@@ -1,0 +1,164 @@
+#*
+ * Copyright (c) 2012, Confluence Community
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, 
+ * with or without modification, are permitted provided 
+ * that the following conditions are met:
+ * 
+ *     + Redistributions of source code must retain the above 
+ *         copyright notice, this list of conditions and the following disclaimer.
+ *     + Redistributions in binary form must reproduce the above copyright notice, 
+ *         this list of conditions and the following disclaimer in the documentation 
+ *         and/or other materials provided with the distribution.
+ *     + Neither the name of Near Infinity Corporation nor the names of its contributors may 
+ *         be used to endorse or promote products derived from this software without 
+ *         specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS 
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *#
+ 
+#set ($userVote = $ballot.getVote($req.remoteUser))
+##1.1.8.1 remove deprecated renderer, use subrenderer instead
+##set ($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
+#set ($xhtmlContent = $action.getContentBean())
+
+<style type="text/css">
+  <!--
+  table.voteSummaryGraphPane {
+    width:100%;
+    padding:0;
+    border-spacing:0;
+    border:0;
+  }
+  -->
+</style>
+
+<script language="JavaScript">
+(new Image()).src = "$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/green-yes.gif";
+</script>
+
+<table class="grid">
+    #set ($columnCount = 2)
+    #if ($canSeeResults) ## 1.1.8.7 || ($canVote && $locked))
+        #set ($columnCount = $columnCount + 1)
+    #end
+    #if ($canSeeVoters)
+        #set ($columnCount = $columnCount + 1)    
+    #end
+    <tr>
+        <th colspan="$columnCount">
+            #if ($locked)
+		      <img align="left" src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
+    	    #end
+            $generalUtil.htmlEncode($ballot.title)
+            
+            #if (!($req.remoteUser) && !($locked))
+              <span class="smalltext">(<a href="${req.contextPath}/login.action?os_destination=$req.getAttribute('atlassian.core.seraph.original.url')">Log In</a> to vote.)</span>
+            #end
+            ##if ($locked)
+		##<img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
+    	    ##end
+        </th>
+    </tr>
+    <tr>
+       	##<th>Choices</th>
+       	##<th>Your Vote</th>
+       	<th>$action.getText("surveyplugin.vote.choices")</th>
+       	<th>$action.getText("surveyplugin.vote.vote")</th>
+       	#if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
+       	    ##<th>Current Results: <span class="smalltext">($ballot.totalVoteCount total votes)</span></th>
+       	    <th>$action.getText("surveyplugin.vote.result"): <span class="smalltext">($ballot.totalVoteCount $action.getText("surveyplugin.survey.summary.header.total"))</span></th>
+       	#end
+       	#if ($canSeeVoters)
+	    ##<th>Voters</th>
+	    <th>$action.getText("surveyplugin.vote.voters")</th>
+        #end
+    </tr>
+   	#foreach ($choice in $ballot.choices)
+        <tr>
+            ##<td>$renderer.convertWikiToXHtml($content.toPageContext(), $choice.description)</td>
+            ##<td>$subRenderer.render($choice.description, $content.toPageContext())</td>
+            ##$subRenderer.render($choice.description, $context)
+            <td>$choice.description</td>
+            <td align="center">
+                #if ($choice.equals($userVote))
+                    <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/green-yes.gif" border="0" align="absmiddle" height="17" width="17" />
+                #elseif ($canVote && !($locked))
+                    #if (!($voteAnchor))
+                      #set ($voteAnchor = "")
+                    #end
+                    <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)#${voteAnchor}">
+                        <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/green-yes.gif';" onmouseout="this.src='$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/blue-yes.gif';" />
+                    </a>
+                #else
+                    <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" />
+                #end
+            </td>
+            
+            #if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
+                #set ($percentVotedFor = $ballot.getPercentageOfVoteForChoice($choice))
+                #set ($percentNotVotedFor = 100 - $percentVotedFor)
+                <td>
+                    <table class="voteSummaryGraphPane">
+                        <tr>
+                            #if ($percentVotedFor > 0)
+                                <td height="8" width="$percentVotedFor%" class="greenbar"></td>
+                            #end
+                            #if ($percentNotVotedFor > 0)
+                                <td height="8" width="$percentNotVotedFor%" class="greenbar" style="BACKGROUND: #d0d0d0;"></td>
+                            #end
+                        </tr>
+                        <tr>
+                            <td colspan="2" height="12" valign="absmiddle" align="center">
+                                ##<span class="smalltext">($choice.voteCount votes, $percentVotedFor%)</span>
+                                <span class="smalltext">($choice.voteCount $action.getText("surveyplugin.survey.summary.votes"), $percentVotedFor%)</span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            #end
+            
+            #if ($canSeeVoters)
+		<td>
+		    #if ($choice.getVoteCount())
+		    	#if ($visibleVotersWiki)
+		    		##$renderer.convertWikiToXHtml($content.toPageContext(), $choice.getVotersAsString(true))
+		    		##$subRenderer.render($choice.getVotersAsString(true), $context) ##$content.toPageContext())
+		    		##$xhtmlContent.convertWikiToView("[~alice]", $content.toPageContext(), null)
+		    		$choice.getVotersAsString($visibleVotersWiki)
+		    		##set($xhtmlContent = $action.getContentBean())
+                    ##$xhtmlContent.convertWikiToView($choice.getVotersAsString($visibleVotersWiki), null, null)
+		    	#else
+		    		$choice.getVotersAsString(false)
+		    	#end
+			##foreach ($voterName in $choice.getVoters())
+			##    $voterName
+			##    <BR>
+			##end
+		    #end
+		</td>
+            #end
+        </tr>
+    #end
+    #if ($canSeeVoters)
+        <tr>
+        	<td colspan="$columnCount">
+        	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $renderer.convertWikiToXHtml($content.toPageContext(),$ballot.getAllVotersString(true)) #else $ballot.getAllVotersString(false) #end
+        	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $subRenderer.render($ballot.getAllVotersString(true), $context) #else $ballot.getAllVotersString(false) #end
+        	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $ballot.getAllVotersString(true) #else $ballot.getAllVotersString(false) #end
+        	$action.getText("surveyplugin.vote.voters.all"): $ballot.getAllVotersString($visibleVotersWiki)
+        	</td>
+        </tr>
+    #end
+</table>

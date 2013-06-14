@@ -1,0 +1,86 @@
+## If the user can see results, only show them if they are not a voter or have completed the entire survey
+##1.1.4 if summary can be shown, it is still hidden for a User not finished voting.
+##1.1.5 show summary if it is locked (closed)
+#if ($survey.isSummaryDisplay() && $canSeeSurveyResults)
+##1.1.8.1 remove deprecated renderer here also, CSRVY-31
+###set ($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
+  
+  <h3><a name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a></h3>
+  #if ($survey.isSurveyComplete($req.remoteUser) || !($canTakeSurvey) || $locked )
+  
+<style type="text/css">
+  <!--
+  table.surveySummaryGraphPane {
+    width:200px;
+    padding:0;
+    border-spacing:0;
+    border:0;
+  }
+  -->
+</style>
+  
+  
+  
+  <table class="grid">
+    <tr>
+    	##1.1.6 try some i18n values
+        ##<th>Question</th>
+        ##<th>Total Votes</th>
+        ##<th>Average Score</th>
+        ##<th>Average Score</th>
+        <th>$action.getText("surveyplugin.survey.summary.header.question")</th>
+        <th>$action.getText("surveyplugin.survey.summary.header.total")</th>
+        <th>$action.getText("surveyplugin.survey.summary.header.average.digit")</th>
+        <th>$action.getText("surveyplugin.survey.summary.header.average.bar")</th>
+        #if ($canSeeSurveyVoters) <th>$action.getText("surveyplugin.vote.voters")</th> #end ##1.1.7.5
+    </tr>
+  #foreach ($ballot in $survey.ballots)
+    #set ($average = $survey.computeAverage($ballot)) 
+    #set ($sAverage = $survey.computeFormatedAverage($ballot, "0.00")) ##1.1.8.5 format rendering digits fixed to two
+      <tr>
+        <td>
+          $generalUtil.htmlEncode($ballot.title)
+        </td>
+        <td align="center">
+          $ballot.totalVoteCount
+        </td>
+        <td align="center">
+          $sAverage $ballot.getBoundsIfNotDefault()
+        </td>
+        <td>
+          <table class="surveySummaryGraphPane">
+              <tr>
+                  ##set ($percentFill = $macro.getPercentFillForFloatScore($average, $macro.getArrayLength($ballot.choices)))
+                  #set ($percentFill = $ballot.getAveragePercentage($average))
+                  #set ($percentEmpty = 100 - $percentFill)
+                  #if ($percentFill > 0)
+                     <td height="8" width="$percentFill%" class="greenbar"><br /></td>
+                  #end
+                  #if ($percentEmpty > 0)
+                     <td height="8" width="$percentEmpty%" class="greenbar" style="BACKGROUND: #d0d0d0;"><br /></td>
+                  #end
+              </tr>
+          </table>
+        </td>
+        #if ($canSeeSurveyVoters) 
+          <td>
+          #if ($visibleVotersWiki)
+          	##$v2SubRenderer.render($ballot.getAllVotersString(true), $context)
+            $generalUtil.htmlEncode($ballot.getAllVotersString(true))
+          	###$renderer.convertWikiToXHtml($content.toPageContext(),$ballot.getAllVotersString(true)) 
+          #else 
+          	$ballot.getAllVotersString(false)
+          #end
+          </td>
+        #end
+      </tr>
+  #end
+  </table>
+  #else
+    <div class="alertbox" style="background: #FF6A00; float: left">
+        ##You must vote on all Survey-Items to see the Summary.
+        $action.getText("surveyplugin.survey.summary.viewable.mustvoteall").
+    </div>
+    <br/>
+  #end
+#end

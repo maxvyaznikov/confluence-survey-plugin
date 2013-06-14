@@ -1,0 +1,234 @@
+#*
+ * Copyright (c) 2006, Near Infinity Corporation
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, 
+ * with or without modification, are permitted provided 
+ * that the following conditions are met:
+ * 
+ *     + Redistributions of source code must retain the above 
+ *         copyright notice, this list of conditions and the following disclaimer.
+ *     + Redistributions in binary form must reproduce the above copyright notice, 
+ *         this list of conditions and the following disclaimer in the documentation 
+ *         and/or other materials provided with the distribution.
+ *     + Neither the name of Near Infinity Corporation nor the names of its contributors may 
+ *         be used to endorse or promote products derived from this software without 
+ *         specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS 
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *#
+<tr bgcolor=ffffff>
+  <td>
+    {vote:What is your favorite color?}<br />
+    Red<br />
+    Blue<br />
+    None of the above<br />
+    {vote}<br />
+    <br />
+    {vote:What is your favorite color?|changeableVotes=true|voters=user1,user2}<br />
+    Red<br />
+    Blue<br />
+    None of the above<br />
+    {vote}<br />
+  </td>
+
+  <td>
+    <p>
+      The vote macro allows Confluence users to vote on any topic of interest.
+      Users are allowed to select only one of the given choices and vote one time,
+      and the results will not be visible to them until they have voted. Users
+      that have not logged in will be prompted to do so before allowing them to
+      cast a vote. This macro was created to support quick, informal votes on
+      various topics. The macro has a title and a series of choices, each choice
+      starting on its own line.
+
+    <!-- Provide a list of all possible macro arguments -->
+    <table>
+      <tr>
+        <th>Parameter</th>
+        <th>Required</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td><br /></td>
+        <td>true</td>
+        <td><br /></td>
+        <td>This is the title of the ballot and must be the first paramter.</td>
+      </tr>
+      <tr>
+        <td>voters</td>
+        <td>false</td>
+        <td>all users</td>
+        <td>This is a comma seperated list of usernames to who are allowed to 
+            cast a vote. Users not in this list will not be allowed to vote, but
+            if they are viewers will be shown the results of the vote. If this parameter
+            is not specified, all users with access to the page are considered voters.
+        </td>
+      </tr>
+      <tr>
+        <td>viewers</td>
+        <td>false</td>
+        <td>all users</td>
+        <td>This is a comma seperated list of usernames to who are allowed to see the survey results.
+            Users not in this list will be allowed to vote but
+            after doing so will simply be shown which item they voted for. If a user is in this
+            list but is not a voter, they will be taken straight to the results. If this parameter is not specified,
+            all users will be able to see the results.
+        </td>
+      </tr>
+      <tr>
+        <td>changeableVotes</td>
+        <td>false</td>
+        <td>false</td>
+        <td>This parameter, if set to true, will allow the voters to change their vote
+            after it has been cast.
+        </td>
+      </tr>
+      <tr>
+      	<td>locked</td>
+      	<td>false</td>
+      	<td>false</td>
+      	<td>Dont allow any further voting. Show a lock Symbol to indicate that.</td>
+      </tr>
+    </table>
+    </p>
+
+    <p>Before the user logs in:</p>
+    <div align='center'>
+    <table class="grid">
+      <tr>
+        <th colspan="2">What is your favorite color?  <span class="smalltext">(<a href="#">Log In</a> to vote.)</span></th>
+      </tr>
+      <tr>
+        <th>Choices</th>
+        <th>Your Vote</th>
+      </tr>
+      <tr>
+        <td>Red</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+      </tr>
+      <tr>
+        <td>Blue</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+      </tr>
+      <tr>
+        <td>None of the above</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+      </tr>
+    </table>
+    </div>
+
+    <p>Before the logged-in user votes:</p>
+    <div align='center'>
+    <table class="grid">
+      <tr>
+        <th colspan="2">What is your favorite color?</th>
+      </tr>
+      <tr>
+        <th>Choices</th>
+        <th>Your Vote</th>
+      </tr>
+      <tr>
+        <td>Red</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+      </tr>
+      <tr>
+        <td>Blue</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+      </tr>
+      <tr>
+        <td>None of the above</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+      </tr>
+    </table>
+    </div>
+
+    <p>After the logged-in user votes:</p>
+    <div align='center'>
+    <table class="grid">
+      <tr>
+        <th colspan="3">What is your favorite color?</th>
+      </tr>
+      <tr>
+        <th>Choices</th>
+        <th>Your Vote</th>
+        <th>Current Results: (10 total votes)</th>
+      </tr>
+      <tr>
+        <td>Red</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/green-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td height="8" width="40%" class="greenbar"></td>
+              <td height="8" width="60%" class="greenbar" style="BACKGROUND: #d0d0d0;"></td>
+            </tr>
+            <tr>
+              <td colspan="2" height="12" valign="absmiddle" align="center"><span class="smalltext">(4 votes, 40%)</span></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>Blue</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td height="8" width="50%" class="greenbar"></td>
+              <td height="8" width="50%" class="greenbar" style="BACKGROUND: #d0d0d0;"></td>
+            </tr>
+            <tr>
+              <td colspan="2" height="12" valign="absmiddle" align="center"><span class="smalltext">(5 votes, 50%)</span></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>None of the above</td>
+        <td align="center">
+          <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+        </td>
+        <td>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td height="8" width="10%" class="greenbar"></td>
+              <td height="8" width="90%" class="greenbar" style="BACKGROUND: #d0d0d0;"></td>
+            </tr>
+            <tr>
+              <td colspan="2" height="12" valign="absmiddle" align="center"><span class="smalltext">(1 votes, 10%)</span></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    </div>
+    </td>
+</tr>

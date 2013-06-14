@@ -1,0 +1,158 @@
+#*
+ * Copyright (c) 2006, Near Infinity Corporation
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, 
+ * with or without modification, are permitted provided 
+ * that the following conditions are met:
+ * 
+ *     + Redistributions of source code must retain the above 
+ *         copyright notice, this list of conditions and the following disclaimer.
+ *     + Redistributions in binary form must reproduce the above copyright notice, 
+ *         this list of conditions and the following disclaimer in the documentation 
+ *         and/or other materials provided with the distribution.
+ *     + Neither the name of Near Infinity Corporation nor the names of its contributors may 
+ *         be used to endorse or promote products derived from this software without 
+ *         specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS 
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; 
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *#
+ 
+###set($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
+
+<style type="text/css">
+<!--
+##div.surveyComment {
+##  width: 90%;
+##}
+##td.surveyVotePane { <!--column of vote-macro within survey-->
+##  width:20%;
+##}
+table.surveyTable { 
+  <!--width:100%;-->
+  padding:0;
+  margin:0;
+}
+##div.surveybox { <!--if there is a survey-title, use a div around-->
+##  
+##}
+-->
+</style>
+
+#set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
+#if ( $survey.title )
+  <div id="$generalUtil.urlEncode(${survey.title.trim})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px;">
+  <h2>#if ($locked) <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.survey.locked")." /> #end <a name="$generalUtil.urlEncode(${survey.titleNoSpace})">$generalUtil.htmlEncode($survey.title)</a></h2>
+#else
+  #set( $surveyTitleSummary = "summary" )
+#end
+#if ($showTopSummary)
+  #parse ("templates/extra/survey/surveysummary.vm")
+#end
+
+#set ($ballotNumber = 0)
+#foreach ($ballot in $survey.ballots)
+
+  ## Set up a few variables to let the vote macro do its thing...
+  #set ($canVote = ($canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $survey.changeableVotes)))
+  #set ($canSeeResults = ($canSeeSurveyResults && ( $ballot.getHasVoted($req.remoteUser) || ($canTakeSurvey && $locked) || !($canTakeSurvey) )))
+  #set ($canSeeVoters = $canSeeResults && $survey.visibleVoters) ##1.1.7.5 pass survey-context to vote-vm
+  #set ($userVote = false)
+  ##set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballotNumber}"))
+  #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballotNumber}-${ballot.titleNoSpace}"))
+  #set ($ballotNumberID = $generalUtil.htmlEncode("${ballotNumber}-${ballot.titleNoSpace}") )
+  
+  <h3><a name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a></h3>
+  ##$generalUtil.htmlEncode($ballot.description) ##1.1.8.4 allow wiki-rendering of ballot-description
+  ##$v2SubRenderer.render($ballot.description, $context)
+  $ballot.description
+
+  <table class="surveyTable" >
+    <tr>
+      <td class="surveyVotePane">  
+        #parse ("templates/extra/vote/votemacro.vm")
+      </td>
+      <td>
+        #if ($canTakeSurvey && $showComments && !($locked))
+          #set ($currentComment = "")
+          #if ($ballot.getCommentForUser($req.remoteUser))
+            #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
+          #end
+          <div class="focusedComment commentblock surveyComment">
+            <span id="${ballotNumberID}CommentForm" style="display:none">
+              <form method="POST" action="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id">
+                <input type="hidden" name="ballotTitle" value="$generalUtil.htmlEncode($ballot.title)" />
+                <input type="hidden" name="ballotAnchor" value="${voteAnchor}" />
+                <textarea name="comment" rows="5" cols="70" style="font:12px monospace;">$generalUtil.htmlEncode($currentComment)</textarea>
+                <br />
+                <span style="align:right">
+                  ##<input type="submit" value="save" /> 1.1.7.5 render in the selected language
+                  <input type="submit" value="$action.getText('surveyplugin.survey.save')" />
+                  <input type="button" value="$action.getText('surveyplugin.survey.cancel')" onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='inline';document.getElementById('${ballotNumberID}CommentForm').style.display='none';" />
+                </span>
+              </form>
+            </span>
+            #if ($ballot.getCommentForUser($req.remoteUser))
+              #set($rawWiki=$ballot.getCommentForUser($req.remoteUser).comment)
+              ##set($xhtml=$renderer.convertWikiToXHtml($content.toPageContext(), $rawWiki)) 1.1.7.10 fixed rendering for conf3.1
+              <span id="${ballotNumberID}CommentDisplay">
+                ##<span id="${ballotNumberID}CommentValue">$subRenderer.render($rawWiki, $context)</span>
+                <span id="${ballotNumberID}CommentValue">$rawWiki</span>
+                <br />
+                <br />
+                <a href="#" onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.edit")</a>
+                <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id&ballotTitle=$generalUtil.urlEncode($ballot.title)&comment=#${voteAnchor}">$action.getText("surveyplugin.survey.comment.remove")</a>
+              </span>
+            #else
+              <span id="${ballotNumberID}CommentDisplay">
+                <a href="#" onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.add")</a>
+              </span>
+            #end
+          </div>
+        #end
+        
+        
+        ##1.1.8.7 canvote will see only his own vote on locked, for other comments he needs canSeeResults
+        #if (($canSeeResults || ($canVote && $locked)) && $showComments)
+          #foreach ($comment in $ballot.comments)
+            #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $locked))
+              <div class="commentBox commentblock surveyComment"  >
+              	#set( $voteText = $action.getText("surveyplugin.survey.vote.not") ) 
+		#if ($ballot.getVote($comment.username))
+		      #set($voteText=$ballot.getVote($comment.username).description)
+		#end
+		#if ($canSeeVoters)
+		      ##set($voteText= $comment.username + "'s comment on " + $voteText)
+		      #set($voteText= $comment.username + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
+		#end
+		##<b>$voteText:</b> $renderer.convertWikiToXHtml($content.toPageContext(), $comment.comment)
+		##<b>$voteText:</b> $subRenderer.render($comment.comment, $context)
+		<b>$voteText:</b> $comment.comment
+              </div>
+            #end
+          #end
+        #end
+      </td>
+    </tr>
+  </table>
+  
+  #set ($ballotNumber = $ballotNumber + 1)
+#end
+
+#if (!$showTopSummary)
+  #parse ("templates/extra/survey/surveysummary.vm")
+#end
+
+#if ( $survey.title )
+  </div>
+#end

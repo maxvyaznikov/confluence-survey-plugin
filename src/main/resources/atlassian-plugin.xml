@@ -1,0 +1,127 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/icons/csrvyico.png</param>
+        <param name="plugin-logo">images/icons/csrvyico.png</param>
+    </plugin-info>
+
+    <xhtml-macro key="vote" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro" icon="/download/resources/org.hivesoft.confluence.survey-plugin/icons/csrvyico.png">
+        <description>Allows users to vote on a single topic, tallying up and displaying the results after the user has voted.</description>
+        <resource type="velocity" name="help" location="templates/extra/vote/help.vm" />
+        <category name="confluence-content" />
+        <parameters>
+            <parameter name="title" type="string" required="true">
+                <alias name="" />
+            </parameter>
+            <parameter name="voters" type="string" multiple="true" />
+            <parameter name="viewers" type="string" multiple="true" />
+            <parameter name="visibleVoters" type="boolean" />
+            <parameter name="visibleVotersWiki" type="boolean" />
+            <parameter name="locked" type="boolean" />
+        </parameters>
+    </xhtml-macro>
+
+    <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro" icon="/download/resources/org.hivesoft.confluence.survey-plugin/icons/csrvyico.png">
+        <description>Allows users to vote on different topics, tallying up and displaying the results after the user has voted. </description>
+        <resource type="velocity" name="help" location="templates/extra/survey/help.vm" />
+        <category name="confluence-content" />
+        <parameters>
+            <parameter name="title" type="string" />
+            <parameter name="choices" type="string" />
+            <parameter name="changeableVotes" type="boolean" />
+            <parameter name="showSummary" type="boolean" />
+            <parameter name="showTopSummary" type="boolean" />
+            <parameter name="showLast" type="boolean" />
+            <parameter name="startBound" type="string" default="1" />
+            <parameter name="iterateStep" type="string" default="1" />
+            <parameter name="voters" type="string" multiple="true" />
+            <parameter name="viewers" type="string" multiple="true" />
+            <parameter name="visibleVoters" type="boolean" />
+            <parameter name="visibleVotersWiki" type="boolean" />
+            <parameter name="locked" type="boolean" />
+        </parameters>
+    </xhtml-macro>
+
+    <macro key="vote-wikistyle" name="vote-conf3" class="org.hivesoft.confluence.macros.vote.VoteMacro" icon="/download/resources/org.hivesoft.confluence.survey-plugin/icons/csrvyico.png">
+        <description>Allows users to vote on a topic, tallying up and displaying the results after the user has voted.</description>
+        <resource type="velocity" name="help" location="templates/extra/vote/help.vm" />
+        <category name="confluence-content" />
+        <parameters>
+            <parameter name="title" type="string" required="true">
+                <alias name="" />
+            </parameter>
+            <parameter name="voters" type="string" multiple="true" />
+            <parameter name="viewers" type="string" multiple="true" />
+            <parameter name="visibleVoters" type="boolean" />
+            <parameter name="visibleVotersWiki" type="boolean" />
+            <parameter name="locked" type="boolean" />
+        </parameters>
+    </macro>
+
+    <macro key="survey-wikistyle" name="survey-conf3" class="org.hivesoft.confluence.macros.survey.SurveyMacro" icon="/download/resources/org.hivesoft.confluence.survey-plugin/icons/csrvyico.png">
+        <description>Allows users to vote on a topic, tallying up and displaying the results after the user has voted.</description>
+        <category name="confluence-content" />
+        <resource type="velocity" name="help" location="templates/extra/survey/help.vm" />
+        <parameters>
+            <parameter name="title" type="string" />
+            <parameter name="choices" type="string" />
+            <parameter name="changeableVotes" type="boolean" />
+            <parameter name="showSummary" type="boolean" />
+            <parameter name="showTopSummary" type="boolean" />
+            <parameter name="showLast" type="boolean" />
+            <parameter name="startBound" type="string" default="1" />
+            <parameter name="iterateStep" type="string" default="1" />
+            <parameter name="voters" type="string" multiple="true" />
+            <parameter name="viewers" type="string" multiple="true" />
+            <parameter name="visibleVoters" type="boolean" />
+            <parameter name="visibleVotersWiki" type="boolean" />
+            <parameter name="locked" type="boolean" />
+        </parameters>
+    </macro>
+    
+    <!-- The survey macro needs a place to post its comments. -->
+    <!-- This action will catch a comment post and redirect back to the original page. -->
+    <xwork name="surveyaction" key="surveyaction">
+        <package name="survey" extends="default" namespace="/plugins/survey">
+            <default-interceptor-ref name="validatingStack" />
+
+            <action name="doaddcomment" class="org.hivesoft.confluence.macros.survey.AddCommentAction">
+                <result name="success" type="redirect">${@com.atlassian.confluence.util.GeneralUtil@customGetPageUrl(page)}#${#request.surveySection}
+                </result>
+                <result name="error" type="redirect">${@com.atlassian.confluence.util.GeneralUtil@customGetPageUrl(page)}#${#request.surveySection}
+                </result>
+            </action>
+        </package>
+    </xwork>
+
+    <resource key="icons" name="icons/" type="download" location="images/icons" />
+    <resource key="extraimg" name="extraimg/" type="download" location="templates/extra/images" />
+    <resource name="gray-yes.gif" type="download" location="extraimg/gray-yes.gif">
+        <property key="content-type" value="image/gif" />
+    </resource>
+    <resource name="blue-yes.gif" type="download" location="extraimg/blue-yes.gif">
+        <property key="content-type" value="image/gif" />
+    </resource>
+    <resource name="green-yes.gif" type="download" location="/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/green-yes.gif">
+        <property key="content-type" value="image/gif" />
+    </resource>
+    <resource name="gray-no.gif" type="download" location="/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/gray-no.gif">
+        <property key="content-type" value="image/gif" />
+    </resource>
+    <resource name="red-no.gif" type="download" location="/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/red-no.gif">
+        <property key="content-type" value="image/gif" />
+    </resource>
+
+    <resource name="blue-no.gif" type="download" location="/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/blue-no.gif">
+        <property key="content-type" value="image/gif" />
+    </resource>
+    <resource name="locked.gif" type="download" location="extraimg/locked.gif">
+        <property key="content-type" value="image/gif" />
+    </resource>
+
+    <!-- Directory and filename prefix of the properties-resource for i18n -->
+    <resource type="i18n" name="i18n" location="org.hivesoft.confluence.macros.SurveyPlugin" />
+
+</atlassian-plugin>
