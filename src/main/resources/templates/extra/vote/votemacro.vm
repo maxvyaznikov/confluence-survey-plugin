@@ -45,7 +45,7 @@
 </style>
 
 <script language="JavaScript">
-(new Image()).src = "$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/green-yes.gif";
+(new Image()).src = "$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/green-yes.gif";
 </script>
 
 <table class="grid">
@@ -59,7 +59,7 @@
     <tr>
         <th colspan="$columnCount">
             #if ($locked)
-		      <img align="left" src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
+		      <img align="left" src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
     	    #end
             $generalUtil.htmlEncode($ballot.title)
             
@@ -67,7 +67,7 @@
               <span class="smalltext">(<a href="${req.contextPath}/login.action?os_destination=$req.getAttribute('atlassian.core.seraph.original.url')">Log In</a> to vote.)</span>
             #end
             ##if ($locked)
-		##<img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
+		##<img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
     	    ##end
         </th>
     </tr>
@@ -93,16 +93,16 @@
             <td>$choice.description</td>
             <td align="center">
                 #if ($choice.equals($userVote))
-                    <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/green-yes.gif" border="0" align="absmiddle" height="17" width="17" />
+                    <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/green-yes.gif" border="0" align="absmiddle" height="17" width="17" />
                 #elseif ($canVote && !($locked))
                     #if (!($voteAnchor))
                       #set ($voteAnchor = "")
                     #end
                     <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)#${voteAnchor}">
-                        <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/green-yes.gif';" onmouseout="this.src='$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/blue-yes.gif';" />
+                        <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/green-yes.gif';" onmouseout="this.src='$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/blue-yes.gif';" />
                     </a>
                 #else
-                    <img src="$req.contextPath/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" />
+                    <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" />
                 #end
             </td>
             

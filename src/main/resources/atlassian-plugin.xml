@@ -15,6 +15,7 @@
             <parameter name="title" type="string" required="true">
                 <alias name="" />
             </parameter>
+            <parameter name="changeableVotes" type="boolean" />
             <parameter name="voters" type="string" multiple="true" />
             <parameter name="viewers" type="string" multiple="true" />
             <parameter name="visibleVoters" type="boolean" />
@@ -52,6 +53,7 @@
             <parameter name="title" type="string" required="true">
                 <alias name="" />
             </parameter>
+            <parameter name="changeableVotes" type="boolean" />
             <parameter name="voters" type="string" multiple="true" />
             <parameter name="viewers" type="string" multiple="true" />
             <parameter name="visibleVoters" type="boolean" />
@@ -98,26 +100,26 @@
 
     <resource key="icons" name="icons/" type="download" location="images/icons" />
     <resource key="extraimg" name="extraimg/" type="download" location="templates/extra/images" />
-    <resource name="gray-yes.gif" type="download" location="extraimg/gray-yes.gif">
+    <resource name="gray-yes.gif" type="download" location="/download/resources/${project.groupId}.${project.artifactId}/extraimg/gray-yes.gif">
         <property key="content-type" value="image/gif" />
     </resource>
-    <resource name="blue-yes.gif" type="download" location="extraimg/blue-yes.gif">
+    <resource name="blue-yes.gif" type="download" location="/download/resources/${project.groupId}.${project.artifactId}/extraimg/blue-yes.gif">
         <property key="content-type" value="image/gif" />
     </resource>
-    <resource name="green-yes.gif" type="download" location="/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/green-yes.gif">
+    <resource name="green-yes.gif" type="download" location="/download/resources/${project.groupId}.${project.artifactId}/extraimg/green-yes.gif">
         <property key="content-type" value="image/gif" />
     </resource>
-    <resource name="gray-no.gif" type="download" location="/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/gray-no.gif">
+    <resource name="gray-no.gif" type="download" location="/download/resources/${project.groupId}.${project.artifactId}/extraimg/gray-no.gif">
         <property key="content-type" value="image/gif" />
     </resource>
-    <resource name="red-no.gif" type="download" location="/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/red-no.gif">
+    <resource name="red-no.gif" type="download" location="/download/resources/${project.groupId}.${project.artifactId}/extraimg/red-no.gif">
         <property key="content-type" value="image/gif" />
     </resource>
 
-    <resource name="blue-no.gif" type="download" location="/download/resources/org.hivesoft.confluence.survey-plugin/extraimg/blue-no.gif">
+    <resource name="blue-no.gif" type="download" location="/download/resources/${project.groupId}.${project.artifactId}/extraimg/blue-no.gif">
         <property key="content-type" value="image/gif" />
     </resource>
-    <resource name="locked.gif" type="download" location="extraimg/locked.gif">
+    <resource name="locked.gif" type="download" location="/download/resources/${project.groupId}.${project.artifactId}/extraimg/locked.gif">
         <property key="content-type" value="image/gif" />
     </resource>
 
