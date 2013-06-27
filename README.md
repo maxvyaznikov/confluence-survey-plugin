@@ -3,8 +3,6 @@ Introduction
 
 Welcome to the Confluence-Survey-Plugin Page.
 
-Currently there is no Issue Tracker, if someone knows a good one like github (maybe integratable?-)) give me a note
-
 Usage
 =====
 
