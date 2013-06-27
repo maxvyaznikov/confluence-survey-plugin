@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 
 public class BallotTest {
@@ -12,7 +11,7 @@ public class BallotTest {
     private static final String SOME_BALLOT = "SOME_BALLOT";
 
     @Before
-    public void setup(){
+    public void setup() {
     }
 
     @Test
