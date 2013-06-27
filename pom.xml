@@ -23,8 +23,8 @@
     <url>https://plugins.atlassian.com/plugin/details/195</url>
 
     <scm>
-        <connection>https://studio.plugins.atlassian.com/svn/CSRVY/trunk</connection>
-        <developerConnection>https://studio.plugins.atlassian.com/svn/CSRVY/trunk</developerConnection>
+        <connection>https://github.com/drohne1673/confluence-survey-plugin</connection>
+        <developerConnection>https://github.com/drohne1673/confluence-survey-plugin</developerConnection>
     </scm>
 
     <properties>
