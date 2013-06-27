@@ -1,31 +1,12 @@
-/*
- * Copyright (c) 2012, Confluence Community
+/**
+ * Copyright (c) 2006-2013, Confluence Community
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms,
- * with or without modification, are permitted provided
- * that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
- *     + Redistributions of source code must retain the above
- *         copyright notice, this list of conditions and the following disclaimer.
- *     + Redistributions in binary form must reproduce the above copyright notice,
- *         this list of conditions and the following disclaimer in the documentation
- *         and/or other materials provided with the distribution.
- *     + Neither the name of Near Infinity Corporation nor the names of its contributors may
- *         be used to endorse or promote products derived from this software without
- *         specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.hivesoft.confluence.macros.vote;
 
@@ -67,9 +48,9 @@ import com.opensymphony.webwork.ServletActionContext;
  * This macro defines a simple voting mechanism against a particular topic. Users may only vote once (unless changeable votes is true), can only vote for one choice, and cannot see the overall results
  * until after they have voted.
  * </p>
- * <p>
+ * <p/>
  * Usage:
- * 
+ * <p/>
  * <pre>
  * {vote:Big Decision}
  * Buy
@@ -214,16 +195,12 @@ public class VoteMacro extends BaseMacro implements Macro {
      * <p>
      * Get the HTML rendering of this macro.
      * </p>
-     * 
-     * @param parameters
-     *            Any parameters passed into this macro. This macro expects is a single, unnamed parameter.
-     * @param body
-     *            The rendered body of the macro
-     * @param renderContext
-     *            The render context for the current page rendering.
+     *
+     * @param parameters    Any parameters passed into this macro. This macro expects is a single, unnamed parameter.
+     * @param body          The rendered body of the macro
+     * @param renderContext The render context for the current page rendering.
      * @return String respresenting the HTML rendering of this macro
-     * @throws MacroException
-     *             If an exception occurs rendering the HTML
+     * @throws MacroException If an exception occurs rendering the HTML
      */
     @Override
     public String execute(@SuppressWarnings("rawtypes") Map parameters, String body, RenderContext renderContext) throws MacroException {
@@ -262,7 +239,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         }
         if (strExceedsKeyItems != "") {
             String logMessage = "Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: "
-                            + strExceedsKeyItems + "!";
+                    + strExceedsKeyItems + "!";
             LOG.error(logMessage);
             throw new MacroException(logMessage);
         }
@@ -328,13 +305,10 @@ public class VoteMacro extends BaseMacro implements Macro {
      * <p>
      * This method will take the data from the macros parameters, body, and page data to reconstruct a ballot object with all of the choices and previously cast votes populated.
      * </p>
-     * 
-     * @param parameters
-     *            The macro parameters.
-     * @param body
-     *            The rendered body of the macro.
-     * @param contentObject
-     *            The page content object where cast votes are stored.
+     *
+     * @param parameters    The macro parameters.
+     * @param body          The rendered body of the macro.
+     * @param contentObject The page content object where cast votes are stored.
      * @return A fully populated ballot object.
      */
     protected Ballot reconstructBallot(Map<String, String> parameters, String body, ContentEntityObject contentObject) throws MacroException {
@@ -354,7 +328,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         Ballot ballot = new Ballot(ballotTitle);
 
         // Reconstruct all of the votes that have been cast so far
-        for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens();) {
+        for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
             // 1.1.6: added trim(), otherwise it can happen that empty lines (spaces) get valid options
             String line = stringTokenizer.nextToken().trim();
 
@@ -366,7 +340,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
                 if (TextUtils.stringSet(votes)) {
 
-                    for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens();) {
+                    for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
                         choice.voteFor(voteTokenizer.nextToken());
                     }
                 }
@@ -386,13 +360,10 @@ public class VoteMacro extends BaseMacro implements Macro {
      * <p>
      * This is a helper method to set the content property value for a particular vote choice once it has been updated.
      * </p>
-     * 
-     * @param choice
-     *            The choice that has been updated.
-     * @param ballotTitle
-     *            The title of the ballot that the choice belongs to.
-     * @param contentObject
-     *            The content object for the current macro.
+     *
+     * @param choice        The choice that has been updated.
+     * @param ballotTitle   The title of the ballot that the choice belongs to.
+     * @param contentObject The content object for the current macro.
      */
     protected void setVoteContentProperty(Choice choice, String ballotTitle, ContentEntityObject contentObject) {
         String propertyKey = VOTE_PREFIX + ballotTitle + "." + choice.getDescription();
@@ -419,15 +390,11 @@ public class VoteMacro extends BaseMacro implements Macro {
      * <li>The user is allowed to vote and has already cast a vote.</li>
      * </ol>
      * </p>
-     * 
-     * @param viewers
-     *            The list of usernames allowed to see the results after voting. If blank, all users can see results.
-     * @param voters
-     *            The list of usernames allowed to vote. If blank, all users can vote.
-     * @param username
-     *            The username of the user about to see results.
-     * @param ballot
-     *            The ballot whose results are about to be shown.
+     *
+     * @param viewers  The list of usernames allowed to see the results after voting. If blank, all users can see results.
+     * @param voters   The list of usernames allowed to vote. If blank, all users can vote.
+     * @param username The username of the user about to see results.
+     * @param ballot   The ballot whose results are about to be shown.
      * @return <code>true</code> if the user can see the results, <code>false</code> if they cannot.
      */
     protected Boolean getCanSeeResults(String viewers, String voters, String username, Ballot ballot) {
@@ -490,13 +457,10 @@ public class VoteMacro extends BaseMacro implements Macro {
      * Determine if a user is authorized to cast a vote, taking into account whether they are a voter (either explicitly or implicitly) and whether or not they have already cast a vote. Only logged in
      * users can vote.
      * </p>
-     * 
-     * @param voters
-     *            The list of usernames allowed to vote. If blank, all users can vote.
-     * @param username
-     *            the username of the user about to see the ballot.
-     * @param ballot
-     *            the ballot that is about to be shown.
+     *
+     * @param voters   The list of usernames allowed to vote. If blank, all users can vote.
+     * @param username the username of the user about to see the ballot.
+     * @param ballot   the ballot that is about to be shown.
      * @return <code>true</code> if the user can cast a vote, <code>false</code> if they cannot.
      */
     protected Boolean getCanVote(String voters, String username, Ballot ballot) {
@@ -527,15 +491,11 @@ public class VoteMacro extends BaseMacro implements Macro {
      * <p>
      * If there is a vote in the request, store it in this page for the given ballot.
      * </p>
-     * 
-     * @param ballot
-     *            The ballot being voted on.
-     * @param request
-     *            The request where the vote and username can be found.
-     * @param contentObject
-     *            The content object where any votes should be stored.
-     * @param voters
-     *            The list of usernames allowed to vote. If blank, all users can vote.
+     *
+     * @param ballot        The ballot being voted on.
+     * @param request       The request where the vote and username can be found.
+     * @param contentObject The content object where any votes should be stored.
+     * @param voters        The list of usernames allowed to vote. If blank, all users can vote.
      */
     protected void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject, String voters) {
         String remoteUser = request.getRemoteUser();

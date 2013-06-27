@@ -1,31 +1,12 @@
-/*
- * Copyright (c) 2012, Confluence Community
+/**
+ * Copyright (c) 2006-2013, Confluence Community
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms,
- * with or without modification, are permitted provided
- * that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
- *     + Redistributions of source code must retain the above
- *         copyright notice, this list of conditions and the following disclaimer.
- *     + Redistributions in binary form must reproduce the above copyright notice,
- *         this list of conditions and the following disclaimer in the documentation
- *         and/or other materials provided with the distribution.
- *     + Neither the name of Near Infinity Corporation nor the names of its contributors may
- *         be used to endorse or promote products derived from this software without
- *         specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.hivesoft.confluence.macros.vote.model;
 
@@ -152,7 +133,7 @@ public class Ballot {
 	 * Set whether or not this ballot should allow users to see the voters in clear text
 	 * </p>
 	 *
-	 * @param visibleVotes <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
+	 * @param visibleVoters <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
 	 */
 	public void setVisibleVoters(boolean visibleVoters) {
 		this.visibleVoters = visibleVoters;
@@ -167,10 +148,9 @@ public class Ballot {
      * @return <code>Choice</code> that the user voted on, <code>null</code> if username has not voted.
      */
     public Choice getVote(String username) {
-        Collection<Choice> col = choices.values();
-        if (col != null && col.size() > 0) {
-            for (Iterator<Choice> iter = col.iterator(); iter.hasNext(); ) {
-                Choice choice = (Choice)iter.next();
+        Collection<Choice> userChoices = choices.values();
+        if (userChoices != null && userChoices.size() > 0) {
+            for (Choice choice : userChoices) {
                 if (choice.getHasVotedFor(username)) {
                     return choice;
                 }
@@ -322,7 +302,7 @@ public class Ballot {
 	 * 1.1.7.1: set the StartBound for calculations (average)
 	 * </p>
 	 *
-	 * @param Integer the Iteration shall start with
+	 * @param iStartBound the Iteration shall start with
 	 */
 	public void setStartBound(int iStartBound) {
 		startBound=iStartBound;
@@ -344,7 +324,7 @@ public class Ballot {
 	 * 1.1.7.1: set the iterateStep for calculations (average)
 	 * </p>
 	 *
-	 * @param Integer the Iteration shall iterate with
+	 * @param iIterateStep the Iteration shall iterate with
 	 */
 	public void setIterateStep(int iIterateStep) {
 		iterateStep=iIterateStep;

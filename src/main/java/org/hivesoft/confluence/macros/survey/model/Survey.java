@@ -1,31 +1,12 @@
-/*
- * Copyright (c) 2012, Confluence Community
+/**
+ * Copyright (c) 2006-2013, Confluence Community
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms,
- * with or without modification, are permitted provided
- * that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
- *     + Redistributions of source code must retain the above
- *         copyright notice, this list of conditions and the following disclaimer.
- *     + Redistributions in binary form must reproduce the above copyright notice,
- *         this list of conditions and the following disclaimer in the documentation
- *         and/or other materials provided with the distribution.
- *     + Neither the name of Near Infinity Corporation nor the names of its contributors may
- *         be used to endorse or promote products derived from this software without
- *         specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.hivesoft.confluence.macros.survey.model;
 
@@ -72,9 +53,7 @@ public class Survey {
      * @return The requested <code>Ballot</code> or <code>null</code> if not found.
      */
     public Ballot getBallot(String title) {
-        for (Iterator<Ballot> iter = ballots.iterator(); iter.hasNext(); ) {
-            Ballot ballot = (Ballot)iter.next();
-
+        for (Ballot ballot : ballots) {
             if (ballot.getTitle().equals(title)) {
                 return ballot;
             }
@@ -116,9 +95,7 @@ public class Survey {
      * @return <code>true</code> if the user has voted on all ballots; <code>false</code> otherwise.
      */
     public boolean isSurveyComplete(String username) {
-		for (Iterator<Ballot> iter = ballots.iterator(); iter.hasNext(); ) {
-            Ballot ballot = (Ballot)iter.next();
-
+        for (Ballot ballot : ballots) {
             if (!ballot.getHasVoted(username)) {
                 return false;
             }
@@ -154,8 +131,7 @@ public class Survey {
     public void setChangeableVotes(boolean changeableVotes) {
         this.changeableVotes = changeableVotes;
 
-        for (Iterator<Ballot> iter = ballots.iterator(); iter.hasNext(); ) {
-            Ballot ballot = (Ballot)iter.next();
+        for (Ballot ballot : ballots) {
             ballot.setChangeableVotes(changeableVotes);
         }
     }
@@ -176,15 +152,14 @@ public class Survey {
 	 * Set whether or not this survey should allow users to see the voted users
 	 * </p>
 	 *
-	 * @param visibileVoters <code>true</code> if users can see voted users in clear text; <code>false</code> (default) otherwise.
+	 * @param visibleVoters <code>true</code> if users can see voted users in clear text; <code>false</code> (default) otherwise.
 	 */
 	public void setVisibleVoters(boolean visibleVoters) {
 		this.visibleVoters = visibleVoters;
 
-		for (Iterator<Ballot> iter = ballots.iterator(); iter.hasNext(); ) {
-			Ballot ballot = (Ballot)iter.next();
-			ballot.setVisibleVoters(visibleVoters);
-		}
+        for (Ballot ballot : ballots) {
+            ballot.setVisibleVoters(visibleVoters);
+        }
 	}
 
 
@@ -193,14 +168,13 @@ public class Survey {
 	 * Set the Start Bound and iterating step for each ballot (can be overriden by each one if necessary)
 	 * </p>
 	 *
-	 * @param default StartBound <code>1</code>, default IterateStep <code>1</code>.
+	 * @param startBound defaults <code>1</code>, iterateStep defaults <code>1</code>.
 	 */
 	public void setStartBoundAndIterateStep(int startBound, int iterateStep) {
-		for (Iterator<Ballot> iter = ballots.iterator(); iter.hasNext(); ) {
-			Ballot ballot = (Ballot)iter.next();
-			ballot.setStartBound(startBound);
-			ballot.setIterateStep(iterateStep);
-		}
+        for (Ballot ballot : ballots) {
+            ballot.setStartBound(startBound);
+            ballot.setIterateStep(iterateStep);
+        }
     }
 
     /**
@@ -302,12 +276,12 @@ public class Survey {
 	 */
 	 public List<String> getBallotTitlesWithChoiceNames(){
 		 List<String> ballotChoiceNames = new ArrayList<String>();
-		 for (Iterator<Ballot> iter = ballots.iterator(); iter.hasNext(); ) {
-			 Ballot ballot = (Ballot)iter.next();
-			 Choice[] choices = ballot.getChoices();
-			 for (int iCo=0;iCo<choices.length; iCo++ ) {
-			 	 ballotChoiceNames.add(ballot.getTitle()+"."+choices[iCo].getDescription());
-		 	 }
+
+         for (Ballot ballot : ballots) {
+             Choice[] choices = ballot.getChoices();
+             for (int iCo=0;iCo<choices.length; iCo++ ) {
+                 ballotChoiceNames.add(ballot.getTitle()+"."+choices[iCo].getDescription());
+             }
          }
          return ballotChoiceNames;
 	 }
