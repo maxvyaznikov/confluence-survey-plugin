@@ -102,20 +102,16 @@
             #if ($canSeeVoters)
 		<td>
 		    #if ($choice.getVoteCount())
-		    	#if ($visibleVotersWiki)
-		    		##$renderer.convertWikiToXHtml($content.toPageContext(), $choice.getVotersAsString(true))
-		    		##$subRenderer.render($choice.getVotersAsString(true), $context) ##$content.toPageContext())
-		    		##$xhtmlContent.convertWikiToView("[~alice]", $content.toPageContext(), null)
-		    		$choice.getVotersAsString($visibleVotersWiki)
-		    		##set($xhtmlContent = $action.getContentBean())
-                    ##$xhtmlContent.convertWikiToView($choice.getVotersAsString($visibleVotersWiki), null, null)
-		    	#else
-		    		$choice.getVotersAsString(false)
-		    	#end
-			##foreach ($voterName in $choice.getVoters())
-			##    $voterName
-			##    <BR>
-			##end
+		       #set($voters = $choice.getVoters())
+               #set($iCounter = 0)
+               #foreach($voter in $voters)
+                 #set($iCounter=$iCounter+1)
+                 #if ($visibleVotersWiki)
+                   <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+                 #else
+                   $voter#if ($iCounter!=$voters.size()),#end
+                 #end
+               #end
 		    #end
 		</td>
             #end
@@ -124,10 +120,21 @@
     #if ($canSeeVoters)
         <tr>
         	<td colspan="$columnCount">
+        	$action.getText("surveyplugin.vote.voters.all"):
+        	#set($voters = $ballot.getAllVoters())
+            #set($iCounter = 0)
+            #foreach($voter in $voters)
+              #set($iCounter=$iCounter+1)
+              #if ($visibleVotersWiki)
+                <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+              #else
+                $voter#if ($iCounter!=$voters.size()),#end
+              #end
+            #end
         	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $renderer.convertWikiToXHtml($content.toPageContext(),$ballot.getAllVotersString(true)) #else $ballot.getAllVotersString(false) #end
         	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $subRenderer.render($ballot.getAllVotersString(true), $context) #else $ballot.getAllVotersString(false) #end
         	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $ballot.getAllVotersString(true) #else $ballot.getAllVotersString(false) #end
-        	$action.getText("surveyplugin.vote.voters.all"): $ballot.getAllVotersString($visibleVotersWiki)
+        	##$action.getText("surveyplugin.vote.voters.all"): $ballot.getAllVotersString($visibleVotersWiki)
         	</td>
         </tr>
     #end

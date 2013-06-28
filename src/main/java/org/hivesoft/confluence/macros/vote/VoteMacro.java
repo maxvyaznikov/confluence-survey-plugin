@@ -25,7 +25,6 @@ import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
-import com.atlassian.gzipfilter.org.tuckey.web.filters.urlrewrite.utils.StringUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
@@ -33,11 +32,13 @@ import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
+import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -378,11 +379,8 @@ public class VoteMacro extends BaseMacro implements Macro {
         if (choice.getVoteCount() == 0) {
             contentPropertyManager.setTextProperty(contentObject, propertyKey, null);
         } else {
-            String[] voters = choice.getVoters();
-            String propertyValue = "";
-            for (int i = 0; i < voters.length; i++) {
-                propertyValue += (i == 0 ? "" : ",") + voters[i];
-            }
+            Collection<String> voters = choice.getVoters();
+            String propertyValue = StringUtils.join(voters, ",");
             // store property to text, for votes larger than usernames.length * votes > 255 chars
             contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
         }

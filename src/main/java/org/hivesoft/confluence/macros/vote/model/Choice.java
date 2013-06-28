@@ -10,7 +10,10 @@
  */
 package org.hivesoft.confluence.macros.vote.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -78,34 +81,8 @@ public class Choice {
      *
      * @return all of the usernames of people that have voted for this <code>Choice</code>
      */
-    public String[] getVoters() {
-        if (votes.size() > 0) {
-            return (String[])votes.toArray(new String[votes.size()]);
-        } else {
-            return null;
-        }
-    }
-    /*
-     * @return all Voters as comma separated string
-     */
-    public String getVotersAsString(boolean bAsWikiMarkup) {
-		if (votes.size() > 0) {
-			StringBuilder bld = new StringBuilder();
-			String[] voters = getVoters();
-			for (int iNo=0;iNo<voters.length;iNo++) {
-				if (bld.length() > 0 )
-					bld.append(", ");
-				if (bAsWikiMarkup)
-				    //1.2.0 now xHtml conform, but not working
-				    bld.append("<ac:link><ri:user ri:username=\""+voters[iNo]+"\" /></ac:link>");
-					//bld.append("[~"+voters[iNo]+"]");
-				else
-					bld.append(voters[iNo]);
-			}
-			return bld.toString();
-		} else {
-			return "";
-		}
+    public Collection<String> getVoters() {
+        return votes;
     }
 
     /**
@@ -126,12 +103,12 @@ public class Choice {
      *
      * @param username username of the potential voter
      * @return <code>true</code> if the user previously voted for this
-     * <code>Choice</code>, <code>false</code> otherwise.
+     *         <code>Choice</code>, <code>false</code> otherwise.
      */
     public boolean getHasVotedFor(String username) {
         if (votes.size() > 0) {
             for (Iterator<String> iter = votes.iterator(); iter.hasNext(); ) {
-                String vote = (String)iter.next();
+                String vote = (String) iter.next();
                 if (vote.equals(username)) {
                     return true;
                 }
@@ -147,17 +124,17 @@ public class Choice {
      * </p>
      *
      * @param o the <code>Object</code> to determine equality with this
-     * <code>Choice</code>
+     *          <code>Choice</code>
      * @return <code>true</code> if the description of the <code>Object</code>
-     * argument is the same as the description of this <code>Choice</code>,
-     * <code>false</code> otherwise.
+     *         argument is the same as the description of this <code>Choice</code>,
+     *         <code>false</code> otherwise.
      */
     public boolean equals(Object o) {
         if (o == null) {
             return false;
         }
         if (o instanceof Choice) {
-            return description.equals(((Choice)o).description);
+            return description.equals(((Choice) o).description);
         } else {
             return false;
         }

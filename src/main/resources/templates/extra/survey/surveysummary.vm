@@ -62,12 +62,15 @@
         </td>
         #if ($canSeeSurveyVoters) 
           <td>
-          #if ($visibleVotersWiki)
-          	##$v2SubRenderer.render($ballot.getAllVotersString(true), $context)
-            $generalUtil.htmlEncode($ballot.getAllVotersString(true))
-          	###$renderer.convertWikiToXHtml($content.toPageContext(),$ballot.getAllVotersString(true)) 
-          #else 
-          	$ballot.getAllVotersString(false)
+          #set($voters = $ballot.getAllVoters())
+          #set($iCounter = 0)
+          #foreach($voter in $voters)
+            #set($iCounter=$iCounter+1)
+            #if ($visibleVotersWiki)
+                <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+            #else
+                $voter#if ($iCounter!=$voters.size()),#end
+            #end
           #end
           </td>
         #end

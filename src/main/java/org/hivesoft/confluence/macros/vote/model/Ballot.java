@@ -10,10 +10,7 @@
  */
 package org.hivesoft.confluence.macros.vote.model;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -23,14 +20,14 @@ import java.util.Map;
  * </p>
  */
 public class Ballot {
-    private String description=new String("");
+    private String description = new String("");
     private String title;
     private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
     private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
     private boolean changeableVotes = false;
-    private boolean visibleVoters=false; //1.1.7.5 show voters if allowed to
-    private int startBound=1; //1.1.7.1 calculate for each ballot starting by 1
-    private int iterateStep=1; //iterating Step, so usually it is 1 .. till choies.upperbound
+    private boolean visibleVoters = false; //1.1.7.5 show voters if allowed to
+    private int startBound = 1; //1.1.7.1 calculate for each ballot starting by 1
+    private int iterateStep = 1; //iterating Step, so usually it is 1 .. till choies.upperbound
 
     /**
      * <p>
@@ -65,15 +62,15 @@ public class Ballot {
         return title;
     }
 
-   /**
-	 * <p>
-	 * Get the title assigned to the <code>Ballot</code> without spaces and lowercase (for linkage).
-	 * </p>
-	 *
-	 * @return title assigned to the <code>Ballot</code> without spaces and lowercase (for linkage)
-	 */
-	public String getTitleNoSpace() {
-		return title.replaceAll(" ", "").toLowerCase();
+    /**
+     * <p>
+     * Get the title assigned to the <code>Ballot</code> without spaces and lowercase (for linkage).
+     * </p>
+     *
+     * @return title assigned to the <code>Ballot</code> without spaces and lowercase (for linkage)
+     */
+    public String getTitleNoSpace() {
+        return title.replaceAll(" ", "").toLowerCase();
     }
 
     /**
@@ -83,7 +80,7 @@ public class Ballot {
      *
      * @param username the username of the prospective voter
      * @return <code>true</code> if the user has already voted on this
-     * <code>Ballot</code>, <code>false</code> if s/he has not.
+     *         <code>Ballot</code>, <code>false</code> if s/he has not.
      */
     public boolean getHasVoted(String username) {
         return getVote(username) != null;
@@ -118,25 +115,25 @@ public class Ballot {
     }
 
     /**
-	 * <p>
-	 * Return whether or not users should be allowed to see voters in clear text
-	 * </p>
-	 *
-	 * @return <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
-	 */
-	public boolean isVisibleVoters() {
-		return visibleVoters;
-	}
+     * <p>
+     * Return whether or not users should be allowed to see voters in clear text
+     * </p>
+     *
+     * @return <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
+     */
+    public boolean isVisibleVoters() {
+        return visibleVoters;
+    }
 
-	/**
-	 * <p>
-	 * Set whether or not this ballot should allow users to see the voters in clear text
-	 * </p>
-	 *
-	 * @param visibleVoters <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
-	 */
-	public void setVisibleVoters(boolean visibleVoters) {
-		this.visibleVoters = visibleVoters;
+    /**
+     * <p>
+     * Set whether or not this ballot should allow users to see the voters in clear text
+     * </p>
+     *
+     * @param visibleVoters <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
+     */
+    public void setVisibleVoters(boolean visibleVoters) {
+        this.visibleVoters = visibleVoters;
     }
 
     /**
@@ -168,7 +165,7 @@ public class Ballot {
      * @return the {@link Choice} associated with the description
      */
     public Choice getChoice(String description) {
-        return (Choice)choices.get(description);
+        return (Choice) choices.get(description);
     }
 
     /**
@@ -180,7 +177,7 @@ public class Ballot {
      */
     public Choice[] getChoices() {
         if (choices.size() > 0) {
-            return (Choice[])choices.values().toArray(new Choice[choices.size()]);
+            return (Choice[]) choices.values().toArray(new Choice[choices.size()]);
         } else {
             return null;
         }
@@ -198,7 +195,7 @@ public class Ballot {
         Collection<Choice> col = choices.values();
         if (col != null && col.size() > 0) {
             for (Iterator<Choice> iter = col.iterator(); iter.hasNext(); ) {
-                Choice choice = (Choice)iter.next();
+                Choice choice = (Choice) iter.next();
                 totalVotes += choice.getVoteCount();
             }
         }
@@ -213,8 +210,8 @@ public class Ballot {
      *
      * @param choice the {@link Choice} to determine the vote percentage of
      * @return the percentage of the total vote represented by the provided
-     * {@link Choice}. The percentage is given as a whole number, rather than
-     * a floating point number.
+     *         {@link Choice}. The percentage is given as a whole number, rather than
+     *         a floating point number.
      */
     public int getPercentageOfVoteForChoice(Choice choice) {
         int totalVoteCount = getTotalVoteCount();
@@ -283,7 +280,7 @@ public class Ballot {
      * @return The requested user's comment or null if not present.
      */
     public Comment getCommentForUser(String username) {
-        return (Comment)comments.get(username);
+        return (Comment) comments.get(username);
     }
 
     /**
@@ -298,79 +295,77 @@ public class Ballot {
     }
 
     /**
-	 * <p>
-	 * 1.1.7.1: set the StartBound for calculations (average)
-	 * </p>
-	 *
-	 * @param iStartBound the Iteration shall start with
-	 */
-	public void setStartBound(int iStartBound) {
-		startBound=iStartBound;
+     * <p>
+     * 1.1.7.1: set the StartBound for calculations (average)
+     * </p>
+     *
+     * @param iStartBound the Iteration shall start with
+     */
+    public void setStartBound(int iStartBound) {
+        startBound = iStartBound;
     }
 
     /**
-	 * <p>
-	 * 1.1.7.1: get the StartBound for calculations (average)
-	 * </p>
-	 *
-	 * @return The StartBound for this ballots calcu/iteration.
-	 */
-	public int getStartBound() {
-		return startBound;
-    }
-
-	/**
-	 * <p>
-	 * 1.1.7.1: set the iterateStep for calculations (average)
-	 * </p>
-	 *
-	 * @param iIterateStep the Iteration shall iterate with
-	 */
-	public void setIterateStep(int iIterateStep) {
-		iterateStep=iIterateStep;
-	}
-
-	/**
-	 * <p>
-	 * 1.1.7.1: get the Iterations Step for calculations (average)
-	 * </p>
-	 *
-	 * @return The iteration Step for this ballots calcu/iteration.
-	 */
-	public int getIterateStep() {
-		return iterateStep;
+     * <p>
+     * 1.1.7.1: get the StartBound for calculations (average)
+     * </p>
+     *
+     * @return The StartBound for this ballots calcu/iteration.
+     */
+    public int getStartBound() {
+        return startBound;
     }
 
     /**
-	 * @return The calculated EndBound Value (out of StartBound + iteration-steps)
-	 */
-	public int getEndBound() {
-		return startBound+(choices.size()-1)*iterateStep;
+     * <p>
+     * 1.1.7.1: set the iterateStep for calculations (average)
+     * </p>
+     *
+     * @param iIterateStep the Iteration shall iterate with
+     */
+    public void setIterateStep(int iIterateStep) {
+        iterateStep = iIterateStep;
     }
 
     /**
-	 *
-	 * @return The calculated <code>real<code> LowerBound Value
-	 */
+     * <p>
+     * 1.1.7.1: get the Iterations Step for calculations (average)
+     * </p>
+     *
+     * @return The iteration Step for this ballots calcu/iteration.
+     */
+    public int getIterateStep() {
+        return iterateStep;
+    }
+
+    /**
+     * @return The calculated EndBound Value (out of StartBound + iteration-steps)
+     */
+    public int getEndBound() {
+        return startBound + (choices.size() - 1) * iterateStep;
+    }
+
+    /**
+     * @return The calculated <code>real<code> LowerBound Value
+     */
     public int getLowerBound() {
-		return getStartBound()>getEndBound() ? getEndBound() : getStartBound();
-	}
+        return getStartBound() > getEndBound() ? getEndBound() : getStartBound();
+    }
 
-	/**
-	 *
-	 * @return The calculated <code>real<code> UpperBound Value
-	 */
+    /**
+     * @return The calculated <code>real<code> UpperBound Value
+     */
     public int getUpperBound() {
-		return getStartBound()>getEndBound() ? getStartBound() : getEndBound();
-	}
+        return getStartBound() > getEndBound() ? getStartBound() : getEndBound();
+    }
 
-	public int getAveragePercentage(float average) {
-		return (int)(average-getLowerBound())*100/(getUpperBound()-getLowerBound());
-	}
+    public int getAveragePercentage(float average) {
+        return (int) (average - getLowerBound()) * 100 / (getUpperBound() - getLowerBound());
+    }
 
-	public String getBoundsIfNotDefault() {
-		return (startBound==1 && iterateStep==1) ? "" : "("+getStartBound()+"-"+getEndBound()+")";
-	}
+    public String getBoundsIfNotDefault() {
+        return (startBound == 1 && iterateStep == 1) ? "" : "(" + getStartBound() + "-" + getEndBound() + ")";
+    }
 
     /**
      * <p>
@@ -380,19 +375,18 @@ public class Ballot {
      * </p>
      *
      * @param o the <code>Object</code> to determine equality with this
-     * <code>Ballot</code>
+     *          <code>Ballot</code>
      * @return <code>true</code> if the ballot title of the <code>Object</code>
-     * argument is the same as the title of this <code>Ballot</code>,
-     * <code>false</code> otherwise.
+     *         argument is the same as the title of this <code>Ballot</code>,
+     *         <code>false</code> otherwise.
      */
     public boolean equals(Object o) {
         if (o == null) {
             return false;
         }
         if (o instanceof Ballot) {
-            return title.equals(((Ballot)o).title);
-        }
-        else {
+            return title.equals(((Ballot) o).title);
+        } else {
             return false;
         }
     }
@@ -409,45 +403,23 @@ public class Ballot {
         return title.hashCode();
     }
 
-    /** new in 1.1.7.5 by strike
-	 * <p>
-	 * Return a string of the stored voters, a comma separated list.
-	 * </p>
-	 *
-	 * @return string of the ballot voters.
+    /**
+     * <p>
+     * Return <code>Voters</code> containing the stored voters.
+     * </p>
+     *
+     * @return Voters of the ballot voters
      */
-    public String getAllVotersString(boolean bAsWikiMarkup) {
-		//if (false) {
-		try {
-			LinkedHashMap<String, String> voters = new LinkedHashMap<String, String>();
-			Collection<Choice> col;
-			if(choices.size() > 0) {
-				col = choices.values();
-				for (Iterator<Choice> iter = col.iterator(); iter.hasNext(); ) {
-					String[] choiceVoters = ((Choice)iter.next()).getVoters();
-					if (choiceVoters != null)
-						for(int iNo=0;iNo<choiceVoters.length;iNo++)
-							voters.put(choiceVoters[iNo], choiceVoters[iNo]);
-				}
-			}
-			StringBuilder bld = new StringBuilder();
-			Collection<String> col2 = voters.values();
-			if (col2 != null && col2.size() > 0) {
-				for (Iterator<String> iter = col2.iterator(); iter.hasNext(); ) {
-					String voter = (String)iter.next();
-					if (bld.length() > 0 )
-						bld.append(", ");
-					if (bAsWikiMarkup)
-						//bld.append("[~"+voter+"]");
-					    bld.append("<ac:link><ri:user ri:username=\""+voter+"\" /></ac:link>");
-					else
-					bld.append(voter);
-				}
-			}
-			return bld.toString();
-		} catch(Exception e) {
-			return e.getMessage();
-		}
+    public Collection<String> getAllVoters() {
+        List<String> voters = new ArrayList<>();
+        Collection<Choice> col;
+        if (choices.size() > 0) {
+            for (Choice choice : choices.values()) {
+                Collection<String> choiceVoters = choice.getVoters();
+                voters.addAll(choiceVoters);
+            }
+        }
+        return voters;
     }
 
 }
