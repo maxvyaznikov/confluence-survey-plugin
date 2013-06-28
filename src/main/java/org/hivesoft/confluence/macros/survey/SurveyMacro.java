@@ -10,24 +10,7 @@
  */
 package org.hivesoft.confluence.macros.survey;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.log4j.Logger;
-import org.hivesoft.confluence.macros.survey.model.Survey;
-import org.hivesoft.confluence.macros.vote.VoteMacro;
-import org.hivesoft.confluence.macros.vote.model.Ballot;
-import org.hivesoft.confluence.macros.vote.model.Choice;
-import org.hivesoft.confluence.macros.vote.model.Comment;
-
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
-import com.atlassian.confluence.content.render.xhtml.Renderer;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.Format;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFormat;
 import com.atlassian.confluence.core.ContentEntityObject;
@@ -45,8 +28,19 @@ import com.atlassian.gzipfilter.org.tuckey.web.filters.urlrewrite.utils.StringUt
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
+import org.apache.log4j.Logger;
+import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.vote.VoteMacro;
+import org.hivesoft.confluence.macros.vote.model.Ballot;
+import org.hivesoft.confluence.macros.vote.model.Choice;
+import org.hivesoft.confluence.macros.vote.model.Comment;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * <p>
@@ -56,10 +50,13 @@ import com.opensymphony.webwork.ServletActionContext;
 public class SurveyMacro extends VoteMacro implements Macro {
     private static final Logger LOG = Logger.getLogger(SurveyMacro.class);
 
-    private final static String[] defaultBallotLabels = new String[] { "5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory" };
-    private final static String[] defaultOldBallotLabels = new String[] { "5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory" };
+    private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
+    private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
 
-    public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, Renderer renderer, XhtmlContent xhtmlContent) {
+    //public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, Renderer renderer, XhtmlContent xhtmlContent) {
+    //    super(pageManager, spaceManager, contentPropertyManager, userAccessor, renderer, xhtmlContent);
+    //}
+    public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent) {
         super(pageManager, spaceManager, contentPropertyManager, userAccessor, renderer, xhtmlContent);
     }
 
@@ -89,7 +86,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
     public RenderMode getBodyRenderMode() {
         return RenderMode.NO_RENDER;
     }
-    
+
     /**
      * New Confluence 4 xhtml stuff {@inheritDoc}
      */
@@ -106,16 +103,12 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
     /**
      * Get the HTML rendering of this macro, Confluence V. 3 and less.
-     * 
-     * @param parameters
-     *            Any parameters passed into this macro. This macro expects is a single, unnamed parameter.
-     * @param body
-     *            The rendered body of the macro
-     * @param renderContext
-     *            The render context for the current page rendering.
+     *
+     * @param parameters    Any parameters passed into this macro. This macro expects is a single, unnamed parameter.
+     * @param body          The rendered body of the macro
+     * @param renderContext The render context for the current page rendering.
      * @return String respresenting the HTML rendering of this macro
-     * @throws MacroException
-     *             If an exception occurs rendering the HTML
+     * @throws MacroException If an exception occurs rendering the HTML
      */
     @Override
     public String execute(Map parameters, String body, RenderContext renderContext) throws MacroException {
@@ -127,7 +120,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
         String strExceedsKeyItems = "";
-        for (Iterator<String> iter = survey.getBallotTitlesWithChoiceNames().iterator(); iter.hasNext();) {
+        for (Iterator<String> iter = survey.getBallotTitlesWithChoiceNames().iterator(); iter.hasNext(); ) {
             String ballotChoiceKey = (String) iter.next();
             try {
                 // 1.1.7.8 check for unicode-characters. They consume more space than they sometimes are allowed. add 5 to the calculated length (prefix for vote)
@@ -142,9 +135,9 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
         if (strExceedsKeyItems != "") {
             LOG.error("Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: " + strExceedsKeyItems
-                            + "!");
+                    + "!");
             throw new MacroException("Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: "
-                            + strExceedsKeyItems + "!");
+                    + strExceedsKeyItems + "!");
         }
 
         // Let the Survey have a Title (to have it more compact)
@@ -288,11 +281,9 @@ public class SurveyMacro extends VoteMacro implements Macro {
      * <p>
      * Determine if a user is authorized to perform an action based on the provided list of names.
      * </p>
-     * 
-     * @param permitted
-     *            the list of usernames allowed to perform the action. If blank, everyone is permitted.
-     * @param username
-     *            the username of the candidate user.
+     *
+     * @param permitted the list of usernames allowed to perform the action. If blank, everyone is permitted.
+     * @param username  the username of the candidate user.
      * @return <code>true</code> if the user can see the results, <code>false</code> if they cannot.
      */
     protected Boolean getCanPerformAction(String permitted, String username) {
@@ -326,11 +317,9 @@ public class SurveyMacro extends VoteMacro implements Macro {
      * <p>
      * Create a survey object for the given macro body pre-populated with all choices that have previously been made by the users.
      * </p>
-     * 
-     * @param body
-     *            The rendered body of the macro.
-     * @param contentObject
-     *            The content object from which the votes can be read.
+     *
+     * @param body          The rendered body of the macro.
+     * @param contentObject The content object from which the votes can be read.
      * @return The survey object, pre-filled with the correct data.
      */
     protected Survey createSurvey(String body, ContentEntityObject contentObject, Map<String, Object> parameters) {
@@ -344,7 +333,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         String tmpBallotLabels = (String) parameters.get("choices");
 
         // Reconstruct all of the votes that have been cast so far
-        for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens();) {
+        for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
             String line = stringTokenizer.nextToken();
 
             // the parameter given list must override the inline Labels if none are there
@@ -368,7 +357,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
                     String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".commenters");
 
                     if (TextUtils.stringSet(commenters)) {
-                        for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens();) {
+                        for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens(); ) {
                             String commenter = commenterTokenizer.nextToken();
                             if (TextUtils.stringSet(commenter)) {
                                 String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".comment." + commenter);
@@ -422,7 +411,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
                     // changed string to TextProperty
                     String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + choice.getDescription());
                     if (TextUtils.stringSet(votes)) {
-                        for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens();) {
+                        for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
                             choice.voteFor(voteTokenizer.nextToken());
                         }
                     }
@@ -437,11 +426,9 @@ public class SurveyMacro extends VoteMacro implements Macro {
      * <p>
      * Helper method for the velocity code to draw the bar graph for the summary section since velocity can't do float math.
      * </p>
-     * 
-     * @param score
-     *            The computed score for a categroy.
-     * @param totalCount
-     *            The total number of choices for a ballot.
+     *
+     * @param score      The computed score for a categroy.
+     * @param totalCount The total number of choices for a ballot.
      * @return The score converted to a percentage.
      */
     public Integer getPercentFillForFloatScore(float score, int totalCount) {
@@ -452,9 +439,8 @@ public class SurveyMacro extends VoteMacro implements Macro {
      * <p>
      * Helper method used by the velocity code since it can't determine the length of an array.
      * </p>
-     * 
-     * @param array
-     *            The array whose length is needed.
+     *
+     * @param array The array whose length is needed.
      * @return The length of the array as an Integer.
      */
     public Integer getArrayLength(Object array) {

@@ -10,17 +10,7 @@
  */
 package org.hivesoft.confluence.macros.vote;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.hivesoft.confluence.macros.vote.model.Ballot;
-import org.hivesoft.confluence.macros.vote.model.Choice;
-
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
-import com.atlassian.confluence.content.render.xhtml.Renderer;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.Format;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFormat;
 import com.atlassian.confluence.core.ContentEntityObject;
@@ -40,8 +30,16 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
+import org.hivesoft.confluence.macros.vote.model.Ballot;
+import org.hivesoft.confluence.macros.vote.model.Choice;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * <p>
@@ -66,10 +64,10 @@ public class VoteMacro extends BaseMacro implements Macro {
     protected final SpaceManager spaceManager;
     protected final ContentPropertyManager contentPropertyManager;
     protected final UserAccessor userAccessor;
-    protected final Renderer renderer;
+    protected final TemplateRenderer renderer;
     protected final XhtmlContent xhtmlContent;
 
-    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, Renderer renderer, XhtmlContent xhtmlContent) {
+    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent) {
         this.pageManager = pageManager;
         this.spaceManager = spaceManager;
         this.contentPropertyManager = contentPropertyManager;
@@ -77,6 +75,15 @@ public class VoteMacro extends BaseMacro implements Macro {
         this.renderer = renderer;
         this.xhtmlContent = xhtmlContent;
     }
+    /*
+    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, Renderer renderer, XhtmlContent xhtmlContent) {
+        this.pageManager = pageManager;
+        this.spaceManager = spaceManager;
+        this.contentPropertyManager = contentPropertyManager;
+        this.userAccessor = userAccessor;
+        this.renderer = renderer;
+        this.xhtmlContent = xhtmlContent;
+    }           */
 
     // 1.1.7.7 define the max length that is storable to the propertyentry-key field
     protected static final int MAX_STORABLE_KEY_LENGTH = 200;

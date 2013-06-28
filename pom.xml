@@ -32,6 +32,8 @@
         <confluence.data.version>5.1.3</confluence.data.version>
         <amps.version>4.2.0</amps.version>
         <plugin.testrunner.version>1.1.1</plugin.testrunner.version>
+        <!--workaround as #requireresource isnt working without templaterenderer as it seems-->
+        <workaroundRequireResourcePath>$req.contextPath/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources</workaroundRequireResourcePath>
     </properties>
 
     <dependencies>
@@ -39,6 +41,13 @@
             <groupId>com.atlassian.confluence</groupId>
             <artifactId>confluence</artifactId>
             <version>${confluence.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atlassian.templaterenderer</groupId>
+            <artifactId>atlassian-template-renderer-api</artifactId>
+            <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -103,6 +112,20 @@
                 <directory>${basedir}/src/main/resources</directory>
                 <includes>
                     <include>**/*.vm</include>
+                </includes>
+                <excludes>
+                    <exclude>**/images/**</exclude>
+                    <exclude>**/icons/**</exclude>
+                    <exclude>**/*.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/images/**</include>
+                    <include>**/icons/**</include>
+                    <include>**/*.properties</include>
                 </includes>
             </resource>
         </resources>

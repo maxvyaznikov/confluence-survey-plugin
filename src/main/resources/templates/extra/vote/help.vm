@@ -99,19 +99,19 @@
       <tr>
         <td>Red</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
       </tr>
       <tr>
         <td>Blue</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
       </tr>
       <tr>
         <td>None of the above</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
       </tr>
     </table>
@@ -130,19 +130,19 @@
       <tr>
         <td>Red</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
       </tr>
       <tr>
         <td>Blue</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
       </tr>
       <tr>
         <td>None of the above</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/blue-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
       </tr>
     </table>
@@ -162,7 +162,7 @@
       <tr>
         <td>Red</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/green-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/green-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
         <td>
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -179,7 +179,7 @@
       <tr>
         <td>Blue</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
         <td>
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -196,7 +196,7 @@
       <tr>
         <td>None of the above</td>
         <td align="center">
-          <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
+          <img src="${workaroundRequireResourcePath}/extraimg/gray-yes.gif" border="0" align="absmiddle" height="17" width="17" name="vote">
         </td>
         <td>
           <table width="100%" cellpadding="0" cellspacing="0" border="0">

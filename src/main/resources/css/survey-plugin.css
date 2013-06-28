@@ -1,0 +1,23 @@
+td.greenbar {
+    background-color:#00dd00;
+}
+
+table.surveySummaryGraphPane {
+    width:200px;
+    padding:0;
+    border-spacing:0;
+    border:0;
+}
+
+table.surveyTable {
+    <!--width:100%;-->
+    padding:0;
+    margin:0;
+}
+
+table.voteSummaryGraphPane {
+    width:100%;
+    padding:0;
+    border-spacing:0;
+    border:0;
+}

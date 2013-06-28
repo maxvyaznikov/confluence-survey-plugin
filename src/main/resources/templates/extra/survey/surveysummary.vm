@@ -18,20 +18,7 @@
   
   <h3><a name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a></h3>
   #if ($survey.isSurveyComplete($req.remoteUser) || !($canTakeSurvey) || $locked )
-  
-<style type="text/css">
-  <!--
-  table.surveySummaryGraphPane {
-    width:200px;
-    padding:0;
-    border-spacing:0;
-    border:0;
-  }
-  -->
-</style>
-  
-  
-  
+
   <table class="grid">
     <tr>
     	##1.1.6 try some i18n values

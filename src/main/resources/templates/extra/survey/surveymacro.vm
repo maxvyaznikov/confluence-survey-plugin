@@ -10,30 +10,16 @@
  *#
  
 ###set($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
+###$webResourceManager.
+###requireResource("${project.groupId}.${project.artifactId}:survey-plugin-resources")
+###requireResource("confluence.web.resources:jquery")
 
-<style type="text/css">
-<!--
-##div.surveyComment {
-##  width: 90%;
-##}
-##td.surveyVotePane { <!--column of vote-macro within survey-->
-##  width:20%;
-##}
-table.surveyTable { 
-  <!--width:100%;-->
-  padding:0;
-  margin:0;
-}
-##div.surveybox { <!--if there is a survey-title, use a div around-->
-##  
-##}
--->
-</style>
+<link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all" />
 
 #set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
 #if ( $survey.title )
   <div id="$generalUtil.urlEncode(${survey.title.trim})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px;">
-  <h2>#if ($locked) <img src="$req.contextPath/download/resources/${project.groupId}.${project.artifactId}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.survey.locked")." /> #end <a name="$generalUtil.urlEncode(${survey.titleNoSpace})">$generalUtil.htmlEncode($survey.title)</a></h2>
+  <h2>#if ($locked) <img src="${workaroundRequireResourcePath}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.survey.locked")." /> #end <a name="$generalUtil.urlEncode(${survey.titleNoSpace})">$generalUtil.htmlEncode($survey.title)</a></h2>
 #else
   #set( $surveyTitleSummary = "summary" )
 #end
