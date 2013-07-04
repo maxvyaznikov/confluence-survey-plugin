@@ -10,12 +10,11 @@
  */
 package org.hivesoft.confluence.macros.survey.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -26,11 +25,12 @@ import org.hivesoft.confluence.macros.vote.model.Choice;
  * </p>
  */
 public class Survey {
+
+    private String title;
     private List<Ballot> ballots = new ArrayList<Ballot>();
     private boolean changeableVotes = false;
     private boolean visibleVoters = false;
     private boolean summaryDisplay = true;
-    private String title;
 
     /**
      * <p>
@@ -58,7 +58,6 @@ public class Survey {
                 return ballot;
             }
         }
-
         return null;
     }
 
@@ -137,40 +136,40 @@ public class Survey {
     }
 
     /**
-	 * <p>
-	 * Return whether or not users should be allowed to see the voters in clear text
-	 * </p>
-	 *
-	 * @return <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
-	 */
-	public boolean isVisibleVoters() {
-		return visibleVoters;
-	}
+     * <p>
+     * Return whether or not users should be allowed to see the voters in clear text
+     * </p>
+     *
+     * @return <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
+     */
+    public boolean isVisibleVoters() {
+        return visibleVoters;
+    }
 
-	/**
-	 * <p>
-	 * Set whether or not this survey should allow users to see the voted users
-	 * </p>
-	 *
-	 * @param visibleVoters <code>true</code> if users can see voted users in clear text; <code>false</code> (default) otherwise.
-	 */
-	public void setVisibleVoters(boolean visibleVoters) {
-		this.visibleVoters = visibleVoters;
+    /**
+     * <p>
+     * Set whether or not this survey should allow users to see the voted users
+     * </p>
+     *
+     * @param visibleVoters <code>true</code> if users can see voted users in clear text; <code>false</code> (default) otherwise.
+     */
+    public void setVisibleVoters(boolean visibleVoters) {
+        this.visibleVoters = visibleVoters;
 
         for (Ballot ballot : ballots) {
             ballot.setVisibleVoters(visibleVoters);
         }
-	}
+    }
 
 
     /**
-	 * <p>
-	 * Set the Start Bound and iterating step for each ballot (can be overriden by each one if necessary)
-	 * </p>
-	 *
-	 * @param startBound defaults <code>1</code>, iterateStep defaults <code>1</code>.
-	 */
-	public void setStartBoundAndIterateStep(int startBound, int iterateStep) {
+     * <p>
+     * Set the Start Bound and iterating step for each ballot (can be overriden by each one if necessary)
+     * </p>
+     *
+     * @param startBound defaults <code>1</code>, iterateStep defaults <code>1</code>.
+     */
+    public void setStartBoundAndIterateStep(int startBound, int iterateStep) {
         for (Ballot ballot : ballots) {
             ballot.setStartBound(startBound);
             ballot.setIterateStep(iterateStep);
@@ -198,91 +197,89 @@ public class Survey {
         int itStart = ballot.getStartBound();
         int itStep = ballot.getIterateStep();
         int iCur;
-        if (itStep<0) {
-			for (int i = 0; i < choices.length; i++) {
-				total += (itStart + i*itStep) * choices[choices.length -i -1].getVoteCount();
-			}
-		} else {
-			for (int i = 0; i < choices.length; i++) {
-				//total += (choices.length - i) * choices[i].getVoteCount();
-				//first elements have the high calculation numbers
-				iCur=choices.length - i; //default 5..1
-				total += (((iCur-1)*itStep)+(itStart)) * choices[i].getVoteCount();
-			}
-		}
+        if (itStep < 0) {
+            for (int i = 0; i < choices.length; i++) {
+                total += (itStart + i * itStep) * choices[choices.length - i - 1].getVoteCount();
+            }
+        } else {
+            for (int i = 0; i < choices.length; i++) {
+                iCur = choices.length - i; //default 5..1
+                total += (((iCur - 1) * itStep) + (itStart)) * choices[i].getVoteCount();
+            }
+        }
 
-        return ((float)total)/totalVoteCount;
+        return ((float) total) / totalVoteCount;
     }
 
     //1.1.8.5 format the output to a default of 2 digits
     public static String computeFormatedAverage(Ballot ballot, String format) {
-		//format like "0.##"
-		return new java.text.DecimalFormat(format).format((double)computeAverage(ballot));
-	}
+        //format like "0.##"
+        return new java.text.DecimalFormat(format).format((double) computeAverage(ballot));
+    }
 
 
     /**
-     *<p>
+     * <p>
      * Set whether or not the summary of the survey should be displayed
      * </p>
-     * @param showSummary Flag to indicate summary display
      *
+     * @param showSummary Flag to indicate summary display
      */
-    public void setSummaryDisplay(boolean showSummary){
-		this.summaryDisplay = showSummary;
-	}
+    public void setSummaryDisplay(boolean showSummary) {
+        this.summaryDisplay = showSummary;
+    }
 
-	/**
-	 * <p>
-	 * Flag to indicate summary display
-	 * </p>
-	 */
-	 public boolean isSummaryDisplay(){
-		 return summaryDisplay;
-	 }
+    /**
+     * <p>
+     * Flag to indicate summary display
+     * </p>
+     */
+    public boolean isSummaryDisplay() {
+        return summaryDisplay;
+    }
 
-	/**
-	 * <p>
-	 * Set the Survey Title.
-	 * </p>
-	 */
-	 public void setTitle(String inTitle){
-	 	 title = inTitle;
-	 }
+    /**
+     * <p>
+     * Set the Survey Title.
+     * </p>
+     */
+    public void setTitle(String inTitle) {
+        title = inTitle;
+    }
 
-	/**
-	 * <p>
-	 * Get the Survey Title.
-	 * </p>
-	 */
-	 public String getTitle(){
-		 return title;
-	 }
+    /**
+     * <p>
+     * Get the Survey Title.
+     * </p>
+     */
+    public String getTitle() {
+        return title;
+    }
 
-	/**
-	 * <p>
-	 * Get the Survey Title for linkage (no Space), and make it lowercase
-	 * </p>
-	 */
-	 public String getTitleNoSpace(){
-		 return title.replaceAll(" ", "").toLowerCase();
-	 }
+    /**
+     * <p>
+     * Get the Survey Title for linkage (no Space), and make it lowercase
+     * </p>
+     */
+    public String getTitleNoSpace() {
+        return title.replaceAll(" ", "").toLowerCase();
+    }
 
 
-	/**
-	 * <p>
-	 * Get the BallotTitles incl. the names of all choices. To check the length of the key to be stored
-	 * </p>
-	 */
-	 public List<String> getBallotTitlesWithChoiceNames(){
-		 List<String> ballotChoiceNames = new ArrayList<String>();
+    /**
+     * <p>
+     * Get the BallotTitles incl. the names of all choices. To check the length of the key to be stored
+     * </p>
+     */
+    public List<String> getBallotTitlesWithChoiceNames() {
+        List<String> ballotChoiceNames = new ArrayList<String>();
 
-         for (Ballot ballot : ballots) {
-             Choice[] choices = ballot.getChoices();
-             for (int iCo=0;iCo<choices.length; iCo++ ) {
-                 ballotChoiceNames.add(ballot.getTitle()+"."+choices[iCo].getDescription());
-             }
-         }
-         return ballotChoiceNames;
-	 }
+        for (Ballot ballot : ballots) {
+            Choice[] choices = ballot.getChoices();
+            for (int iCo = 0; iCo < choices.length; iCo++) {
+                ballotChoiceNames.add(ballot.getTitle() + "." + choices[iCo].getDescription());
+            }
+        }
+        return ballotChoiceNames;
+    }
 }

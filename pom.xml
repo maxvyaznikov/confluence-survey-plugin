@@ -33,7 +33,9 @@
         <amps.version>4.2.0</amps.version>
         <plugin.testrunner.version>1.1.1</plugin.testrunner.version>
         <!--workaround as #requireresource isnt working without templaterenderer as it seems-->
-        <workaroundRequireResourcePath>$req.contextPath/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources</workaroundRequireResourcePath>
+        <workaroundRequireResourcePath>
+            $req.contextPath/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources
+        </workaroundRequireResourcePath>
     </properties>
 
     <dependencies>
@@ -64,13 +66,20 @@
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.2-atlassian-1</version>
-        </dependency>
+        </dependency>-->
+
 
         <!-- BEGIN: TEST-->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -143,8 +152,8 @@
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
         </plugins>

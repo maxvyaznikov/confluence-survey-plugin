@@ -10,11 +10,8 @@
  */
 package org.hivesoft.confluence.macros.vote.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -106,15 +103,7 @@ public class Choice {
      *         <code>Choice</code>, <code>false</code> otherwise.
      */
     public boolean getHasVotedFor(String username) {
-        if (votes.size() > 0) {
-            for (Iterator<String> iter = votes.iterator(); iter.hasNext(); ) {
-                String vote = (String) iter.next();
-                if (vote.equals(username)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return votes.contains(username);
     }
 
     /**
@@ -129,15 +118,16 @@ public class Choice {
      *         argument is the same as the description of this <code>Choice</code>,
      *         <code>false</code> otherwise.
      */
+    @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (o instanceof Choice) {
-            return description.equals(((Choice) o).description);
-        } else {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Choice choice = (Choice) o;
+
+        if (!description.equals(choice.description)) return false;
+
+        return true;
     }
 
     /**
@@ -148,7 +138,16 @@ public class Choice {
      *
      * @return hash code of the description
      */
+    @Override
     public int hashCode() {
         return description.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Choice{" +
+                "description='" + description + '\'' +
+                ", votes=" + votes +
+                '}';
     }
 }

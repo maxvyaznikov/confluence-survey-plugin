@@ -20,6 +20,7 @@ import java.util.*;
  * </p>
  */
 public class Ballot {
+
     private String description = new String("");
     private String title;
     private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
@@ -42,17 +43,6 @@ public class Ballot {
 
     /**
      * <p>
-     * Add an available {@link Choice} for this <code>Ballot</code>.
-     * </p>
-     *
-     * @param choice a {@link Choice} for this <code>Ballot</code>
-     */
-    public void addChoice(Choice choice) {
-        choices.put(choice.getDescription(), choice);
-    }
-
-    /**
-     * <p>
      * Get the title assigned to the <code>Ballot</code>.
      * </p>
      *
@@ -71,6 +61,17 @@ public class Ballot {
      */
     public String getTitleNoSpace() {
         return title.replaceAll(" ", "").toLowerCase();
+    }
+
+    /**
+     * <p>
+     * Add an available {@link Choice} for this <code>Ballot</code>.
+     * </p>
+     *
+     * @param choice a {@link Choice} for this <code>Ballot</code>
+     */
+    public void addChoice(Choice choice) {
+        choices.put(choice.getDescription(), choice);
     }
 
     /**
@@ -194,8 +195,7 @@ public class Ballot {
         int totalVotes = 0;
         Collection<Choice> col = choices.values();
         if (col != null && col.size() > 0) {
-            for (Iterator<Choice> iter = col.iterator(); iter.hasNext(); ) {
-                Choice choice = (Choice) iter.next();
+            for (Choice choice : col) {
                 totalVotes += choice.getVoteCount();
             }
         }
@@ -369,6 +369,25 @@ public class Ballot {
 
     /**
      * <p>
+     * Return <code>Voters</code> containing the stored voters.
+     * </p>
+     *
+     * @return Voters of the ballot voters
+     */
+    public Collection<String> getAllVoters() {
+        List<String> voters = new ArrayList<String>();
+        Collection<Choice> col;
+        if (choices.size() > 0) {
+            for (Choice choice : choices.values()) {
+                Collection<String> choiceVoters = choice.getVoters();
+                voters.addAll(choiceVoters);
+            }
+        }
+        return voters;
+    }
+
+    /**
+     * <p>
      * Determines if a <code>Ballot</code> is equal to another <code>Ballot</code>.
      * Ballots are considered equal if their title is the same for both
      * ballots.
@@ -380,15 +399,17 @@ public class Ballot {
      *         argument is the same as the title of this <code>Ballot</code>,
      *         <code>false</code> otherwise.
      */
+    @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (o instanceof Ballot) {
-            return title.equals(((Ballot) o).title);
-        } else {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof Ballot)) return false;
+
+        Ballot ballot = (Ballot) o;
+
+        if (!description.equals(ballot.description)) return false;
+        if (!title.equals(ballot.title)) return false;
+
+        return true;
     }
 
     /**
@@ -399,27 +420,24 @@ public class Ballot {
      *
      * @return hash code of the ballot title
      */
+    @Override
     public int hashCode() {
-        return title.hashCode();
+        int result = description.hashCode();
+        result = 31 * result + title.hashCode();
+        return result;
     }
 
-    /**
-     * <p>
-     * Return <code>Voters</code> containing the stored voters.
-     * </p>
-     *
-     * @return Voters of the ballot voters
-     */
-    public Collection<String> getAllVoters() {
-        List<String> voters = new ArrayList<>();
-        Collection<Choice> col;
-        if (choices.size() > 0) {
-            for (Choice choice : choices.values()) {
-                Collection<String> choiceVoters = choice.getVoters();
-                voters.addAll(choiceVoters);
-            }
-        }
-        return voters;
+    @Override
+    public String toString() {
+        return "Ballot{" +
+                "description='" + description + '\'' +
+                ", title='" + title + '\'' +
+                ", choices=" + choices +
+                ", comments=" + comments +
+                ", changeableVotes=" + changeableVotes +
+                ", visibleVoters=" + visibleVoters +
+                ", startBound=" + startBound +
+                ", iterateStep=" + iterateStep +
+                '}';
     }
-
 }
