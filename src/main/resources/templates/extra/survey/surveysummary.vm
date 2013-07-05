@@ -48,7 +48,6 @@
         <td>
           <table class="surveySummaryGraphPane">
               <tr>
-                  ##set ($percentFill = $macro.getPercentFillForFloatScore($average, $macro.getArrayLength($ballot.choices)))
                   #set ($percentFill = $ballot.getAveragePercentage($average))
                   #set ($percentEmpty = 100 - $percentFill)
                   #if ($percentFill > 0)

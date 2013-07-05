@@ -40,7 +40,10 @@ import org.hivesoft.confluence.macros.vote.model.Comment;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * <p>
@@ -50,12 +53,12 @@ import java.util.*;
 public class SurveyMacro extends VoteMacro implements Macro {
     private static final Logger LOG = Logger.getLogger(SurveyMacro.class);
 
+    private static final String KEY_SHOW_SUMMARY = "showSummary";
+
+
     private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
     private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
 
-    //public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, Renderer renderer, XhtmlContent xhtmlContent) {
-    //    super(pageManager, spaceManager, contentPropertyManager, userAccessor, renderer, xhtmlContent);
-    //}
     public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent) {
         super(pageManager, spaceManager, contentPropertyManager, userAccessor, renderer, xhtmlContent);
     }
@@ -116,12 +119,11 @@ public class SurveyMacro extends VoteMacro implements Macro {
         ContentEntityObject contentObject = ((PageContext) renderContext).getEntity();
 
         // Create the survey model, 1.1.3 add the parameters map
-        Survey survey = createSurvey(body, contentObject, parameters);
+        Survey survey = createSurvey(body, contentObject, (String) parameters.get("choices"));
 
         // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
         String strExceedsKeyItems = "";
-        for (Iterator<String> iter = survey.getBallotTitlesWithChoiceNames().iterator(); iter.hasNext(); ) {
-            String ballotChoiceKey = (String) iter.next();
+        for (String ballotChoiceKey : survey.getBallotTitlesWithChoiceNames()) {
             try {
                 // 1.1.7.8 check for unicode-characters. They consume more space than they sometimes are allowed. add 5 to the calculated length (prefix for vote)
                 if (ballotChoiceKey.getBytes("UTF-8").length + VOTE_PREFIX.length() > MAX_STORABLE_KEY_LENGTH) {
@@ -134,23 +136,20 @@ public class SurveyMacro extends VoteMacro implements Macro {
             }
         }
         if (strExceedsKeyItems != "") {
-            LOG.error("Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: " + strExceedsKeyItems
-                    + "!");
-            throw new MacroException("Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: "
-                    + strExceedsKeyItems + "!");
+            final String message = "Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: " + strExceedsKeyItems + "!";
+            LOG.error(message);
+            throw new MacroException(message);
         }
 
         // Let the Survey have a Title (to have it more compact)
         String title = (String) parameters.get("title");
-        if (StringUtils.isBlank(title)) {
+        if (!StringUtils.isBlank(title)) {
             survey.setTitle(title);
         }
 
         // If this macro is configured to allow users to change their vote, let the ballot know
-        String changeableVotes = (String) parameters.get("changeableVotes");
-        if (changeableVotes != null) {
-            survey.setChangeableVotes("true".equals(changeableVotes));
-        }
+
+        survey.setChangeableVotes(Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES)));
 
         // 1.1.7 Show Summary last
         Boolean bTopSummary = Boolean.TRUE;
@@ -159,38 +158,31 @@ public class SurveyMacro extends VoteMacro implements Macro {
         if (topSummary != null) {
             bTopSummary = Boolean.valueOf(topSummary);
         }
+
         topSummary = (String) parameters.get("showLast");
         if (topSummary != null) {
-            bTopSummary = Boolean.valueOf(topSummary);
-            if (bTopSummary == Boolean.TRUE)
-                bTopSummary = Boolean.FALSE;
-            else
-                bTopSummary = Boolean.TRUE;
+            bTopSummary = !Boolean.valueOf(topSummary);
         }
-        // either use the showTopSummary=false or showLast=true command to
-        // change the default
 
         // 1.1.7.1: default with 5 options and a step 1 .. 1..5 (or ordered 5..1)
-        int startBound = 1;
+        int startBound = Ballot.DEFAULT_START_BOUND;
         String sTmpParam = (String) parameters.get("startBound");
         if (sTmpParam != null) {
             startBound = Integer.valueOf(sTmpParam).intValue();
         }
-        int iterateStep = 1;
+        int iterateStep = Ballot.DEFAULT_ITERATE_STEP;
         sTmpParam = (String) parameters.get("iterateStep");
         if (sTmpParam != null) {
             iterateStep = Integer.valueOf(sTmpParam).intValue();
         }
         // Hardcoded default is 1 and 1, if it is different, set it for each ballot, let default otherwise
-        if (startBound != 1 || iterateStep != 1) {
+        if (startBound != Ballot.DEFAULT_START_BOUND || iterateStep != Ballot.DEFAULT_ITERATE_STEP) {
             survey.setStartBoundAndIterateStep(startBound, iterateStep);
         }
 
         // Check if the macro has disabled the display of summary
-        String showSummary = (String) parameters.get("showSummary");
-        if (showSummary != null) {
-            survey.setSummaryDisplay("true".equals(showSummary));
-        }
+
+        survey.setSummaryDisplay(Boolean.parseBoolean((String) parameters.get(KEY_SHOW_SUMMARY)));
 
         // check if any request parameters came in to vote on a ballot
         HttpServletRequest request = ServletActionContext.getRequest();
@@ -322,7 +314,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
      * @param contentObject The content object from which the votes can be read.
      * @return The survey object, pre-filled with the correct data.
      */
-    protected Survey createSurvey(String body, ContentEntityObject contentObject, Map<String, Object> parameters) {
+    protected Survey createSurvey(String body, ContentEntityObject contentObject, String choices) {
         Survey survey = new Survey();
 
         if (!TextUtils.stringSet(body)) {
@@ -330,7 +322,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
 
         // 1.1.3: See what the choices-Parameter contains
-        String tmpBallotLabels = (String) parameters.get("choices");
+        String tmpBallotLabels = choices;
 
         // Reconstruct all of the votes that have been cast so far
         for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
@@ -420,19 +412,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
 
         return survey;
-    }
-
-    /**
-     * <p>
-     * Helper method for the velocity code to draw the bar graph for the summary section since velocity can't do float math.
-     * </p>
-     *
-     * @param score      The computed score for a categroy.
-     * @param totalCount The total number of choices for a ballot.
-     * @return The score converted to a percentage.
-     */
-    public Integer getPercentFillForFloatScore(float score, int totalCount) {
-        return new Integer(Math.round(100 * (score / totalCount)));
     }
 
     /**

@@ -61,6 +61,8 @@ import java.util.StringTokenizer;
 public class VoteMacro extends BaseMacro implements Macro {
     private static final Logger.Log LOG = Logger.getInstance(VoteMacro.class);
 
+    protected static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
+
     protected final PageManager pageManager;
     protected final SpaceManager spaceManager;
     protected final ContentPropertyManager contentPropertyManager;
@@ -148,56 +150,6 @@ public class VoteMacro extends BaseMacro implements Macro {
             throw new MacroExecutionException(e);
         }
     }
-
-    /*
-     * // retrieve a reference to the body object this macro is in ContentEntityObject contentObject = context.getEntity();
-     * 
-     * if (body == null || !TextUtils.stringSet(body)) { LOG.error("Error: Body is Empty. Break!"); throw new MacroExecutionException(
-     * "Error: Please provide a parsable Body with Answers to pick from (Required)! Each new line represents a Answer." ); }
-     * 
-     * // 1.1.8.3 key-parameter should be checked or a error message shown if // not present String ballotTitle = (String) parameters.get("title"); if (ballotTitle != null) { // proceed as planed }
-     * else { ballotTitle = (String) parameters.get("0"); if (ballotTitle != null) { // proceed as planed } else { // neither Parameter 0 is present nor title-Parameter could be // found
-     * LOG.error("Error: Parameter-0 and title are not given. Break!"); throw new MacroExecutionException("Error: Please pass Parameter-0 or title-Argument (Required)!"); } }
-     * 
-     * // Rebuild the model for this ballot Ballot ballot = reconstructBallot(parameters, body, contentObject);
-     * 
-     * // 1.1.7.7 ballot title and choices too long will crash the system if // exceeding 200 chars for entity_key. So check this on rendering String strExceedsKeyItems = ""; String strTemp = "";
-     * Choice[] choices = ballot.getChoices(); for (int iCo = 0; iCo < choices.length; iCo++) { strTemp = ballot.getTitle() + "." + choices[iCo].getDescription(); try { // 1.1.7.8 check for
-     * unicode-characters. They consume more space // than they sometimes are allowed. // add 5 to the calculated length (prefix for vote.) if (strTemp.getBytes("UTF-8").length + 5 >
-     * maxStorableKeyLength) { if (strExceedsKeyItems == "") strExceedsKeyItems += ", "; strExceedsKeyItems += strTemp + " Length: " + (strTemp.getBytes("UTF-8").length + 5); } } catch
-     * (java.io.UnsupportedEncodingException e) { throw new MacroExecutionException(e); } } if (strExceedsKeyItems != "") {
-     * LOG.error("Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + maxStorableKeyLength + "). Problematic Names: " + strExceedsKeyItems + "!");
-     * throw new MacroExecutionException( "Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + maxStorableKeyLength + "). Problematic Names: " +
-     * strExceedsKeyItems + "!"); }
-     * 
-     * // check if any request parameters came in to complete or uncomplete tasks HttpServletRequest request = ServletActionContext.getRequest(); String remoteUser = null; if (request != null) {
-     * remoteUser = request.getRemoteUser(); recordVote(ballot, request, contentObject, (String) parameters.get("voters")); }
-     * 
-     * // now create a simple velocity context and render a template for the output Map<String, Object> contextMap = MacroUtils.defaultVelocityContext(); contextMap.put("ballot", ballot);
-     * contextMap.put("content", contentObject); contextMap.put("context", context);
-     * 
-     * try { contextMap.put("alice", xhtmlContent.convertWikiToView("[~alice]", context, null)); } catch (XMLStreamException e1) { LOG.error("StreamError while trying to convert wiki to Xhtml!", e1);
-     * } catch (XhtmlException e1) { LOG.error("XhtmlError while trying to convert wiki to Xhtml!", e1); }
-     * 
-     * // 1.1.5 add flag (default=false) for locking the Survey (no more voting) String locked = (String) parameters.get("locked"); if (locked != null) { contextMap.put("locked",
-     * Boolean.valueOf(locked)); } else { contextMap.put("locked", Boolean.valueOf(false)); }
-     * 
-     * // 1.1.5 if viewers not defined and vote is locked then he may see the result && // !TextUtils.stringSet(remoteUser) doesnt matter Boolean canSeeResults = Boolean.FALSE; if
-     * (!TextUtils.stringSet((String) parameters.get("viewers")) && Boolean.valueOf(locked).booleanValue()) { canSeeResults = Boolean.TRUE; } else { canSeeResults = getCanSeeResults((String)
-     * parameters.get("viewers"), (String) parameters.get("voters"), remoteUser, ballot); } contextMap.put("canSeeResults", canSeeResults);
-     * 
-     * // 1.1.7.5 can see voters (clear text of the usernames) Boolean canSeeVoters = getCanSeeVoters((String) parameters.get("visibleVoters"), canSeeResults); contextMap.put("canSeeVoters",
-     * canSeeVoters); ballot.setVisibleVoters(canSeeVoters == Boolean.TRUE);
-     * 
-     * // 1.1.7.5 if voters will be displayed, will they be rendered like // confluence-profile-links? (default) String votersWiki = (String) parameters.get("visibleVotersWiki"); if (votersWiki !=
-     * null) { contextMap.put("visibleVotersWiki", Boolean.valueOf(votersWiki)); } else { contextMap.put("visibleVotersWiki", Boolean.valueOf(true)); }
-     * 
-     * Boolean canVote = getCanVote((String) parameters.get("voters"), remoteUser, ballot); contextMap.put("canVote", canVote);
-     * 
-     * try { String xml = VelocityUtils.getRenderedTemplate("templates/extra/vote/votemacro.vm", contextMap); LOG.info("Try Rendering xml: " + xml + ", now render it again!"); return
-     * renderer.render(xml, context); // return VelocityUtils.getRenderedTemplate("templates/extra/vote/votemacro.vm", contextMap); } catch (Exception e) {
-     * LOG.error("Error while trying to display Ballot!", e); throw new MacroExecutionException(e); } }
-     */
 
     /**
      * <p>
@@ -355,11 +307,7 @@ public class VoteMacro extends BaseMacro implements Macro {
             }
         }
 
-        // If this macro is configured to allow users to change their vote, let the ballot know
-        String changeableVotes = (String) parameters.get("changeableVotes");
-        if (changeableVotes != null) {
-            ballot.setChangeableVotes("true".equals(changeableVotes));
-        }
+        ballot.setChangeableVotes(Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES)));
 
         return ballot;
     }
