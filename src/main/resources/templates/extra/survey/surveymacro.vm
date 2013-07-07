@@ -18,7 +18,7 @@
 
 #set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
 #if ( $survey.title )
-  <div id="$generalUtil.urlEncode(${survey.title.trim})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px;">
+  <div id="$generalUtil.urlEncode(${survey.title.trim})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px; width: 100%;">
   <h2>#if ($locked) <img src="${workaroundRequireResourcePath}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.survey.locked")." /> #end <a name="$generalUtil.urlEncode(${survey.titleNoSpace})">$generalUtil.htmlEncode($survey.title)</a></h2>
 #else
   #set( $surveyTitleSummary = "summary" )
@@ -35,7 +35,6 @@
   #set ($canSeeResults = ($canSeeSurveyResults && ( $ballot.getHasVoted($req.remoteUser) || ($canTakeSurvey && $locked) || !($canTakeSurvey) )))
   #set ($canSeeVoters = $canSeeResults && $survey.visibleVoters) ##1.1.7.5 pass survey-context to vote-vm
   #set ($userVote = false)
-  ##set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballotNumber}"))
   #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballotNumber}-${ballot.titleNoSpace}"))
   #set ($ballotNumberID = $generalUtil.htmlEncode("${ballotNumber}-${ballot.titleNoSpace}") )
   
@@ -63,7 +62,6 @@
                 <textarea name="comment" rows="5" cols="70" style="font:12px monospace;">$generalUtil.htmlEncode($currentComment)</textarea>
                 <br />
                 <span style="align:right">
-                  ##<input type="submit" value="save" /> 1.1.7.5 render in the selected language
                   <input type="submit" value="$action.getText('surveyplugin.survey.save')" />
                   <input type="button" value="$action.getText('surveyplugin.survey.cancel')" onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='inline';document.getElementById('${ballotNumberID}CommentForm').style.display='none';" />
                 </span>
@@ -88,23 +86,20 @@
           </div>
         #end
         
-        
-        ##1.1.8.7 canvote will see only his own vote on locked, for other comments he needs canSeeResults
         #if (($canSeeResults || ($canVote && $locked)) && $showComments)
           #foreach ($comment in $ballot.comments)
             #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $locked))
               <div class="commentBox commentblock surveyComment"  >
               	#set( $voteText = $action.getText("surveyplugin.survey.vote.not") ) 
-		#if ($ballot.getVote($comment.username))
-		      #set($voteText=$ballot.getVote($comment.username).description)
-		#end
-		#if ($canSeeVoters)
-		      ##set($voteText= $comment.username + "'s comment on " + $voteText)
-		      #set($voteText= $comment.username + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
-		#end
-		##<b>$voteText:</b> $renderer.convertWikiToXHtml($content.toPageContext(), $comment.comment)
-		##<b>$voteText:</b> $subRenderer.render($comment.comment, $context)
-		<b>$voteText:</b> $comment.comment
+                #if ($ballot.getVote($comment.username))
+                      #set($voteText=$ballot.getVote($comment.username).description)
+                #end
+                #if ($canSeeVoters)
+                      #set($voteText= $comment.username + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
+                #end
+                ##<b>$voteText:</b> $renderer.convertWikiToXHtml($content.toPageContext(), $comment.comment)
+                ##<b>$voteText:</b> $subRenderer.render($comment.comment, $context)
+                <b>$voteText:</b> $comment.comment
               </div>
             #end
           #end

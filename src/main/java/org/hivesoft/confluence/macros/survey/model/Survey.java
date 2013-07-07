@@ -178,48 +178,6 @@ public class Survey {
 
     /**
      * <p>
-     * Compute the average response value based on the order
-     * of the choices in the ballot. The choice values go from
-     * choices.length to 1.
-     * </p>
-     *
-     * @param ballot The ballot whose average is needed.
-     * @return The calculated average response.
-     */
-    public static float computeAverage(Ballot ballot) {
-        int total = 0;
-        int totalVoteCount = ballot.getTotalVoteCount();
-        if (totalVoteCount == 0) {
-            return 0.0f;
-        }
-
-        Choice[] choices = ballot.getChoices();
-        int itStart = ballot.getStartBound();
-        int itStep = ballot.getIterateStep();
-        int iCur;
-        if (itStep < 0) {
-            for (int i = 0; i < choices.length; i++) {
-                total += (itStart + i * itStep) * choices[choices.length - i - 1].getVoteCount();
-            }
-        } else {
-            for (int i = 0; i < choices.length; i++) {
-                iCur = choices.length - i; //default 5..1
-                total += (((iCur - 1) * itStep) + (itStart)) * choices[i].getVoteCount();
-            }
-        }
-
-        return ((float) total) / totalVoteCount;
-    }
-
-    //1.1.8.5 format the output to a default of 2 digits
-    public static String computeFormatedAverage(Ballot ballot, String format) {
-        //format like "0.##"
-        return new java.text.DecimalFormat(format).format((double) computeAverage(ballot));
-    }
-
-
-    /**
-     * <p>
      * Set whether or not the summary of the survey should be displayed
      * </p>
      *

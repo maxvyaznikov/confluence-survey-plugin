@@ -391,6 +391,39 @@ public class Ballot {
 
     /**
      * <p>
+     * Compute the average response value based on the order
+     * of the choices in the ballot. The choice values go from
+     * choices.length to 1.
+     * </p>
+     *
+     * @return The calculated average response.
+     */
+    public float computeAverage() {
+        int total = 0;
+        int totalVoteCount = getTotalVoteCount();
+        if (totalVoteCount == 0) {
+            return 0.0f;
+        }
+
+        Choice[] choices = this.getChoices();
+        //the first choice gets the highest number, so calculate last
+        int iCur = startBound + (choices.length - 1) * iterateStep;
+        for (Choice choice : choices) {
+            total += iCur * choice.getVoteCount();
+            iCur -= iterateStep;
+        }
+        return ((float) total) / totalVoteCount;
+    }
+
+    /**
+     * format the output to a default of 2 digits, format like "0.##"
+     */
+    public String computeFormatedAverage(String format) {
+        return new java.text.DecimalFormat(format).format((double) computeAverage());
+    }
+
+    /**
+     * <p>
      * Determines if a <code>Ballot</code> is equal to another <code>Ballot</code>.
      * Ballots are considered equal if their title is the same for both
      * ballots.

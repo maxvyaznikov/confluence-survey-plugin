@@ -42,24 +42,17 @@
         </th>
     </tr>
     <tr>
-       	##<th>Choices</th>
-       	##<th>Your Vote</th>
        	<th>$action.getText("surveyplugin.vote.choices")</th>
        	<th>$action.getText("surveyplugin.vote.vote")</th>
        	#if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
-       	    ##<th>Current Results: <span class="smalltext">($ballot.totalVoteCount total votes)</span></th>
        	    <th>$action.getText("surveyplugin.vote.result"): <span class="smalltext">($ballot.totalVoteCount $action.getText("surveyplugin.survey.summary.header.total"))</span></th>
        	#end
        	#if ($canSeeVoters)
-	    ##<th>Voters</th>
-	    <th>$action.getText("surveyplugin.vote.voters")</th>
+	        <th>$action.getText("surveyplugin.vote.voters")</th>
         #end
     </tr>
    	#foreach ($choice in $ballot.choices)
         <tr>
-            ##<td>$renderer.convertWikiToXHtml($content.toPageContext(), $choice.description)</td>
-            ##<td>$subRenderer.render($choice.description, $content.toPageContext())</td>
-            ##$subRenderer.render($choice.description, $context)
             <td>$choice.description</td>
             <td align="center">
                 #if ($choice.equals($userVote))
@@ -120,21 +113,17 @@
     #if ($canSeeVoters)
         <tr>
         	<td colspan="$columnCount">
-        	$action.getText("surveyplugin.vote.voters.all"):
-        	#set($voters = $ballot.getAllVoters())
-            #set($iCounter = 0)
-            #foreach($voter in $voters)
-              #set($iCounter=$iCounter+1)
-              #if ($visibleVotersWiki)
-                <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
-              #else
-                $voter#if ($iCounter!=$voters.size()),#end
-              #end
-            #end
-        	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $renderer.convertWikiToXHtml($content.toPageContext(),$ballot.getAllVotersString(true)) #else $ballot.getAllVotersString(false) #end
-        	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $subRenderer.render($ballot.getAllVotersString(true), $context) #else $ballot.getAllVotersString(false) #end
-        	##$action.getText("surveyplugin.vote.voters.all"): #if ($visibleVotersWiki) $ballot.getAllVotersString(true) #else $ballot.getAllVotersString(false) #end
-        	##$action.getText("surveyplugin.vote.voters.all"): $ballot.getAllVotersString($visibleVotersWiki)
+                $action.getText("surveyplugin.vote.voters.all"):
+                #set($voters = $ballot.getAllVoters())
+                #set($iCounter = 0)
+                #foreach($voter in $voters)
+                  #set($iCounter=$iCounter+1)
+                  #if ($visibleVotersWiki)
+                    <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+                  #else
+                    $voter#if ($iCounter!=$voters.size()),#end
+                  #end
+                #end
         	</td>
         </tr>
     #end

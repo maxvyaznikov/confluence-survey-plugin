@@ -10,6 +10,5 @@
  *#
  
 <div class="greybox" style="background: #f0f0f0; float: left">
-    ##You do not have permission to view this survey.
     $action.getText("surveyplugin.survey.viewable.nopermission").
 </div>

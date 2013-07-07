@@ -10,10 +10,7 @@
  *#
 
 ## If the user can see results, only show them if they are not a voter or have completed the entire survey
-##1.1.4 if summary can be shown, it is still hidden for a User not finished voting.
-##1.1.5 show summary if it is locked (closed)
 #if ($survey.isSummaryDisplay() && $canSeeSurveyResults)
-##1.1.8.1 remove deprecated renderer here also, CSRVY-31
 ###set ($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
   
   <h3><a name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a></h3>
@@ -21,11 +18,6 @@
 
   <table class="grid">
     <tr>
-    	##1.1.6 try some i18n values
-        ##<th>Question</th>
-        ##<th>Total Votes</th>
-        ##<th>Average Score</th>
-        ##<th>Average Score</th>
         <th>$action.getText("surveyplugin.survey.summary.header.question")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.total")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.average.digit")</th>
@@ -33,8 +25,8 @@
         #if ($canSeeSurveyVoters) <th>$action.getText("surveyplugin.vote.voters")</th> #end ##1.1.7.5
     </tr>
   #foreach ($ballot in $survey.ballots)
-    #set ($average = $survey.computeAverage($ballot)) 
-    #set ($sAverage = $survey.computeFormatedAverage($ballot, "0.00")) ##1.1.8.5 format rendering digits fixed to two
+    #set ($average = $ballot.computeAverage())
+    #set ($sAverage = $ballot.computeFormatedAverage("0.00")) ##1.1.8.5 format rendering digits fixed to two
       <tr>
         <td>
           $generalUtil.htmlEncode($ballot.title)
@@ -78,7 +70,6 @@
   </table>
   #else
     <div class="alertbox" style="background: #FF6A00; float: left">
-        ##You must vote on all Survey-Items to see the Summary.
         $action.getText("surveyplugin.survey.summary.viewable.mustvoteall").
     </div>
     <br/>
