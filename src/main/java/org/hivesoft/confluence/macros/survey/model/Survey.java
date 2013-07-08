@@ -216,16 +216,6 @@ public class Survey {
 
     /**
      * <p>
-     * Get the Survey Title for linkage (no Space), and make it lowercase
-     * </p>
-     */
-    public String getTitleNoSpace() {
-        return title.replaceAll(" ", "").toLowerCase();
-    }
-
-
-    /**
-     * <p>
      * Get the BallotTitles incl. the names of all choices. To check the length of the key to be stored
      * </p>
      */

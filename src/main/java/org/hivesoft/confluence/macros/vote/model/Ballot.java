@@ -24,7 +24,7 @@ public class Ballot {
     public static final int DEFAULT_START_BOUND = 1;
     public static final int DEFAULT_ITERATE_STEP = 1;
 
-    private String description = new String("");
+    private String description = "";
     private String title;
     private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
     private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
@@ -53,17 +53,6 @@ public class Ballot {
      */
     public String getTitle() {
         return title;
-    }
-
-    /**
-     * <p>
-     * Get the title assigned to the <code>Ballot</code> without spaces and lowercase (for linkage).
-     * </p>
-     *
-     * @return title assigned to the <code>Ballot</code> without spaces and lowercase (for linkage)
-     */
-    public String getTitleNoSpace() {
-        return title.replaceAll(" ", "").toLowerCase();
     }
 
     /**
@@ -150,11 +139,9 @@ public class Ballot {
      */
     public Choice getVote(String username) {
         Collection<Choice> userChoices = choices.values();
-        if (userChoices != null && userChoices.size() > 0) {
-            for (Choice choice : userChoices) {
-                if (choice.getHasVotedFor(username)) {
-                    return choice;
-                }
+        for (Choice choice : userChoices) {
+            if (choice.getHasVotedFor(username)) {
+                return choice;
             }
         }
         return null;
@@ -169,7 +156,7 @@ public class Ballot {
      * @return the {@link Choice} associated with the description
      */
     public Choice getChoice(String description) {
-        return (Choice) choices.get(description);
+        return choices.get(description);
     }
 
     /**
@@ -197,10 +184,8 @@ public class Ballot {
     public int getTotalVoteCount() {
         int totalVotes = 0;
         Collection<Choice> col = choices.values();
-        if (col != null && col.size() > 0) {
-            for (Choice choice : col) {
-                totalVotes += choice.getVoteCount();
-            }
+        for (Choice choice : col) {
+            totalVotes += choice.getVoteCount();
         }
         return totalVotes;
     }
