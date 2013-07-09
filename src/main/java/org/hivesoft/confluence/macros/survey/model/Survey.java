@@ -223,9 +223,8 @@ public class Survey {
         List<String> ballotChoiceNames = new ArrayList<String>();
 
         for (Ballot ballot : ballots) {
-            Choice[] choices = ballot.getChoices();
-            for (int iCo = 0; iCo < choices.length; iCo++) {
-                ballotChoiceNames.add(ballot.getTitle() + "." + choices[iCo].getDescription());
+            for (Choice choice : ballot.getChoices()) {
+                ballotChoiceNames.add(ballot.getTitle() + "." + choice.getDescription());
             }
         }
         return ballotChoiceNames;

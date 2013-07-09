@@ -166,12 +166,8 @@ public class Ballot {
      *
      * @return all of the {@link Choice}s belonging to this <code>Ballot</code>
      */
-    public Choice[] getChoices() {
-        if (choices.size() > 0) {
-            return (Choice[]) choices.values().toArray(new Choice[choices.size()]);
-        } else {
-            return null;
-        }
+    public Collection<Choice> getChoices() {
+        return choices.values();
     }
 
     /**
@@ -268,7 +264,7 @@ public class Ballot {
      * @return The requested user's comment or null if not present.
      */
     public Comment getCommentForUser(String username) {
-        return (Comment) comments.get(username);
+        return comments.get(username);
     }
 
     /**
@@ -390,9 +386,9 @@ public class Ballot {
             return 0.0f;
         }
 
-        Choice[] choices = this.getChoices();
+        Collection<Choice> choices = this.getChoices();
         //the first choice gets the highest number, so calculate last
-        int iCur = startBound + (choices.length - 1) * iterateStep;
+        int iCur = startBound + (choices.size() - 1) * iterateStep;
         for (Choice choice : choices) {
             total += iCur * choice.getVoteCount();
             iCur -= iterateStep;

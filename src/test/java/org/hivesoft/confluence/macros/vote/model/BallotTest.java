@@ -3,6 +3,7 @@ package org.hivesoft.confluence.macros.vote.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -120,9 +121,9 @@ public class BallotTest {
     public void test_getChoices_NoChoices_failure() {
         Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
 
-        Choice[] result = classUnderTest.getChoices();
+        Collection<Choice> result = classUnderTest.getChoices();
 
-        assertNull(result);
+        assertEquals(0, result.size());
     }
 
     @Test(expected = IllegalArgumentException.class)

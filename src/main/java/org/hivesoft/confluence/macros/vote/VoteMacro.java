@@ -181,9 +181,9 @@ public class VoteMacro extends BaseMacro implements Macro {
         // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
         String strExceedsKeyItems = "";
         String strTemp = "";
-        Choice[] choices = ballot.getChoices();
-        for (int iCo = 0; iCo < choices.length; iCo++) {
-            strTemp = ballot.getTitle() + "." + choices[iCo].getDescription();
+        Collection<Choice> choices = ballot.getChoices();
+        for (Choice choice : choices) {
+            strTemp = ballot.getTitle() + "." + choice.getDescription();
             try {
                 // 1.1.7.8 check for unicode-characters. They consume more space
                 // than they sometimes are allowed.
