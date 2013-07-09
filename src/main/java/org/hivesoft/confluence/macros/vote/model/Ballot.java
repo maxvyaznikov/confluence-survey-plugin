@@ -360,7 +360,6 @@ public class Ballot {
      */
     public Collection<String> getAllVoters() {
         List<String> voters = new ArrayList<String>();
-        Collection<Choice> col;
         if (choices.size() > 0) {
             for (Choice choice : choices.values()) {
                 Collection<String> choiceVoters = choice.getVoters();
