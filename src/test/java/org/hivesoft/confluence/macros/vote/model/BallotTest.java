@@ -26,6 +26,13 @@ public class BallotTest {
     }
 
     @Test
+    public void test_getTitleNoSpace_success() {
+        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE + " " + " more spaces");
+
+        assertEquals(SOME_BALLOT_TITLE.toLowerCase() + "morespaces", classUnderTest.getTitleNoSpace());
+    }
+
+    @Test
     public void test_getDescription_success() {
         Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
 

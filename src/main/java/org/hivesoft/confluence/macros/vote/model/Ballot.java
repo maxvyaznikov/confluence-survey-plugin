@@ -57,6 +57,15 @@ public class Ballot {
 
     /**
      * <p>
+     * Get the Survey Title for linkage (no Space), and make it lowercase . required for comments
+     * </p>
+     */
+    public String getTitleNoSpace() {
+        return title.replaceAll(" ", "").toLowerCase();
+    }
+
+    /**
+     * <p>
      * Add an available {@link Choice} for this <code>Ballot</code>.
      * </p>
      *

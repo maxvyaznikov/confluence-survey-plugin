@@ -3,12 +3,12 @@
         <description>${project.description}</description>
         <version>${project.version}</version>
         <vendor name="${project.organization.name}" url="${project.organization.url}"/>
-        <param name="plugin-icon">images/icons/csrvyico.png</param>
-        <param name="plugin-logo">images/icons/csrvyico.png</param>
+        <param name="plugin-icon">images/icons/srvlogo.png</param>
+        <param name="plugin-logo">images/icons/srvlogo.png</param>
     </plugin-info>
 
     <xhtml-macro key="vote" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
-                 icon="/download/resources/${project.groupId}.${project.artifactId}/icons/csrvyico.png">
+                 icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
         <description>Allows users to vote on a single topic, tallying up and displaying the results after the user has
             voted.
         </description>
@@ -28,7 +28,7 @@
     </xhtml-macro>
 
     <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-                 icon="/download/resources/${project.groupId}.${project.artifactId}/icons/csrvyico.png">
+                 icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
         <description>Allows users to vote on different topics, tallying up and displaying the results after the user has
             voted.
         </description>
@@ -52,7 +52,7 @@
     </xhtml-macro>
 
     <macro key="vote-wikistyle" name="vote-conf3" class="org.hivesoft.confluence.macros.vote.VoteMacro"
-           icon="/download/resources/${project.groupId}.${project.artifactId}/icons/csrvyico.png">
+           icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
         <description>Allows users to vote on a topic, tallying up and displaying the results after the user has voted.
         </description>
         <resource type="velocity" name="help" location="templates/extra/vote/help.vm"/>
@@ -71,7 +71,7 @@
     </macro>
 
     <macro key="survey-wikistyle" name="survey-conf3" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-           icon="/download/resources/${project.groupId}.${project.artifactId}/icons/csrvyico.png">
+           icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
         <description>Allows users to vote on a topic, tallying up and displaying the results after the user has voted.
         </description>
         <category name="confluence-content"/>
