@@ -1,13 +1,36 @@
-td.greenbar {
-    background-color:#00dd00;
+.greenbar-wrap {
+    position: relative;
+    background-color: #fff;
+    border-radius: 7px;
+    padding: 2px;
+    border-width:1px;
+    border-style:solid;
+    border-color:#ddd;
 }
 
+.greenbar-value {
+    height: 16px;
+    background-color: #0d0;
+    border-radius: 10px;
+}
+
+.greenbar-text {
+    position: absolute;
+    top:0; left:0;
+
+    color: #000;
+    text-align: center;
+    width: 100%;
+}
+
+<!--
 table.surveySummaryGraphPane {
     width:200px;
     padding:0;
     border-spacing:0;
     border:0;
 }
+-->
 
 table.surveyTable {
     <!--width:100%;-->

@@ -20,7 +20,6 @@
     <tr>
         <th>$action.getText("surveyplugin.survey.summary.header.question")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.total")</th>
-        <th>$action.getText("surveyplugin.survey.summary.header.average.digit")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.average.bar")</th>
         #if ($canSeeSurveyVoters) <th>$action.getText("surveyplugin.vote.voters")</th> #end ##1.1.7.5
     </tr>
@@ -34,24 +33,17 @@
         <td align="center">
           $ballot.totalVoteCount
         </td>
-        <td align="center">
-          $sAverage $ballot.getBoundsIfNotDefault()
-        </td>
+        #set ($percentFill = $ballot.getAveragePercentage($average))
         <td>
-          <table class="surveySummaryGraphPane">
-              <tr>
-                  #set ($percentFill = $ballot.getAveragePercentage($average))
-                  #set ($percentEmpty = 100 - $percentFill)
-                  #if ($percentFill > 0)
-                     <td height="8" width="$percentFill%" class="greenbar"><br /></td>
-                  #end
-                  #if ($percentEmpty > 0)
-                     <td height="8" width="$percentEmpty%" class="greenbar" style="BACKGROUND: #d0d0d0;"><br /></td>
-                  #end
-              </tr>
-          </table>
+            <div class="greenbar-wrap">
+                <div class="greenbar-value" style="width:$percentFill%;">
+                    <div class="greenbar-text">
+                        $sAverage $ballot.getBoundsIfNotDefault()
+                    </div>
+                </div>
+            </div>
         </td>
-        #if ($canSeeSurveyVoters) 
+        #if ($canSeeSurveyVoters)
           <td>
           #set($voters = $ballot.getAllVoters())
           #set($iCounter = 0)

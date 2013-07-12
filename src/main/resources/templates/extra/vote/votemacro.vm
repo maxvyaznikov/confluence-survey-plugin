@@ -71,24 +71,14 @@
             
             #if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
                 #set ($percentVotedFor = $ballot.getPercentageOfVoteForChoice($choice))
-                #set ($percentNotVotedFor = 100 - $percentVotedFor)
                 <td>
-                    <table class="voteSummaryGraphPane">
-                        <tr>
-                            #if ($percentVotedFor > 0)
-                                <td height="8" width="$percentVotedFor%" class="greenbar"></td>
-                            #end
-                            #if ($percentNotVotedFor > 0)
-                                <td height="8" width="$percentNotVotedFor%" class="greenbar" style="BACKGROUND: #d0d0d0;"></td>
-                            #end
-                        </tr>
-                        <tr>
-                            <td colspan="2" height="12" valign="absmiddle" align="center">
-                                ##<span class="smalltext">($choice.voteCount votes, $percentVotedFor%)</span>
-                                <span class="smalltext">($choice.voteCount $action.getText("surveyplugin.survey.summary.votes"), $percentVotedFor%)</span>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="greenbar-wrap">
+                        <div class="greenbar-value" style="width:$percentVotedFor%;">
+                            <div class="greenbar-text">
+                                $choice.voteCount $action.getText("surveyplugin.survey.summary.votes"), $percentVotedFor%
+                            </div>
+                        </div>
+                    </div>
                 </td>
             #end
             
