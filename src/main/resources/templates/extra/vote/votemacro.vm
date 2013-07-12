@@ -14,9 +14,17 @@
 ##set ($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
 #set ($xhtmlContent = $action.getContentBean())
 
-<script language="JavaScript">
-(new Image()).src = "${workaroundRequireResourcePath}/extraimg/green-yes.gif";
-</script>
+##<script language="JavaScript">
+##(new Image()).src = "${workaroundRequireResourcePath}/extraimg/green-yes.gif";
+##</script>
+
+#set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
+
+<h3><a name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a></h3>
+#if ($locked)
+  <img align="left" src="${workaroundRequireResourcePath}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
+#end
+$generalUtil.htmlEncode($ballot.description)
 
 <table class="grid">
     #set ($columnCount = 2)
@@ -24,23 +32,8 @@
         #set ($columnCount = $columnCount + 1)
     #end
     #if ($canSeeVoters)
-        #set ($columnCount = $columnCount + 1)    
+        #set ($columnCount = $columnCount + 1)
     #end
-    <tr>
-        <th colspan="$columnCount">
-            #if ($locked)
-		      <img align="left" src="${workaroundRequireResourcePath}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
-    	    #end
-            $generalUtil.htmlEncode($ballot.title)
-            
-            #if (!($req.remoteUser) && !($locked))
-              <span class="smalltext">(<a href="${req.contextPath}/login.action?os_destination=$req.getAttribute('atlassian.core.seraph.original.url')">Log In</a> to vote.)</span>
-            #end
-            ##if ($locked)
-		##<img src="${workaroundRequireResourcePath}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
-    	    ##end
-        </th>
-    </tr>
     <tr>
        	<th>$action.getText("surveyplugin.vote.choices")</th>
        	<th>$action.getText("surveyplugin.vote.vote")</th>
@@ -85,6 +78,7 @@
             #if ($canSeeVoters)
 		<td>
 		    #if ($choice.getVoteCount())
+		        <i>
 		       #set($voters = $choice.getVoters())
                #set($iCounter = 0)
                #foreach($voter in $voters)
@@ -95,6 +89,7 @@
                    $voter#if ($iCounter!=$voters.size()),#end
                  #end
                #end
+               </i>
 		    #end
 		</td>
             #end
@@ -103,6 +98,7 @@
     #if ($canSeeVoters)
         <tr>
         	<td colspan="$columnCount">
+        	    <i>
                 $action.getText("surveyplugin.vote.voters.all"):
                 #set($voters = $ballot.getAllVoters())
                 #set($iCounter = 0)
@@ -114,6 +110,7 @@
                     $voter#if ($iCounter!=$voters.size()),#end
                   #end
                 #end
+                </i>
         	</td>
         </tr>
     #end
