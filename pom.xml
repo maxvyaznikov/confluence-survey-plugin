@@ -7,7 +7,7 @@
     <!--<groupId>org.hivesoft.confluence</groupId>-->
     <groupId>com.nearinfinity.confluence</groupId>
     <artifactId>survey-plugin</artifactId>
-    <version>1.2.6-SNAPSHOT</version>
+    <version>1.2.7-SNAPSHOT</version>
     <packaging>atlassian-plugin</packaging>
 
     <organization>
