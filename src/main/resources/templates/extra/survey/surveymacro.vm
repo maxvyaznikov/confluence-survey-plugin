@@ -42,7 +42,7 @@
       <td class="surveyVotePane">
         #parse ("templates/extra/vote/votemacro.vm")
       </td>
-      <td>
+      <td class="surveyCommentPane">
         #if ($canTakeSurvey && $showComments && !($locked))
           #set ($currentComment = "")
           #if ($ballot.getCommentForUser($req.remoteUser))

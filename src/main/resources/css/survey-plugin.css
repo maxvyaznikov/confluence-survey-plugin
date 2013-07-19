@@ -29,3 +29,8 @@ table.surveyTable {
     margin:0;
 }
 
+td.surveyCommentPane {
+    vertical-align:middle;
+    padding-left:10px;
+}
+
