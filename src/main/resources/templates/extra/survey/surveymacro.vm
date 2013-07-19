@@ -35,13 +35,7 @@
   #set ($canSeeResults = ($canSeeSurveyResults && ( $ballot.getHasVoted($req.remoteUser) || ($canTakeSurvey && $locked) || !($canTakeSurvey) )))
   #set ($canSeeVoters = $canSeeResults && $survey.visibleVoters) ##1.1.7.5 pass survey-context to vote-vm
   #set ($userVote = false)
-  ##set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballotNumber}-${ballot.titleNoSpace}"))
-  ##set ($ballotNumberID = $generalUtil.htmlEncode("${ballotNumber}-${ballot.titleNoSpace}") )
-  
-  ##<h3><a name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a></h3>
-  ##$generalUtil.htmlEncode($ballot.description) ##1.1.8.4 allow wiki-rendering of ballot-description
-  ##$v2SubRenderer.render($ballot.description, $context)
-  ##$ballot.description
+  #set ($ballotNumberID = $generalUtil.htmlEncode("${ballotNumber}-${ballot.titleNoSpace}") )
 
   <table class="surveyTable" >
     <tr>
