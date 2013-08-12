@@ -226,8 +226,9 @@ public class BallotTest {
         classUnderTest.setStartBound(-1);
         classUnderTest.setIterateStep(-3);
 
-        final String result = classUnderTest.computeFormatedAverage("0.##");
+        final String format = "0.##";
+        final String result = classUnderTest.computeFormatedAverage(format);
 
-        assertEquals("-2.5", result);
+        assertEquals(new java.text.DecimalFormat(format).format(-2.5), result);
     }
 }
