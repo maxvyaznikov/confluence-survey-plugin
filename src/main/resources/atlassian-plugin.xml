@@ -9,9 +9,6 @@
 
     <xhtml-macro key="vote" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
                  icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
-        <description>Allows users to vote on a single topic, tallying up and displaying the results after the user has
-            voted.
-        </description>
         <resource type="velocity" name="help" location="templates/extra/vote/help.vm"/>
         <category name="confluence-content"/>
         <parameters>
@@ -29,9 +26,6 @@
 
     <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
                  icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
-        <description>Allows users to vote on different topics, tallying up and displaying the results after the user has
-            voted.
-        </description>
         <resource type="velocity" name="help" location="templates/extra/survey/help.vm"/>
         <category name="confluence-content"/>
         <parameters>
@@ -53,8 +47,6 @@
 
     <macro key="vote-wikistyle" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
            icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
-        <description>Allows users to vote on a topic, tallying up and displaying the results after the user has voted.
-        </description>
         <resource type="velocity" name="help" location="templates/extra/vote/help.vm"/>
         <category name="confluence-content"/>
         <parameters>
@@ -72,8 +64,6 @@
 
     <macro key="survey-wikistyle" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
            icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
-        <description>Allows users to vote on a topic, tallying up and displaying the results after the user has voted.
-        </description>
         <category name="confluence-content"/>
         <resource type="velocity" name="help" location="templates/extra/survey/help.vm"/>
         <parameters>
@@ -110,11 +100,10 @@
         </package>
     </xwork>
 
-    <component-import key="renderer"
-                      interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>
+    <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>
 
     <!-- Directory and filename prefix of the properties-resource for i18n -->
-    <resource type="i18n" name="i18n" location="org.hivesoft.confluence.macros.SurveyPlugin"/>
+    <resource type="i18n" name="SurveyPlugin" location="org.hivesoft.confluence.macros.SurveyPlugin"/>
 
     <!-- add our web resources -->
     <web-resource key="survey-plugin-resources" name="survey-plugin Web Resources">
