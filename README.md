@@ -1,12 +1,13 @@
 Introduction
 ============
 
-Welcome to the Confluence-Survey-Plugin Page.
+Welcome to the readme Confluence-Survey-Plugin Page.
 
 Usage
 =====
 
-The following usage is mainly copied from the shipped help (within the plugin)
+Since Version 1.2.9 the Macro Browser is quite comfortably described to use, but you are welcome to still read
+the following usage but its for the old plugin version 1 system and is mainly copied from the shipped help (within the plugin)
 
 Survey-Macro
 ------------
