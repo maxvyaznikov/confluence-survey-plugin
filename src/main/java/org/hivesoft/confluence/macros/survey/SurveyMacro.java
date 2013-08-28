@@ -199,12 +199,28 @@ public class SurveyMacro extends VoteMacro implements Macro {
             }
         }
 
+        String renderTitleLevel = "3";
+        String surveyRenderTitleLevel = (String) parameters.get("renderTitleLevel");
+        if (StringUtils.isBlank(surveyRenderTitleLevel)) {
+            surveyRenderTitleLevel = "2";
+            renderTitleLevel = "3";
+        } else {
+            if (Integer.valueOf(surveyRenderTitleLevel) == 0) {
+                surveyRenderTitleLevel = "";
+                renderTitleLevel = "";
+            } else {
+                renderTitleLevel = (Integer.valueOf(surveyRenderTitleLevel) + 1) + "";
+            }
+        }
+
         // now create a simple velocity context and render a template for the output
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
         contextMap.put("survey", survey);
         contextMap.put("content", contentObject);
         contextMap.put("macro", this);
         contextMap.put("showTopSummary", bTopSummary);
+        contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
+        contextMap.put("renderTitleLevel", renderTitleLevel);
         // 1.1.8.1 somehow content.toPageContext isnt working anymore...
         contextMap.put("context", renderContext);
 

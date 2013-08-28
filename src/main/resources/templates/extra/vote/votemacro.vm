@@ -22,7 +22,7 @@
 
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
-<h3><a name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a></h3>
+#if ($renderTitleLevel) <h$renderTitleLevel>#end <a name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a>#if ($renderTitleLevel) </h$renderTitleLevel> #end
 #if ($locked)
   <img align="left" src="${workaroundRequireResourcePath}/extraimg/locked.gif" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
 #end

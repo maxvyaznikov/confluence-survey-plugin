@@ -212,10 +212,20 @@ public class VoteMacro extends BaseMacro implements Macro {
             recordVote(ballot, request, contentObject, (String) parameters.get("voters"));
         }
 
+        String renderTitleLevel = (String) parameters.get("renderTitleLevel");
+        if (StringUtils.isBlank(renderTitleLevel)) {
+            renderTitleLevel = "3";
+        } else {
+            if (Integer.valueOf(renderTitleLevel) == 0) {
+                renderTitleLevel = "";
+            }
+        }
+
         // now create a simple velocity context and render a template for the output
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
         contextMap.put("ballot", ballot);
         contextMap.put("content", contentObject);
+        contextMap.put("renderTitleLevel", renderTitleLevel);
         // 1.1.8.1 somehow content.toPageContext isnt working anymore...
         contextMap.put("context", renderContext);
 
