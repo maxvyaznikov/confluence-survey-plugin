@@ -47,9 +47,10 @@
             </parameter>
             <parameter name="choices" type="string"/>
             <parameter name="changeableVotes" type="boolean"/>
-            <parameter name="showSummary" type="boolean"/>
-            <parameter name="showTopSummary" type="boolean"/>
+            <parameter name="showSummary" type="boolean" default="true"/>
+            <parameter name="showTopSummary" type="boolean" default="true"/>
             <parameter name="showLast" type="boolean"/>
+            <parameter name="showComments" type="boolean" default="true"/>
             <parameter name="startBound" type="string" default="1"/>
             <parameter name="iterateStep" type="string" default="1"/>
             <parameter name="voters" type="string" multiple="true"/>
@@ -100,9 +101,10 @@
             </parameter>
             <parameter name="choices" type="string"/>
             <parameter name="changeableVotes" type="boolean"/>
-            <parameter name="showSummary" type="boolean"/>
-            <parameter name="showTopSummary" type="boolean"/>
+            <parameter name="showSummary" type="boolean" default="true"/>
+            <parameter name="showTopSummary" type="boolean" default="true"/>
             <parameter name="showLast" type="boolean"/>
+            <parameter name="showComments" type="boolean" default="true"/>
             <parameter name="startBound" type="string" default="1"/>
             <parameter name="iterateStep" type="string" default="1"/>
             <parameter name="voters" type="string" multiple="true"/>
