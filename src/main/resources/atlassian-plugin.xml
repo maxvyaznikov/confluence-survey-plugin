@@ -3,13 +3,13 @@
         <description>${project.description}</description>
         <version>${project.version}</version>
         <vendor name="${project.organization.name}" url="${project.organization.url}"/>
-        <param name="plugin-icon">images/icons/srvlogo.png</param>
-        <param name="plugin-logo">images/icons/srvlogo.png</param>
+        <param name="plugin-icon">images/logos/srvlogo.png</param>
+        <param name="plugin-logo">images/logos/srvlogo.png</param>
     </plugin-info>
 
     <xhtml-macro key="vote" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
-                 icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
-        <resource type="velocity" name="help" location="templates/extra/vote/help.vm"/>
+                 icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
+        <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
         <category name="confluence-content"/>
         <parameters>
             <parameter name="title" type="string" required="true">
@@ -33,8 +33,8 @@
     </xhtml-macro>
 
     <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-                 icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
-        <resource type="velocity" name="help" location="templates/extra/survey/help.vm"/>
+                 icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
+        <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
         <category name="confluence-content"/>
         <parameters>
             <parameter name="title" type="string"/>
@@ -62,8 +62,8 @@
     </xhtml-macro>
 
     <macro key="vote-wikistyle" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
-           icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
-        <resource type="velocity" name="help" location="templates/extra/vote/help.vm"/>
+           icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
+        <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
         <category name="confluence-content"/>
         <parameters>
             <parameter name="title" type="string" required="true">
@@ -87,9 +87,9 @@
     </macro>
 
     <macro key="survey-wikistyle" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-           icon="/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources/icons/srvlogo.png">
+           icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
         <category name="confluence-content"/>
-        <resource type="velocity" name="help" location="templates/extra/survey/help.vm"/>
+        <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
         <parameters>
             <parameter name="title" type="string"/>
             <parameter name="renderTitleLevel" type="enum" default="2">
@@ -139,7 +139,7 @@
     <web-resource key="resources" name="survey-plugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
 
-        <resource type="download" name="surveyplugin-admin.js" location="surveyplugin-admin.js"/>
+        <resource type="download" name="surveyplugin-admin.js" location="/templates/admin/surveyplugin-admin.js"/>
 
         <resource type="download" name="survey-plugin.css" location="/css/survey-plugin.css">
             <property key="content-type" value="text/css"/>
@@ -147,8 +147,8 @@
         <!--<resource type="download" name="survey-plugin-os.js" location="/js/survey-plugin.js"/>-->
         <!--<resource type="download" name="images/" location="/images"/>-->
 
+        <resource type="download" name="logos/" location="/images/logos"/>
         <resource type="download" name="icons/" location="/images/icons"/>
-        <resource type="download" name="extraimg/" location="/templates/extra/images"/>
 
         <!--<context>survey-plugin</context>-->
     </web-resource>

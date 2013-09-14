@@ -24,7 +24,6 @@ import com.atlassian.confluence.spaces.SpaceManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
-import com.atlassian.gzipfilter.org.tuckey.web.filters.urlrewrite.utils.StringUtils;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
@@ -33,7 +32,9 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.hivesoft.confluence.admin.AdminResource;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -122,7 +123,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
 
-        //TODO: think of some useful plugin settings
+        String iconSet = (String) settings.get(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET);
+        if (StringUtils.isBlank(iconSet)) {
+            iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
+        }
 
         // Create the survey model, 1.1.3 add the parameters map
         Survey survey = createSurvey(body, contentObject, (String) parameters.get("choices"));
@@ -227,6 +231,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put("showTopSummary", bTopSummary);
         contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
         contextMap.put("renderTitleLevel", renderTitleLevel);
+        contextMap.put("iconSet", iconSet);
         // 1.1.8.1 somehow content.toPageContext isnt working anymore...
         contextMap.put("context", renderContext);
 
@@ -281,10 +286,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         try {
             if (canSeeResults.booleanValue() || canTakeSurvey.booleanValue()) {
-                return VelocityUtils.getRenderedTemplate("templates/extra/survey/surveymacro.vm", contextMap);
+                return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro.vm", contextMap);
             }
 
-            return VelocityUtils.getRenderedTemplate("templates/extra/survey/surveymacro-denied.vm", contextMap);
+            return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro-denied.vm", contextMap);
         } catch (Exception e) {
             LOG.error("Error while trying to display Ballot!", e);
             throw new MacroException(e);

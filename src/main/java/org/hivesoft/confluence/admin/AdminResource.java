@@ -6,10 +6,9 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.sal.api.user.UserProfile;
+import org.apache.commons.lang.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,6 +18,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Path("/")
 public class AdminResource {
+    public final static String SURVEY_PLUGIN_KEY_ICON_SET = "survey-plugin.iconSet";
+
+    public final static String SURVEY_PLUGIN_ICON_SET_DEFAULT = "default";
+
     private final UserManager userManager;
     private final PluginSettingsFactory pluginSettingsFactory;
     private final TransactionTemplate transactionTemplate;
@@ -31,7 +34,7 @@ public class AdminResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@Context HttpServletRequest request) {
+    public Response get() {
         final UserProfile remoteUser = userManager.getRemoteUser();
         if (remoteUser == null || !userManager.isSystemAdmin(remoteUser.getUserKey())) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -41,11 +44,9 @@ public class AdminResource {
             public Object doInTransaction() {
                 PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
                 Config config = new Config();
-                config.setName((String) settings.get(Config.class.getName() + ".name"));
-
-                String time = (String) settings.get(Config.class.getName() + ".time");
-                if (time != null) {
-                    config.setTime(Integer.parseInt(time));
+                config.setIconSet((String) settings.get(SURVEY_PLUGIN_KEY_ICON_SET));
+                if (StringUtils.isBlank(config.getIconSet())) {
+                    config.setIconSet(SURVEY_PLUGIN_ICON_SET_DEFAULT);
                 }
                 return config;
             }
@@ -54,7 +55,7 @@ public class AdminResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response put(final Config config, @Context HttpServletRequest request) {
+    public Response put(final Config config) {
         final UserProfile remoteUser = userManager.getRemoteUser();
         if (remoteUser == null || !userManager.isSystemAdmin(remoteUser.getUserKey())) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -63,8 +64,14 @@ public class AdminResource {
         transactionTemplate.execute(new TransactionCallback() {
             public Object doInTransaction() {
                 PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-                pluginSettings.put(Config.class.getName() + ".name", config.getName());
-                pluginSettings.put(Config.class.getName() + ".time", Integer.toString(config.getTime()));
+                if (StringUtils.isBlank(config.getIconSet())) {
+                    config.setIconSet(SURVEY_PLUGIN_ICON_SET_DEFAULT);
+                } else {
+                    if (config.getIconSet().startsWith("is-")) {
+                        config.setIconSet(config.getIconSet().substring("is-".length()));
+                    }
+                }
+                pluginSettings.put(SURVEY_PLUGIN_KEY_ICON_SET, config.getIconSet());
                 return null;
             }
         });
@@ -76,24 +83,14 @@ public class AdminResource {
     public static final class Config {
 
         @XmlElement
-        private String name;
-        @XmlElement
-        private int time;
+        private String iconSet;
 
-        public String getName() {
-            return name;
+        public String getIconSet() {
+            return iconSet;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public int getTime() {
-            return time;
-        }
-
-        public void setTime(int time) {
-            this.time = time;
+        public void setIconSet(String iconSet) {
+            this.iconSet = iconSet;
         }
     }
 }

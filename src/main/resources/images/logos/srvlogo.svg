@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="srvlogo.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -26,19 +26,52 @@
        id="perspective3009" />
     <filter
        inkscape:collect="always"
-       id="filter3861">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="0.50002548"
-         id="feGaussianBlur3863" />
-    </filter>
-    <filter
-       inkscape:collect="always"
        id="filter3891">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="1.000051"
          id="feGaussianBlur3893" />
+    </filter>
+    <filter
+       color-interpolation-filters="sRGB"
+       inkscape:collect="always"
+       id="filter3891-4">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.000051"
+         id="feGaussianBlur3893-4" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3975">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.42142857"
+         id="feGaussianBlur3977" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3995">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.23033083"
+         id="feGaussianBlur3997" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4011">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.12095408"
+         id="feGaussianBlur4013" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4027">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.11785701"
+         id="feGaussianBlur4029" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -48,9 +81,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="55.3359"
-     inkscape:cy="683.2171"
+     inkscape:zoom="5.6"
+     inkscape:cx="382.65971"
+     inkscape:cy="330.45384"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -61,8 +94,8 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-global="true"
-     inkscape:window-width="1626"
-     inkscape:window-height="940"
+     inkscape:window-width="1763"
+     inkscape:window-height="990"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1" />
@@ -138,7 +171,10 @@
        x="78.690376"
        y="161.0661"
        ry="18.940348"
-       transform="matrix(0.70426309,0,0,0.70426309,51.866323,66.214323)" />
+       transform="matrix(0.70426309,0,0,0.70426309,51.866323,66.214323)"
+       inkscape:export-filename="/home/drohne1673/workspace/confluence-survey-plugin-git/src/main/resources/images/icons/default/green-yes.png"
+       inkscape:export-xdpi="20.401262"
+       inkscape:export-ydpi="20.401262" />
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -174,7 +210,10 @@
        height="100.0051"
        width="100.0051"
        id="rect3895"
-       style="fill:none;stroke:#0000f0;stroke-width:1.68895185;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3891)" />
+       style="fill:none;stroke:#0000f0;stroke-width:1.68895185;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3891)"
+       inkscape:export-filename="/home/drohne1673/workspace/confluence-survey-plugin-git/src/main/resources/images/icons/default/blue-yes.png"
+       inkscape:export-xdpi="20.401262"
+       inkscape:export-ydpi="20.401262" />
     <rect
        style="fill:none;stroke:#0000f0;stroke-width:1.68895185;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3891)"
        id="rect3897"
@@ -192,6 +231,57 @@
        height="100.0051"
        width="100.0051"
        id="rect3899"
-       style="fill:none;stroke:#0000f0;stroke-width:1.68895185;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3891)" />
+       style="fill:none;stroke:#0000f0;stroke-width:1.68895185;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3891)"
+       inkscape:export-filename="/home/drohne1673/workspace/confluence-survey-plugin-git/src/main/resources/images/icons/default/gray-yes.png"
+       inkscape:export-xdpi="20.401262"
+       inkscape:export-ydpi="20.401262" />
+    <rect
+       style="fill:#d40000;filter:url(#filter3975)"
+       id="rect3169"
+       width="42.142857"
+       height="42.142857"
+       x="374.46429"
+       y="722.89789"
+       ry="10.481847"
+       inkscape:export-filename="/home/drohne1673/workspace/confluence-survey-plugin-git/src/main/resources/images/icons/default/locked.png"
+       inkscape:export-xdpi="25.517353"
+       inkscape:export-ydpi="25.517353"
+       transform="matrix(1.3234574,0,0,0.89487644,-128.29599,80.530134)" />
+    <rect
+       style="fill:none;stroke:#d40000;stroke-width:3.45709348;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3995)"
+       id="rect3171"
+       width="26.423344"
+       height="19.642822"
+       x="382.32141"
+       y="708.43365"
+       ry="6.405066"
+       inkscape:export-filename="/home/drohne1673/workspace/confluence-survey-plugin-git/src/main/resources/images/icons/default/locked.png"
+       inkscape:export-xdpi="25.517353"
+       inkscape:export-ydpi="25.517353"
+       transform="matrix(1.3096897,0,0,1.3162237,-122.76039,-223.37937)" />
+    <rect
+       style="fill:#ffffff;stroke:#000000;stroke-width:2.69031286;stroke-miterlimit:4;stroke-opacity:0;stroke-dasharray:none;filter:url(#filter4011)"
+       id="rect4001"
+       width="11.738255"
+       height="12.452562"
+       x="389.6666"
+       y="732.20728"
+       ry="5.1470685"
+       transform="matrix(1.2472971,0,0,0.90491139,-97.636231,72.216627)"
+       inkscape:export-filename="/home/drohne1673/workspace/confluence-survey-plugin-git/src/main/resources/images/icons/default/locked.png"
+       inkscape:export-xdpi="25.517353"
+       inkscape:export-ydpi="25.517353" />
+    <rect
+       style="fill:#ffffff;stroke:#000000;stroke-width:3;stroke-miterlimit:4;stroke-opacity:0;stroke-dasharray:none;filter:url(#filter4027)"
+       id="rect4005"
+       width="3.7499912"
+       height="19.821411"
+       x="393.75"
+       y="741.29077"
+       ry="1.5178572"
+       inkscape:export-filename="/home/drohne1673/workspace/confluence-survey-plugin-git/src/main/resources/images/icons/default/locked.png"
+       inkscape:export-xdpi="25.517353"
+       inkscape:export-ydpi="25.517353"
+       transform="matrix(1.2219033,0,0,0.98566101,-87.701212,10.771471)" />
   </g>
 </svg>

@@ -29,11 +29,13 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.admin.AdminResource;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 
@@ -177,6 +179,12 @@ public class VoteMacro extends BaseMacro implements Macro {
             throw new MacroException("Error: Please provide a parsable Body with Answers to pick from (Required)! Each new line represents a Answer.");
         }
 
+        PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+        String iconSet = (String) settings.get(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET);
+        if (StringUtils.isBlank(iconSet)) {
+            iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
+        }
+
         // Rebuild the model for this ballot
         @SuppressWarnings("unchecked")
         Ballot ballot = reconstructBallot(parameters, body, contentObject);
@@ -229,6 +237,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         contextMap.put("ballot", ballot);
         contextMap.put("content", contentObject);
         contextMap.put("renderTitleLevel", renderTitleLevel);
+        contextMap.put("iconSet", iconSet);
         // 1.1.8.1 somehow content.toPageContext isnt working anymore...
         contextMap.put("context", renderContext);
 
@@ -267,7 +276,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         contextMap.put("canVote", canVote);
 
         try {
-            return VelocityUtils.getRenderedTemplate("templates/extra/vote/votemacro.vm", contextMap);
+            return VelocityUtils.getRenderedTemplate("templates/macros/vote/votemacro.vm", contextMap);
         } catch (Exception e) {
             LOG.error("Error while trying to display Ballot!", e);
             throw new MacroException(e);
