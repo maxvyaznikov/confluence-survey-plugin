@@ -11,8 +11,8 @@
  
 ###set($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
 ###$webResourceManager.
-###requireResource("${project.groupId}.${project.artifactId}:survey-plugin-resources")
-###requireResource("confluence.web.resources:jquery")
+###requireResource("${project.groupId}.${project.artifactId}:resources")
+###$webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:resources")
 
 <link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all" />
 

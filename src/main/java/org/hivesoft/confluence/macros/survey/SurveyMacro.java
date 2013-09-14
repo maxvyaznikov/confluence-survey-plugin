@@ -28,6 +28,8 @@ import com.atlassian.gzipfilter.org.tuckey.web.filters.urlrewrite.utils.StringUt
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
@@ -59,8 +61,8 @@ public class SurveyMacro extends VoteMacro implements Macro {
     private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
     private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
 
-    public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent) {
-        super(pageManager, spaceManager, contentPropertyManager, userAccessor, renderer, xhtmlContent);
+    public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory) {
+        super(pageManager, spaceManager, contentPropertyManager, userAccessor, renderer, xhtmlContent, pluginSettingsFactory);
     }
 
     private String[] ballotLabels = null; // 1.1.3 allow a self defined ballotLabels-List
@@ -117,6 +119,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
     public String execute(Map parameters, String body, RenderContext renderContext) throws MacroException {
         // retrieve a reference to the body object this macro is in
         ContentEntityObject contentObject = ((PageContext) renderContext).getEntity();
+
+        PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+
+        //TODO: think of some useful plugin settings
 
         // Create the survey model, 1.1.3 add the parameters map
         Survey survey = createSurvey(body, contentObject, (String) parameters.get("choices"));

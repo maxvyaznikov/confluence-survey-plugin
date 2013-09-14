@@ -132,15 +132,14 @@
         </package>
     </xwork>
 
-    <component-import key="renderer"
-                      interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>
-
     <!-- Directory and filename prefix of the properties-resource for i18n -->
     <resource type="i18n" name="SurveyPlugin" location="org.hivesoft.confluence.macros.SurveyPlugin"/>
 
     <!-- add our web resources -->
-    <web-resource key="survey-plugin-resources" name="survey-plugin Web Resources">
+    <web-resource key="resources" name="survey-plugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
+
+        <resource type="download" name="surveyplugin-admin.js" location="surveyplugin-admin.js"/>
 
         <resource type="download" name="survey-plugin.css" location="/css/survey-plugin.css">
             <property key="content-type" value="text/css"/>
@@ -151,7 +150,30 @@
         <resource type="download" name="icons/" location="/images/icons"/>
         <resource type="download" name="extraimg/" location="/templates/extra/images"/>
 
-        <context>survey-plugin</context>
+        <!--<context>survey-plugin</context>-->
     </web-resource>
 
+    <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager"/>
+    <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
+    <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>
+    <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
+    <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
+    <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate" />
+
+    <template-context-item key="applicationPropertiesContextItem" component-ref="applicationProperties"
+                           context-key="applicationProperties" name="Application Properties Context Item"/>
+
+    <servlet key="admin-servlet" class="org.hivesoft.confluence.admin.AdminServlet">
+        <url-pattern>/surveyplugin/admin</url-pattern>
+    </servlet>
+
+    <rest key="rest" path="/surveyplugin-admin" version="1.0">
+        <description>Provides REST resources for the admin UI.</description>
+    </rest>
+
+    <web-item key="conf-menu-item" name="Survey-Plugin Admin" section="system.admin/configuration" weight="10">
+        <description>Link to surveyplugin-admin page.</description>
+        <label key="surveyplugin.admin.label" />
+        <link linkId="surveyplugin-admin-link">/plugins/servlet/surveyplugin/admin</link>
+    </web-item>
 </atlassian-plugin>

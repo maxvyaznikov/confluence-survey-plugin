@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <!--<groupId>org.hivesoft.confluence</groupId>-->
     <groupId>com.nearinfinity.confluence</groupId>
     <artifactId>survey-plugin</artifactId>
     <version>1.2.13-SNAPSHOT</version>
     <packaging>atlassian-plugin</packaging>
 
-    <organization>
-        <name>Confluence Community</name>
-        <url>https://plugins.atlassian.com/plugin/details/195</url>
-    </organization>
-
     <name>Survey and Vote Macros</name>
-    <description>This project is a set of two macros that are designed to gather information from confluence users.
-        The vote macro allows users to vote on a single issue and will tally the results as they are cast.
-        The survey macro builds on the vote macro to collect user votes and comments on many issues.
-    </description>
+    <description>This project is a set of two macros that are designed to gather information from confluence users. The vote macro allows users to vote on a single issue and will tally the results as they are cast. The survey macro builds on the vote macro to collect user votes and comments on many issues.</description>
     <url>https://plugins.atlassian.com/plugin/details/195</url>
-
     <scm>
         <connection>https://github.com/drohne1673/confluence-survey-plugin</connection>
         <developerConnection>https://github.com/drohne1673/confluence-survey-plugin</developerConnection>
     </scm>
-
+    <organization>
+        <name>Confluence Community</name>
+        <url>https://plugins.atlassian.com/plugin/details/195</url>
+    </organization>
+    <developers>
+        <developer>
+            <name>Frank Stiller</name>
+            <email>drohne1673@gmail.com</email>
+            <roles>
+                <role>development</role>
+                <role>maintenance</role>
+            </roles>
+            <url>https://github.com/drohne1673</url>
+        </developer>
+    </developers>
     <properties>
-        <confluence.version>5.1.3</confluence.version>
-        <confluence.data.version>5.1.3</confluence.data.version>
-        <amps.version>4.2.0</amps.version>
+        <confluence.version>5.2.3</confluence.version>
+        <confluence.data.version>5.2.3</confluence.data.version>
+        <amps.version>4.2.9</amps.version>
         <plugin.testrunner.version>1.1.1</plugin.testrunner.version>
         <!--workaround as #requireresource isnt working without templaterenderer as it seems-->
-        <workaroundRequireResourcePath>
-            $req.contextPath/download/resources/${project.groupId}.${project.artifactId}:survey-plugin-resources
-        </workaroundRequireResourcePath>
+        <workaroundRequireResourcePath>$req.contextPath/download/resources/${project.groupId}.${project.artifactId}:resources</workaroundRequireResourcePath>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.atlassian.confluence</groupId>
@@ -45,14 +45,18 @@
             <version>${confluence.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>com.atlassian.templaterenderer</groupId>
             <artifactId>atlassian-template-renderer-api</artifactId>
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.atlassian.sal</groupId>
+            <artifactId>sal-api</artifactId>
+            <version>2.10.5</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- WIRED TEST RUNNER DEPENDENCIES -->
         <dependency>
             <groupId>com.atlassian.plugins</groupId>
@@ -66,19 +70,19 @@
             <version>1.1.1</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- required for compatibility with confluence 4 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.1</version>
         </dependency>
-        <!--<dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.2-atlassian-1</version>
-        </dependency>-->
-
-
         <!-- BEGIN: TEST-->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -107,11 +111,10 @@
         <dependency>
             <groupId>net.sourceforge.nekohtml</groupId>
             <artifactId>nekohtml</artifactId>
-            <version>1.9.12</version>
+            <version>1.9.14</version>
             <scope>test</scope>
         </dependency>
         <!-- END: TEST-->
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -119,7 +122,6 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
     <build>
         <resources>
             <resource>

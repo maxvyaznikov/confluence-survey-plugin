@@ -29,6 +29,7 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
@@ -63,6 +64,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     protected static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
 
+    protected final PluginSettingsFactory pluginSettingsFactory;
     protected final PageManager pageManager;
     protected final SpaceManager spaceManager;
     protected final ContentPropertyManager contentPropertyManager;
@@ -70,13 +72,14 @@ public class VoteMacro extends BaseMacro implements Macro {
     protected final TemplateRenderer renderer;
     protected final XhtmlContent xhtmlContent;
 
-    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent) {
+    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory) {
         this.pageManager = pageManager;
         this.spaceManager = spaceManager;
         this.contentPropertyManager = contentPropertyManager;
         this.userAccessor = userAccessor;
         this.renderer = renderer;
         this.xhtmlContent = xhtmlContent;
+        this.pluginSettingsFactory = pluginSettingsFactory;
     }
     /*
     public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, Renderer renderer, XhtmlContent xhtmlContent) {
