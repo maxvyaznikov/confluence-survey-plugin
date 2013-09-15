@@ -34,7 +34,7 @@ public class AdminResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response get() {
+    public Response getConfig() {
         final UserProfile remoteUser = userManager.getRemoteUser();
         if (remoteUser == null || !userManager.isSystemAdmin(remoteUser.getUserKey())) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -55,7 +55,7 @@ public class AdminResource {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response put(final Config config) {
+    public Response putConfig(final Config config) {
         final UserProfile remoteUser = userManager.getRemoteUser();
         if (remoteUser == null || !userManager.isSystemAdmin(remoteUser.getUserKey())) {
             return Response.status(Response.Status.UNAUTHORIZED).build();

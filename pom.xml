@@ -78,12 +78,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- required for compatibility with confluence 4 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
-        </dependency>
         <!-- BEGIN: TEST-->
         <dependency>
             <groupId>org.mockito</groupId>
