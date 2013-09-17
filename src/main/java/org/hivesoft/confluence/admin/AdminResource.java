@@ -5,7 +5,6 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.sal.api.user.UserProfile;
 import org.apache.commons.lang.StringUtils;
 
 import javax.ws.rs.*;
@@ -35,8 +34,8 @@ public class AdminResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getConfig() {
-        final UserProfile remoteUser = userManager.getRemoteUser();
-        if (remoteUser == null || !userManager.isSystemAdmin(remoteUser.getUserKey())) {
+        final String remoteUser = userManager.getRemoteUsername();
+        if (remoteUser == null || !userManager.isSystemAdmin(remoteUser)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 
@@ -56,8 +55,8 @@ public class AdminResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     public Response putConfig(final Config config) {
-        final UserProfile remoteUser = userManager.getRemoteUser();
-        if (remoteUser == null || !userManager.isSystemAdmin(remoteUser.getUserKey())) {
+        final String remoteUser = userManager.getRemoteUsername();
+        if (remoteUser == null || !userManager.isSystemAdmin(remoteUser)) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
 

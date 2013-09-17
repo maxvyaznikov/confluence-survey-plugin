@@ -17,14 +17,14 @@ public class AdminResourceTest {
     private final PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
     private final TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
 
-    private final TestUserProfile testUserProfile = new TestUserProfile("someKey", "someUserName");
+    private static final String TEST_USERNAME = "someUserName";
 
     AdminResource classUnderTest = new AdminResource(mockUserManager, mockPluginSettingsFactory, mockTransactionTemplate);
 
     @Test
     public void test_getConfig_default_success() {
-        when(mockUserManager.getRemoteUser()).thenReturn(testUserProfile);
-        when(mockUserManager.isSystemAdmin(testUserProfile.getUserKey())).thenReturn(true);
+        when(mockUserManager.getRemoteUsername()).thenReturn(TEST_USERNAME);
+        when(mockUserManager.isSystemAdmin(TEST_USERNAME)).thenReturn(true);
         final Response response = classUnderTest.getConfig();
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -34,8 +34,8 @@ public class AdminResourceTest {
     @Test
     public void test_getConfig_userNotAnAdmin_failure() {
 
-        when(mockUserManager.getRemoteUser()).thenReturn(testUserProfile);
-        when(mockUserManager.isSystemAdmin(testUserProfile.getUserKey())).thenReturn(false);
+        when(mockUserManager.getRemoteUsername()).thenReturn(TEST_USERNAME);
+        when(mockUserManager.isSystemAdmin(TEST_USERNAME)).thenReturn(false);
 
         final Response response = classUnderTest.getConfig();
 
@@ -44,7 +44,7 @@ public class AdminResourceTest {
 
     @Test
     public void test_getConfig_userNotFound_failure() {
-        when(mockUserManager.getRemoteUser()).thenReturn(null);
+        when(mockUserManager.getRemoteUsername()).thenReturn(null);
 
         final Response response = classUnderTest.getConfig();
 
@@ -53,8 +53,8 @@ public class AdminResourceTest {
 
     @Test
     public void test_putConfig_default_success() {
-        when(mockUserManager.getRemoteUser()).thenReturn(testUserProfile);
-        when(mockUserManager.isSystemAdmin(testUserProfile.getUserKey())).thenReturn(true);
+        when(mockUserManager.getRemoteUsername()).thenReturn(TEST_USERNAME);
+        when(mockUserManager.isSystemAdmin(TEST_USERNAME)).thenReturn(true);
         final Response response = classUnderTest.putConfig(null);
 
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -63,8 +63,8 @@ public class AdminResourceTest {
     @Test
     public void test_putConfig_userNotAnAdmin_failure() {
 
-        when(mockUserManager.getRemoteUser()).thenReturn(testUserProfile);
-        when(mockUserManager.isSystemAdmin(testUserProfile.getUserKey())).thenReturn(false);
+        when(mockUserManager.getRemoteUsername()).thenReturn(TEST_USERNAME);
+        when(mockUserManager.isSystemAdmin(TEST_USERNAME)).thenReturn(false);
 
         final Response response = classUnderTest.putConfig(null);
 
@@ -73,7 +73,7 @@ public class AdminResourceTest {
 
     @Test
     public void test_putConfig_userNotFound_failure() {
-        when(mockUserManager.getRemoteUser()).thenReturn(null);
+        when(mockUserManager.getRemoteUsername()).thenReturn(null);
 
         final Response response = classUnderTest.putConfig(null);
 

@@ -22,7 +22,7 @@ public class AdminServletTest {
     private final LoginUriProvider mockLoginUriProvider = mock(LoginUriProvider.class);
     private final TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
 
-    private final TestUserProfile testUserProfile = new TestUserProfile("someKey", "someUserName");
+    private static final String TEST_USERNAME = "someUserName";
 
     AdminServlet classUnderTest = new AdminServlet(mockUserManager, mockLoginUriProvider, mockTemplateRenderer);
 
@@ -31,8 +31,8 @@ public class AdminServletTest {
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         HttpServletResponse mockResponse = mock(HttpServletResponse.class);
 
-        when(mockUserManager.getRemoteUser()).thenReturn(testUserProfile);
-        when(mockUserManager.isSystemAdmin(testUserProfile.getUserKey())).thenReturn(true);
+        when(mockUserManager.getRemoteUsername()).thenReturn(TEST_USERNAME);
+        when(mockUserManager.isSystemAdmin(TEST_USERNAME)).thenReturn(true);
 
         classUnderTest.doGet(mockRequest, mockResponse);
     }
@@ -42,7 +42,7 @@ public class AdminServletTest {
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         HttpServletResponse mockResponse = mock(HttpServletResponse.class);
 
-        when(mockUserManager.getRemoteUser()).thenReturn(null);
+        when(mockUserManager.getRemoteUsername()).thenReturn(null);
         when(mockRequest.getRequestURL()).thenReturn(new StringBuffer());
         when(mockLoginUriProvider.getLoginUri(any(URI.class))).thenReturn(new URI("http://localhost:123/login"));
 

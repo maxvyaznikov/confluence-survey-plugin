@@ -2,7 +2,6 @@ package org.hivesoft.confluence.admin;
 
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
-import com.atlassian.sal.api.user.UserProfile;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
 import javax.servlet.ServletException;
@@ -26,8 +25,8 @@ public class AdminServlet extends HttpServlet {
 
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        final UserProfile remoteUser = userManager.getRemoteUser();
-        if (remoteUser == null || !userManager.isSystemAdmin(remoteUser.getUserKey())) {
+        final String remoteUser = userManager.getRemoteUsername();
+        if (remoteUser == null || !userManager.isSystemAdmin(remoteUser)) {
             redirectToLogin(request, response);
             return;
         }
