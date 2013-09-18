@@ -11,6 +11,7 @@
 package org.hivesoft.confluence.macros.survey;
 
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
+import com.atlassian.confluence.content.render.xhtml.XhtmlException;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.Format;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFormat;
 import com.atlassian.confluence.core.ContentEntityObject;
@@ -23,6 +24,8 @@ import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.spaces.SpaceManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
+import com.atlassian.confluence.xhtml.api.MacroDefinition;
+import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
@@ -43,21 +46,23 @@ import org.hivesoft.confluence.macros.vote.model.Comment;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
- * <p>
  * This macro defines a simple survey mechanism against set of topics using the vote macro as its collection mechanism.
- * </p>
  */
 public class SurveyMacro extends VoteMacro implements Macro {
     private static final Logger LOG = Logger.getLogger(SurveyMacro.class);
 
-    private static final String KEY_SHOW_SUMMARY = "showSummary";
+    private static final String SURVEY_MACRO = "survey";
 
+    private static final String KEY_CHOICES = "choices";
+    private static final String KEY_SHOW_SUMMARY = "showSummary";
+    private static final String KEY_SHOW_TOP_SUMMARY = "showTopSummary";
+    private static final String KEY_SHOW_LAST = "showLast";
+    private static final String KEY_SHOW_COMMENTS = "showComments";
+    private static final String KEY_START_BOUND = "startBound";
+    private static final String KEY_ITERATE_STEP = "iterateStep";
 
     private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
     private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
@@ -98,14 +103,38 @@ public class SurveyMacro extends VoteMacro implements Macro {
      */
     @Override
     @RequiresFormat(value = Format.View)
-    public String execute(Map<String, String> parameters, String body, ConversionContext context) throws MacroExecutionException {
-        LOG.info("Try executing macro XHtml Style with body: " + body);
+    public String execute(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
+        final List<String> macros = new ArrayList<String>();
         try {
-            return execute(parameters, body, (RenderContext) context.getPageContext());
+            final String surveyMacroTitle = StringUtils.defaultString(parameters.get(KEY_TITLE)).trim();
+            LOG.info("Try executing " + SURVEY_MACRO + "-macro XHtml Style with title: '" + surveyMacroTitle + "' body: '" + body + "'");
+            xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
+                @Override
+                public void handle(MacroDefinition macroDefinition) {
+                    if (SURVEY_MACRO.equals(macroDefinition.getName())) {
+                        final Map<String, String> parameters = macroDefinition.getParameters();
+                        String currentTitle = StringUtils.defaultString(parameters.get(KEY_TITLE)).trim();
+                        if (!StringUtils.isBlank(currentTitle)) {
+                            if (macros.contains(currentTitle)) {
+                                LOG.warn("A " + SURVEY_MACRO + "-macro should not have the same title " + currentTitle + " on the same page! In newer version it may become mandatory / unique.");
+                            } else {
+                                macros.add(currentTitle);
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (XhtmlException e) {
+            throw new MacroExecutionException(e);
+        }
+
+        try {
+            return execute(parameters, body, (RenderContext) conversionContext.getPageContext());
         } catch (MacroException e) {
             throw new MacroExecutionException(e);
         }
     }
+
 
     /**
      * Get the HTML rendering of this macro, Confluence V. 3 and less.
@@ -129,7 +158,16 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
 
         // Create the survey model, 1.1.3 add the parameters map
-        Survey survey = createSurvey(body, contentObject, (String) parameters.get("choices"));
+        Survey survey = createSurvey(body, contentObject, (String) parameters.get(KEY_CHOICES));
+
+        final List<String> noneUniqueTitles = new ArrayList<String>();
+        for (Ballot ballot : survey.getBallots()) {
+            if (noneUniqueTitles.contains(ballot.getTitle())) {
+                throw new MacroException("The ballot-titles must be unique! The row starting with title of '" + ballot.getTitle() + "' violated that. Please rename your choices to unique answers!");
+            } else {
+                noneUniqueTitles.add(ballot.getTitle());
+            }
+        }
 
         // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
         String strExceedsKeyItems = "";
@@ -152,36 +190,26 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
 
         // Let the Survey have a Title (to have it more compact)
-        String title = (String) parameters.get("title");
-        if (!StringUtils.isBlank(title)) {
-            survey.setTitle(title);
-        }
+        survey.setTitle(StringUtils.defaultString((String) parameters.get(KEY_TITLE)).trim());
 
         // If this macro is configured to allow users to change their vote, let the ballot know
-
-        survey.setChangeableVotes(Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES)));
+        survey.setChangeableVotes(getBooleanFromString((String) parameters.get(KEY_CHANGEABLE_VOTES), false));
 
         // 1.1.7 Show Summary last
-        Boolean bTopSummary = Boolean.TRUE;
-        // if the user wishes to show the summary at the end
-        String topSummary = (String) parameters.get("showTopSummary");
-        if (topSummary != null) {
-            bTopSummary = Boolean.valueOf(topSummary);
-        }
+        Boolean bTopSummary = Boolean.valueOf(getBooleanFromString((String) parameters.get(KEY_SHOW_TOP_SUMMARY), true));
 
-        topSummary = (String) parameters.get("showLast");
-        if (topSummary != null) {
-            bTopSummary = !Boolean.valueOf(topSummary);
+        if ((String) parameters.get(KEY_SHOW_LAST) != null) {
+            bTopSummary = !Boolean.valueOf((String) parameters.get(KEY_SHOW_LAST));
         }
 
         // 1.1.7.1: default with 5 options and a step 1 .. 1..5 (or ordered 5..1)
         int startBound = Ballot.DEFAULT_START_BOUND;
-        String sTmpParam = (String) parameters.get("startBound");
+        String sTmpParam = (String) parameters.get(KEY_START_BOUND);
         if (sTmpParam != null) {
             startBound = Integer.valueOf(sTmpParam).intValue();
         }
         int iterateStep = Ballot.DEFAULT_ITERATE_STEP;
-        sTmpParam = (String) parameters.get("iterateStep");
+        sTmpParam = (String) parameters.get(KEY_ITERATE_STEP);
         if (sTmpParam != null) {
             iterateStep = Integer.valueOf(sTmpParam).intValue();
         }
@@ -191,8 +219,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
 
         // Check if the macro has disabled the display of summary
-
-        survey.setSummaryDisplay(Boolean.parseBoolean((String) parameters.get(KEY_SHOW_SUMMARY)));
+        survey.setSummaryDisplay(getBooleanFromString((String) parameters.get(KEY_SHOW_SUMMARY), true));
 
         // check if any request parameters came in to vote on a ballot
         HttpServletRequest request = ServletActionContext.getRequest();
@@ -205,15 +232,14 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
             // If there is a ballot found, cast the vote using our super's method
             if (ballot != null) {
-                recordVote(ballot, request, contentObject, (String) parameters.get("voters"));
+                recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
             }
         }
 
         String renderTitleLevel = "3";
-        String surveyRenderTitleLevel = (String) parameters.get("renderTitleLevel");
+        String surveyRenderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
         if (StringUtils.isBlank(surveyRenderTitleLevel)) {
             surveyRenderTitleLevel = "2";
-            renderTitleLevel = "3";
         } else {
             if (Integer.valueOf(surveyRenderTitleLevel) == 0) {
                 surveyRenderTitleLevel = "";
@@ -228,57 +254,40 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put("survey", survey);
         contextMap.put("content", contentObject);
         contextMap.put("macro", this);
-        contextMap.put("showTopSummary", bTopSummary);
+        contextMap.put(KEY_SHOW_TOP_SUMMARY, bTopSummary);
         contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
-        contextMap.put("renderTitleLevel", renderTitleLevel);
+        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put("iconSet", iconSet);
         // 1.1.8.1 somehow content.toPageContext isnt working anymore...
         contextMap.put("context", renderContext);
 
         // 1.1.4 add flag (default=true) for Showing Comments
-        String showComments = (String) parameters.get("showComments");
-        if (showComments != null) {
-            contextMap.put("showComments", Boolean.valueOf(showComments));
-        } else {
-            contextMap.put("showComments", Boolean.valueOf(true));
-        }
+        contextMap.put(KEY_SHOW_COMMENTS, getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
 
-        // 1.1.5 add flag (default=false) for locking the Survey (no more
-        // voting)
-        String locked = (String) parameters.get("locked");
-        if (locked != null) {
-            contextMap.put("locked", Boolean.valueOf(locked));
-        } else {
-            contextMap.put("locked", Boolean.valueOf(false));
-        }
+        // 1.1.5 add flag (default=false) for locking the Survey (no more voting)
+        contextMap.put(KEY_LOCKED, getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
 
         Boolean canSeeResults = Boolean.FALSE;
         // 1.1.4 Viewing is permitted by default for everyone
         // 1.1.5 the survey must be closed and viewers=empty (doesnt matter whether anonymous or not)
-        // if viewers is not specifed and survey is locked
-        if (!TextUtils.stringSet((String) parameters.get("viewers")) && Boolean.valueOf(locked).booleanValue()) {
+        // if viewers is not specified and survey is locked
+        if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(StringUtils.defaultString((String) parameters.get(KEY_LOCKED))).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = getCanPerformAction((String) parameters.get("viewers"), remoteUser);
+            canSeeResults = getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUser);
         }
         contextMap.put("canSeeSurveyResults", canSeeResults);
 
-        Boolean canTakeSurvey = getCanPerformAction((String) parameters.get("voters"), remoteUser);
+        Boolean canTakeSurvey = getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUser);
         contextMap.put("canTakeSurvey", canTakeSurvey);
 
         // 1.1.7.5 see voters
-        Boolean canSeeVoters = getCanSeeVoters((String) parameters.get("visibleVoters"), canSeeResults);
+        Boolean canSeeVoters = getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
         contextMap.put("canSeeSurveyVoters", canSeeVoters);
 
-        // 1.1.7.5 if voters will be displayed, will they be rendered like
-        // confluence-profile-links? (default)
-        // globally valid in all vm's
-        String votersWiki = (String) parameters.get("visibleVotersWiki");
-        if (votersWiki != null) {
-            contextMap.put("visibleVotersWiki", Boolean.valueOf(votersWiki));
-        } else {
-            contextMap.put("visibleVotersWiki", Boolean.valueOf(true));
-        }
+        // 1.1.7.5 if voters will be displayed, will they be rendered like confluence-profile-links? (default) globally valid in all vm's
+        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), true));
+
         // survey parameter must be passed through
         if (canSeeVoters == Boolean.TRUE) { // default is false, so only set if true
             survey.setVisibleVoters(true);
@@ -293,6 +302,14 @@ public class SurveyMacro extends VoteMacro implements Macro {
         } catch (Exception e) {
             LOG.error("Error while trying to display Ballot!", e);
             throw new MacroException(e);
+        }
+    }
+
+    protected boolean getBooleanFromString(String stringToParse, boolean defaultValue) {
+        if (StringUtils.defaultString(stringToParse).equals("")) {
+            return defaultValue;
+        } else {
+            return Boolean.valueOf(stringToParse);
         }
     }
 

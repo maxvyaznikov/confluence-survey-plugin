@@ -8,7 +8,8 @@
     </plugin-info>
 
     <xhtml-macro key="vote" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
-                 icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
+                 icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png"
+                 documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
         <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
         <category name="confluence-content"/>
         <parameters>
@@ -33,7 +34,8 @@
     </xhtml-macro>
 
     <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-                 icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
+                 icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png"
+                 documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
         <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
         <category name="confluence-content"/>
         <parameters>
@@ -157,8 +159,8 @@
     <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
     <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>
     <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
-    <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
-    <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate" />
+    <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
+    <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate"/>
 
     <template-context-item key="applicationPropertiesContextItem" component-ref="applicationProperties"
                            context-key="applicationProperties" name="Application Properties Context Item"/>
@@ -173,7 +175,7 @@
 
     <web-item key="conf-menu-item" name="Survey-Plugin Admin" section="system.admin/configuration" weight="10">
         <description>Link to surveyplugin-admin page.</description>
-        <label key="surveyplugin.admin.label" />
+        <label key="surveyplugin.admin.label"/>
         <link linkId="surveyplugin-admin-link">/plugins/servlet/surveyplugin/admin</link>
     </web-item>
 </atlassian-plugin>

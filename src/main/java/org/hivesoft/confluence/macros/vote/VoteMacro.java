@@ -11,6 +11,7 @@
 package org.hivesoft.confluence.macros.vote;
 
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
+import com.atlassian.confluence.content.render.xhtml.XhtmlException;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.Format;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFormat;
 import com.atlassian.confluence.core.ContentEntityObject;
@@ -23,6 +24,8 @@ import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.spaces.SpaceManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
+import com.atlassian.confluence.xhtml.api.MacroDefinition;
+import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.renderer.RenderContext;
@@ -40,31 +43,35 @@ import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
- * <p>
  * This macro defines a simple voting mechanism against a particular topic. Users may only vote once (unless changeable votes is true), can only vote for one choice, and cannot see the overall results
  * until after they have voted.
- * </p>
- * <p/>
- * Usage:
- * <p/>
- * <pre>
- * {vote:Big Decision}
- * Buy
- * Build
- * Outsource
- * {vote}
- * </pre>
  */
 public class VoteMacro extends BaseMacro implements Macro {
     private static final Logger.Log LOG = Logger.getInstance(VoteMacro.class);
 
+    private static final String VOTE_MACRO = "vote";
+
+    protected static final String KEY_TITLE = "title";
+    protected static final String KEY_RENDER_TITLE_LEVEL = "renderTitleLevel";
     protected static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
+    protected static final String KEY_VOTERS = "voters";
+    protected static final String KEY_VIEWERS = "viewers";
+    protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
+    protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
+    protected static final String KEY_LOCKED = "locked";
+
+    // 1.1.7.7 define the max length that is storable to the propertyentry-key field
+    protected static final int MAX_STORABLE_KEY_LENGTH = 200;
+
+    // confluence 4 cant render dynamic content anymore so set wiki by default to false (was true in older confluence versions)
+    protected static final boolean IS_VISIBLE_VOTERS_WIKI = false;
+
+    // prefix vote to make a vote unique in the textproperties
+    protected static final String VOTE_PREFIX = "vote.";
+
 
     protected final PluginSettingsFactory pluginSettingsFactory;
     protected final PageManager pageManager;
@@ -83,25 +90,6 @@ public class VoteMacro extends BaseMacro implements Macro {
         this.xhtmlContent = xhtmlContent;
         this.pluginSettingsFactory = pluginSettingsFactory;
     }
-    /*
-    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, Renderer renderer, XhtmlContent xhtmlContent) {
-        this.pageManager = pageManager;
-        this.spaceManager = spaceManager;
-        this.contentPropertyManager = contentPropertyManager;
-        this.userAccessor = userAccessor;
-        this.renderer = renderer;
-        this.xhtmlContent = xhtmlContent;
-    }           */
-
-    // 1.1.7.7 define the max length that is storable to the propertyentry-key field
-    protected static final int MAX_STORABLE_KEY_LENGTH = 200;
-
-    // confluence 4 cant render dynamic content anymore so set wiki by default to false (was true in older confluence
-    // versions)
-    protected static final boolean IS_VISIBLE_VOTERS_WIKI = false;
-
-    // prefix vote to make a vote unique in the textproperties
-    protected static final String VOTE_PREFIX = "vote.";
 
     /**
      * {@inheritDoc}
@@ -147,10 +135,41 @@ public class VoteMacro extends BaseMacro implements Macro {
      */
     @Override
     @RequiresFormat(value = Format.View)
-    public String execute(Map<String, String> parameters, String body, ConversionContext context) throws MacroExecutionException {
-        LOG.info("Try executing macro XHtml Style with body: " + body);
+    public String execute(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
+        final List<String> macros = new ArrayList<String>();
         try {
-            return execute(parameters, body, (RenderContext) context.getPageContext());
+            final String voteMacroTitle = getTitle(parameters);
+            LOG.info("Try executing " + VOTE_MACRO + "-macro XHtml Style with title: '" + voteMacroTitle + "' and body: '" + body + "'");
+            xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
+                @Override
+                public void handle(MacroDefinition macroDefinition) {
+                    if (VOTE_MACRO.equals(macroDefinition.getName())) {
+                        final Map<String, String> parameters = macroDefinition.getParameters();
+                        String currentTitle = StringUtils.defaultString(parameters.get(KEY_TITLE)).trim();
+                        if (!StringUtils.isBlank(currentTitle)) {
+                            if (macros.contains(currentTitle)) {
+                                LOG.info("A " + VOTE_MACRO + "-macro should not have the same title " + currentTitle + " on the same page! In newer version it may become mandatory / unique.");
+                                if (macros.contains(voteMacroTitle)) {
+                                    macros.add(voteMacroTitle.toUpperCase());
+                                }
+                            } else {
+                                macros.add(currentTitle);
+                            }
+                        }
+                    }
+                }
+            });
+            if (macros.contains(voteMacroTitle.toUpperCase())) {
+                throw new MacroExecutionException("The " + VOTE_MACRO + "-macro with title '" + voteMacroTitle + "' exists more then one time on this page. That is not allowed. Please change one of them!");
+            }
+        } catch (XhtmlException e) {
+            throw new MacroExecutionException(e);
+        } catch (MacroException e) {
+            throw new MacroExecutionException(e);
+        }
+
+        try {
+            return execute(parameters, body, (RenderContext) conversionContext.getPageContext());
         } catch (MacroException e) {
             throw new MacroExecutionException(e);
         }
@@ -169,8 +188,6 @@ public class VoteMacro extends BaseMacro implements Macro {
      */
     @Override
     public String execute(@SuppressWarnings("rawtypes") Map parameters, String body, RenderContext renderContext) throws MacroException {
-        LOG.info("Try executing macro Wiki Style with body: " + body);
-
         // retrieve a reference to the body object this macro is in
         ContentEntityObject contentObject = ((PageContext) renderContext).getEntity();
 
@@ -188,6 +205,19 @@ public class VoteMacro extends BaseMacro implements Macro {
         // Rebuild the model for this ballot
         @SuppressWarnings("unchecked")
         Ballot ballot = reconstructBallot(parameters, body, contentObject);
+
+        final List<String> noneUniqueTitles = new ArrayList<String>();
+        if (ballot.getChoices().size() == 0) {
+            throw new MacroException("The list of choices may not be empty. On which items do you want to vote on?");
+        } else {
+            for (Choice choice : ballot.getChoices()) {
+                if (noneUniqueTitles.contains(choice.getDescription())) {
+                    throw new MacroException("The choice-descriptions must be unique! The row starting with title of '" + choice.getDescription() + "' violated that. Please rename your choices to unique answers!");
+                } else {
+                    noneUniqueTitles.add(choice.getDescription());
+                }
+            }
+        }
 
         // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
         String strExceedsKeyItems = "";
@@ -218,12 +248,13 @@ public class VoteMacro extends BaseMacro implements Macro {
         // check if any request parameters came in to complete or uncomplete tasks
         HttpServletRequest request = ServletActionContext.getRequest();
         String remoteUser = null;
+
         if (request != null) {
             remoteUser = request.getRemoteUser();
-            recordVote(ballot, request, contentObject, (String) parameters.get("voters"));
+            recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
         }
 
-        String renderTitleLevel = (String) parameters.get("renderTitleLevel");
+        String renderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
         if (StringUtils.isBlank(renderTitleLevel)) {
             renderTitleLevel = "3";
         } else {
@@ -236,43 +267,39 @@ public class VoteMacro extends BaseMacro implements Macro {
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
         contextMap.put("ballot", ballot);
         contextMap.put("content", contentObject);
-        contextMap.put("renderTitleLevel", renderTitleLevel);
+        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put("iconSet", iconSet);
         // 1.1.8.1 somehow content.toPageContext isnt working anymore...
         contextMap.put("context", renderContext);
 
         // 1.1.5 add flag (default=false) for locking the Survey (no more voting)
-        String locked = (String) parameters.get("locked");
-        if (locked != null) {
-            contextMap.put("locked", Boolean.valueOf(locked));
-        } else {
-            contextMap.put("locked", Boolean.valueOf(false));
-        }
+        String locked = StringUtils.defaultString((String) parameters.get(KEY_LOCKED));
+        contextMap.put(KEY_LOCKED, Boolean.valueOf(locked));
 
         // 1.1.5 if viewers not defined and vote is locked then he may see the result && !TextUtils.stringSet(remoteUser) doesnt matter
         Boolean canSeeResults = Boolean.FALSE;
-        if (!TextUtils.stringSet((String) parameters.get("viewers")) && Boolean.valueOf(locked).booleanValue()) {
+        if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(locked).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = getCanSeeResults((String) parameters.get("viewers"), (String) parameters.get("voters"), remoteUser, ballot);
+            canSeeResults = getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUser, ballot);
         }
         contextMap.put("canSeeResults", canSeeResults);
 
         // 1.1.7.5 can see voters (clear text of the usernames)
-        Boolean canSeeVoters = getCanSeeVoters((String) parameters.get("visibleVoters"), canSeeResults);
+        Boolean canSeeVoters = getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
         contextMap.put("canSeeVoters", canSeeVoters);
         ballot.setVisibleVoters(canSeeVoters == Boolean.TRUE);
 
         // 1.1.7.5 if voters will be displayed, will they be rendered like
         // confluence-profile-links? (default)
-        String votersWiki = (String) parameters.get("visibleVotersWiki");
+        String votersWiki = (String) parameters.get(KEY_VISIBLE_VOTERS_WIKI);
         if (votersWiki != null) {
-            contextMap.put("visibleVotersWiki", Boolean.valueOf(votersWiki));
+            contextMap.put(KEY_VISIBLE_VOTERS_WIKI, Boolean.valueOf(votersWiki));
         } else {
-            contextMap.put("visibleVotersWiki", Boolean.valueOf(IS_VISIBLE_VOTERS_WIKI));
+            contextMap.put(KEY_VISIBLE_VOTERS_WIKI, Boolean.valueOf(IS_VISIBLE_VOTERS_WIKI));
         }
 
-        Boolean canVote = getCanVote((String) parameters.get("voters"), remoteUser, ballot);
+        Boolean canVote = getCanVote((String) parameters.get(KEY_VOTERS), remoteUser, ballot);
         contextMap.put("canVote", canVote);
 
         try {
@@ -294,31 +321,17 @@ public class VoteMacro extends BaseMacro implements Macro {
      * @return A fully populated ballot object.
      */
     protected Ballot reconstructBallot(Map<String, String> parameters, String body, ContentEntityObject contentObject) throws MacroException {
-        // retrieve the first parameter passed, in our case the title of the ballot.
-        // 1.1.8.3 key-parameter should be checked or a error message shown if not present
-        String ballotTitle = (String) parameters.get("title");
-        if (StringUtils.isBlank(ballotTitle)) {
-            ballotTitle = (String) parameters.get("0");
-            if (StringUtils.isBlank(ballotTitle)) {
-                // neither Parameter 0 is present nor title-Parameter could be found
-                String logMessage = "Error: Please pass Parameter-0 or title-Argument (Required)!";
-                LOG.error(logMessage);
-                throw new MacroException(logMessage);
-            }
-        }
+        Ballot ballot = new Ballot(getTitle(parameters));
 
-        Ballot ballot = new Ballot(ballotTitle);
-
-        // Reconstruct all of the votes that have been cast so far
         for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
             // 1.1.6: added trim(), otherwise it can happen that empty lines (spaces) get valid options
-            String line = stringTokenizer.nextToken().trim();
+            String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
-            if (TextUtils.stringSet(line)) {
+            if (!StringUtils.isBlank(line) && line.length() > 0 && Character.getNumericValue(line.toCharArray()[0]) > -1) {
                 Choice choice = new Choice(line);
                 ballot.addChoice(choice);
 
-                String votes = contentPropertyManager.getTextProperty(contentObject, VOTE_PREFIX + ballotTitle + "." + line);
+                String votes = contentPropertyManager.getTextProperty(contentObject, VOTE_PREFIX + ballot.getTitle() + "." + line);
 
                 if (TextUtils.stringSet(votes)) {
 
@@ -332,6 +345,20 @@ public class VoteMacro extends BaseMacro implements Macro {
         ballot.setChangeableVotes(Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES)));
 
         return ballot;
+    }
+
+    private String getTitle(Map<String, String> parameters) throws MacroException {
+        String ballotTitle = StringUtils.defaultString(parameters.get(KEY_TITLE)).trim();
+        if (StringUtils.isBlank(ballotTitle)) {
+            ballotTitle = StringUtils.defaultString(parameters.get("0")).trim();
+            if (StringUtils.isBlank(ballotTitle)) {
+                // neither Parameter 0 is present nor title-Parameter could be found
+                String logMessage = "Error: Please pass Parameter-0 or title-Argument (Required)!";
+                LOG.error(logMessage);
+                throw new MacroException(logMessage);
+            }
+        }
+        return ballotTitle;
     }
 
     /**
