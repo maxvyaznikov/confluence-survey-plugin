@@ -34,6 +34,7 @@ import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
@@ -78,14 +79,16 @@ public class VoteMacro extends BaseMacro implements Macro {
     protected final SpaceManager spaceManager;
     protected final ContentPropertyManager contentPropertyManager;
     protected final UserAccessor userAccessor;
+    protected final UserManager userManager;
     protected final TemplateRenderer renderer;
     protected final XhtmlContent xhtmlContent;
 
-    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory) {
+    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory) {
         this.pageManager = pageManager;
         this.spaceManager = spaceManager;
         this.contentPropertyManager = contentPropertyManager;
         this.userAccessor = userAccessor;
+        this.userManager = userManager;
         this.renderer = renderer;
         this.xhtmlContent = xhtmlContent;
         this.pluginSettingsFactory = pluginSettingsFactory;
@@ -208,7 +211,8 @@ public class VoteMacro extends BaseMacro implements Macro {
 
         final List<String> noneUniqueTitles = new ArrayList<String>();
         if (ballot.getChoices().size() == 0) {
-            throw new MacroException("The list of choices may not be empty. On which items do you want to vote on?");
+            //throw new MacroException("The list of choices may not be empty. On which items do you want to vote on?");
+            //don't render a error (that's not nice), render a warning list within velocity
         } else {
             for (Choice choice : ballot.getChoices()) {
                 if (noneUniqueTitles.contains(choice.getDescription())) {
@@ -247,10 +251,9 @@ public class VoteMacro extends BaseMacro implements Macro {
 
         // check if any request parameters came in to complete or uncomplete tasks
         HttpServletRequest request = ServletActionContext.getRequest();
-        String remoteUser = null;
 
+        final String remoteUsername = userManager.getRemoteUsername();
         if (request != null) {
-            remoteUser = request.getRemoteUser();
             recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
         }
 
@@ -281,7 +284,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(locked).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUser, ballot);
+            canSeeResults = getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
         }
         contextMap.put("canSeeResults", canSeeResults);
 
@@ -299,7 +302,7 @@ public class VoteMacro extends BaseMacro implements Macro {
             contextMap.put(KEY_VISIBLE_VOTERS_WIKI, Boolean.valueOf(IS_VISIBLE_VOTERS_WIKI));
         }
 
-        Boolean canVote = getCanVote((String) parameters.get(KEY_VOTERS), remoteUser, ballot);
+        Boolean canVote = getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
         contextMap.put("canVote", canVote);
 
         try {
@@ -500,25 +503,25 @@ public class VoteMacro extends BaseMacro implements Macro {
      * @param voters        The list of usernames allowed to vote. If blank, all users can vote.
      */
     protected void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject, String voters) {
-        String remoteUser = request.getRemoteUser();
+        final String remoteUsername = userManager.getRemoteUsername();
         String requestBallotTitle = request.getParameter("ballot.title");
         String requestChoice = request.getParameter("vote.choice");
 
         // If there is a choice, make sure the vote is for this ballot and this
         // user can vote
-        if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && getCanVote(voters, remoteUser, ballot).booleanValue()) {
+        if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && getCanVote(voters, remoteUsername, ballot).booleanValue()) {
 
             // If this is a re-vote situation, then unvote first
-            Choice previousChoice = ballot.getVote(remoteUser);
+            Choice previousChoice = ballot.getVote(remoteUsername);
             if (previousChoice != null && ballot.isChangeableVotes()) {
-                previousChoice.removeVoteFor(remoteUser);
+                previousChoice.removeVoteFor(remoteUsername);
                 setVoteContentProperty(previousChoice, ballot.getTitle(), contentObject);
             }
 
             Choice choice = ballot.getChoice(requestChoice);
 
             if (choice != null) {
-                choice.voteFor(remoteUser);
+                choice.voteFor(remoteUsername);
                 setVoteContentProperty(choice, ballot.getTitle(), contentObject);
             }
         }

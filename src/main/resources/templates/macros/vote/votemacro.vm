@@ -28,92 +28,98 @@
 #end
 $generalUtil.htmlEncode($ballot.description)
 
-<table class="grid">
-    #set ($columnCount = 2)
-    #if ($canSeeResults) ## 1.1.8.7 || ($canVote && $locked))
-        #set ($columnCount = $columnCount + 1)
-    #end
-    #if ($canSeeVoters)
-        #set ($columnCount = $columnCount + 1)
-    #end
-    <tr>
-       	<th>$action.getText("surveyplugin.vote.choices")</th>
-       	<th>$action.getText("surveyplugin.vote.vote")</th>
-       	#if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
-       	    <th>$action.getText("surveyplugin.vote.result"): <span class="smalltext">($ballot.totalVoteCount $action.getText("surveyplugin.survey.summary.header.total"))</span></th>
-       	#end
-       	#if ($canSeeVoters)
-	        <th>$action.getText("surveyplugin.vote.voters")</th>
+#if ( $ballot.choices.size()==0 )
+    <div class="aui-message Warning" style="margin-left:10px">
+      $action.getText("surveyplugin.vote.info.add.choices")
+    </div>
+#else
+    <table class="grid">
+        #set ($columnCount = 2)
+        #if ($canSeeResults) ## 1.1.8.7 || ($canVote && $locked))
+            #set ($columnCount = $columnCount + 1)
         #end
-    </tr>
-   	#foreach ($choice in $ballot.choices)
+        #if ($canSeeVoters)
+            #set ($columnCount = $columnCount + 1)
+        #end
         <tr>
-            <td>$choice.description</td>
-            <td align="center">
-                #if ($choice.equals($userVote))
-                    <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="17" width="17" />
-                #elseif ($canVote && !($locked))
-                    #if (!($voteAnchor))
-                      #set ($voteAnchor = "")
-                    #end
-                    <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)#${voteAnchor}">
-                        <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';" onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';" />
-                    </a>
-                #else
-                    <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="17" width="17" />
-                #end
-            </td>
-            
+            <th>$action.getText("surveyplugin.vote.choices")</th>
+            <th>$action.getText("surveyplugin.vote.vote")</th>
             #if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
-                #set ($percentVotedFor = $ballot.getPercentageOfVoteForChoice($choice))
-                <td>
-                    <div class="greenbar-wrap">
-                        <div class="greenbar-value" style="width:$percentVotedFor%;">
-                            <div class="greenbar-text">
-                                $choice.voteCount $action.getText("surveyplugin.survey.summary.votes"), $percentVotedFor%
+                <th>$action.getText("surveyplugin.vote.result"): <span class="smalltext">($ballot.totalVoteCount $action.getText("surveyplugin.survey.summary.header.total"))</span></th>
+            #end
+            #if ($canSeeVoters)
+                <th>$action.getText("surveyplugin.vote.voters")</th>
+            #end
+        </tr>
+        #foreach ($choice in $ballot.choices)
+            <tr>
+                <td>$choice.description</td>
+                <td align="center">
+                    #if ($choice.equals($userVote))
+                        <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="17" width="17" />
+                    #elseif ($canVote && !($locked))
+                        #if (!($voteAnchor))
+                          #set ($voteAnchor = "")
+                        #end
+                        <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)#${voteAnchor}">
+                            <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';" onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';" />
+                        </a>
+                    #else
+                        <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="17" width="17" />
+                    #end
+                </td>
+
+                #if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
+                    #set ($percentVotedFor = $ballot.getPercentageOfVoteForChoice($choice))
+                    <td>
+                        <div class="greenbar-wrap">
+                            <div class="greenbar-value" style="width:$percentVotedFor%;">
+                                <div class="greenbar-text">
+                                    $choice.voteCount $action.getText("surveyplugin.survey.summary.votes"), $percentVotedFor%
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </td>
-            #end
-            
-            #if ($canSeeVoters)
-		<td>
-		    #if ($choice.getVoteCount())
-		        <i>
-		       #set($voters = $choice.getVoters())
-               #set($iCounter = 0)
-               #foreach($voter in $voters)
-                 #set($iCounter=$iCounter+1)
-                 #if ($visibleVotersWiki)
-                   <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
-                 #else
-                   $voter#if ($iCounter!=$voters.size()),#end
-                 #end
-               #end
-               </i>
-		    #end
-		</td>
-            #end
-        </tr>
-    #end
-    #if ($canSeeVoters)
-        <tr>
-        	<td colspan="$columnCount">
-        	    <i>
-                $action.getText("surveyplugin.vote.voters.all"):
-                #set($voters = $ballot.getAllVoters())
-                #set($iCounter = 0)
-                #foreach($voter in $voters)
-                  #set($iCounter=$iCounter+1)
-                  #if ($visibleVotersWiki)
-                    <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
-                  #else
-                    $voter#if ($iCounter!=$voters.size()),#end
-                  #end
+                    </td>
                 #end
-                </i>
-        	</td>
-        </tr>
-    #end
-</table>
+
+                #if ($canSeeVoters)
+            <td>
+                #if ($choice.getVoteCount())
+                    <i>
+                   #set($voters = $choice.getVoters())
+                   #set($iCounter = 0)
+                   #foreach($voter in $voters)
+                     #set($iCounter=$iCounter+1)
+                     #if ($visibleVotersWiki)
+                       <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+                     #else
+                       $voter#if ($iCounter!=$voters.size()),#end
+                     #end
+                   #end
+                   </i>
+                #end
+            </td>
+                #end
+            </tr>
+        #end
+        #if ($canSeeVoters)
+            <tr>
+                <td colspan="$columnCount">
+                    <i>
+                    $action.getText("surveyplugin.vote.voters.all"):
+                    #set($voters = $ballot.getAllVoters())
+                    #set($iCounter = 0)
+                    #foreach($voter in $voters)
+                      #set($iCounter=$iCounter+1)
+                      #if ($visibleVotersWiki)
+                        <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+                      #else
+                        $voter#if ($iCounter!=$voters.size()),#end
+                      #end
+                    #end
+                    </i>
+                </td>
+            </tr>
+        #end
+    </table>
+#end

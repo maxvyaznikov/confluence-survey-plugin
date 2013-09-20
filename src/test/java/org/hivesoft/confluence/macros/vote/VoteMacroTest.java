@@ -8,6 +8,7 @@ import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import org.junit.Test;
 
@@ -21,11 +22,12 @@ public class VoteMacroTest {
     SpaceManager mockSpaceManager = mock(SpaceManager.class);
     ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
     UserAccessor mockUserAccessor = mock(UserAccessor.class);
+    UserManager mockUserManager = mock(UserManager.class);
     TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
     XhtmlContent mockXhtmlContent = mock(XhtmlContent.class);
     PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
 
-    VoteMacro classUnderTest = new VoteMacro(mockPageManager, mockSpaceManager, mockContentPropertyManager, mockUserAccessor, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory);
+    VoteMacro classUnderTest = new VoteMacro(mockPageManager, mockSpaceManager, mockContentPropertyManager, mockUserAccessor, mockUserManager, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory);
 
     @Test
     public void test_MacroProperties_success() {

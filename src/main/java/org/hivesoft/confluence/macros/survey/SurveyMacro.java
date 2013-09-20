@@ -32,6 +32,7 @@ import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
@@ -67,8 +68,8 @@ public class SurveyMacro extends VoteMacro implements Macro {
     private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
     private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
 
-    public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory) {
-        super(pageManager, spaceManager, contentPropertyManager, userAccessor, renderer, xhtmlContent, pluginSettingsFactory);
+    public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory) {
+        super(pageManager, spaceManager, contentPropertyManager, userAccessor, userManager, renderer, xhtmlContent, pluginSettingsFactory);
     }
 
     private String[] ballotLabels = null; // 1.1.3 allow a self defined ballotLabels-List
@@ -223,10 +224,8 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         // check if any request parameters came in to vote on a ballot
         HttpServletRequest request = ServletActionContext.getRequest();
-        String remoteUser = null;
-        if (request != null) {
-            remoteUser = request.getRemoteUser();
 
+        if (request != null) {
             // Try to retrieve the proper ballot
             Ballot ballot = survey.getBallot(request.getParameter("ballot.title"));
 
@@ -268,17 +267,19 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put(KEY_LOCKED, getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
 
         Boolean canSeeResults = Boolean.FALSE;
+
+        final String remoteUsername = userManager.getRemoteUsername();
         // 1.1.4 Viewing is permitted by default for everyone
         // 1.1.5 the survey must be closed and viewers=empty (doesnt matter whether anonymous or not)
         // if viewers is not specified and survey is locked
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(StringUtils.defaultString((String) parameters.get(KEY_LOCKED))).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUser);
+            canSeeResults = getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
         }
         contextMap.put("canSeeSurveyResults", canSeeResults);
 
-        Boolean canTakeSurvey = getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUser);
+        Boolean canTakeSurvey = getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
         contextMap.put("canTakeSurvey", canTakeSurvey);
 
         // 1.1.7.5 see voters
@@ -370,7 +371,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         // Reconstruct all of the votes that have been cast so far
         for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
-            String line = stringTokenizer.nextToken();
+            String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
             // the parameter given list must override the inline Labels if none are there
             if (tmpBallotLabels != null) {
@@ -379,7 +380,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
                 ballotLabels = null; // null the ballotLabels, will be filled later
             }
 
-            if (TextUtils.stringSet(line)) {
+            if ((!StringUtils.isBlank(line) && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1) {
                 String[] titleDescription = line.split("\\-", -1);
 
                 Ballot ballot = new Ballot(titleDescription[0].trim());
