@@ -23,9 +23,12 @@
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
 #if ($renderTitleLevel) <h$renderTitleLevel>#end <a name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a>#if ($renderTitleLevel) </h$renderTitleLevel> #end
+#set ($voteAnchor = "")
+
 #if ($locked)
   <img align="left" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
 #end
+
 $generalUtil.htmlEncode($ballot.description)
 
 #if ( $ballot.choices.size()==0 )
@@ -35,7 +38,7 @@ $generalUtil.htmlEncode($ballot.description)
 #else
     <table class="grid">
         #set ($columnCount = 2)
-        #if ($canSeeResults) ## 1.1.8.7 || ($canVote && $locked))
+        #if ($canSeeResults)
             #set ($columnCount = $columnCount + 1)
         #end
         #if ($canSeeVoters)
@@ -44,7 +47,7 @@ $generalUtil.htmlEncode($ballot.description)
         <tr>
             <th>$action.getText("surveyplugin.vote.choices")</th>
             <th>$action.getText("surveyplugin.vote.vote")</th>
-            #if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
+            #if ($canSeeResults)
                 <th>$action.getText("surveyplugin.vote.result"): <span class="smalltext">($ballot.totalVoteCount $action.getText("surveyplugin.survey.summary.header.total"))</span></th>
             #end
             #if ($canSeeVoters)
@@ -55,21 +58,24 @@ $generalUtil.htmlEncode($ballot.description)
             <tr>
                 <td>$choice.description</td>
                 <td align="center">
-                    #if ($choice.equals($userVote))
-                        <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="17" width="17" />
-                    #elseif ($canVote && !($locked))
-                        #if (!($voteAnchor))
-                          #set ($voteAnchor = "")
+                    #if ($canVote && !($locked))
+                        #if ($choice.equals($userVote))
+                            <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&u=1#${voteAnchor}">
+                                <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';" onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';" />
+                            </a>
+                        #else
+                            <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)#${voteAnchor}">
+                                <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';" onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';" />
+                            </a>
                         #end
-                        <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)#${voteAnchor}">
-                            <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';" onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';" />
-                        </a>
+                    #elseif ($choice.equals($userVote))
+                        <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="17" width="17" />
                     #else
                         <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="17" width="17" />
                     #end
                 </td>
 
-                #if ($canSeeResults) ## || ($canVote && $locked)) 1.1.8.7 canvote will not gain seeresults by locked
+                #if ($canSeeResults)
                     #set ($percentVotedFor = $ballot.getPercentageOfVoteForChoice($choice))
                     <td>
                         <div class="greenbar-wrap">

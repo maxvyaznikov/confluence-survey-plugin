@@ -29,9 +29,9 @@ public class Ballot {
     private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
     private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
     private boolean changeableVotes = false;
-    private boolean visibleVoters = false; //1.1.7.5 show voters if allowed to
+    private boolean visibleVoters = false;
     private int startBound = DEFAULT_START_BOUND; //1.1.7.1 calculate for each ballot starting by 1
-    private int iterateStep = DEFAULT_ITERATE_STEP; //iterating Step, so usually it is 1 .. till choies.upperbound
+    private int iterateStep = DEFAULT_ITERATE_STEP; //iterating Step, so usually it is 1 .. till choices.upperbound
 
     /**
      * <p>

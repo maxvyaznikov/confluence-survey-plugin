@@ -55,6 +55,9 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     private static final String VOTE_MACRO = "vote";
 
+    public static final String REQUEST_PARAMETER_BALLOT = "ballot.title";
+    public static final String REQUEST_PARAMETER_CHOICE = "vote.choice";
+
     protected static final String KEY_TITLE = "title";
     protected static final String KEY_RENDER_TITLE_LEVEL = "renderTitleLevel";
     protected static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
@@ -504,11 +507,10 @@ public class VoteMacro extends BaseMacro implements Macro {
      */
     protected void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject, String voters) {
         final String remoteUsername = userManager.getRemoteUsername();
-        String requestBallotTitle = request.getParameter("ballot.title");
-        String requestChoice = request.getParameter("vote.choice");
+        String requestBallotTitle = request.getParameter(REQUEST_PARAMETER_BALLOT);
+        String requestChoice = request.getParameter(REQUEST_PARAMETER_CHOICE);
 
-        // If there is a choice, make sure the vote is for this ballot and this
-        // user can vote
+        // If there is a choice, make sure the vote is for this ballot and this user can vote
         if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && getCanVote(voters, remoteUsername, ballot).booleanValue()) {
 
             // If this is a re-vote situation, then unvote first
@@ -521,8 +523,10 @@ public class VoteMacro extends BaseMacro implements Macro {
             Choice choice = ballot.getChoice(requestChoice);
 
             if (choice != null) {
-                choice.voteFor(remoteUsername);
-                setVoteContentProperty(choice, ballot.getTitle(), contentObject);
+                if (!choice.equals(previousChoice)) {
+                    choice.voteFor(remoteUsername);
+                    setVoteContentProperty(choice, ballot.getTitle(), contentObject);
+                }
             }
         }
     }

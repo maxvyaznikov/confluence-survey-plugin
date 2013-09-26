@@ -158,6 +158,19 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <check/>
+                    <instrumentation>
+                        <excludes>
+                            <exclude>org/apache/commons/**</exclude>
+                        </excludes>
+                    </instrumentation>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
