@@ -10,12 +10,13 @@
  */
 package org.hivesoft.confluence.macros.survey;
 
-import java.util.Map;
-
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.actions.AbstractPageAction;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.ActionContext;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -31,11 +32,7 @@ public class AddCommentAction extends AbstractPageAction {
     protected String comment;
 
     /**
-     * <p>
-     * This method gets called when a post request is recieved
-     * and will add the comment to the indicated ballot.
-     * </p>
-     *
+     * This method gets called when a post request is received and will add the comment to the indicated ballot.
      * @return a string constant indicating success or failure.
      */
     public String execute() {
@@ -50,18 +47,26 @@ public class AddCommentAction extends AbstractPageAction {
         String usernameRegex = "\\|" + username + "\\|";
 
         String commenters = contentPropertyManager.getStringProperty(getPage(), commentersPropertyName);
+        //safely store string stored items into text
+        if (!StringUtils.isBlank(commenters)) {
+            if (StringUtils.isBlank(contentPropertyManager.getStringProperty(getPage(), commentersPropertyName))) {
+                contentPropertyManager.setTextProperty(getPage(), commentersPropertyName, commenters);
+                contentPropertyManager.setStringProperty(getPage(), commentersPropertyName, null);
+            }
+        } else {
+            commenters = contentPropertyManager.getTextProperty(getPage(), commentersPropertyName);
+        }
+
         if (TextUtils.stringSet(comment)) {
             if (TextUtils.stringSet(commenters) && !commenters.matches(".*" + usernameRegex + ".*")) {
-                  commenters += "|" + username + "|";
-            }
-            else if (!TextUtils.stringSet(commenters)) {
+                commenters += "|" + username + "|";
+            } else if (!TextUtils.stringSet(commenters)) {
                 commenters = "|" + username + "|";
             }
 
             contentPropertyManager.setTextProperty(getPage(), commentPropertyName, comment);
-        }
-        else if (TextUtils.stringSet(commenters) && commenters.matches(".*" + usernameRegex + ".*")) {
-            commenters = commenters.replaceAll(usernameRegex,"");
+        } else if (TextUtils.stringSet(commenters) && commenters.matches(".*" + usernameRegex + ".*")) {
+            commenters = commenters.replaceAll(usernameRegex, "");
             contentPropertyManager.setTextProperty(getPage(), commentPropertyName, null);
         }
 
@@ -69,15 +74,12 @@ public class AddCommentAction extends AbstractPageAction {
         //if there are more commenters than 255 chars
         contentPropertyManager.setTextProperty(getPage(), commentersPropertyName, commenters);
 
-        ((Map)ActionContext.getContext().get("request")).put("surveySection", ballotAnchor);
+        ((Map) ActionContext.getContext().get("request")).put("surveySection", ballotAnchor);
         return SUCCESS;
     }
 
     /**
-     * <p>
      * This is a binding method for the ballot title request parameter.
-     * </p>
-     *
      * @param ballotTitle The ballotTitle request parameter.
      */
     public void setBallotTitle(String ballotTitle) {
@@ -85,10 +87,7 @@ public class AddCommentAction extends AbstractPageAction {
     }
 
     /**
-     * <p>
      * This is a binding method for the ballot anchor request parameter.
-     * </p>
-     *
      * @param ballotAnchor The ballotAnchor request parameter.
      */
     public void setBallotAnchor(String ballotAnchor) {
@@ -96,10 +95,7 @@ public class AddCommentAction extends AbstractPageAction {
     }
 
     /**
-     * <p>
      * This is a binding method for the comment request parameter.
-     * </p>
-     *
      * @param comment The comment request parameter.
      */
     public void setComment(String comment) {
@@ -107,11 +103,7 @@ public class AddCommentAction extends AbstractPageAction {
     }
 
     /**
-     * <p>
-     * Injection method for confluence to provide this
-     * action with a ContentPropertyManager.
-     * </p>
-     *
+     * Injection method for confluence to provide this action with a ContentPropertyManager.
      * @param contentPropertyManager The manager to access page properties.
      */
     public void setContentPropertyManager(ContentPropertyManager contentPropertyManager) {

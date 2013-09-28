@@ -68,7 +68,6 @@
                 </span>
                 #if ($ballot.getCommentForUser($req.remoteUser))
                   #set($rawWiki=$ballot.getCommentForUser($req.remoteUser).comment)
-                  ##set($xhtml=$renderer.convertWikiToXHtml($content.toPageContext(), $rawWiki)) 1.1.7.10 fixed rendering for conf3.1
                   <span id="${ballotNumberID}CommentDisplay">
                     ##<span id="${ballotNumberID}CommentValue">$subRenderer.render($rawWiki, $context)</span>
                     <span id="${ballotNumberID}CommentValue">$rawWiki</span>

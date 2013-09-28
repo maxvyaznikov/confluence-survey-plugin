@@ -197,11 +197,6 @@ public class VoteMacro extends BaseMacro implements Macro {
         // retrieve a reference to the body object this macro is in
         ContentEntityObject contentObject = ((PageContext) renderContext).getEntity();
 
-        if (body == null || !TextUtils.stringSet(body)) {
-            LOG.error("Error: Body is Empty. Break!");
-            throw new MacroException("Error: Please provide a parsable Body with Answers to pick from (Required)! Each new line represents a Answer.");
-        }
-
         PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
         String iconSet = (String) settings.get(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET);
         if (StringUtils.isBlank(iconSet)) {

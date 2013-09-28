@@ -14,28 +14,28 @@ public class BallotTest {
     private static final String SOME_CHOICE_DESCRIPTION = "someChoice";
     private static final String SOME_EXISTING_USER_NAME = "someExistingUser";
 
+    Ballot classUnderTest;
+
+
     @Before
     public void setup() {
+        classUnderTest = new Ballot(SOME_BALLOT_TITLE);
     }
 
     @Test
     public void test_getTitle_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-
         assertEquals(SOME_BALLOT_TITLE, classUnderTest.getTitle());
     }
 
     @Test
     public void test_getTitleNoSpace_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE + " " + " more spaces");
+        classUnderTest = new Ballot(SOME_BALLOT_TITLE + " " + " more spaces");
 
         assertEquals(SOME_BALLOT_TITLE.toLowerCase() + "morespaces", classUnderTest.getTitleNoSpace());
     }
 
     @Test
     public void test_getDescription_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-
         assertEquals("", classUnderTest.getDescription());
 
         classUnderTest.setDescription("someDescription");
@@ -44,14 +44,11 @@ public class BallotTest {
 
     @Test
     public void test_isChangeableVotes_DefaultFalse_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-
         assertEquals(false, classUnderTest.isChangeableVotes());
     }
 
     @Test
     public void test_isChangeableVotes_SetTrue_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.setChangeableVotes(true);
 
         assertEquals(true, classUnderTest.isChangeableVotes());
@@ -59,14 +56,11 @@ public class BallotTest {
 
     @Test
     public void test_isVisibleVoters_DefaultFalse_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-
         assertEquals(false, classUnderTest.isVisibleVoters());
     }
 
     @Test
     public void test_isVisibleVoters_SetTrue_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.setVisibleVoters(true);
 
         assertEquals(true, classUnderTest.isVisibleVoters());
@@ -77,7 +71,6 @@ public class BallotTest {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
         someChoice.voteFor(SOME_EXISTING_USER_NAME);
 
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.addChoice(someChoice);
 
         Choice result = classUnderTest.getVote(SOME_EXISTING_USER_NAME);
@@ -91,7 +84,6 @@ public class BallotTest {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
         someChoice.voteFor(SOME_EXISTING_USER_NAME);
 
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.addChoice(someChoice);
 
         Choice result = classUnderTest.getVote("someDifferentNotExistingUser");
@@ -104,7 +96,6 @@ public class BallotTest {
     public void test_getChoice_success() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
 
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.addChoice(someChoice);
 
         Choice result = classUnderTest.getChoice(SOME_CHOICE_DESCRIPTION);
@@ -116,7 +107,6 @@ public class BallotTest {
     public void test_getChoice_NotExists_failure() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
 
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.addChoice(someChoice);
 
         Choice result = classUnderTest.getChoice("NotExistingChoice");
@@ -126,17 +116,43 @@ public class BallotTest {
 
     @Test
     public void test_getChoices_NoChoices_failure() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-
         Collection<Choice> result = classUnderTest.getChoices();
 
         assertEquals(0, result.size());
     }
 
+    @Test
+    public void test_getPercentageOfVoteForChoice_NoVotes_success(){
+        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+
+        classUnderTest.addChoice(someChoice);
+
+        final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
+
+        assertEquals(0, percentageResult);
+    }
+
+    @Test
+    public void test_getPercentageOfVoteForChoice_success(){
+        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION+"two");
+
+        classUnderTest.addChoice(someChoice);
+        classUnderTest.addChoice(someChoiceTwo);
+
+        someChoice.voteFor("someUserOne");
+        someChoice.voteFor("someUserTwo");
+        someChoiceTwo.voteFor("someUserThree");
+
+        final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
+        final int percentageResultTwo = classUnderTest.getPercentageOfVoteForChoice(someChoiceTwo);
+
+        assertEquals(66, percentageResult);
+        assertEquals(33, percentageResultTwo);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void test_AddComment_NoUser_exception() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-
         Comment someComment = new Comment();
 
         classUnderTest.addComment(someComment);
@@ -144,8 +160,6 @@ public class BallotTest {
 
     @Test
     public void test_Comments_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-
         Comment someComment = new Comment(SOME_EXISTING_USER_NAME, "some crazy comment for a crazy plugin");
 
         classUnderTest.addComment(someComment);
@@ -158,8 +172,6 @@ public class BallotTest {
 
     @Test
     public void test_getCommentForUser_success() {
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-
         Comment someComment = new Comment(SOME_EXISTING_USER_NAME, "some crazy comment for a crazy plugin");
 
         classUnderTest.addComment(someComment);
@@ -173,7 +185,6 @@ public class BallotTest {
     public void test_computeAverage_OneChoiceNoVotes_success() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
 
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.addChoice(someChoice);
 
         final float result = classUnderTest.computeAverage();
@@ -186,7 +197,6 @@ public class BallotTest {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
         someChoice.voteFor(SOME_EXISTING_USER_NAME);
 
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.addChoice(someChoice);
 
         final float result = classUnderTest.computeAverage();
@@ -201,7 +211,6 @@ public class BallotTest {
         someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
         Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
 
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.addChoice(someChoice);
         classUnderTest.addChoice(someChoiceTwo);
         classUnderTest.addChoice(someChoiceThree);
@@ -219,7 +228,6 @@ public class BallotTest {
         Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
         someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
 
-        Ballot classUnderTest = new Ballot(SOME_BALLOT_TITLE);
         classUnderTest.addChoice(someChoice);
         classUnderTest.addChoice(someChoiceTwo);
         classUnderTest.addChoice(someChoiceThree);

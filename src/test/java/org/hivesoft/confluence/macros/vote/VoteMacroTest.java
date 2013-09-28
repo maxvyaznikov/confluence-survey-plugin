@@ -79,6 +79,16 @@ public class VoteMacroTest {
     }
 
     @Test
+    public void test_recordVote_noUser_success() {
+        Ballot ballot = createDefaultBallot();
+        when(mockUserManager.getRemoteUsername()).thenReturn("");
+
+        classUnderTest.recordVote(ballot, mockRequest, new Page(), "");
+
+        verify(mockContentPropertyManager, times(0)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
+    }
+
+    @Test
     public void test_recordVote_freshVote_success() {
         Ballot ballot = createDefaultBallot();
 
