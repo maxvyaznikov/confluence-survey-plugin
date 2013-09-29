@@ -46,7 +46,6 @@ import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -68,12 +67,12 @@ public class SurveyMacro extends VoteMacro implements Macro {
     private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
     private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
 
+    private String[] ballotLabels = null; // 1.1.3 allow a self defined ballotLabels-List
+    private ArrayList<String> myChoicesList = null;
+
     public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory) {
         super(pageManager, spaceManager, contentPropertyManager, userAccessor, userManager, renderer, xhtmlContent, pluginSettingsFactory);
     }
-
-    private String[] ballotLabels = null; // 1.1.3 allow a self defined ballotLabels-List
-    private ArrayList<String> myChoicesList = null;
 
     /**
      * {@inheritDoc}
@@ -257,21 +256,13 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
         contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put("iconSet", iconSet);
-        // 1.1.8.1 somehow content.toPageContext isnt working anymore...
         contextMap.put("context", renderContext);
-
-        // 1.1.4 add flag (default=true) for Showing Comments
         contextMap.put(KEY_SHOW_COMMENTS, getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
-
-        // 1.1.5 add flag (default=false) for locking the Survey (no more voting)
         contextMap.put(KEY_LOCKED, getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
 
         Boolean canSeeResults = Boolean.FALSE;
 
         final String remoteUsername = userManager.getRemoteUsername();
-        // 1.1.4 Viewing is permitted by default for everyone
-        // 1.1.5 the survey must be closed and viewers=empty (doesnt matter whether anonymous or not)
-        // if viewers is not specified and survey is locked
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(StringUtils.defaultString((String) parameters.get(KEY_LOCKED))).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
@@ -282,7 +273,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
         Boolean canTakeSurvey = getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
         contextMap.put("canTakeSurvey", canTakeSurvey);
 
-        // 1.1.7.5 see voters
         Boolean canSeeVoters = getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
         contextMap.put("canSeeSurveyVoters", canSeeVoters);
 
@@ -315,45 +305,38 @@ public class SurveyMacro extends VoteMacro implements Macro {
     }
 
     /**
-     * <p>
      * Determine if a user is authorized to perform an action based on the provided list of names.
-     * </p>
      *
      * @param permitted the list of usernames allowed to perform the action. If blank, everyone is permitted.
      * @param username  the username of the candidate user.
      * @return <code>true</code> if the user can see the results, <code>false</code> if they cannot.
      */
     protected Boolean getCanPerformAction(String permitted, String username) {
-        // You aren't permitted if we don't know who you are
-        if (!TextUtils.stringSet(username)) {
+        if (StringUtils.isBlank(username)) {
             return Boolean.FALSE;
         }
 
-        // if it is not restricted you are granted
-        if (!TextUtils.stringSet(permitted))
+        if (StringUtils.isBlank(permitted)) {
             return Boolean.TRUE;
+        }
 
+        String[] permittedList = permitted.split(",");
         // if the logged in user matches a entry, it is granted
-        if (Arrays.asList(permitted.split(",")).contains(username))
+        if (Arrays.asList(permittedList).contains(username)) {
             return Boolean.TRUE;
+        }
 
         // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-        String[] lUsers = permitted.split(",");
-        for (int ino = 0; ino < lUsers.length; ino++) {
-            // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-            if (userAccessor.hasMembership(lUsers[ino], username))
+        for (String permittedElement : permittedList) {
+            if (userAccessor.hasMembership(permittedElement, username)) {
                 return Boolean.TRUE;
+            }
         }
         return Boolean.FALSE;
-
-        // If you're not in the list or the list is not set, you aren't permitted /return Boolean.valueOf(!TextUtils.stringSet(permitted) ||
-        // Arrays.asList(permitted.split(",")).contains(username));
     }
 
     /**
-     * <p>
      * Create a survey object for the given macro body pre-populated with all choices that have previously been made by the users.
-     * </p>
      *
      * @param body          The rendered body of the macro.
      * @param contentObject The content object from which the votes can be read.
@@ -362,11 +345,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
     protected Survey createSurvey(String body, ContentEntityObject contentObject, String choices) {
         Survey survey = new Survey();
 
-        if (!TextUtils.stringSet(body)) {
+        if (StringUtils.isBlank(body)) {
             return survey;
         }
 
-        // 1.1.3: See what the choices-Parameter contains
         String tmpBallotLabels = choices;
 
         // Reconstruct all of the votes that have been cast so far
@@ -427,12 +409,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
                 // Load all of the choices and votes into the ballot
                 for (int i = 0; i < ballotLabels.length; i++) {
                     Choice choice = new Choice(ballotLabels[i]);
-                    // 1.1.7.6 if this ballot is a default one, check whether
-                    // there are old default items and convert
-                    // see CSRVY-21 for details
-                    // 1.1.8.2 override choices can now extend the
-                    // defaultBallots (will then not compared starting by
-                    // defaultb.length)
+                    // 1.1.7.6 if this ballot is a default one, check whether there are old default items and convert see CSRVY-21 for details
                     if (i < defaultBallotLabels.length && ballotLabels[i] == defaultBallotLabels[i]) {
                         // check for old votes
                         String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels[i]);
@@ -457,25 +434,5 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
 
         return survey;
-    }
-
-    /**
-     * <p>
-     * Helper method used by the velocity code since it can't determine the length of an array.
-     * </p>
-     *
-     * @param array The array whose length is needed.
-     * @return The length of the array as an Integer.
-     */
-    public Integer getArrayLength(Object array) {
-        if (array == null) {
-            return new Integer(0);
-        }
-
-        if (!array.getClass().isArray()) {
-            throw new IllegalArgumentException(array.getClass().getName() + " is not an array.");
-        }
-
-        return new Integer(Array.getLength(array));
     }
 }

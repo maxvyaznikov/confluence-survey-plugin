@@ -312,9 +312,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     }
 
     /**
-     * <p>
      * This method will take the data from the macros parameters, body, and page data to reconstruct a ballot object with all of the choices and previously cast votes populated.
-     * </p>
      *
      * @param parameters    The macro parameters.
      * @param body          The rendered body of the macro.
@@ -363,9 +361,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     }
 
     /**
-     * <p>
      * This is a helper method to set the content property value for a particular vote choice once it has been updated.
-     * </p>
      *
      * @param choice        The choice that has been updated.
      * @param ballotTitle   The title of the ballot that the choice belongs to.
@@ -402,12 +398,12 @@ public class VoteMacro extends BaseMacro implements Macro {
      */
     protected Boolean getCanSeeResults(String viewers, String voters, String username, Ballot ballot) {
         // You can't see results if we don't know who you are
-        if (!TextUtils.stringSet(username)) {
+        if (StringUtils.isBlank(username)) {
             return Boolean.FALSE;
         }
 
         // If you're not a viewer, you can't see results
-        boolean isViewer = !TextUtils.stringSet(viewers) || Arrays.asList(viewers.split(",")).contains(username);
+        boolean isViewer = StringUtils.isBlank(viewers) || Arrays.asList(viewers.split(",")).contains(username);
         if (!isViewer) {
             // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
             String[] lUsers = viewers.split(",");
@@ -423,7 +419,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         }
 
         // If you're a viewer but not a voter, then you can always see the results
-        boolean isVoter = !TextUtils.stringSet(voters) || Arrays.asList(voters.split(",")).contains(username);
+        boolean isVoter = StringUtils.isBlank(voters) || Arrays.asList(voters.split(",")).contains(username);
         if (!isVoter) {
             // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
             String[] lUsers = voters.split(",");
