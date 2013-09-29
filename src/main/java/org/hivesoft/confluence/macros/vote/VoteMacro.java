@@ -321,28 +321,25 @@ public class VoteMacro extends BaseMacro implements Macro {
      */
     protected Ballot reconstructBallot(Map<String, String> parameters, String body, ContentEntityObject contentObject) throws MacroException {
         Ballot ballot = new Ballot(getTitle(parameters));
+        ballot.setChangeableVotes(Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES)));
 
         for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
             // 1.1.6: added trim(), otherwise it can happen that empty lines (spaces) get valid options
             String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
-            if (!StringUtils.isBlank(line) && line.length() > 0 && Character.getNumericValue(line.toCharArray()[0]) > -1) {
+            if (!StringUtils.isBlank(line) && ((line.length() == 1 && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1)) {
                 Choice choice = new Choice(line);
                 ballot.addChoice(choice);
 
                 String votes = contentPropertyManager.getTextProperty(contentObject, VOTE_PREFIX + ballot.getTitle() + "." + line);
 
                 if (TextUtils.stringSet(votes)) {
-
                     for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
                         choice.voteFor(voteTokenizer.nextToken());
                     }
                 }
             }
         }
-
-        ballot.setChangeableVotes(Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES)));
-
         return ballot;
     }
 
