@@ -74,7 +74,7 @@
                     <br />
                     <br />
                     <a href="#" onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.edit")</a>
-                    <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id&ballotTitle=$generalUtil.urlEncode($ballot.title)&comment=#${voteAnchor}">$action.getText("surveyplugin.survey.comment.remove")</a>
+                    <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id&ballotTitle=$generalUtil.urlEncode($ballot.title)&ballotAnchor=$generalUtil.urlEncode("${voteAnchor}")&comment=">$action.getText("surveyplugin.survey.comment.remove")</a>
                   </span>
                 #else
                   <span id="${ballotNumberID}CommentDisplay">

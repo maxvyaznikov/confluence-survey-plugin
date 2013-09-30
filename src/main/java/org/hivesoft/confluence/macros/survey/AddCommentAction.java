@@ -15,6 +15,7 @@ import com.atlassian.confluence.pages.actions.AbstractPageAction;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.ActionContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import java.util.Map;
  * </p>
  */
 public class AddCommentAction extends AbstractPageAction {
+    private static final Logger LOG = Logger.getLogger(AddCommentAction.class);
     protected ContentPropertyManager contentPropertyManager;
     protected String ballotTitle;
     protected String ballotAnchor;
@@ -33,11 +35,16 @@ public class AddCommentAction extends AbstractPageAction {
 
     /**
      * This method gets called when a post request is received and will add the comment to the indicated ballot.
+     *
      * @return a string constant indicating success or failure.
      */
     public String execute() {
         if (getRemoteUser() == null || !TextUtils.stringSet(ballotTitle)) {
             return ERROR;
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Entered AddCommentAction with ballotTitle=" + ballotTitle + ", ballotAnchor=" + ballotAnchor + ", comment=" + comment);
         }
 
         String username = getRemoteUser().getName();
@@ -49,7 +56,7 @@ public class AddCommentAction extends AbstractPageAction {
         String commenters = contentPropertyManager.getStringProperty(getPage(), commentersPropertyName);
         //safely store string stored items into text
         if (!StringUtils.isBlank(commenters)) {
-            if (StringUtils.isBlank(contentPropertyManager.getStringProperty(getPage(), commentersPropertyName))) {
+            if (StringUtils.isBlank(contentPropertyManager.getTextProperty(getPage(), commentersPropertyName))) {
                 contentPropertyManager.setTextProperty(getPage(), commentersPropertyName, commenters);
                 contentPropertyManager.setStringProperty(getPage(), commentersPropertyName, null);
             }
@@ -57,13 +64,12 @@ public class AddCommentAction extends AbstractPageAction {
             commenters = contentPropertyManager.getTextProperty(getPage(), commentersPropertyName);
         }
 
-        if (TextUtils.stringSet(comment)) {
+        if (!StringUtils.isBlank(comment)) {
             if (TextUtils.stringSet(commenters) && !commenters.matches(".*" + usernameRegex + ".*")) {
                 commenters += "|" + username + "|";
             } else if (!TextUtils.stringSet(commenters)) {
                 commenters = "|" + username + "|";
             }
-
             contentPropertyManager.setTextProperty(getPage(), commentPropertyName, comment);
         } else if (TextUtils.stringSet(commenters) && commenters.matches(".*" + usernameRegex + ".*")) {
             commenters = commenters.replaceAll(usernameRegex, "");
@@ -80,6 +86,7 @@ public class AddCommentAction extends AbstractPageAction {
 
     /**
      * This is a binding method for the ballot title request parameter.
+     *
      * @param ballotTitle The ballotTitle request parameter.
      */
     public void setBallotTitle(String ballotTitle) {
@@ -88,6 +95,7 @@ public class AddCommentAction extends AbstractPageAction {
 
     /**
      * This is a binding method for the ballot anchor request parameter.
+     *
      * @param ballotAnchor The ballotAnchor request parameter.
      */
     public void setBallotAnchor(String ballotAnchor) {
@@ -96,6 +104,7 @@ public class AddCommentAction extends AbstractPageAction {
 
     /**
      * This is a binding method for the comment request parameter.
+     *
      * @param comment The comment request parameter.
      */
     public void setComment(String comment) {
@@ -104,6 +113,7 @@ public class AddCommentAction extends AbstractPageAction {
 
     /**
      * Injection method for confluence to provide this action with a ContentPropertyManager.
+     *
      * @param contentPropertyManager The manager to access page properties.
      */
     public void setContentPropertyManager(ContentPropertyManager contentPropertyManager) {

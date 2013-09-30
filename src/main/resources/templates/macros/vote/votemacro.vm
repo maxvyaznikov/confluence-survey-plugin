@@ -16,14 +16,10 @@
 ##set ($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
 #set ($xhtmlContent = $action.getContentBean())
 
-##<script language="JavaScript">
-##(new Image()).src = "${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png";
-##</script>
-
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
 #if ($renderTitleLevel) <h$renderTitleLevel>#end <a name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a>#if ($renderTitleLevel) </h$renderTitleLevel> #end
-#set ($voteAnchor = "")
+##set ($voteAnchor = "")
 
 #if ($locked)
   <img align="left" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16" title="$action.getText("surveyplugin.vote.locked")." />
