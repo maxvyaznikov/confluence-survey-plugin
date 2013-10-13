@@ -137,9 +137,9 @@ public class SurveyTest {
         classUnderTest.setTitle("someTitle");
         assertEquals("someTitle", classUnderTest.getTitle());
 
-        assertTrue(classUnderTest.isSummaryDisplay());
-        classUnderTest.setSummaryDisplay(false);
-        assertFalse(classUnderTest.isSummaryDisplay());
+        assertEquals(SurveySummary.Top, classUnderTest.getSurveySummary());
+        classUnderTest.setSurveySummary(SurveySummary.None);
+        assertEquals(SurveySummary.None, classUnderTest.getSurveySummary());
     }
 
     @Test

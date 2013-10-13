@@ -23,7 +23,7 @@
 #else
   #set( $surveyTitleSummary = "summary" )
 #end
-#if ($showTopSummary)
+#if ($survey.surveySummary=="Top")
   #parse ("templates/macros/survey/surveysummary.vm")
 #end
 
@@ -109,7 +109,7 @@
       #set ($ballotNumber = $ballotNumber + 1)
     #end
 
-    #if (!$showTopSummary)
+    #if ($survey.surveySummary=="Bottom")
       #parse ("templates/macros/survey/surveysummary.vm")
     #end
 #end

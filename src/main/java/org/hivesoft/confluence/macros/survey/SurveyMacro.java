@@ -40,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hivesoft.confluence.admin.AdminResource;
 import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.survey.model.SurveySummary;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
@@ -58,7 +59,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
     private static final String KEY_CHOICES = "choices";
     private static final String KEY_SHOW_SUMMARY = "showSummary";
-    private static final String KEY_SHOW_TOP_SUMMARY = "showTopSummary";
+    //private static final String KEY_SHOW_TOP_SUMMARY = "showTopSummary"; if showSummary is true and last is not, then obviously it must be top
     private static final String KEY_SHOW_LAST = "showLast";
     private static final String KEY_SHOW_COMMENTS = "showComments";
     private static final String KEY_START_BOUND = "startBound";
@@ -195,12 +196,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
         // If this macro is configured to allow users to change their vote, let the ballot know
         survey.setChangeableVotes(getBooleanFromString((String) parameters.get(KEY_CHANGEABLE_VOTES), false));
 
-        // 1.1.7 Show Summary last
-        Boolean bTopSummary = Boolean.valueOf(getBooleanFromString((String) parameters.get(KEY_SHOW_TOP_SUMMARY), true));
-
-        if ((String) parameters.get(KEY_SHOW_LAST) != null) {
-            bTopSummary = !Boolean.valueOf((String) parameters.get(KEY_SHOW_LAST));
-        }
 
         // 1.1.7.1: default with 5 options and a step 1 .. 1..5 (or ordered 5..1)
         int startBound = Ballot.DEFAULT_START_BOUND;
@@ -218,8 +213,15 @@ public class SurveyMacro extends VoteMacro implements Macro {
             survey.setStartBoundAndIterateStep(startBound, iterateStep);
         }
 
-        // Check if the macro has disabled the display of summary
-        survey.setSummaryDisplay(getBooleanFromString((String) parameters.get(KEY_SHOW_SUMMARY), true));
+        SurveySummary surveySummary = SurveySummary.Top;
+        if (!getBooleanFromString((String) parameters.get(KEY_SHOW_SUMMARY), true)) {
+            surveySummary = SurveySummary.None;
+        } else {
+            if (getBooleanFromString((String) parameters.get(KEY_SHOW_LAST), false)) {
+                surveySummary = SurveySummary.Bottom;
+            }
+        }
+        survey.setSurveySummary(surveySummary);
 
         // check if any request parameters came in to vote on a ballot
         HttpServletRequest request = ServletActionContext.getRequest();
@@ -251,12 +253,12 @@ public class SurveyMacro extends VoteMacro implements Macro {
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
         contextMap.put("survey", survey);
         contextMap.put("content", contentObject);
-        contextMap.put("macro", this);
-        contextMap.put(KEY_SHOW_TOP_SUMMARY, bTopSummary);
-        contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
-        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
-        contextMap.put("iconSet", iconSet);
         contextMap.put("context", renderContext);
+        //contextMap.put("macro", this);
+        contextMap.put("iconSet", iconSet);
+        contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
+        //contextMap.put(KEY_SHOW_TOP_SUMMARY, bTopSummary);
+        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put(KEY_SHOW_COMMENTS, getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
         contextMap.put(KEY_LOCKED, getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
 

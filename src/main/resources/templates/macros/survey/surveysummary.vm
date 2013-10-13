@@ -10,7 +10,7 @@
  *#
 
 ## If the user can see results, only show them if they are not a voter or have completed the entire survey
-#if ($survey.isSummaryDisplay() && $canSeeSurveyResults)
+#if ($survey.surveySummary!="None" && $canSeeSurveyResults)
 ###set ($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
   
   <h3><a name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a></h3>

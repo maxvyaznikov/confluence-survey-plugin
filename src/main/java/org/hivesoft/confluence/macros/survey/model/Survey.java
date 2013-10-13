@@ -17,20 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
- * A model object representing a survey. Surveys can have several
- * {@link Ballot}s that can be voted on.
- * Each <code>Ballot</code> has {@link Choice}s
- * that can be assigned zero or more votes.
- * </p>
+ * A model object representing a survey. Surveys can have several {@link Ballot}s that can be voted on.
+ * Each <code>Ballot</code> has {@link Choice}s that can be assigned zero or more votes.
  */
 public class Survey {
 
     private String title;
     private List<Ballot> ballots = new ArrayList<Ballot>();
+
     private boolean changeableVotes = false;
     private boolean visibleVoters = false;
-    private boolean summaryDisplay = true;
+    private SurveySummary surveySummary = SurveySummary.Top;
 
     /**
      * <p>
@@ -177,47 +174,29 @@ public class Survey {
     }
 
     /**
-     * <p>
-     * Set whether or not the summary of the survey should be displayed
-     * </p>
-     *
-     * @param showSummary Flag to indicate summary display
+     * Set whether or not the surveySummary of the survey should be displayed @param surveySummary Flag to indicate surveySummary display
      */
-    public void setSummaryDisplay(boolean showSummary) {
-        this.summaryDisplay = showSummary;
+    public void setSurveySummary(SurveySummary surveySummary) {
+        this.surveySummary = surveySummary;
     }
 
     /**
-     * <p>
-     * Flag to indicate summary display
-     * </p>
+     * Flag to indicate surveySummary display
      */
-    public boolean isSummaryDisplay() {
-        return summaryDisplay;
+    public SurveySummary getSurveySummary() {
+        return surveySummary;
     }
 
-    /**
-     * <p>
-     * Set the Survey Title.
-     * </p>
-     */
     public void setTitle(String inTitle) {
         title = inTitle;
     }
 
-    /**
-     * <p>
-     * Get the Survey Title.
-     * </p>
-     */
     public String getTitle() {
         return title;
     }
 
     /**
-     * <p>
      * Get the BallotTitles incl. the names of all choices. To check the length of the key to be stored
-     * </p>
      */
     public List<String> getBallotTitlesWithChoiceNames() {
         List<String> ballotChoiceNames = new ArrayList<String>();
