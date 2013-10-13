@@ -16,75 +16,38 @@ package org.hivesoft.confluence.macros.vote.model;
  * </p>
  */
 public class Comment {
-	private String username;
-	private String comment;
+    private String username;
+    private String comment;
 
-	/**
-	 * <p>
-	 * Create a new empty comment.
-	 * </p>
-	 */
-	public Comment() {
-	}
+    public Comment() {
+    }
 
-	/**
-	 * <p>
-	 * Create a new comment loaded with the given username and comment.
-	 * </p>
-	 * 
-	 * @param username
-	 *            The user who entered the comment.
-	 * @param comment
-	 *            The comment.
-	 */
-	public Comment(String username, String comment) {
-		this.username = username;
-		this.comment = comment;
-	}
+    /**
+     * Create a new comment loaded with the given username and comment.
+     *
+     * @param username -The user who entered the comment.
+     * @param comment  - The comment.
+     */
+    public Comment(String username, String comment) {
+        this.username = username;
+        this.comment = comment;
+    }
 
-	/**
-	 * <p>
-	 * Get the text of this comment.
-	 * </p>
-	 * 
-	 * @return The comment as a <code>String</code>
-	 */
-	public String getComment() {
-		return comment;
-	}
+    /**
+     * Get the text of this comment.
+     *
+     * @return The comment as a <code>String</code>
+     */
+    public String getComment() {
+        return comment;
+    }
 
-	/**
-	 * <p>
-	 * Set the text of this comment.
-	 * </p>
-	 * 
-	 * @param comment
-	 *            The comment as a <code>String</code>
-	 */
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
-	/**
-	 * <p>
-	 * Get the name of the user that entered this comment.
-	 * </p>
-	 * 
-	 * @return The username for this comment.
-	 */
-	public String getUsername() {
-		return username;
-	}
-
-	/**
-	 * <p>
-	 * Set the name of the user that entered this comment.
-	 * </p>
-	 * 
-	 * @param username
-	 *            The username for this comment.
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    /**
+     * Get the name of the user that entered this comment.
+     *
+     * @return The username for this comment.
+     */
+    public String getUsername() {
+        return username;
+    }
 }

@@ -3,6 +3,7 @@ package org.hivesoft.confluence.macros.vote.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -122,7 +123,7 @@ public class BallotTest {
     }
 
     @Test
-    public void test_getPercentageOfVoteForChoice_NoVotes_success(){
+    public void test_getPercentageOfVoteForChoice_NoVotes_success() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
 
         classUnderTest.addChoice(someChoice);
@@ -133,9 +134,9 @@ public class BallotTest {
     }
 
     @Test
-    public void test_getPercentageOfVoteForChoice_success(){
+    public void test_getPercentageOfVoteForChoice_success() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION+"two");
+        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "two");
 
         classUnderTest.addChoice(someChoice);
         classUnderTest.addChoice(someChoiceTwo);
@@ -172,13 +173,15 @@ public class BallotTest {
 
     @Test
     public void test_getCommentForUser_success() {
-        Comment someComment = new Comment(SOME_EXISTING_USER_NAME, "some crazy comment for a crazy plugin");
+        final String comment = "some crazy comment for a crazy plugin";
+        Comment someComment = new Comment(SOME_EXISTING_USER_NAME, comment);
 
         classUnderTest.addComment(someComment);
 
         final Comment result = classUnderTest.getCommentForUser(SOME_EXISTING_USER_NAME);
 
         assertEquals(someComment, result);
+        assertEquals(comment, someComment.getComment());
     }
 
     @Test
@@ -218,6 +221,7 @@ public class BallotTest {
         final float result = classUnderTest.computeAverage();
 
         assertEquals(2.0f, result, 0.0f);
+        assertEquals(66, classUnderTest.getAveragePercentage(result));
     }
 
     @Test
@@ -238,5 +242,39 @@ public class BallotTest {
         final String result = classUnderTest.computeFormatedAverage(format);
 
         assertEquals(new java.text.DecimalFormat(format).format(-2.5), result);
+    }
+
+    @Test
+    public void test_getBounds_success() {
+        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+
+        classUnderTest.addChoice(someChoice);
+        classUnderTest.addChoice(someChoiceTwo);
+
+        assertEquals(Ballot.DEFAULT_START_BOUND, classUnderTest.getLowerBound());
+        assertEquals(Ballot.DEFAULT_START_BOUND + Ballot.DEFAULT_START_BOUND * (classUnderTest.getChoices().size() - 1), classUnderTest.getUpperBound());
+
+    }
+
+    @Test
+    public void test_getAllVoters_success() {
+        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+        someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+        Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
+        someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
+
+        classUnderTest.addChoice(someChoice);
+        classUnderTest.addChoice(someChoiceTwo);
+        classUnderTest.addChoice(someChoiceThree);
+
+        Collection<String> userList = new ArrayList<String>();
+        userList.add(SOME_EXISTING_USER_NAME + "TWO");
+        userList.add(SOME_EXISTING_USER_NAME + "THREE");
+
+        final Collection<String> allVoters = classUnderTest.getAllVoters();
+
+        assertEquals(userList, allVoters);
     }
 }

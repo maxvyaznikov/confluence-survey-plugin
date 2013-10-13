@@ -101,28 +101,14 @@ public class Survey {
     }
 
     /**
-     * <p>
-     * Return whether or not users should be allowed to change
-     * their vote once it has been cast. This survey is not
-     * responsible for enforcing this behaviour. It merely
-     * tracks whether it should be allowed or not.
-     * </p>
-     *
-     * @return <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
+     * Return whether or not users should be allowed to change their vote once it has been cast.
      */
     public boolean isChangeableVotes() {
         return changeableVotes;
     }
 
     /**
-     * <p>
-     * Set whether or not this survey should allow users to change
-     * their votes once they have been cast. This survey is not
-     * responsible for enforcing this behaviour. It merely
-     * tracks whether it should be allowed or not.
-     * </p>
-     *
-     * @param changeableVotes <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
+     * Set whether or not this survey should allow users to change their votes once they have been cast.
      */
     public void setChangeableVotes(boolean changeableVotes) {
         this.changeableVotes = changeableVotes;
@@ -133,9 +119,7 @@ public class Survey {
     }
 
     /**
-     * <p>
      * Return whether or not users should be allowed to see the voters in clear text
-     * </p>
      *
      * @return <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
      */
@@ -144,9 +128,7 @@ public class Survey {
     }
 
     /**
-     * <p>
      * Set whether or not this survey should allow users to see the voted users
-     * </p>
      *
      * @param visibleVoters <code>true</code> if users can see voted users in clear text; <code>false</code> (default) otherwise.
      */
@@ -158,11 +140,8 @@ public class Survey {
         }
     }
 
-
     /**
-     * <p>
      * Set the Start Bound and iterating step for each ballot (can be overriden by each one if necessary)
-     * </p>
      *
      * @param startBound defaults <code>1</code>, iterateStep defaults <code>1</code>.
      */

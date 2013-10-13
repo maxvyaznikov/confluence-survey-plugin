@@ -249,37 +249,33 @@ public class SurveyMacro extends VoteMacro implements Macro {
             }
         }
 
-        // now create a simple velocity context and render a template for the output
-        Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
-        contextMap.put("survey", survey);
-        contextMap.put("content", contentObject);
-        contextMap.put("context", renderContext);
-        //contextMap.put("macro", this);
-        contextMap.put("iconSet", iconSet);
-        contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
-        //contextMap.put(KEY_SHOW_TOP_SUMMARY, bTopSummary);
-        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
-        contextMap.put(KEY_SHOW_COMMENTS, getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
-        contextMap.put(KEY_LOCKED, getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
+        final String remoteUsername = userManager.getRemoteUsername();
 
         Boolean canSeeResults = Boolean.FALSE;
-
-        final String remoteUsername = userManager.getRemoteUsername();
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(StringUtils.defaultString((String) parameters.get(KEY_LOCKED))).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
             canSeeResults = getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
         }
-        contextMap.put("canSeeSurveyResults", canSeeResults);
 
         Boolean canTakeSurvey = getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
-        contextMap.put("canTakeSurvey", canTakeSurvey);
-
         Boolean canSeeVoters = getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
+
+        // now create a simple velocity context and render a template for the output
+        Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
+        contextMap.put("survey", survey);
+        contextMap.put("content", contentObject);
+        contextMap.put("context", renderContext);
+        contextMap.put("iconSet", iconSet);
+        contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
+        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
+        contextMap.put(KEY_SHOW_COMMENTS, getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
+        contextMap.put(KEY_LOCKED, getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
+        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), true));
+        contextMap.put("canSeeSurveyResults", canSeeResults);
+        contextMap.put("canTakeSurvey", canTakeSurvey);
         contextMap.put("canSeeSurveyVoters", canSeeVoters);
 
-        // 1.1.7.5 if voters will be displayed, will they be rendered like confluence-profile-links? (default) globally valid in all vm's
-        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), true));
 
         // survey parameter must be passed through
         if (canSeeVoters == Boolean.TRUE) { // default is false, so only set if true
@@ -293,7 +289,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
             return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro-denied.vm", contextMap);
         } catch (Exception e) {
-            LOG.error("Error while trying to display Ballot!", e);
+            LOG.error("Error while trying to display Survey!", e);
             throw new MacroException(e);
         }
     }

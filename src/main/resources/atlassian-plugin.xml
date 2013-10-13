@@ -147,7 +147,6 @@
             <property key="content-type" value="text/css"/>
         </resource>
         <!--<resource type="download" name="survey-plugin-os.js" location="/js/survey-plugin.js"/>-->
-        <!--<resource type="download" name="images/" location="/images"/>-->
 
         <resource type="download" name="logos/" location="/images/logos"/>
         <resource type="download" name="icons/" location="/images/icons"/>

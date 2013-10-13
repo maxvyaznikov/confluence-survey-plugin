@@ -82,7 +82,7 @@ public class Ballot {
      *
      * @param username the username of the prospective voter
      * @return <code>true</code> if the user has already voted on this
-     *         <code>Ballot</code>, <code>false</code> if s/he has not.
+     * <code>Ballot</code>, <code>false</code> if s/he has not.
      */
     public boolean getHasVoted(String username) {
         return getVote(username) != null;
@@ -203,8 +203,8 @@ public class Ballot {
      *
      * @param choice the {@link Choice} to determine the vote percentage of
      * @return the percentage of the total vote represented by the provided
-     *         {@link Choice}. The percentage is given as a whole number, rather than
-     *         a floating point number.
+     * {@link Choice}. The percentage is given as a whole number, rather than
+     * a floating point number.
      */
     public int getPercentageOfVoteForChoice(Choice choice) {
         int totalVoteCount = getTotalVoteCount();
@@ -353,7 +353,7 @@ public class Ballot {
     }
 
     public int getAveragePercentage(float average) {
-        return (int) (average - getLowerBound()) * 100 / (getUpperBound() - getLowerBound());
+        return (int) (average - getLowerBound() + iterateStep) * 100 / (getUpperBound() - getLowerBound() + iterateStep);
     }
 
     public String getBoundsIfNotDefault() {
@@ -369,11 +369,9 @@ public class Ballot {
      */
     public Collection<String> getAllVoters() {
         List<String> voters = new ArrayList<String>();
-        if (choices.size() > 0) {
-            for (Choice choice : choices.values()) {
-                Collection<String> choiceVoters = choice.getVoters();
-                voters.addAll(choiceVoters);
-            }
+        for (Choice choice : choices.values()) {
+            Collection<String> choiceVoters = choice.getVoters();
+            voters.addAll(choiceVoters);
         }
         return voters;
     }
@@ -421,8 +419,8 @@ public class Ballot {
      * @param o the <code>Object</code> to determine equality with this
      *          <code>Ballot</code>
      * @return <code>true</code> if the ballot title of the <code>Object</code>
-     *         argument is the same as the title of this <code>Ballot</code>,
-     *         <code>false</code> otherwise.
+     * argument is the same as the title of this <code>Ballot</code>,
+     * <code>false</code> otherwise.
      */
     @Override
     public boolean equals(Object o) {
