@@ -15,10 +15,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * <p>
- * A model object representing an available <code>Choice</code> that can be
- * voted for on a {@link Ballot}.
- * </p>
+ * A model object representing an available <code>Choice</code> that can be voted for on a {@link Ballot}.
  */
 public class Choice {
 
@@ -26,9 +23,7 @@ public class Choice {
     private List<String> votes = new ArrayList<String>();
 
     /**
-     * <p>
      * Create a <code>Choice</code> with the given description.
-     * </p>
      *
      * @param description the description of the <code>Choice</code>
      */
@@ -37,9 +32,7 @@ public class Choice {
     }
 
     /**
-     * <p>
      * Get the description of this <code>Choice</code>.
-     * </p>
      *
      * @return the description of this <code>Choice</code>
      */
@@ -48,9 +41,7 @@ public class Choice {
     }
 
     /**
-     * <p>
      * Add a vote for this <code>Choice</code>.
-     * </p>
      *
      * @param voter the username to add to this <code>Choice</code>
      */
@@ -61,9 +52,7 @@ public class Choice {
     }
 
     /**
-     * <p>
      * Remove a vote for this <code>Choice</code>.
-     * </p>
      *
      * @param voter the username to remove from this <code>Choice</code>
      */
@@ -72,9 +61,7 @@ public class Choice {
     }
 
     /**
-     * <p>
      * Get all of the usernames of people that have voted for this <code>Choice</code>.
-     * </p>
      *
      * @return all of the usernames of people that have voted for this <code>Choice</code>
      */
@@ -83,9 +70,7 @@ public class Choice {
     }
 
     /**
-     * <p>
      * Get a count of the number of votes cast for this <code>Choice</code>.
-     * </p>
      *
      * @return the number of votes cast for this <code>Choice</code>
      */
@@ -94,29 +79,20 @@ public class Choice {
     }
 
     /**
-     * <p>
      * Determine is a specific username has voted for this <code>Choice</code>.
-     * </p>
      *
      * @param username username of the potential voter
-     * @return <code>true</code> if the user previously voted for this
-     *         <code>Choice</code>, <code>false</code> otherwise.
+     * @return <code>true</code> if the user previously voted for this <code>Choice</code>, <code>false</code> otherwise.
      */
     public boolean getHasVotedFor(String username) {
         return votes.contains(username);
     }
 
     /**
-     * <p>
-     * Determines if a <code>Choice</code> is equal to another <code>Choice</code>.
-     * Choices are considered equal if their description is the same.
-     * </p>
+     * Determines if a <code>Choice</code> is equal to another <code>Choice</code>. Choices are considered equal if their description is the same.
      *
-     * @param o the <code>Object</code> to determine equality with this
-     *          <code>Choice</code>
-     * @return <code>true</code> if the description of the <code>Object</code>
-     *         argument is the same as the description of this <code>Choice</code>,
-     *         <code>false</code> otherwise.
+     * @param o the <code>Object</code> to determine equality with this <code>Choice</code>
+     * @return <code>true</code> if the description of the <code>Object</code> argument is the same as the description of this <code>Choice</code>, <code>false</code> otherwise.
      */
     @Override
     public boolean equals(Object o) {
@@ -131,10 +107,7 @@ public class Choice {
     }
 
     /**
-     * <p>
-     * Return a hash code for the <code>Choice</code>. The hash code for this
-     * implementation is simply the hash code of the description.
-     * </p>
+     * Return a hash code for the <code>Choice</code>. The hash code for this implementation is simply the hash code of the description.
      *
      * @return hash code of the description
      */
@@ -143,6 +116,9 @@ public class Choice {
         return description.hashCode();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "Choice{" +

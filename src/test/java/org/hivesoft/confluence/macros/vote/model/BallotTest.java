@@ -245,7 +245,7 @@ public class BallotTest {
     }
 
     @Test
-    public void test_getBounds_success() {
+    public void test_getBounds_Default_success() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
         Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
 
@@ -254,7 +254,31 @@ public class BallotTest {
 
         assertEquals(Ballot.DEFAULT_START_BOUND, classUnderTest.getLowerBound());
         assertEquals(Ballot.DEFAULT_START_BOUND + Ballot.DEFAULT_START_BOUND * (classUnderTest.getChoices().size() - 1), classUnderTest.getUpperBound());
+    }
 
+    @Test
+    public void test_getBoundsIfNotDefault_default_success() {
+        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+
+        classUnderTest.addChoice(someChoice);
+        classUnderTest.addChoice(someChoiceTwo);
+
+        assertEquals("", classUnderTest.getBoundsIfNotDefault());
+    }
+
+    @Test
+    public void test_getBoundsIfNotDefault_notDefault_success() {
+        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+
+        classUnderTest.addChoice(someChoice);
+        classUnderTest.addChoice(someChoiceTwo);
+
+        classUnderTest.setStartBound(3);
+        classUnderTest.setIterateStep(-3);
+
+        assertEquals("(3-0)", classUnderTest.getBoundsIfNotDefault());
     }
 
     @Test
@@ -276,5 +300,24 @@ public class BallotTest {
         final Collection<String> allVoters = classUnderTest.getAllVoters();
 
         assertEquals(userList, allVoters);
+    }
+
+    @Test
+    public void test_equalsAndHashCode() {
+        Ballot classUnderTest2 = new Ballot(SOME_BALLOT_TITLE);
+
+        assertFalse(classUnderTest.equals("someString"));
+        assertTrue(classUnderTest.equals(classUnderTest2));
+        assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
+        assertTrue(classUnderTest.toString().equals(classUnderTest2.toString()));
+
+        classUnderTest2.setDescription("someDesc2");
+        assertFalse(classUnderTest.equals(classUnderTest2));
+        assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
+        assertFalse(classUnderTest.toString().equals(classUnderTest2.toString()));
+
+        classUnderTest2 = new Ballot(SOME_BALLOT_TITLE + "2");
+        assertFalse(classUnderTest.equals(classUnderTest2));
+        assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
     }
 }

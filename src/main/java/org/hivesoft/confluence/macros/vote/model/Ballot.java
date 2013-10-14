@@ -13,11 +13,8 @@ package org.hivesoft.confluence.macros.vote.model;
 import java.util.*;
 
 /**
- * <p>
- * A model object representing a voting ballot. Ballots can have several
- * {@link Choice}s that can be voted on. Each <code>Choice</code> can be assigned
- * zero or more votes.
- * </p>
+ * A model object representing a voting ballot. Ballots can have several {@link Choice}s that can be voted on.
+ * Each <code>Choice</code> can be assigned zero or more votes.
  */
 public class Ballot {
 
@@ -34,9 +31,7 @@ public class Ballot {
     private int iterateStep = DEFAULT_ITERATE_STEP; //iterating Step, so usually it is 1 .. till choices.upperbound
 
     /**
-     * <p>
      * Create a <code>Ballot</code>, specifying the title.
-     * </p>
      *
      * @param title the title for the <code>Ballot</code>
      */
@@ -45,9 +40,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Get the title assigned to the <code>Ballot</code>.
-     * </p>
      *
      * @return title assigned to the <code>Ballot</code>
      */
@@ -56,18 +49,14 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Get the Survey Title for linkage (no Space), and make it lowercase . required for comments
-     * </p>
      */
     public String getTitleNoSpace() {
         return title.replaceAll(" ", "").toLowerCase();
     }
 
     /**
-     * <p>
      * Add an available {@link Choice} for this <code>Ballot</code>.
-     * </p>
      *
      * @param choice a {@link Choice} for this <code>Ballot</code>
      */
@@ -76,25 +65,17 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Determine if a user has already voted.
-     * </p>
      *
      * @param username the username of the prospective voter
-     * @return <code>true</code> if the user has already voted on this
-     * <code>Ballot</code>, <code>false</code> if s/he has not.
+     * @return <code>true</code> if the user has already voted on this <code>Ballot</code>, <code>false</code> if s/he has not.
      */
     public boolean getHasVoted(String username) {
         return getVote(username) != null;
     }
 
     /**
-     * <p>
-     * Return whether or not users should be allowed to change
-     * their vote once it has been cast. This ballot is not
-     * responsible for enforcing this behaviour. It merely
-     * tracks whether it should be allowed or not.
-     * </p>
+     * Return whether or not users should be allowed to change their vote once it has been cast.
      *
      * @return <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
      */
@@ -103,12 +84,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * Set whether or not this ballot should allow users to change
-     * their vote once it has been cast. This ballot is not
-     * responsible for enforcing this behaviour. It merely
-     * tracks whether it should be allowed or not.
-     * </p>
+     * Set whether or not this ballot should allow users to change their vote once it has been cast.
      *
      * @param changeableVotes <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
      */
@@ -117,9 +93,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Return whether or not users should be allowed to see voters in clear text
-     * </p>
      *
      * @return <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
      */
@@ -128,9 +102,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Set whether or not this ballot should allow users to see the voters in clear text
-     * </p>
      *
      * @param visibleVoters <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
      */
@@ -139,9 +111,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Get the choice voted for by a particular user
-     * </p>
      *
      * @param username the username whose vote is needed
      * @return <code>Choice</code> that the user voted on, <code>null</code> if username has not voted.
@@ -157,9 +127,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Retrieve a {@link Choice} on the <code>Ballot</code> based on its description.
-     * </p>
      *
      * @param description the description of the {@link Choice} to be retrieved
      * @return the {@link Choice} associated with the description
@@ -169,9 +137,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Get all of the {@link Choice}s belonging to this <code>Ballot</code>.
-     * </p>
      *
      * @return all of the {@link Choice}s belonging to this <code>Ballot</code>
      */
@@ -180,9 +146,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Get a count of all votes that have been cast on the <code>Ballot</code>.
-     * </p>
      *
      * @return a count of all votes that have been cast
      */
@@ -196,15 +160,10 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * Get the percentage of the total vote represented by the provided
-     * {@link Choice}.
-     * </p>
+     * Get the percentage of the total vote represented by the provided {@link Choice}.
      *
-     * @param choice the {@link Choice} to determine the vote percentage of
-     * @return the percentage of the total vote represented by the provided
-     * {@link Choice}. The percentage is given as a whole number, rather than
-     * a floating point number.
+     * @param choice - the {@link Choice} to determine the vote percentage of
+     * @return the percentage of the total vote represented by the provided {@link Choice}. The percentage is given as a whole number, rather than a floating point number.
      */
     public int getPercentageOfVoteForChoice(Choice choice) {
         int totalVoteCount = getTotalVoteCount();
@@ -216,9 +175,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Set the description for this ballot.
-     * </p>
      *
      * @return A String description of this ballot.
      */
@@ -227,23 +184,18 @@ public class Ballot {
     }
 
     /**
-     * <p>
      * Get the description for this ballot.
-     * </p>
      *
-     * @param description A String description of this ballot.
+     * @param description - A String description of this ballot.
      */
     public void setDescription(String description) {
         this.description = description;
     }
 
     /**
-     * <p>
-     * Add a user's comment to this ballot. Add comments need to have a username
-     * associated with them before adding to a ballot.
-     * </p>
+     * Add a user's comment to this ballot. Add comments need to have a username associated with them before adding to a ballot.
      *
-     * @param comment The comment to add.
+     * @param comment - The comment to add.
      */
     public void addComment(Comment comment) {
         if (comment.getUsername() == null) {
@@ -254,20 +206,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * Remove a user's comment from this ballot.
-     * </p>
-     *
-     * @param username The user that wishes to remove theis comment.
-     */
-    public void removeCommentForUser(String username) {
-        comments.remove(username);
-    }
-
-    /**
-     * <p>
      * Get the comment entered by a particular user.
-     * </p>
      *
      * @param username The name of the user whose comment is to be returned.
      * @return The requested user's comment or null if not present.
@@ -288,20 +227,16 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * 1.1.7.1: set the StartBound for calculations (average)
-     * </p>
+     * Set the StartBound for calculations (average)
      *
-     * @param iStartBound the Iteration shall start with
+     * @param iStartBound - the Iteration shall start with
      */
     public void setStartBound(int iStartBound) {
         startBound = iStartBound;
     }
 
     /**
-     * <p>
-     * 1.1.7.1: get the StartBound for calculations (average)
-     * </p>
+     * Get the StartBound for calculations (average)
      *
      * @return The StartBound for this ballots calcu/iteration.
      */
@@ -310,9 +245,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * 1.1.7.1: set the iterateStep for calculations (average)
-     * </p>
+     * Set the iterateStep for calculations (average)
      *
      * @param iIterateStep the Iteration shall iterate with
      */
@@ -321,9 +254,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * 1.1.7.1: get the Iterations Step for calculations (average)
-     * </p>
+     * Get the Iterations Step for calculations (average)
      *
      * @return The iteration Step for this ballots calcu/iteration.
      */
@@ -356,16 +287,17 @@ public class Ballot {
         return (int) (average - getLowerBound() + iterateStep) * 100 / (getUpperBound() - getLowerBound() + iterateStep);
     }
 
+    /**
+     * @return The bounds for this ballot if different then the default
+     */
     public String getBoundsIfNotDefault() {
         return (startBound == 1 && iterateStep == 1) ? "" : "(" + getStartBound() + "-" + getEndBound() + ")";
     }
 
     /**
-     * <p>
      * Return <code>Voters</code> containing the stored voters.
-     * </p>
      *
-     * @return Voters of the ballot voters
+     * @return Voters of the ballot
      */
     public Collection<String> getAllVoters() {
         List<String> voters = new ArrayList<String>();
@@ -377,11 +309,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * Compute the average response value based on the order
-     * of the choices in the ballot. The choice values go from
-     * choices.length to 1.
-     * </p>
+     * Compute the average response value based on the order of the choices in the ballot. The choice values go from choices.length to 1.
      *
      * @return The calculated average response.
      */
@@ -410,17 +338,10 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * Determines if a <code>Ballot</code> is equal to another <code>Ballot</code>.
-     * Ballots are considered equal if their title is the same for both
-     * ballots.
-     * </p>
+     * Determines if a <code>Ballot</code> is equal to another <code>Ballot</code>. Ballots are considered equal if their title is the same for both ballots.
      *
-     * @param o the <code>Object</code> to determine equality with this
-     *          <code>Ballot</code>
-     * @return <code>true</code> if the ballot title of the <code>Object</code>
-     * argument is the same as the title of this <code>Ballot</code>,
-     * <code>false</code> otherwise.
+     * @param o the <code>Object</code> to determine equality with this <code>Ballot</code>
+     * @return <code>true</code> if the ballot title of the <code>Object</code> argument is the same as the title of this <code>Ballot</code>, <code>false</code> otherwise.
      */
     @Override
     public boolean equals(Object o) {
@@ -436,12 +357,7 @@ public class Ballot {
     }
 
     /**
-     * <p>
-     * Return a hash code for the <code>Ballot</code>. The hash code for this
-     * implementation is simply the hash code of the ballot title.
-     * </p>
-     *
-     * @return hash code of the ballot title
+     * {@inheritDoc}
      */
     @Override
     public int hashCode() {
@@ -450,6 +366,9 @@ public class Ballot {
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return "Ballot{" +

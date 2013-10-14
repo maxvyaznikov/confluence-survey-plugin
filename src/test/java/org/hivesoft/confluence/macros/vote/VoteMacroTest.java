@@ -79,6 +79,18 @@ public class VoteMacroTest {
     }
 
     @Test
+    public void test_getCanSeeVoters_success() {
+        //cant see results
+        assertFalse(classUnderTest.getCanSeeVoters("true", false));
+        //visibleVoters Parameter null
+        assertFalse(classUnderTest.getCanSeeVoters(null, true));
+        //visibleVoters Parameter not "true"
+        assertFalse(classUnderTest.getCanSeeVoters("something", true));
+        //visibleVoters Parameter "true"
+        assertTrue(classUnderTest.getCanSeeVoters("true", true));
+    }
+
+    @Test
     public void test_recordVote_noUser_success() {
         Ballot ballot = createDefaultBallot();
         when(mockUserManager.getRemoteUsername()).thenReturn("");

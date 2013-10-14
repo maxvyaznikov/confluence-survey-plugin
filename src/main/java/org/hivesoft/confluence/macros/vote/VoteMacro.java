@@ -441,7 +441,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     protected Boolean getCanSeeVoters(String visibleVoters, Boolean canSeeResults) {
         if (canSeeResults == Boolean.FALSE)
             return Boolean.FALSE;
-        if (visibleVoters == null || !TextUtils.stringSet(visibleVoters))
+        if (StringUtils.isBlank(visibleVoters))
             return Boolean.FALSE;
         if ("true".equals(visibleVoters))
             return Boolean.TRUE;
