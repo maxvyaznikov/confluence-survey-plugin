@@ -271,7 +271,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put(KEY_SHOW_COMMENTS, getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
         contextMap.put(KEY_LOCKED, getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
-        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), true));
+        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
         contextMap.put("canSeeSurveyResults", canSeeResults);
         contextMap.put("canTakeSurvey", canTakeSurvey);
         contextMap.put("canSeeSurveyVoters", canSeeVoters);
@@ -291,14 +291,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
         } catch (Exception e) {
             LOG.error("Error while trying to display Survey!", e);
             throw new MacroException(e);
-        }
-    }
-
-    protected boolean getBooleanFromString(String stringToParse, boolean defaultValue) {
-        if (StringUtils.defaultString(stringToParse).equals("")) {
-            return defaultValue;
-        } else {
-            return Boolean.valueOf(stringToParse);
         }
     }
 

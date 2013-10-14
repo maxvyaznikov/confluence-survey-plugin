@@ -70,9 +70,6 @@ public class VoteMacro extends BaseMacro implements Macro {
     // 1.1.7.7 define the max length that is storable to the propertyentry-key field
     protected static final int MAX_STORABLE_KEY_LENGTH = 200;
 
-    // confluence 4 cant render dynamic content anymore so set wiki by default to false (was true in older confluence versions)
-    protected static final boolean IS_VISIBLE_VOTERS_WIKI = false;
-
     // prefix vote to make a vote unique in the textproperties
     protected static final String VOTE_PREFIX = "vote.";
 
@@ -228,8 +225,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         for (Choice choice : choices) {
             strTemp = ballot.getTitle() + "." + choice.getDescription();
             try {
-                // 1.1.7.8 check for unicode-characters. They consume more space
-                // than they sometimes are allowed.
+                // 1.1.7.8 check for unicode-characters. They consume more space than they sometimes are allowed.
                 if (strTemp.getBytes("UTF-8").length + VOTE_PREFIX.length() > MAX_STORABLE_KEY_LENGTH) {
                     if (!strExceedsKeyItems.equals("")) {
                         strExceedsKeyItems += ", ";
@@ -264,18 +260,7 @@ public class VoteMacro extends BaseMacro implements Macro {
             }
         }
 
-        // now create a simple velocity context and render a template for the output
-        Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
-        contextMap.put("ballot", ballot);
-        contextMap.put("content", contentObject);
-        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
-        contextMap.put("iconSet", iconSet);
-        // 1.1.8.1 somehow content.toPageContext isnt working anymore...
-        contextMap.put("context", renderContext);
-
-        // 1.1.5 add flag (default=false) for locking the Survey (no more voting)
         String locked = StringUtils.defaultString((String) parameters.get(KEY_LOCKED));
-        contextMap.put(KEY_LOCKED, Boolean.valueOf(locked));
 
         // 1.1.5 if viewers not defined and vote is locked then he may see the result && !TextUtils.stringSet(remoteUser) doesnt matter
         Boolean canSeeResults = Boolean.FALSE;
@@ -284,23 +269,24 @@ public class VoteMacro extends BaseMacro implements Macro {
         } else {
             canSeeResults = getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
         }
-        contextMap.put("canSeeResults", canSeeResults);
 
         // 1.1.7.5 can see voters (clear text of the usernames)
         Boolean canSeeVoters = getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
-        contextMap.put("canSeeVoters", canSeeVoters);
         ballot.setVisibleVoters(canSeeVoters == Boolean.TRUE);
 
-        // 1.1.7.5 if voters will be displayed, will they be rendered like
-        // confluence-profile-links? (default)
-        String votersWiki = (String) parameters.get(KEY_VISIBLE_VOTERS_WIKI);
-        if (votersWiki != null) {
-            contextMap.put(KEY_VISIBLE_VOTERS_WIKI, Boolean.valueOf(votersWiki));
-        } else {
-            contextMap.put(KEY_VISIBLE_VOTERS_WIKI, Boolean.valueOf(IS_VISIBLE_VOTERS_WIKI));
-        }
-
         Boolean canVote = getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
+
+        // now create a simple velocity context and render a template for the output
+        Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
+        contextMap.put("ballot", ballot);
+        contextMap.put("content", contentObject);
+        contextMap.put("context", renderContext);
+        contextMap.put("iconSet", iconSet);
+        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
+        contextMap.put(KEY_LOCKED, Boolean.valueOf(locked));
+        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
+        contextMap.put("canSeeResults", canSeeResults);
+        contextMap.put("canSeeVoters", canSeeVoters);
         contextMap.put("canVote", canVote);
 
         try {
@@ -449,10 +435,8 @@ public class VoteMacro extends BaseMacro implements Macro {
     }
 
     /**
-     * <p>
-     * Determine if a user is authorized to cast a vote, taking into account whether they are a voter (either explicitly or implicitly) and whether or not they have already cast a vote. Only logged in
-     * users can vote.
-     * </p>
+     * Determine if a user is authorized to cast a vote, taking into account whether they are a voter (either explicitly or implicitly)
+     * and whether or not they have already cast a vote. Only logged in users can vote.
      *
      * @param voters   The list of usernames allowed to vote. If blank, all users can vote.
      * @param username the username of the user about to see the ballot.
@@ -484,9 +468,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     }
 
     /**
-     * <p>
      * If there is a vote in the request, store it in this page for the given ballot.
-     * </p>
      *
      * @param ballot        The ballot being voted on.
      * @param request       The request where the vote and username can be found.
@@ -516,6 +498,14 @@ public class VoteMacro extends BaseMacro implements Macro {
                     setVoteContentProperty(choice, ballot.getTitle(), contentObject);
                 }
             }
+        }
+    }
+
+    protected boolean getBooleanFromString(String stringToParse, boolean defaultValue) {
+        if (StringUtils.defaultString(stringToParse).equals("")) {
+            return defaultValue;
+        } else {
+            return Boolean.valueOf(stringToParse);
         }
     }
 }
