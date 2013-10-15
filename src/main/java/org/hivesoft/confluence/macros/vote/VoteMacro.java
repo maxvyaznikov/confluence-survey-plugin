@@ -40,6 +40,7 @@ import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.admin.AdminResource;
+import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 
@@ -58,6 +59,9 @@ public class VoteMacro extends BaseMacro implements Macro {
     public static final String REQUEST_PARAMETER_BALLOT = "ballot.title";
     public static final String REQUEST_PARAMETER_CHOICE = "vote.choice";
 
+    // prefix vote to make a vote unique in the textproperties
+    public static final String VOTE_PREFIX = "vote.";
+
     protected static final String KEY_TITLE = "title";
     protected static final String KEY_RENDER_TITLE_LEVEL = "renderTitleLevel";
     protected static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
@@ -66,13 +70,6 @@ public class VoteMacro extends BaseMacro implements Macro {
     protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
     protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
     protected static final String KEY_LOCKED = "locked";
-
-    // 1.1.7.7 define the max length that is storable to the propertyentry-key field
-    protected static final int MAX_STORABLE_KEY_LENGTH = 200;
-
-    // prefix vote to make a vote unique in the textproperties
-    protected static final String VOTE_PREFIX = "vote.";
-
 
     protected final PluginSettingsFactory pluginSettingsFactory;
     protected final PageManager pageManager;
@@ -127,7 +124,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     }
 
     /**
-     * Body should not be rendered, as we want it to control ourselfs
+     * Body should not be rendered, as we want to control it ourselves
      */
     public RenderMode getBodyRenderMode() {
         return RenderMode.NO_RENDER;
@@ -179,14 +176,12 @@ public class VoteMacro extends BaseMacro implements Macro {
     }
 
     /**
-     * <p>
      * Get the HTML rendering of this macro.
-     * </p>
      *
-     * @param parameters    Any parameters passed into this macro. This macro expects is a single, unnamed parameter.
-     * @param body          The rendered body of the macro
+     * @param parameters    Any parameters passed into this macro.
+     * @param body          The raw body of the macro
      * @param renderContext The render context for the current page rendering.
-     * @return String respresenting the HTML rendering of this macro
+     * @return String representing the HTML rendering of this macro
      * @throws MacroException If an exception occurs rendering the HTML
      */
     @Override
@@ -206,8 +201,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
         final List<String> noneUniqueTitles = new ArrayList<String>();
         if (ballot.getChoices().size() == 0) {
-            //throw new MacroException("The list of choices may not be empty. On which items do you want to vote on?");
-            //don't render a error (that's not nice), render a warning list within velocity
+            //don't render a error (that's not nice), render a warning element within velocity
         } else {
             for (Choice choice : ballot.getChoices()) {
                 if (noneUniqueTitles.contains(choice.getDescription())) {
@@ -218,30 +212,7 @@ public class VoteMacro extends BaseMacro implements Macro {
             }
         }
 
-        // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
-        String strExceedsKeyItems = "";
-        String strTemp = "";
-        Collection<Choice> choices = ballot.getChoices();
-        for (Choice choice : choices) {
-            strTemp = ballot.getTitle() + "." + choice.getDescription();
-            try {
-                // 1.1.7.8 check for unicode-characters. They consume more space than they sometimes are allowed.
-                if (strTemp.getBytes("UTF-8").length + VOTE_PREFIX.length() > MAX_STORABLE_KEY_LENGTH) {
-                    if (!strExceedsKeyItems.equals("")) {
-                        strExceedsKeyItems += ", ";
-                    }
-                    strExceedsKeyItems += strTemp + " Length: " + (strTemp.getBytes("UTF-8").length + VOTE_PREFIX.length());
-                }
-            } catch (java.io.UnsupportedEncodingException e) {
-                throw new MacroException(e);
-            }
-        }
-        if (strExceedsKeyItems != "") {
-            String logMessage = "Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: "
-                    + strExceedsKeyItems + "!";
-            LOG.error(logMessage);
-            throw new MacroException(logMessage);
-        }
+        SurveyUtils.validateMaxStorableKeyLength(ballot.getBallotTitlesWithChoiceNames());
 
         // check if any request parameters came in to complete or uncomplete tasks
         HttpServletRequest request = ServletActionContext.getRequest();
@@ -310,7 +281,6 @@ public class VoteMacro extends BaseMacro implements Macro {
         ballot.setChangeableVotes(Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES)));
 
         for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
-            // 1.1.6: added trim(), otherwise it can happen that empty lines (spaces) get valid options
             String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
             if (!StringUtils.isBlank(line) && ((line.length() == 1 && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1)) {

@@ -41,6 +41,7 @@ import org.apache.log4j.Logger;
 import org.hivesoft.confluence.admin.AdminResource;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.survey.model.SurveySummary;
+import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
@@ -170,32 +171,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
             }
         }
 
-        // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
-        String strExceedsKeyItems = "";
-        for (String ballotChoiceKey : survey.getBallotTitlesWithChoiceNames()) {
-            try {
-                // 1.1.7.8 check for unicode-characters. They consume more space than they sometimes are allowed. add 5 to the calculated length (prefix for vote)
-                if (ballotChoiceKey.getBytes("UTF-8").length + VOTE_PREFIX.length() > MAX_STORABLE_KEY_LENGTH) {
-                    if (strExceedsKeyItems == "")
-                        strExceedsKeyItems += ", ";
-                    strExceedsKeyItems += ballotChoiceKey + " Length: " + (ballotChoiceKey.getBytes("UTF-8").length + VOTE_PREFIX.length());
-                }
-            } catch (java.io.UnsupportedEncodingException e) {
-                throw new MacroException(e);
-            }
-        }
-        if (strExceedsKeyItems != "") {
-            final String message = "Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: " + strExceedsKeyItems + "!";
-            LOG.error(message);
-            throw new MacroException(message);
-        }
+        SurveyUtils.validateMaxStorableKeyLength(survey.getBallotTitlesWithChoiceNames());
 
-        // Let the Survey have a Title (to have it more compact)
         survey.setTitle(StringUtils.defaultString((String) parameters.get(KEY_TITLE)).trim());
-
-        // If this macro is configured to allow users to change their vote, let the ballot know
         survey.setChangeableVotes(getBooleanFromString((String) parameters.get(KEY_CHANGEABLE_VOTES), false));
-
 
         // 1.1.7.1: default with 5 options and a step 1 .. 1..5 (or ordered 5..1)
         int startBound = Ballot.DEFAULT_START_BOUND;
@@ -228,7 +207,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         if (request != null) {
             // Try to retrieve the proper ballot
-            Ballot ballot = survey.getBallot(request.getParameter("ballot.title"));
+            Ballot ballot = survey.getBallot(request.getParameter(REQUEST_PARAMETER_BALLOT));
 
             // If there is a ballot found, cast the vote using our super's method
             if (ballot != null) {
@@ -251,7 +230,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         final String remoteUsername = userManager.getRemoteUsername();
 
-        Boolean canSeeResults = Boolean.FALSE;
+        Boolean canSeeResults;
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(StringUtils.defaultString((String) parameters.get(KEY_LOCKED))).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
@@ -260,6 +239,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         Boolean canTakeSurvey = getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
         Boolean canSeeVoters = getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
+        // survey parameter must be passed through
+        if (canSeeVoters == Boolean.TRUE) { // default is false, so only set if true
+            survey.setVisibleVoters(true);
+        }
 
         // now create a simple velocity context and render a template for the output
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
@@ -275,12 +258,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put("canSeeSurveyResults", canSeeResults);
         contextMap.put("canTakeSurvey", canTakeSurvey);
         contextMap.put("canSeeSurveyVoters", canSeeVoters);
-
-
-        // survey parameter must be passed through
-        if (canSeeVoters == Boolean.TRUE) { // default is false, so only set if true
-            survey.setVisibleVoters(true);
-        }
 
         try {
             if (canSeeResults.booleanValue() || canTakeSurvey.booleanValue()) {

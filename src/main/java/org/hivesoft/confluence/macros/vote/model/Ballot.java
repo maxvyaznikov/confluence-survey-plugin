@@ -337,6 +337,14 @@ public class Ballot {
         return new java.text.DecimalFormat(format).format((double) computeAverage());
     }
 
+    public List<String> getBallotTitlesWithChoiceNames() {
+        List<String> ballotChoiceNames = new ArrayList<String>();
+        for (Choice choice : getChoices()) {
+            ballotChoiceNames.add(title + "." + choice.getDescription());
+        }
+        return ballotChoiceNames;
+    }
+
     /**
      * Determines if a <code>Ballot</code> is equal to another <code>Ballot</code>. Ballots are considered equal if their title is the same for both ballots.
      *
