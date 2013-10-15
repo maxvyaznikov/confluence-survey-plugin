@@ -174,7 +174,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         SurveyUtils.validateMaxStorableKeyLength(survey.getBallotTitlesWithChoiceNames());
 
         survey.setTitle(StringUtils.defaultString((String) parameters.get(KEY_TITLE)).trim());
-        survey.setChangeableVotes(getBooleanFromString((String) parameters.get(KEY_CHANGEABLE_VOTES), false));
+        survey.setChangeableVotes(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_CHANGEABLE_VOTES), false));
 
         // 1.1.7.1: default with 5 options and a step 1 .. 1..5 (or ordered 5..1)
         int startBound = Ballot.DEFAULT_START_BOUND;
@@ -193,10 +193,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
 
         SurveySummary surveySummary = SurveySummary.Top;
-        if (!getBooleanFromString((String) parameters.get(KEY_SHOW_SUMMARY), true)) {
+        if (!SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_SUMMARY), true)) {
             surveySummary = SurveySummary.None;
         } else {
-            if (getBooleanFromString((String) parameters.get(KEY_SHOW_LAST), false)) {
+            if (SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_LAST), false)) {
                 surveySummary = SurveySummary.Bottom;
             }
         }
@@ -252,9 +252,9 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put("iconSet", iconSet);
         contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
         contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
-        contextMap.put(KEY_SHOW_COMMENTS, getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
-        contextMap.put(KEY_LOCKED, getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
-        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
+        contextMap.put(KEY_SHOW_COMMENTS, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
+        contextMap.put(KEY_LOCKED, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
+        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
         contextMap.put("canSeeSurveyResults", canSeeResults);
         contextMap.put("canTakeSurvey", canTakeSurvey);
         contextMap.put("canSeeSurveyVoters", canSeeVoters);

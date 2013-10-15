@@ -255,7 +255,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         contextMap.put("iconSet", iconSet);
         contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put(KEY_LOCKED, Boolean.valueOf(locked));
-        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
+        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
         contextMap.put("canSeeResults", canSeeResults);
         contextMap.put("canSeeVoters", canSeeVoters);
         contextMap.put("canVote", canVote);
@@ -468,14 +468,6 @@ public class VoteMacro extends BaseMacro implements Macro {
                     setVoteContentProperty(choice, ballot.getTitle(), contentObject);
                 }
             }
-        }
-    }
-
-    protected boolean getBooleanFromString(String stringToParse, boolean defaultValue) {
-        if (StringUtils.defaultString(stringToParse).equals("")) {
-            return defaultValue;
-        } else {
-            return Boolean.valueOf(stringToParse);
         }
     }
 }

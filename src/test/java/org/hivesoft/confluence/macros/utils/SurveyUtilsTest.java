@@ -6,6 +6,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class SurveyUtilsTest {
 
     public static final String BALLOT_AND_CHOICENAME1 = "someBallot.withSomeChoiceName1";
@@ -34,6 +37,15 @@ public class SurveyUtilsTest {
         SurveyUtils.validateMaxStorableKeyLength(ballotAndChoicesWithValidLength);
     }
 
+    @Test
+    public void test_getBooleanFromString_success() {
+        assertTrue(SurveyUtils.getBooleanFromString("true", false));
+        assertFalse(SurveyUtils.getBooleanFromString("false", true));
+        assertTrue(SurveyUtils.getBooleanFromString("", true));
+        assertFalse(SurveyUtils.getBooleanFromString(null, false));
+    }
+
+    // local helper methods
     private static String getRandomString(int length) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < length; i++) {

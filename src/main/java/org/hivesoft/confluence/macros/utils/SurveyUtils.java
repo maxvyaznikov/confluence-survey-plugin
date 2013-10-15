@@ -2,6 +2,7 @@ package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.renderer.v2.macro.MacroException;
+import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 
 import java.util.List;
@@ -32,6 +33,14 @@ public class SurveyUtils {
             final String message = "Error detected Length of BallotTitle and Choices are to long to be stored to the database (MaxLength:" + MAX_STORABLE_KEY_LENGTH + "). Problematic Names: " + strExceedsKeyItems + "!";
             LOG.error(message);
             throw new MacroException(message);
+        }
+    }
+
+    public static boolean getBooleanFromString(String stringToParse, boolean defaultValue) {
+        if (StringUtils.defaultString(stringToParse).equals("")) {
+            return defaultValue;
+        } else {
+            return Boolean.valueOf(stringToParse);
         }
     }
 }
