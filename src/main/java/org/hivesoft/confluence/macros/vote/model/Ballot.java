@@ -284,7 +284,10 @@ public class Ballot {
     }
 
     public int getAveragePercentage(float average) {
-        return (int) (average - getLowerBound() + iterateStep) * 100 / (getUpperBound() - getLowerBound() + iterateStep);
+        if (iterateStep < 0)
+            return (int) (average - getLowerBound() - iterateStep) * 100 / (getUpperBound() - getLowerBound() - iterateStep);
+        else
+            return (int) (average - getLowerBound() + iterateStep) * 100 / (getUpperBound() - getLowerBound() + iterateStep);
     }
 
     /**

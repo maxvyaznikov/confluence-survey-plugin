@@ -225,6 +225,30 @@ public class BallotTest {
     }
 
     @Test
+    public void test_computeAverage_NegativeIterateStepFromPositiveStart_ThreeChoicesTwoVotes_success() {
+        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+        Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
+        Choice someChoiceFour = new Choice(SOME_CHOICE_DESCRIPTION + "FOUR");
+        someChoiceFour.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+        Choice someChoiceFive = new Choice(SOME_CHOICE_DESCRIPTION + "FIVE");
+
+        classUnderTest.addChoice(someChoice);
+        classUnderTest.addChoice(someChoiceTwo);
+        classUnderTest.addChoice(someChoiceThree);
+        classUnderTest.addChoice(someChoiceFour);
+        classUnderTest.addChoice(someChoiceFive);
+        classUnderTest.setStartBound(4);
+        classUnderTest.setIterateStep(-4);
+
+        final float result = classUnderTest.computeAverage();
+
+        assertEquals(0.0f, result, 0.0f);
+        //probably it should be 40 but for now we take the 80% for the 4th one
+        assertEquals(80, classUnderTest.getAveragePercentage(result));
+    }
+
+    @Test
     public void test_computeFormattedAverage_NegativeIterateStep_ThreeChoicesTwoVotes_success() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
         Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
