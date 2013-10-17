@@ -23,6 +23,9 @@ public class AdminServlet extends HttpServlet {
         this.renderer = renderer;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         final String remoteUser = userManager.getRemoteUsername();

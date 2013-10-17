@@ -38,12 +38,13 @@ public class AdminServletTest {
     }
 
     @Test
-    public void test_putConfig_userNotFound_failure() throws IOException, ServletException, URISyntaxException {
+    public void test_doGet_userNotFound_failure() throws IOException, ServletException, URISyntaxException {
         HttpServletRequest mockRequest = mock(HttpServletRequest.class);
         HttpServletResponse mockResponse = mock(HttpServletResponse.class);
 
         when(mockUserManager.getRemoteUsername()).thenReturn(null);
         when(mockRequest.getRequestURL()).thenReturn(new StringBuffer());
+        when(mockRequest.getQueryString()).thenReturn("/someWikiPage");
         when(mockLoginUriProvider.getLoginUri(any(URI.class))).thenReturn(new URI("http://localhost:123/login"));
 
         classUnderTest.doGet(mockRequest, mockResponse);
