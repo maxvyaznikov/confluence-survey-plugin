@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SurveyMacroTest {
 
@@ -35,15 +36,5 @@ public class SurveyMacroTest {
         assertEquals(RenderMode.NO_RENDER, classUnderTest.getBodyRenderMode());
     }
 
-    @Test
-    public void test_getCanPerformAction_Anonymous_failure() {
-        final Boolean canPerformAction = classUnderTest.getCanPerformAction("", "");
-        assertEquals(Boolean.FALSE, canPerformAction);
-    }
 
-    @Test
-    public void test_getCanPerformAction_KnownNotRestricted_success() {
-        final Boolean canPerformAction = classUnderTest.getCanPerformAction("", "KnownUser");
-        assertEquals(Boolean.TRUE, canPerformAction);
-    }
 }

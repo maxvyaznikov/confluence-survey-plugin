@@ -48,7 +48,10 @@ import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * This macro defines a simple survey mechanism against set of topics using the vote macro as its collection mechanism.
@@ -231,14 +234,15 @@ public class SurveyMacro extends VoteMacro implements Macro {
         final String remoteUsername = userManager.getRemoteUsername();
 
         Boolean canSeeResults;
+
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(StringUtils.defaultString((String) parameters.get(KEY_LOCKED))).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
+            canSeeResults = SurveyUtils.getCanPerformAction(userAccessor, (String) parameters.get(KEY_VIEWERS), remoteUsername);
         }
 
-        Boolean canTakeSurvey = getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
-        Boolean canSeeVoters = getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
+        Boolean canTakeSurvey = SurveyUtils.getCanPerformAction(userAccessor, (String) parameters.get(KEY_VOTERS), remoteUsername);
+        Boolean canSeeVoters = SurveyUtils.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
         // survey parameter must be passed through
         if (canSeeVoters == Boolean.TRUE) { // default is false, so only set if true
             survey.setVisibleVoters(true);
@@ -269,37 +273,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
             LOG.error("Error while trying to display Survey!", e);
             throw new MacroException(e);
         }
-    }
-
-    /**
-     * Determine if a user is authorized to perform an action based on the provided list of names.
-     *
-     * @param permitted the list of usernames allowed to perform the action. If blank, everyone is permitted.
-     * @param username  the username of the candidate user.
-     * @return <code>true</code> if the user can see the results, <code>false</code> if they cannot.
-     */
-    protected Boolean getCanPerformAction(String permitted, String username) {
-        if (StringUtils.isBlank(username)) {
-            return Boolean.FALSE;
-        }
-
-        if (StringUtils.isBlank(permitted)) {
-            return Boolean.TRUE;
-        }
-
-        String[] permittedList = permitted.split(",");
-        // if the logged in user matches a entry, it is granted
-        if (Arrays.asList(permittedList).contains(username)) {
-            return Boolean.TRUE;
-        }
-
-        // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-        for (String permittedElement : permittedList) {
-            if (userAccessor.hasMembership(permittedElement, username)) {
-                return Boolean.TRUE;
-            }
-        }
-        return Boolean.FALSE;
     }
 
     /**

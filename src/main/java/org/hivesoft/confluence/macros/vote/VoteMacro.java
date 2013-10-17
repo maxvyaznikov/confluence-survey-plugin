@@ -238,11 +238,11 @@ public class VoteMacro extends BaseMacro implements Macro {
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(locked).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
+            canSeeResults = SurveyUtils.getCanSeeResults(userAccessor, (String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
         }
 
         // 1.1.7.5 can see voters (clear text of the usernames)
-        Boolean canSeeVoters = getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
+        Boolean canSeeVoters = SurveyUtils.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
         ballot.setVisibleVoters(canSeeVoters == Boolean.TRUE);
 
         Boolean canVote = getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
@@ -331,77 +331,6 @@ public class VoteMacro extends BaseMacro implements Macro {
             // store property to text, for votes larger than usernames.length * votes > 255 chars
             contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
         }
-    }
-
-    /**
-     * <p>
-     * Determine if a user is authorized to see the vote results. A user is only eligable to see results if they are specified as a viewer either implicitly (no viewers are specified) or explicitly
-     * (the user is specified in the viewers parameter. A user who is specified as a viewer can see the results in two cases:
-     * <ol>
-     * <li>The user is not allowed to vote.</li>
-     * <li>The user is allowed to vote and has already cast a vote.</li>
-     * </ol>
-     * </p>
-     *
-     * @param viewers  The list of usernames allowed to see the results after voting. If blank, all users can see results.
-     * @param voters   The list of usernames allowed to vote. If blank, all users can vote.
-     * @param username The username of the user about to see results.
-     * @param ballot   The ballot whose results are about to be shown.
-     * @return <code>true</code> if the user can see the results, <code>false</code> if they cannot.
-     */
-    protected Boolean getCanSeeResults(String viewers, String voters, String username, Ballot ballot) {
-        // You can't see results if we don't know who you are
-        if (StringUtils.isBlank(username)) {
-            return Boolean.FALSE;
-        }
-
-        // If you're not a viewer, you can't see results
-        boolean isViewer = StringUtils.isBlank(viewers) || Arrays.asList(viewers.split(",")).contains(username);
-        if (!isViewer) {
-            // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-            String[] lUsers = viewers.split(",");
-            for (int ino = 0; ino < lUsers.length; ino++) {
-                // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-                if (userAccessor.hasMembership(lUsers[ino], username)) {
-                    isViewer = true;
-                    ino = lUsers.length; // end the iteration
-                }
-            }
-            if (!isViewer)
-                return Boolean.FALSE;
-        }
-
-        // If you're a viewer but not a voter, then you can always see the results
-        boolean isVoter = StringUtils.isBlank(voters) || Arrays.asList(voters.split(",")).contains(username);
-        if (!isVoter) {
-            // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-            String[] lUsers = voters.split(",");
-            for (int ino = 0; ino < lUsers.length; ino++) {
-                // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-                if (userAccessor.hasMembership(lUsers[ino], username)) {
-                    isVoter = true;
-                    ino = lUsers.length; // end the iteration
-                }
-            }
-            if (!isVoter)
-                return Boolean.TRUE;
-        }
-
-        // If you are a voter, then you have to vote to see the results
-        return Boolean.valueOf(ballot.getHasVoted(username));
-    }
-
-    /*
-     * 1.1.7.5
-     */
-    protected Boolean getCanSeeVoters(String visibleVoters, Boolean canSeeResults) {
-        if (canSeeResults == Boolean.FALSE)
-            return Boolean.FALSE;
-        if (StringUtils.isBlank(visibleVoters))
-            return Boolean.FALSE;
-        if ("true".equals(visibleVoters))
-            return Boolean.TRUE;
-        return Boolean.FALSE;
     }
 
     /**
