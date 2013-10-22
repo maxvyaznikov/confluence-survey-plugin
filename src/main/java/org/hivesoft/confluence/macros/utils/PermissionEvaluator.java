@@ -46,7 +46,7 @@ public class PermissionEvaluator {
 
         // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
         for (String permittedElement : permittedList) {
-            if (userAccessor.hasMembership(permittedElement, username)) {
+            if (userAccessor.hasMembership(permittedElement.trim(), username)) {
                 return Boolean.TRUE;
             }
         }
@@ -81,7 +81,7 @@ public class PermissionEvaluator {
             // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
             for (String currentUser : viewers.split(",")) {
                 // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-                if (userAccessor.hasMembership(currentUser, username)) {
+                if (userAccessor.hasMembership(currentUser.trim(), username)) {
                     isViewer = true;
                     break;
                 }
@@ -96,7 +96,7 @@ public class PermissionEvaluator {
             // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
             for (String currentUser : voters.split(",")) {
                 // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-                if (userAccessor.hasMembership(currentUser, username)) {
+                if (userAccessor.hasMembership(currentUser.trim(), username)) {
                     isVoter = true;
                     break;
                 }
@@ -133,18 +133,17 @@ public class PermissionEvaluator {
             return Boolean.FALSE;
         }
 
-        boolean isVoter = !TextUtils.stringSet(voters) || Arrays.asList(voters.split(",")).contains(username);
-        if (!isVoter) { // user is not permitted via username
+        boolean isVoter = StringUtils.isBlank(voters) || Arrays.asList(voters.split(",")).contains(username);
+        if (!isVoter) {
             // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
             for (String currentUser : voters.split(",")) {
-                // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-                if (userAccessor.hasMembership(currentUser, username)) {
+                if (userAccessor.hasMembership(currentUser.trim(), username)) {
                     isVoter = true;
                     break;
                 }
             }
 
-            if (!isVoter) // user is not permitted via groupname either
+            if (!isVoter) // user is not permitted via groupName either
                 return Boolean.FALSE;
         }
 

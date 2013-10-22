@@ -139,4 +139,25 @@ public class PermissionEvaluatorTest {
         //visibleVoters Parameter "true"
         assertTrue(classUnderTest.getCanSeeVoters("true", true));
     }
+
+    @Test
+    public void test_getCanVote_success() {
+        final Boolean canVote = classUnderTest.getCanVote("", SOME_USER_NAME, SurveyUtilsTest.createDefaultBallot());
+        assertTrue(canVote);
+    }
+
+    @Test
+    public void test_getCanVote_notInVotersList_success() {
+        final Boolean canVote = classUnderTest.getCanVote("notThisUser, notThisUserEither", SOME_USER_NAME, SurveyUtilsTest.createDefaultBallot());
+        assertFalse(canVote);
+    }
+
+    @Test
+    public void test_getCanVote_inListViaGroup_success() {
+        when(mockUserAccessor.hasMembership("someGroup", SOME_USER_NAME)).thenReturn(true);
+        final Ballot ballot = SurveyUtilsTest.createDefaultBallot();
+        ballot.setChangeableVotes(true);
+        final Boolean canVote = classUnderTest.getCanVote("notThisUser, notThisUserEither, someGroup", SOME_USER_NAME, ballot);
+        assertTrue(canVote);
+    }
 }
