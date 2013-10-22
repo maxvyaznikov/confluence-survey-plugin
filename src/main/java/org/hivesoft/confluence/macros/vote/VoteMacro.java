@@ -40,6 +40,7 @@ import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.admin.AdminResource;
+import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
@@ -75,8 +76,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     protected final PageManager pageManager;
     protected final SpaceManager spaceManager;
     protected final ContentPropertyManager contentPropertyManager;
-    protected final UserAccessor userAccessor;
-    protected final UserManager userManager;
+    protected final PermissionEvaluator permissionEvaluator;
     protected final TemplateRenderer renderer;
     protected final XhtmlContent xhtmlContent;
 
@@ -84,8 +84,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         this.pageManager = pageManager;
         this.spaceManager = spaceManager;
         this.contentPropertyManager = contentPropertyManager;
-        this.userAccessor = userAccessor;
-        this.userManager = userManager;
+        this.permissionEvaluator = new PermissionEvaluator(userAccessor, userManager);
         this.renderer = renderer;
         this.xhtmlContent = xhtmlContent;
         this.pluginSettingsFactory = pluginSettingsFactory;
@@ -217,7 +216,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         // check if any request parameters came in to complete or uncomplete tasks
         HttpServletRequest request = ServletActionContext.getRequest();
 
-        final String remoteUsername = userManager.getRemoteUsername();
+        final String remoteUsername = permissionEvaluator.getRemoteUsername();
         if (request != null) {
             recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
         }
@@ -234,18 +233,18 @@ public class VoteMacro extends BaseMacro implements Macro {
         String locked = StringUtils.defaultString((String) parameters.get(KEY_LOCKED));
 
         // 1.1.5 if viewers not defined and vote is locked then he may see the result && !TextUtils.stringSet(remoteUser) doesnt matter
-        Boolean canSeeResults = Boolean.FALSE;
+        Boolean canSeeResults;
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(locked).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = SurveyUtils.getCanSeeResults(userAccessor, (String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
+            canSeeResults = permissionEvaluator.getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
         }
 
         // 1.1.7.5 can see voters (clear text of the usernames)
-        Boolean canSeeVoters = SurveyUtils.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
+        Boolean canSeeVoters = permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
         ballot.setVisibleVoters(canSeeVoters == Boolean.TRUE);
 
-        Boolean canVote = getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
+        Boolean canVote = permissionEvaluator.getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
 
         // now create a simple velocity context and render a template for the output
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
@@ -333,38 +332,6 @@ public class VoteMacro extends BaseMacro implements Macro {
         }
     }
 
-    /**
-     * Determine if a user is authorized to cast a vote, taking into account whether they are a voter (either explicitly or implicitly)
-     * and whether or not they have already cast a vote. Only logged in users can vote.
-     *
-     * @param voters   The list of usernames allowed to vote. If blank, all users can vote.
-     * @param username the username of the user about to see the ballot.
-     * @param ballot   the ballot that is about to be shown.
-     * @return <code>true</code> if the user can cast a vote, <code>false</code> if they cannot.
-     */
-    protected Boolean getCanVote(String voters, String username, Ballot ballot) {
-        if (!TextUtils.stringSet(username)) {
-            return Boolean.FALSE;
-        }
-
-        boolean isVoter = !TextUtils.stringSet(voters) || Arrays.asList(voters.split(",")).contains(username);
-        if (!isVoter) { // user is not permitted via username
-            // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-            String[] lUsers = voters.split(",");
-            for (int ino = 0; ino < lUsers.length; ino++) {
-                // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-                if (userAccessor.hasMembership(lUsers[ino], username)) {
-                    isVoter = true;
-                    ino = lUsers.length; // end the iteration
-                }
-            }
-
-            if (!isVoter) // user is not permitted via groupname either
-                return Boolean.FALSE;
-        }
-
-        return Boolean.valueOf(!ballot.getHasVoted(username) || ballot.isChangeableVotes());
-    }
 
     /**
      * If there is a vote in the request, store it in this page for the given ballot.
@@ -375,12 +342,12 @@ public class VoteMacro extends BaseMacro implements Macro {
      * @param voters        The list of usernames allowed to vote. If blank, all users can vote.
      */
     protected void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject, String voters) {
-        final String remoteUsername = userManager.getRemoteUsername();
+        final String remoteUsername = permissionEvaluator.getRemoteUsername();
         String requestBallotTitle = request.getParameter(REQUEST_PARAMETER_BALLOT);
         String requestChoice = request.getParameter(REQUEST_PARAMETER_CHOICE);
 
         // If there is a choice, make sure the vote is for this ballot and this user can vote
-        if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && getCanVote(voters, remoteUsername, ballot).booleanValue()) {
+        if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(voters, remoteUsername, ballot).booleanValue()) {
 
             // If this is a re-vote situation, then unvote first
             Choice previousChoice = ballot.getVote(remoteUsername);

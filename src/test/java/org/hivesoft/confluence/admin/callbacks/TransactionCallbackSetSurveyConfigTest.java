@@ -2,14 +2,14 @@ package org.hivesoft.confluence.admin.callbacks;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.hivesoft.confluence.admin.AdminResource;
-import org.hivesoft.confluence.admin.representations.Config;
+import org.hivesoft.confluence.admin.representations.SurveyConfig;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class TransactionCallbackSetConfigTest {
+public class TransactionCallbackSetSurveyConfigTest {
     PluginSettingsFactory mockPluginsSettingsFactory = mock(PluginSettingsFactory.class);
 
     private TransactionCallbackSetConfig classUnderTest;
@@ -18,26 +18,26 @@ public class TransactionCallbackSetConfigTest {
     public void test_doInTransaction_defaultIconSet_success() {
         when(mockPluginsSettingsFactory.createGlobalSettings()).thenReturn(new SurveyPluginSettings());
 
-        Config config = new Config();
-        config.setIconSet(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT);
+        SurveyConfig surveyConfig = new SurveyConfig();
+        surveyConfig.setIconSet(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT);
 
-        classUnderTest = new TransactionCallbackSetConfig(mockPluginsSettingsFactory, config);
+        classUnderTest = new TransactionCallbackSetConfig(mockPluginsSettingsFactory, surveyConfig);
 
-        final Config resultConfig = classUnderTest.doInTransaction();
+        final SurveyConfig resultSurveyConfig = classUnderTest.doInTransaction();
 
-        assertEquals(config, resultConfig);
+        assertEquals(surveyConfig, resultSurveyConfig);
     }
 
     @Test
     public void test_doInTransaction_noIconSet_success() {
         when(mockPluginsSettingsFactory.createGlobalSettings()).thenReturn(new SurveyPluginSettings());
 
-        Config config = new Config();
+        SurveyConfig surveyConfig = new SurveyConfig();
 
-        classUnderTest = new TransactionCallbackSetConfig(mockPluginsSettingsFactory, config);
+        classUnderTest = new TransactionCallbackSetConfig(mockPluginsSettingsFactory, surveyConfig);
 
-        final Config resultConfig = classUnderTest.doInTransaction();
+        final SurveyConfig resultSurveyConfig = classUnderTest.doInTransaction();
 
-        assertEquals(config, resultConfig);
+        assertEquals(surveyConfig, resultSurveyConfig);
     }
 }

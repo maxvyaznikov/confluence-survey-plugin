@@ -28,7 +28,6 @@ public class AdminResourceTest {
         final Response response = classUnderTest.getConfig();
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        //assertEquals(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT, ((AdminResource.Config) response.getEntity()).getIconSet());
     }
 
     @Test

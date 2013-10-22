@@ -21,11 +21,11 @@
         <th>$action.getText("surveyplugin.survey.summary.header.question")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.total")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.average.bar")</th>
-        #if ($canSeeSurveyVoters) <th>$action.getText("surveyplugin.vote.voters")</th> #end ##1.1.7.5
+        #if ($canSeeSurveyVoters) <th>$action.getText("surveyplugin.vote.voters")</th> #end
     </tr>
   #foreach ($ballot in $survey.ballots)
     #set ($average = $ballot.computeAverage())
-    #set ($sAverage = $ballot.computeFormatedAverage("0.00")) ##1.1.8.5 format rendering digits fixed to two
+    #set ($sAverage = $ballot.computeFormatedAverage("0.00"))
       <tr>
         <td>
           $generalUtil.htmlEncode($ballot.title)

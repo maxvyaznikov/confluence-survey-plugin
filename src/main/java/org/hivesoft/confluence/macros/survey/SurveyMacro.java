@@ -231,18 +231,18 @@ public class SurveyMacro extends VoteMacro implements Macro {
             }
         }
 
-        final String remoteUsername = userManager.getRemoteUsername();
+        final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
         Boolean canSeeResults;
 
         if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(StringUtils.defaultString((String) parameters.get(KEY_LOCKED))).booleanValue()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = SurveyUtils.getCanPerformAction(userAccessor, (String) parameters.get(KEY_VIEWERS), remoteUsername);
+            canSeeResults = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
         }
 
-        Boolean canTakeSurvey = SurveyUtils.getCanPerformAction(userAccessor, (String) parameters.get(KEY_VOTERS), remoteUsername);
-        Boolean canSeeVoters = SurveyUtils.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
+        Boolean canTakeSurvey = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
+        Boolean canSeeVoters = permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
         // survey parameter must be passed through
         if (canSeeVoters == Boolean.TRUE) { // default is false, so only set if true
             survey.setVisibleVoters(true);

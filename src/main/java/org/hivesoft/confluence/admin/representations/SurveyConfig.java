@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Config {
+public class SurveyConfig {
 
     @XmlElement
     private String iconSet;
@@ -20,10 +20,13 @@ public class Config {
         this.iconSet = iconSet;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof Config))
+        if (obj == null || !(obj instanceof SurveyConfig))
             return false;
-        return (((Config) obj).getIconSet().equals(this.iconSet));
+        return (((SurveyConfig) obj).getIconSet().equals(this.iconSet));
     }
 }

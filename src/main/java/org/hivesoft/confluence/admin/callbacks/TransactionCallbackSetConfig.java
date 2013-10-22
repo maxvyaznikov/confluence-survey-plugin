@@ -5,32 +5,32 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import org.apache.commons.lang.StringUtils;
 import org.hivesoft.confluence.admin.AdminResource;
-import org.hivesoft.confluence.admin.representations.Config;
+import org.hivesoft.confluence.admin.representations.SurveyConfig;
 
 public class TransactionCallbackSetConfig implements TransactionCallback {
 
     private PluginSettingsFactory pluginSettingsFactory;
-    private Config config;
+    private SurveyConfig surveyConfig;
 
-    public TransactionCallbackSetConfig(PluginSettingsFactory pluginSettingsFactory, Config config) {
+    public TransactionCallbackSetConfig(PluginSettingsFactory pluginSettingsFactory, SurveyConfig surveyConfig) {
         this.pluginSettingsFactory = pluginSettingsFactory;
-        this.config = config;
+        this.surveyConfig = surveyConfig;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Config doInTransaction() {
+    public SurveyConfig doInTransaction() {
         PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-        if (StringUtils.isBlank(config.getIconSet())) {
-            config.setIconSet(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT);
+        if (StringUtils.isBlank(surveyConfig.getIconSet())) {
+            surveyConfig.setIconSet(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT);
         } else {
-            if (config.getIconSet().startsWith("is-")) {
-                config.setIconSet(config.getIconSet().substring("is-".length()));
+            if (surveyConfig.getIconSet().startsWith("is-")) {
+                surveyConfig.setIconSet(surveyConfig.getIconSet().substring("is-".length()));
             }
         }
-        pluginSettings.put(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET, config.getIconSet());
-        return config;
+        pluginSettings.put(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET, surveyConfig.getIconSet());
+        return surveyConfig;
     }
 }

@@ -55,7 +55,6 @@ public class VoteMacroTest {
         assertEquals(Macro.OutputType.BLOCK, classUnderTest.getOutputType());
     }
 
-
     @Test
     public void test_recordVote_noUser_success() {
         Ballot ballot = SurveyUtilsTest.createDefaultBallot();
