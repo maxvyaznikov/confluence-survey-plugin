@@ -230,34 +230,32 @@ public class VoteMacro extends BaseMacro implements Macro {
             }
         }
 
-        String locked = StringUtils.defaultString((String) parameters.get(KEY_LOCKED));
+        ballot.setLocked(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
 
         // 1.1.5 if viewers not defined and vote is locked then he may see the result && !TextUtils.stringSet(remoteUser) doesnt matter
         Boolean canSeeResults;
-        if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(locked).booleanValue()) {
+        if (StringUtils.isBlank((String) parameters.get(KEY_VIEWERS)) && ballot.isLocked()) {
             canSeeResults = Boolean.TRUE;
         } else {
-            canSeeResults = permissionEvaluator.getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
+            //canSeeResults = permissionEvaluator.getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
+            canSeeResults = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
         }
 
         // 1.1.7.5 can see voters (clear text of the usernames)
-        Boolean canSeeVoters = permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
-        ballot.setVisibleVoters(canSeeVoters == Boolean.TRUE);
+        ballot.setVisibleVoters(permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults));
 
         Boolean canVote = permissionEvaluator.getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
 
         // now create a simple velocity context and render a template for the output
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
-        contextMap.put("ballot", ballot);
         contextMap.put("content", contentObject);
         contextMap.put("context", renderContext);
+        contextMap.put("ballot", ballot);
         contextMap.put("iconSet", iconSet);
-        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
-        contextMap.put(KEY_LOCKED, Boolean.valueOf(locked));
-        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
         contextMap.put("canSeeResults", canSeeResults);
-        contextMap.put("canSeeVoters", canSeeVoters);
         contextMap.put("canVote", canVote);
+        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
+        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
         try {
             return VelocityUtils.getRenderedTemplate("templates/macros/vote/votemacro.vm", contextMap);

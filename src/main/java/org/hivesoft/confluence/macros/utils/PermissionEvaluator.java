@@ -109,14 +109,10 @@ public class PermissionEvaluator {
         return Boolean.valueOf(ballot.getHasVoted(username));
     }
 
-    public Boolean getCanSeeVoters(String visibleVoters, Boolean canSeeResults) {
-        if (canSeeResults == Boolean.FALSE)
-            return Boolean.FALSE;
-        if (StringUtils.isBlank(visibleVoters))
-            return Boolean.FALSE;
-        if ("true".equals(visibleVoters))
-            return Boolean.TRUE;
-        return Boolean.FALSE;
+    public boolean getCanSeeVoters(String visibleVoters, boolean canSeeResults) {
+        if (!canSeeResults || StringUtils.isBlank(visibleVoters))
+            return false;
+        return Boolean.parseBoolean(visibleVoters);
     }
 
     /**

@@ -68,6 +68,18 @@ public class BallotTest {
     }
 
     @Test
+    public void test_isLocked_DefaultFalse_success() {
+        assertEquals(false, classUnderTest.isLocked());
+    }
+
+    @Test
+    public void test_isLocked_SetTrue_success() {
+        classUnderTest.setLocked(true);
+
+        assertEquals(true, classUnderTest.isLocked());
+    }
+
+    @Test
     public void test_getVoteForExistingUser_success() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
         someChoice.voteFor(SOME_EXISTING_USER_NAME);

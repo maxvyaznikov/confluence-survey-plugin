@@ -233,35 +233,32 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
-        Boolean canSeeResults;
+        survey.setLocked(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
 
-        if (!TextUtils.stringSet((String) parameters.get(KEY_VIEWERS)) && Boolean.valueOf(StringUtils.defaultString((String) parameters.get(KEY_LOCKED))).booleanValue()) {
+        Boolean canSeeResults;
+        if (StringUtils.isBlank((String) parameters.get(KEY_VIEWERS)) && survey.isLocked()) {
             canSeeResults = Boolean.TRUE;
         } else {
             canSeeResults = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
         }
 
         Boolean canTakeSurvey = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
-        Boolean canSeeVoters = permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
-        // survey parameter must be passed through
-        if (canSeeVoters == Boolean.TRUE) { // default is false, so only set if true
+        if (permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults)) {
             survey.setVisibleVoters(true);
         }
 
         // now create a simple velocity context and render a template for the output
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
-        contextMap.put("survey", survey);
         contextMap.put("content", contentObject);
         contextMap.put("context", renderContext);
-        contextMap.put("iconSet", iconSet);
-        contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
         contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put(KEY_SHOW_COMMENTS, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
-        contextMap.put(KEY_LOCKED, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
         contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
+        contextMap.put("survey", survey);
+        contextMap.put("iconSet", iconSet);
+        contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
         contextMap.put("canSeeSurveyResults", canSeeResults);
         contextMap.put("canTakeSurvey", canTakeSurvey);
-        contextMap.put("canSeeSurveyVoters", canSeeVoters);
 
         try {
             if (canSeeResults.booleanValue() || canTakeSurvey.booleanValue()) {

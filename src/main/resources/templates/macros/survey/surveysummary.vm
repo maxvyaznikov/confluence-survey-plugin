@@ -11,17 +11,16 @@
 
 ## If the user can see results, only show them if they are not a voter or have completed the entire survey
 #if ($survey.surveySummary!="None" && $canSeeSurveyResults)
-###set ($renderer=$action.getGlobalHelper().getWikiStyleRenderer())
-  
+
   <h3><a name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a></h3>
-  #if ($survey.isSurveyComplete($req.remoteUser) || !($canTakeSurvey) || $locked )
+  #if ($survey.isSurveyComplete($req.remoteUser) || !($canTakeSurvey) || $survey.locked )
 
   <table class="grid">
     <tr>
         <th>$action.getText("surveyplugin.survey.summary.header.question")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.total")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.average.bar")</th>
-        #if ($canSeeSurveyVoters) <th>$action.getText("surveyplugin.vote.voters")</th> #end
+        #if ($survey.visibleVoters) <th>$action.getText("surveyplugin.vote.voters")</th> #end
     </tr>
   #foreach ($ballot in $survey.ballots)
     #set ($average = $ballot.computeAverage())
@@ -43,7 +42,7 @@
                 </div>
             </div>
         </td>
-        #if ($canSeeSurveyVoters)
+        #if ($survey.visibleVoters)
           <td>
               <i>
               #set($voters = $ballot.getAllVoters())

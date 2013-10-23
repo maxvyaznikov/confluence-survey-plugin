@@ -25,6 +25,7 @@ public class Survey {
     private String title;
     private List<Ballot> ballots = new ArrayList<Ballot>();
 
+    private boolean locked = false;
     private boolean changeableVotes = false;
     private boolean visibleVoters = false;
     private SurveySummary surveySummary = SurveySummary.Top;
@@ -128,6 +129,40 @@ public class Survey {
     }
 
     /**
+     * Set whether or not the surveySummary of the survey should be displayed @param surveySummary Flag to indicate surveySummary display
+     */
+    public void setSurveySummary(SurveySummary surveySummary) {
+        this.surveySummary = surveySummary;
+    }
+
+    /**
+     * Flag to indicate surveySummary display
+     */
+    public SurveySummary getSurveySummary() {
+        return surveySummary;
+    }
+
+    public void setTitle(String inTitle) {
+        title = inTitle;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+
+        for (Ballot ballot : ballots) {
+            ballot.setLocked(locked);
+        }
+    }
+
+    /**
      * Set whether or not this survey should allow users to see the voted users
      *
      * @param visibleVoters <code>true</code> if users can see voted users in clear text; <code>false</code> (default) otherwise.
@@ -152,27 +187,6 @@ public class Survey {
         }
     }
 
-    /**
-     * Set whether or not the surveySummary of the survey should be displayed @param surveySummary Flag to indicate surveySummary display
-     */
-    public void setSurveySummary(SurveySummary surveySummary) {
-        this.surveySummary = surveySummary;
-    }
-
-    /**
-     * Flag to indicate surveySummary display
-     */
-    public SurveySummary getSurveySummary() {
-        return surveySummary;
-    }
-
-    public void setTitle(String inTitle) {
-        title = inTitle;
-    }
-
-    public String getTitle() {
-        return title;
-    }
 
     /**
      * Get the BallotTitles incl. the names of all choices. To check the length of the key to be stored

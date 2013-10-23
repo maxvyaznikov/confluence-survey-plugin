@@ -21,10 +21,11 @@ public class Ballot {
     public static final int DEFAULT_START_BOUND = 1;
     public static final int DEFAULT_ITERATE_STEP = 1;
 
-    private String description = "";
     private String title;
+    private String description = "";
     private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
     private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
+    private boolean locked = false;
     private boolean changeableVotes = false;
     private boolean visibleVoters = false;
     private int startBound = DEFAULT_START_BOUND; //1.1.7.1 calculate for each ballot starting by 1
@@ -108,6 +109,14 @@ public class Ballot {
      */
     public void setVisibleVoters(boolean visibleVoters) {
         this.visibleVoters = visibleVoters;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
     /**
