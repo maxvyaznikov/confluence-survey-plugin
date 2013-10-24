@@ -133,6 +133,21 @@ public class SurveyTest {
     }
 
     @Test
+    public void test_isVisibleComments_success() {
+        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
+        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
+
+        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
+        classUnderTest.setBallots(ballots);
+
+        assertTrue(classUnderTest.isVisibleComments());
+
+        classUnderTest.setVisibleComments(false);
+
+        assertFalse(classUnderTest.isVisibleComments());
+    }
+
+    @Test
     public void test_setStartBoundAndIterateStep_success() {
         Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
         Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");

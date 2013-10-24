@@ -47,7 +47,7 @@
             #parse ("templates/macros/vote/votemacro.vm")
           </td>
           <td class="surveyCommentPane">
-            #if ($canTakeSurvey && $showComments && !($ballot.locked))
+            #if ($canTakeSurvey && $survey.visibleComments && !($ballot.locked))
               #set ($currentComment = "")
               #if ($ballot.getCommentForUser($req.remoteUser))
                 #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
@@ -82,7 +82,7 @@
               </div>
             #end
 
-            #if (($canSeeResults || ($canVote && $ballot.locked)) && $showComments)
+            #if (($canSeeResults || ($canVote && $ballot.locked)) && $survey.visibleComments)
               #foreach ($comment in $ballot.comments)
                 #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $ballot.locked))
                   <div class="commentBox commentblock surveyComment"  >

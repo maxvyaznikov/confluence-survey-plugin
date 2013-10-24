@@ -234,6 +234,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
         survey.setLocked(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
+        survey.setVisibleComments(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
 
         Boolean canSeeResults;
         if (StringUtils.isBlank((String) parameters.get(KEY_VIEWERS)) && survey.isLocked()) {
@@ -247,18 +248,18 @@ public class SurveyMacro extends VoteMacro implements Macro {
             survey.setVisibleVoters(true);
         }
 
+
         // now create a simple velocity context and render a template for the output
         Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
         contextMap.put("content", contentObject);
         contextMap.put("context", renderContext);
-        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
-        contextMap.put(KEY_SHOW_COMMENTS, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true));
-        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
         contextMap.put("survey", survey);
         contextMap.put("iconSet", iconSet);
         contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
         contextMap.put("canSeeSurveyResults", canSeeResults);
         contextMap.put("canTakeSurvey", canTakeSurvey);
+        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
+        contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
         try {
             if (canSeeResults.booleanValue() || canTakeSurvey.booleanValue()) {
