@@ -1,14 +1,10 @@
 package org.hivesoft.confluence.macros.utils;
 
-import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
-import org.hivesoft.confluence.macros.vote.model.Ballot;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class SurveyUtils {
@@ -50,4 +46,6 @@ public class SurveyUtils {
             return Boolean.valueOf(stringToParse);
         }
     }
+
+
 }

@@ -133,6 +133,31 @@ public class SurveyTest {
     }
 
     @Test
+    public void test_renderTitleLevel_success() {
+        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
+        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
+
+        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
+        classUnderTest.setBallots(ballots);
+
+        assertEquals(2,classUnderTest.getRenderTitleLevel());
+        assertEquals(3,classUnderTest.getBallot(SOME_BALLOT_TITLE).getRenderTitleLevel());
+        assertEquals(3,classUnderTest.getRenderTitleLevelAdjustedOrZero(1));
+
+        classUnderTest.setRenderTitleLevel(0);
+
+        assertEquals(0,classUnderTest.getRenderTitleLevel());
+        assertEquals(0,classUnderTest.getBallot(SOME_BALLOT_TITLE).getRenderTitleLevel());
+        assertEquals(0,classUnderTest.getRenderTitleLevelAdjustedOrZero(1));
+
+        classUnderTest.setRenderTitleLevel(3);
+
+        assertEquals(3,classUnderTest.getRenderTitleLevel());
+        assertEquals(4,classUnderTest.getBallot(SOME_BALLOT_TITLE).getRenderTitleLevel());
+        assertEquals(4,classUnderTest.getRenderTitleLevelAdjustedOrZero(1));
+    }
+
+    @Test
     public void test_isVisibleComments_success() {
         Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
         Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");

@@ -12,7 +12,7 @@
 ## If the user can see results, only show them if they are not a voter or have completed the entire survey
 #if ($survey.surveySummary!="None" && $canSeeSurveyResults)
 
-  <h3><a name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a></h3>
+  #if ($survey.getRenderTitleLevelAdjustedOrZero(1) != 0) <h$survey.getRenderTitleLevelAdjustedOrZero(1)>#else <br/>#end <a name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a>#if ($survey.getRenderTitleLevelAdjustedOrZero(1) != 0) </h$survey.getRenderTitleLevelAdjustedOrZero(1)>#end
   #if ($survey.isSurveyComplete($req.remoteUser) || !($canTakeSurvey) || $survey.locked )
 
   <table class="grid">

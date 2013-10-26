@@ -29,6 +29,7 @@ public class Survey {
     private boolean changeableVotes = false;
     private boolean visibleVoters = false;
     private boolean visibleComments = true;
+    private int renderTitleLevel = 2;
     private SurveySummary surveySummary = SurveySummary.Top;
 
     /**
@@ -83,11 +84,7 @@ public class Survey {
     }
 
     /**
-     * <p>
-     * Indicates whether the survey is complete for a particular user
-     * based on whether or not the user has registered a vote for
-     * each ballot.
-     * </p>
+     * Indicates whether the survey is complete for a particular user based on whether or not the user has registered a vote for each ballot.
      *
      * @param username The user whose survey we need status for.
      * @return <code>true</code> if the user has voted on all ballots; <code>false</code> otherwise.
@@ -182,6 +179,31 @@ public class Survey {
 
     public void setVisibleComments(boolean visibleComments) {
         this.visibleComments = visibleComments;
+    }
+
+    public int getRenderTitleLevel() {
+        return renderTitleLevel;
+    }
+
+    public void setRenderTitleLevel(int renderTitleLevel) {
+        this.renderTitleLevel = renderTitleLevel;
+
+        if (renderTitleLevel > 0) {
+            renderTitleLevel++;
+        }
+
+        for (Ballot ballot : ballots) {
+            ballot.setRenderTitleLevel(renderTitleLevel);
+        }
+    }
+
+    /**
+     * Velocity does not work really well with simple data types so provide a special method for it
+     */
+    public int getRenderTitleLevelAdjustedOrZero(int addSubLevel) {
+        if (renderTitleLevel == 0)
+            return renderTitleLevel;
+        return renderTitleLevel + addSubLevel;
     }
 
     /**

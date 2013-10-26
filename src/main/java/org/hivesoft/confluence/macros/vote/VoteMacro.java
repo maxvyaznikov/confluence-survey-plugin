@@ -222,12 +222,8 @@ public class VoteMacro extends BaseMacro implements Macro {
         }
 
         String renderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
-        if (StringUtils.isBlank(renderTitleLevel)) {
-            renderTitleLevel = "3";
-        } else {
-            if (Integer.valueOf(renderTitleLevel) == 0) {
-                renderTitleLevel = "";
-            }
+        if (!StringUtils.isBlank(renderTitleLevel)) {
+            ballot.setRenderTitleLevel(Integer.valueOf(renderTitleLevel));
         }
 
         ballot.setLocked(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
@@ -254,7 +250,6 @@ public class VoteMacro extends BaseMacro implements Macro {
         contextMap.put("iconSet", iconSet);
         contextMap.put("canSeeResults", canSeeResults);
         contextMap.put("canVote", canVote);
-        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
         try {

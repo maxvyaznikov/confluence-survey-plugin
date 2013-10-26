@@ -28,8 +28,9 @@ public class Ballot {
     private boolean locked = false;
     private boolean changeableVotes = false;
     private boolean visibleVoters = false;
-    private int startBound = DEFAULT_START_BOUND; //1.1.7.1 calculate for each ballot starting by 1
-    private int iterateStep = DEFAULT_ITERATE_STEP; //iterating Step, so usually it is 1 .. till choices.upperbound
+    private int renderTitleLevel = 3;
+    private int startBound = DEFAULT_START_BOUND;
+    private int iterateStep = DEFAULT_ITERATE_STEP;
 
     /**
      * Create a <code>Ballot</code>, specifying the title.
@@ -117,6 +118,14 @@ public class Ballot {
 
     public void setLocked(boolean locked) {
         this.locked = locked;
+    }
+
+    public int getRenderTitleLevel() {
+        return renderTitleLevel;
+    }
+
+    public void setRenderTitleLevel(int renderTitleLevel) {
+        this.renderTitleLevel = renderTitleLevel;
     }
 
     /**

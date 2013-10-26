@@ -218,17 +218,9 @@ public class SurveyMacro extends VoteMacro implements Macro {
             }
         }
 
-        String renderTitleLevel = "3";
-        String surveyRenderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
-        if (StringUtils.isBlank(surveyRenderTitleLevel)) {
-            surveyRenderTitleLevel = "2";
-        } else {
-            if (Integer.valueOf(surveyRenderTitleLevel) == 0) {
-                surveyRenderTitleLevel = "";
-                renderTitleLevel = "";
-            } else {
-                renderTitleLevel = (Integer.valueOf(surveyRenderTitleLevel) + 1) + "";
-            }
+        String renderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
+        if (!StringUtils.isBlank(renderTitleLevel)) {
+            survey.setRenderTitleLevel(Integer.valueOf(renderTitleLevel));
         }
 
         final String remoteUsername = permissionEvaluator.getRemoteUsername();
@@ -255,10 +247,8 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put("context", renderContext);
         contextMap.put("survey", survey);
         contextMap.put("iconSet", iconSet);
-        contextMap.put("surveyRenderTitleLevel", surveyRenderTitleLevel);
         contextMap.put("canSeeSurveyResults", canSeeResults);
         contextMap.put("canTakeSurvey", canTakeSurvey);
-        contextMap.put(KEY_RENDER_TITLE_LEVEL, renderTitleLevel);
         contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
         try {

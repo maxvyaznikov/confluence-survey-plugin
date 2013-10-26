@@ -80,6 +80,18 @@ public class BallotTest {
     }
 
     @Test
+    public void test_renderTitleLevel_DefaultThree_success() {
+        assertEquals(3, classUnderTest.getRenderTitleLevel());
+    }
+
+    @Test
+    public void test_renderTitleLevel_setZero_success() {
+        classUnderTest.setRenderTitleLevel(0);
+
+        assertEquals(0, classUnderTest.getRenderTitleLevel());
+    }
+
+    @Test
     public void test_getVoteForExistingUser_success() {
         Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
         someChoice.voteFor(SOME_EXISTING_USER_NAME);

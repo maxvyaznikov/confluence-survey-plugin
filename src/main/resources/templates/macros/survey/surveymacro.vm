@@ -18,7 +18,7 @@
 #set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
 #if ( $survey.title )
   <div id="$generalUtil.urlEncode(${survey.title})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px; width: 100%;">
-  #if ($surveyRenderTitleLevel) <h$surveyRenderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16" title="$action.getText("surveyplugin.survey.locked")." /> #end <a name="${surveyTitleSummary}-a">$generalUtil.htmlEncode($survey.title)</a>#if ($surveyRenderTitleLevel)</h$surveyRenderTitleLevel>#end
+  #if( $survey.renderTitleLevel !=0 ) <h$survey.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16" title="$action.getText("surveyplugin.survey.locked")." /> #end <a name="${surveyTitleSummary}-a">$generalUtil.htmlEncode($survey.title)</a>#if ($survey.renderTitleLevel !=0)</h$survey.renderTitleLevel>#end
 #else
   #set( $surveyTitleSummary = "summary" )
 #end
