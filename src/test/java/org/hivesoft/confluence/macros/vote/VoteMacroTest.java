@@ -13,6 +13,7 @@ import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.renderer.v2.RenderMode;
+import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
@@ -89,6 +90,50 @@ public class VoteMacroTest {
 
         final String macroResultAsString = classUnderTest.execute(parameters, "", mockConversionContext);
         //assertTrue(macroResultAsString.contains("someTitle"));
+    }
+
+    @Test(expected = MacroException.class)
+    public void test_reconstructBallot_noTitle_exception() throws MacroException {
+        final HashMap<String, String> parameters = new HashMap<String, String>();
+        final Ballot reconstructedBallot = classUnderTest.reconstructBallot(parameters, "", new Page());
+    }
+
+    @Test
+    public void test_reconstructBallot_noChoices_success() throws MacroException {
+        final HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put(VoteMacro.KEY_TITLE, "someTitle");
+        final Ballot reconstructedBallot = classUnderTest.reconstructBallot(parameters, "", new Page());
+
+        assertEquals("someTitle", reconstructedBallot.getTitle());
+    }
+
+    @Test
+    public void test_reconstructBallot_someChoices_noVoter_success() throws MacroException {
+        final HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put(VoteMacro.KEY_TITLE, "someTitle");
+        String someChoices = "someChoice1\r\nsomeChoice2";
+
+        final Ballot reconstructedBallot = classUnderTest.reconstructBallot(parameters, someChoices, new Page());
+
+        assertEquals("someTitle", reconstructedBallot.getTitle());
+        assertEquals("someChoice1", reconstructedBallot.getChoice("someChoice1").getDescription());
+        assertEquals("someChoice2", reconstructedBallot.getChoice("someChoice2").getDescription());
+        assertFalse(reconstructedBallot.getChoice("someChoice1").getHasVotedFor(SOME_USER1.getName()));
+    }
+
+    @Test
+    public void test_reconstructBallot_someChoices_withVoter_success() throws MacroException {
+        final HashMap<String, String> parameters = new HashMap<String, String>();
+        parameters.put(VoteMacro.KEY_TITLE, "someTitle");
+        String someChoices = "someChoice1\r\nsomeChoice2";
+
+        when(mockContentPropertyManager.getTextProperty(any(ContentEntityObject.class), anyString())).thenReturn(SOME_USER1.getName());
+        final Ballot reconstructedBallot = classUnderTest.reconstructBallot(parameters, someChoices, new Page());
+
+        assertEquals("someTitle", reconstructedBallot.getTitle());
+        assertEquals("someChoice1", reconstructedBallot.getChoice("someChoice1").getDescription());
+        assertEquals("someChoice2", reconstructedBallot.getChoice("someChoice2").getDescription());
+        assertTrue(reconstructedBallot.getChoice("someChoice1").getHasVotedFor(SOME_USER1.getName()));
     }
 
     @Test
