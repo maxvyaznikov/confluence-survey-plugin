@@ -20,7 +20,6 @@ import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.renderer.PageContext;
-import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.spaces.SpaceManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
@@ -40,6 +39,7 @@ import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.admin.AdminResource;
+import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -59,6 +59,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     public static final String REQUEST_PARAMETER_BALLOT = "ballot.title";
     public static final String REQUEST_PARAMETER_CHOICE = "vote.choice";
+    public static final String REQUEST_PARAMETER_VOTE_ACTION = "vote.action";
 
     // prefix vote to make a vote unique in the textproperties
     public static final String VOTE_PREFIX = "vote.";
@@ -79,8 +80,9 @@ public class VoteMacro extends BaseMacro implements Macro {
     protected final PermissionEvaluator permissionEvaluator;
     protected final TemplateRenderer renderer;
     protected final XhtmlContent xhtmlContent;
+    protected final VelocityAbstractionHelper velocityAbstractionHelper;
 
-    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory) {
+    public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
         this.pageManager = pageManager;
         this.spaceManager = spaceManager;
         this.contentPropertyManager = contentPropertyManager;
@@ -88,6 +90,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         this.renderer = renderer;
         this.xhtmlContent = xhtmlContent;
         this.pluginSettingsFactory = pluginSettingsFactory;
+        this.velocityAbstractionHelper = velocityAbstractionHelper;
     }
 
     /**
@@ -243,7 +246,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         Boolean canVote = permissionEvaluator.getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
 
         // now create a simple velocity context and render a template for the output
-        Map<String, Object> contextMap = MacroUtils.defaultVelocityContext();
+        Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
         contextMap.put("content", contentObject);
         contextMap.put("context", renderContext);
         contextMap.put("ballot", ballot);
@@ -338,6 +341,9 @@ public class VoteMacro extends BaseMacro implements Macro {
         final String remoteUsername = permissionEvaluator.getRemoteUsername();
         String requestBallotTitle = request.getParameter(REQUEST_PARAMETER_BALLOT);
         String requestChoice = request.getParameter(REQUEST_PARAMETER_CHOICE);
+        String requestVoteAction = request.getParameter(REQUEST_PARAMETER_VOTE_ACTION);
+
+        LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + requestVoteAction);
 
         // If there is a choice, make sure the vote is for this ballot and this user can vote
         if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(voters, remoteUsername, ballot).booleanValue()) {
@@ -351,12 +357,13 @@ public class VoteMacro extends BaseMacro implements Macro {
 
             Choice choice = ballot.getChoice(requestChoice);
 
-            if (choice != null) {
-                if (!choice.equals(previousChoice)) {
-                    choice.voteFor(remoteUsername);
-                    setVoteContentProperty(choice, ballot.getTitle(), contentObject);
-                }
+            if (choice != null && "vote".equalsIgnoreCase(requestVoteAction)) {
+                LOG.debug("recordVote: found choice in requestChoice: " + choice.getDescription());
+                choice.voteFor(remoteUsername);
+                setVoteContentProperty(choice, ballot.getTitle(), contentObject);
             }
         }
     }
+
+
 }

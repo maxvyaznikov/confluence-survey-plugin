@@ -8,9 +8,11 @@ import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.renderer.PageContext;
+import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.spaces.SpaceManager;
 import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
 import com.atlassian.confluence.user.UserAccessor;
+import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
@@ -18,13 +20,14 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.user.impl.DefaultUser;
+import com.opensymphony.webwork.views.velocity.VelocityManager;
 import org.hivesoft.confluence.admin.callbacks.SurveyPluginSettings;
+import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,12 +47,13 @@ public class VoteMacroTest {
     TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
     XhtmlContent mockXhtmlContent = mock(XhtmlContent.class);
     PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
+    VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
 
     ConversionContext mockConversionContext = mock(ConversionContext.class);
 
     HttpServletRequest mockRequest = mock(HttpServletRequest.class);
 
-    VoteMacro classUnderTest = new VoteMacro(mockPageManager, mockSpaceManager, mockContentPropertyManager, mockUserAccessor, mockUserManager, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory);
+    VoteMacro classUnderTest = new VoteMacro(mockPageManager, mockSpaceManager, mockContentPropertyManager, mockUserAccessor, mockUserManager, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
 
     @Before
     public void setup() {
@@ -72,11 +76,10 @@ public class VoteMacroTest {
     }
 
     /**
-     * It is unclear how to fake velocity stuff, so long this test will be ignored!
+     * Cannot test the result of the velocity content as some elements are not initialized, but the macro is running through
      */
-    @Ignore
     @Test
-    public void test_execute_simpleMacroWithTitle_exception() throws Exception {
+    public void test_execute_simpleMacroWithTitle_success() throws Exception {
         final HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put(VoteMacro.KEY_TITLE, "someTitle");
 
@@ -87,6 +90,9 @@ public class VoteMacroTest {
         when(mockConversionContext.getEntity()).thenReturn(somePage);
         when(mockConversionContext.getPageContext()).thenReturn(pageContext);
         when(mockPluginSettingsFactory.createGlobalSettings()).thenReturn(new SurveyPluginSettings());
+        final HashMap<String, Object> contextMap = new HashMap<String, Object>();
+        contextMap.put(VelocityManager.ACTION, MacroUtils.getConfluenceActionSupport());
+        when(mockVelocityAbstractionHelper.getDefaultVelocityContext()).thenReturn(contextMap);
 
         final String macroResultAsString = classUnderTest.execute(parameters, "", mockConversionContext);
         //assertTrue(macroResultAsString.contains("someTitle"));
@@ -95,7 +101,7 @@ public class VoteMacroTest {
     @Test(expected = MacroException.class)
     public void test_reconstructBallot_noTitle_exception() throws MacroException {
         final HashMap<String, String> parameters = new HashMap<String, String>();
-        final Ballot reconstructedBallot = classUnderTest.reconstructBallot(parameters, "", new Page());
+        classUnderTest.reconstructBallot(parameters, "", new Page());
     }
 
     @Test
@@ -159,6 +165,8 @@ public class VoteMacroTest {
     public void test_recordVote_freshVote_success() {
         Ballot ballot = SurveyUtilsTest.createDefaultBallot();
 
+        when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
+
         classUnderTest.recordVote(ballot, mockRequest, new Page(), "");
 
         verify(mockContentPropertyManager, times(1)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
@@ -173,9 +181,27 @@ public class VoteMacroTest {
 
         choice.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
+        when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
+
         classUnderTest.recordVote(ballot, mockRequest, new Page(), "");
 
         verify(mockContentPropertyManager, times(2)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
+    }
+
+    @Test
+    public void test_recordVote_alreadyVotedOnUnvoteChangeAbleVotesTrue_success() {
+        Choice choice = new Choice("already Voted on");
+        Ballot ballot = SurveyUtilsTest.createDefaultBallot();
+        ballot.addChoice(choice);
+        ballot.setChangeableVotes(true);
+
+        choice.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+
+        when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("unvote");
+
+        classUnderTest.recordVote(ballot, mockRequest, new Page(), "");
+
+        verify(mockContentPropertyManager, times(1)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
     }
 
     @Test

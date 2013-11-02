@@ -1,8 +1,12 @@
 package org.hivesoft.confluence.macros.survey;
 
+import com.atlassian.confluence.content.render.xhtml.ConversionContext;
+import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
+import com.atlassian.confluence.renderer.PageContext;
+import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.spaces.SpaceManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
@@ -11,8 +15,14 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.user.impl.DefaultUser;
+import com.opensymphony.webwork.views.velocity.VelocityManager;
+import org.hivesoft.confluence.admin.callbacks.SurveyPluginSettings;
+import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -29,8 +39,11 @@ public class SurveyMacroTest {
     TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
     XhtmlContent mockXhtmlContent = mock(XhtmlContent.class);
     PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
+    VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
 
-    SurveyMacro classUnderTest = new SurveyMacro(mockPageManager, mockSpaceManager, mockContentPropertyManager, mockUserAccessor, mockUserManager, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory);
+    ConversionContext mockConversionContext = mock(ConversionContext.class);
+
+    SurveyMacro classUnderTest = new SurveyMacro(mockPageManager, mockSpaceManager, mockContentPropertyManager, mockUserAccessor, mockUserManager, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
 
     @Test
     public void test_MacroProperties_success() {
@@ -38,6 +51,28 @@ public class SurveyMacroTest {
         assertTrue(classUnderTest.hasBody());
         assertFalse(classUnderTest.isInline());
         assertEquals(RenderMode.NO_RENDER, classUnderTest.getBodyRenderMode());
+    }
+
+    /**
+     * Cannot test the result of the velocity content as some elements are not initialized, but the macro is running through
+     */
+    @Test
+    public void test_execute_simpleMacroWithTitle_success() throws Exception {
+        final HashMap<String, String> parameters = new HashMap<String, String>();
+
+        ContentEntityObject somePage = new Page();
+        somePage.setBodyAsString("{survey}{survey}");
+        final PageContext pageContext = new PageContext(somePage);
+
+        when(mockConversionContext.getEntity()).thenReturn(somePage);
+        when(mockConversionContext.getPageContext()).thenReturn(pageContext);
+        when(mockPluginSettingsFactory.createGlobalSettings()).thenReturn(new SurveyPluginSettings());
+        final HashMap<String, Object> contextMap = new HashMap<String, Object>();
+        contextMap.put(VelocityManager.ACTION, MacroUtils.getConfluenceActionSupport());
+        when(mockVelocityAbstractionHelper.getDefaultVelocityContext()).thenReturn(contextMap);
+
+        final String macroResultAsString = classUnderTest.execute(parameters, "", mockConversionContext);
+        //assertTrue(macroResultAsString.contains("someTitle"));
     }
 
     @Test

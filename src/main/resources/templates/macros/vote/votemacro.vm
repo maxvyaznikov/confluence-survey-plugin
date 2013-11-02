@@ -50,11 +50,11 @@ $generalUtil.htmlEncode($ballot.description)
                 <td align="center">
                     #if ($canVote && !($ballot.locked))
                         #if ($choice.equals($userVote))
-                            <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&u=1#${voteAnchor}">
+                            <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=unvote#${voteAnchor}">
                                 <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';" onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';" />
                             </a>
                         #else
-                            <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)#${voteAnchor}">
+                            <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=vote#${voteAnchor}">
                                 <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';" onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';" />
                             </a>
                         #end

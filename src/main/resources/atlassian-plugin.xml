@@ -154,6 +154,9 @@
         <!--<context>survey-plugin</context>-->
     </web-resource>
 
+    <component key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper" />
+
+    <!--<component-import key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper"/>-->
     <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager"/>
     <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
     <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>
