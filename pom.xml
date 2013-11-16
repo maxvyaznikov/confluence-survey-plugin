@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!--<groupId>org.hivesoft.confluence</groupId>-->
@@ -31,9 +30,10 @@
         </developer>
     </developers>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <confluence.version>4.3.7</confluence.version>
         <confluence.data.version>4.3.7</confluence.data.version>
-        <amps.version>4.2.9</amps.version>
+        <amps.version>4.2.10</amps.version>
         <plugin.testrunner.version>1.1.1</plugin.testrunner.version>
         <!--workaround as #requireresource isnt working without templaterenderer as it seems-->
         <workaroundRequireResourcePathRelative>/download/resources/${project.groupId}.${project.artifactId}:resources</workaroundRequireResourcePathRelative>
@@ -153,6 +153,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>

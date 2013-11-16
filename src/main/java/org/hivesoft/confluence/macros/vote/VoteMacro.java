@@ -202,9 +202,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         Ballot ballot = reconstructBallot(parameters, body, contentObject);
 
         final List<String> noneUniqueTitles = new ArrayList<String>();
-        if (ballot.getChoices().size() == 0) {
-            //don't render a error (that's not nice), render a warning element within velocity
-        } else {
+        if (ballot.getChoices().size() != 0) {
             for (Choice choice : ballot.getChoices()) {
                 if (noneUniqueTitles.contains(choice.getDescription())) {
                     throw new MacroException("The choice-descriptions must be unique! The row starting with title of '" + choice.getDescription() + "' violated that. Please rename your choices to unique answers!");
@@ -212,7 +210,7 @@ public class VoteMacro extends BaseMacro implements Macro {
                     noneUniqueTitles.add(choice.getDescription());
                 }
             }
-        }
+        }   //don't render a error (that's not nice), render a warning element within velocity
 
         SurveyUtils.validateMaxStorableKeyLength(ballot.getBallotTitlesWithChoiceNames());
 
@@ -346,7 +344,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + requestVoteAction);
 
         // If there is a choice, make sure the vote is for this ballot and this user can vote
-        if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(voters, remoteUsername, ballot).booleanValue()) {
+        if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(voters, remoteUsername, ballot)) {
 
             // If this is a re-vote situation, then unvote first
             Choice previousChoice = ballot.getVote(remoteUsername);

@@ -3,7 +3,6 @@ package it;
 import com.atlassian.confluence.plugin.functest.AbstractConfluencePluginWebTestCase;
 import com.atlassian.confluence.plugin.functest.JWebUnitConfluenceWebTester;
 import com.atlassian.confluence.plugin.functest.TesterConfiguration;
-import junit.framework.Assert;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -33,7 +32,7 @@ public class AbstractIntegrationTestCase extends AbstractConfluencePluginWebTest
         }
         catch (IOException ioe)
         {
-            Assert.fail("Unable to create tester: " + ioe.getMessage());
+            fail("Unable to create tester: " + ioe.getMessage());
             return null;
         }
 

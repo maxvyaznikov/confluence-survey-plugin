@@ -63,7 +63,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
     private static final String KEY_CHOICES = "choices";
     private static final String KEY_SHOW_SUMMARY = "showSummary";
-    //private static final String KEY_SHOW_TOP_SUMMARY = "showTopSummary"; if showSummary is true and last is not, then obviously it must be top
     private static final String KEY_SHOW_LAST = "showLast";
     private static final String KEY_SHOW_COMMENTS = "showComments";
     private static final String KEY_START_BOUND = "startBound";
@@ -71,9 +70,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
     private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
     private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
-
-    private String[] ballotLabels = null; // 1.1.3 allow a self defined ballotLabels-List
-    private ArrayList<String> myChoicesList = null;
 
     public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
         super(pageManager, spaceManager, contentPropertyManager, userAccessor, userManager, renderer, xhtmlContent, pluginSettingsFactory, velocityAbstractionHelper);
@@ -183,12 +179,12 @@ public class SurveyMacro extends VoteMacro implements Macro {
         int startBound = Ballot.DEFAULT_START_BOUND;
         String sTmpParam = (String) parameters.get(KEY_START_BOUND);
         if (sTmpParam != null) {
-            startBound = Integer.valueOf(sTmpParam).intValue();
+            startBound = Integer.valueOf(sTmpParam);
         }
         int iterateStep = Ballot.DEFAULT_ITERATE_STEP;
         sTmpParam = (String) parameters.get(KEY_ITERATE_STEP);
         if (sTmpParam != null) {
-            iterateStep = Integer.valueOf(sTmpParam).intValue();
+            iterateStep = Integer.valueOf(sTmpParam);
         }
         // Hardcoded default is 1 and 1, if it is different, set it for each ballot, let default otherwise
         if (startBound != Ballot.DEFAULT_START_BOUND || iterateStep != Ballot.DEFAULT_ITERATE_STEP) {
@@ -252,7 +248,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
         try {
-            if (canSeeResults.booleanValue() || canTakeSurvey.booleanValue()) {
+            if (canSeeResults || canTakeSurvey) {
                 return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro.vm", contextMap);
             }
 
@@ -277,17 +273,14 @@ public class SurveyMacro extends VoteMacro implements Macro {
             return survey;
         }
 
-        String tmpBallotLabels = choices;
-
         // Reconstruct all of the votes that have been cast so far
         for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
             String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
             // the parameter given list must override the inline Labels if none are there
-            if (tmpBallotLabels != null) {
-                ballotLabels = tmpBallotLabels.split(",");
-            } else {
-                ballotLabels = null; // null the ballotLabels, will be filled later
+            String[] ballotLabels = null;
+            if (choices != null) {
+                ballotLabels = choices.split(",");
             }
 
             if ((!StringUtils.isBlank(line) && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1) {
@@ -316,8 +309,8 @@ public class SurveyMacro extends VoteMacro implements Macro {
                     LOG.error("Try contentPropertyManager: " + contentPropertyManager + " or contentEntity: " + contentObject + " or ballot was broken: " + ballot, e);
                 }
 
-                int customChoice = 0;
-                myChoicesList = new ArrayList<String>();
+                int customChoice;
+                ArrayList<String> myChoicesList = new ArrayList<String>();
                 for (customChoice = 2; customChoice < titleDescription.length; customChoice++) {
                     String temp = titleDescription[customChoice];
                     myChoicesList.add(temp);
@@ -338,7 +331,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
                 for (int i = 0; i < ballotLabels.length; i++) {
                     Choice choice = new Choice(ballotLabels[i]);
                     // 1.1.7.6 if this ballot is a default one, check whether there are old default items and convert see CSRVY-21 for details
-                    if (i < defaultBallotLabels.length && ballotLabels[i] == defaultBallotLabels[i]) {
+                    if (i < defaultBallotLabels.length && ballotLabels[i].equalsIgnoreCase(defaultBallotLabels[i])) {
                         // check for old votes
                         String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels[i]);
                         if (TextUtils.stringSet(votes)) {
