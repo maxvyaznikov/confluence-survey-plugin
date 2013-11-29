@@ -39,7 +39,7 @@ public class AdminResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getConfig() {
-        if (isUserAdmin()) return Response.status(Response.Status.UNAUTHORIZED).build();
+        if (isUserNotAdmin()) return Response.status(Response.Status.UNAUTHORIZED).build();
 
         return Response.ok(transactionTemplate.execute(new TransactionCallbackGetConfig(pluginSettingsFactory))).build();
     }
@@ -47,13 +47,13 @@ public class AdminResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     public Response putConfig(final SurveyConfig surveyConfig) {
-        if (isUserAdmin()) return Response.status(Response.Status.UNAUTHORIZED).build();
+        if (isUserNotAdmin()) return Response.status(Response.Status.UNAUTHORIZED).build();
 
         transactionTemplate.execute(new TransactionCallbackSetConfig(pluginSettingsFactory, surveyConfig));
         return Response.noContent().build();
     }
 
-    private boolean isUserAdmin() {
+    private boolean isUserNotAdmin() {
         final String remoteUser = userManager.getRemoteUsername();
         if (remoteUser == null || !userManager.isSystemAdmin(remoteUser)) {
             return true;
