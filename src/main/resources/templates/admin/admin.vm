@@ -3,7 +3,7 @@
     <title>$i18n.getText("surveyplugin.admin.label")</title>
     <meta name="decorator" content="atl.admin" />
     <meta name="application-base-url" content="$applicationProperties.getBaseUrl()">
-    $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:resources")
+    $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:admin-resources")
   </head>
   <body>
     <form id="admin" class="aui">

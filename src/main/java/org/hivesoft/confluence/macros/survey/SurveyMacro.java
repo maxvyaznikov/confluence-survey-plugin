@@ -48,6 +48,7 @@ import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -249,7 +250,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
         try {
             if (canSeeResults || canTakeSurvey) {
-                return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro.vm", contextMap);
+              StringWriter renderedTemplate = new StringWriter();
+              renderer.render("templates/macros/survey/surveymacro.vm", contextMap, renderedTemplate);
+              return renderedTemplate.toString();
+                //return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro.vm", contextMap);
             }
 
             return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro-denied.vm", contextMap);

@@ -1,183 +1,188 @@
 <atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
-    <plugin-info>
-        <description>${project.description}</description>
-        <version>${project.version}</version>
-        <vendor name="${project.organization.name}" url="${project.organization.url}"/>
-        <param name="plugin-icon">images/logos/srvlogo.png</param>
-        <param name="plugin-logo">images/logos/srvlogo.png</param>
-    </plugin-info>
+  <plugin-info>
+    <description>${project.description}</description>
+    <version>${project.version}</version>
+    <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+    <param name="plugin-icon">images/logos/srvlogo.png</param>
+    <param name="plugin-logo">images/logos/srvlogo.png</param>
+  </plugin-info>
 
-    <xhtml-macro key="vote" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
-                 icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png"
-                 documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
-        <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
-        <category name="confluence-content"/>
-        <parameters>
-            <parameter name="title" type="string" required="true">
-                <alias name=""/>
-            </parameter>
-            <parameter name="renderTitleLevel" type="enum" default="3">
-                <value name="0"/>
-                <value name="1"/>
-                <value name="2"/>
-                <value name="3"/>
-                <value name="4"/>
-                <value name="5"/>
-            </parameter>
-            <parameter name="changeableVotes" type="boolean"/>
-            <parameter name="voters" type="string" multiple="true"/>
-            <parameter name="viewers" type="string" multiple="true"/>
-            <parameter name="visibleVoters" type="boolean"/>
-            <parameter name="visibleVotersWiki" type="boolean"/>
-            <parameter name="locked" type="boolean"/>
-        </parameters>
-    </xhtml-macro>
+  <xhtml-macro key="vote" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
+               icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png"
+               documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
+    <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
+    <category name="confluence-content"/>
+    <parameters>
+      <parameter name="title" type="string" required="true">
+        <alias name=""/>
+      </parameter>
+      <parameter name="renderTitleLevel" type="enum" default="3">
+        <value name="0"/>
+        <value name="1"/>
+        <value name="2"/>
+        <value name="3"/>
+        <value name="4"/>
+        <value name="5"/>
+      </parameter>
+      <parameter name="changeableVotes" type="boolean"/>
+      <parameter name="voters" type="string" multiple="true"/>
+      <parameter name="viewers" type="string" multiple="true"/>
+      <parameter name="visibleVoters" type="boolean"/>
+      <parameter name="visibleVotersWiki" type="boolean"/>
+      <parameter name="locked" type="boolean"/>
+    </parameters>
+  </xhtml-macro>
 
-    <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-                 icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png"
-                 documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
-        <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
-        <category name="confluence-content"/>
-        <parameters>
-            <parameter name="title" type="string"/>
-            <parameter name="renderTitleLevel" type="enum" default="2">
-                <value name="0"/>
-                <value name="1"/>
-                <value name="2"/>
-                <value name="3"/>
-                <value name="4"/>
-            </parameter>
-            <parameter name="choices" type="string"/>
-            <parameter name="changeableVotes" type="boolean"/>
-            <parameter name="showSummary" type="boolean" default="true"/>
-            <parameter name="showTopSummary" type="boolean" default="true"/>
-            <parameter name="showLast" type="boolean"/>
-            <parameter name="showComments" type="boolean" default="true"/>
-            <parameter name="startBound" type="string" default="1"/>
-            <parameter name="iterateStep" type="string" default="1"/>
-            <parameter name="voters" type="string" multiple="true"/>
-            <parameter name="viewers" type="string" multiple="true"/>
-            <parameter name="visibleVoters" type="boolean"/>
-            <parameter name="visibleVotersWiki" type="boolean"/>
-            <parameter name="locked" type="boolean"/>
-        </parameters>
-    </xhtml-macro>
+  <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
+               icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png"
+               documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
+    <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
+    <category name="confluence-content"/>
+    <parameters>
+      <parameter name="title" type="string"/>
+      <parameter name="renderTitleLevel" type="enum" default="2">
+        <value name="0"/>
+        <value name="1"/>
+        <value name="2"/>
+        <value name="3"/>
+        <value name="4"/>
+      </parameter>
+      <parameter name="choices" type="string"/>
+      <parameter name="changeableVotes" type="boolean"/>
+      <parameter name="showSummary" type="boolean" default="true"/>
+      <parameter name="showTopSummary" type="boolean" default="true"/>
+      <parameter name="showLast" type="boolean"/>
+      <parameter name="showComments" type="boolean" default="true"/>
+      <parameter name="startBound" type="string" default="1"/>
+      <parameter name="iterateStep" type="string" default="1"/>
+      <parameter name="voters" type="string" multiple="true"/>
+      <parameter name="viewers" type="string" multiple="true"/>
+      <parameter name="visibleVoters" type="boolean"/>
+      <parameter name="visibleVotersWiki" type="boolean"/>
+      <parameter name="locked" type="boolean"/>
+    </parameters>
+  </xhtml-macro>
 
-    <macro key="vote-wikistyle" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
-           icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
-        <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
-        <category name="confluence-content"/>
-        <parameters>
-            <parameter name="title" type="string" required="true">
-                <alias name=""/>
-            </parameter>
-            <parameter name="renderTitleLevel" type="enum" default="3">
-                <value name="0"/>
-                <value name="1"/>
-                <value name="2"/>
-                <value name="3"/>
-                <value name="4"/>
-                <value name="5"/>
-            </parameter>
-            <parameter name="changeableVotes" type="boolean"/>
-            <parameter name="voters" type="string" multiple="true"/>
-            <parameter name="viewers" type="string" multiple="true"/>
-            <parameter name="visibleVoters" type="boolean"/>
-            <parameter name="visibleVotersWiki" type="boolean"/>
-            <parameter name="locked" type="boolean"/>
-        </parameters>
-    </macro>
+  <macro key="vote-wikistyle" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
+         icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
+    <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
+    <category name="confluence-content"/>
+    <parameters>
+      <parameter name="title" type="string" required="true">
+        <alias name=""/>
+      </parameter>
+      <parameter name="renderTitleLevel" type="enum" default="3">
+        <value name="0"/>
+        <value name="1"/>
+        <value name="2"/>
+        <value name="3"/>
+        <value name="4"/>
+        <value name="5"/>
+      </parameter>
+      <parameter name="changeableVotes" type="boolean"/>
+      <parameter name="voters" type="string" multiple="true"/>
+      <parameter name="viewers" type="string" multiple="true"/>
+      <parameter name="visibleVoters" type="boolean"/>
+      <parameter name="visibleVotersWiki" type="boolean"/>
+      <parameter name="locked" type="boolean"/>
+    </parameters>
+  </macro>
 
-    <macro key="survey-wikistyle" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-           icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
-        <category name="confluence-content"/>
-        <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
-        <parameters>
-            <parameter name="title" type="string"/>
-            <parameter name="renderTitleLevel" type="enum" default="2">
-                <value name="0"/>
-                <value name="1"/>
-                <value name="2"/>
-                <value name="3"/>
-                <value name="4"/>
-            </parameter>
-            <parameter name="choices" type="string"/>
-            <parameter name="changeableVotes" type="boolean"/>
-            <parameter name="showSummary" type="boolean" default="true"/>
-            <parameter name="showTopSummary" type="boolean" default="true"/>
-            <parameter name="showLast" type="boolean"/>
-            <parameter name="showComments" type="boolean" default="true"/>
-            <parameter name="startBound" type="string" default="1"/>
-            <parameter name="iterateStep" type="string" default="1"/>
-            <parameter name="voters" type="string" multiple="true"/>
-            <parameter name="viewers" type="string" multiple="true"/>
-            <parameter name="visibleVoters" type="boolean"/>
-            <parameter name="visibleVotersWiki" type="boolean"/>
-            <parameter name="locked" type="boolean"/>
-        </parameters>
-    </macro>
+  <macro key="survey-wikistyle" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
+         icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
+    <category name="confluence-content"/>
+    <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
+    <parameters>
+      <parameter name="title" type="string"/>
+      <parameter name="renderTitleLevel" type="enum" default="2">
+        <value name="0"/>
+        <value name="1"/>
+        <value name="2"/>
+        <value name="3"/>
+        <value name="4"/>
+      </parameter>
+      <parameter name="choices" type="string"/>
+      <parameter name="changeableVotes" type="boolean"/>
+      <parameter name="showSummary" type="boolean" default="true"/>
+      <parameter name="showTopSummary" type="boolean" default="true"/>
+      <parameter name="showLast" type="boolean"/>
+      <parameter name="showComments" type="boolean" default="true"/>
+      <parameter name="startBound" type="string" default="1"/>
+      <parameter name="iterateStep" type="string" default="1"/>
+      <parameter name="voters" type="string" multiple="true"/>
+      <parameter name="viewers" type="string" multiple="true"/>
+      <parameter name="visibleVoters" type="boolean"/>
+      <parameter name="visibleVotersWiki" type="boolean"/>
+      <parameter name="locked" type="boolean"/>
+    </parameters>
+  </macro>
 
-    <!-- The survey macro needs a place to post its comments. -->
-    <!-- This action will catch a comment post and redirect back to the original page. -->
-    <xwork name="surveyaction" key="surveyaction">
-        <package name="survey" extends="default" namespace="/plugins/survey">
-            <default-interceptor-ref name="validatingStack"/>
+  <!-- The survey macro needs a place to post its comments. -->
+  <!-- This action will catch a comment post and redirect back to the original page. -->
+  <xwork name="surveyaction" key="surveyaction">
+    <package name="survey" extends="default" namespace="/plugins/survey">
+      <default-interceptor-ref name="validatingStack"/>
 
-            <action name="doaddcomment" class="org.hivesoft.confluence.macros.survey.AddCommentAction">
-                <result name="success" type="redirect">
-                    ${@com.atlassian.confluence.util.GeneralUtil@customGetPageUrl(page)}#${#request.surveySection}
-                </result>
-                <result name="error" type="redirect">
-                    ${@com.atlassian.confluence.util.GeneralUtil@customGetPageUrl(page)}#${#request.surveySection}
-                </result>
-            </action>
-        </package>
-    </xwork>
+      <action name="doaddcomment" class="org.hivesoft.confluence.macros.survey.AddCommentAction">
+        <result name="success" type="redirect">
+          ${@com.atlassian.confluence.util.GeneralUtil@customGetPageUrl(page)}#${#request.surveySection}
+        </result>
+        <result name="error" type="redirect">
+          ${@com.atlassian.confluence.util.GeneralUtil@customGetPageUrl(page)}#${#request.surveySection}
+        </result>
+      </action>
+    </package>
+  </xwork>
 
-    <!-- Directory and filename prefix of the properties-resource for i18n -->
-    <resource type="i18n" name="SurveyPlugin" location="org.hivesoft.confluence.macros.SurveyPlugin"/>
+  <!-- Directory and filename prefix of the properties-resource for i18n -->
+  <resource type="i18n" name="SurveyPlugin" location="org.hivesoft.confluence.macros.SurveyPlugin"/>
 
-    <!-- add our web resources -->
-    <web-resource key="resources" name="survey-plugin Web Resources">
-        <dependency>com.atlassian.auiplugin:ajs</dependency>
+  <!-- web-resources only for the administration page -->
+  <web-resource key="admin-resources" name="survey-plugin admin Web Resources">
+    <dependency>com.atlassian.auiplugin:ajs</dependency>
 
-        <resource type="download" name="surveyplugin-admin.js" location="/templates/admin/surveyplugin-admin.js"/>
+    <resource type="download" name="surveyplugin-admin.js" location="/templates/admin/surveyplugin-admin.js"/>
+  </web-resource>
 
-        <resource type="download" name="survey-plugin.css" location="/css/survey-plugin.css">
-            <property key="content-type" value="text/css"/>
-        </resource>
-        <!--<resource type="download" name="survey-plugin-os.js" location="/js/survey-plugin.js"/>-->
+  <!-- web-resources for voting -->
+  <web-resource key="resources" name="survey-plugin Web Resources">
+    <dependency>com.atlassian.auiplugin:ajs</dependency>
 
-        <resource type="download" name="logos/" location="/images/logos"/>
-        <resource type="download" name="icons/" location="/images/icons"/>
+    <resource type="download" name="survey-plugin.css" location="/css/survey-plugin.css">
+      <property key="content-type" value="text/css"/>
+    </resource>
 
-        <!--<context>survey-plugin</context>-->
-    </web-resource>
+    <resource type="download" name="logos/" location="/images/logos"/>
+    <resource type="download" name="icons/" location="/images/icons"/>
 
-    <component key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper" />
+    <resource type="download" name="surveyplugin-admin.js" location="/templates/macros/vote/surveyplugin-vote.js"/>
+    <!--<context>survey-plugin</context>-->
+  </web-resource>
 
-    <!--<component-import key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper"/>-->
-    <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager"/>
-    <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
-    <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>
-    <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
-    <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
-    <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate"/>
+  <component key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper"/>
 
-    <template-context-item key="applicationPropertiesContextItem" component-ref="applicationProperties"
-                           context-key="applicationProperties" name="Application Properties Context Item"/>
+  <!--<component-import key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper"/>-->
+  <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager"/>
+  <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
+  <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>
+  <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
+  <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
+  <component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate"/>
 
-    <servlet key="admin-servlet" class="org.hivesoft.confluence.admin.AdminServlet">
-        <url-pattern>/surveyplugin/admin</url-pattern>
-    </servlet>
+  <template-context-item key="applicationPropertiesContextItem" component-ref="applicationProperties"
+                         context-key="applicationProperties" name="Application Properties Context Item"/>
 
-    <rest key="rest" path="/surveyplugin-admin" version="1.0">
-        <description>Provides REST resources for the admin UI.</description>
-    </rest>
+  <servlet key="admin-servlet" class="org.hivesoft.confluence.admin.AdminServlet">
+    <url-pattern>/surveyplugin/admin</url-pattern>
+  </servlet>
 
-    <web-item key="conf-menu-item" name="Survey-Plugin Admin" section="system.admin/configuration" weight="10">
-        <description>Link to surveyplugin-admin page.</description>
-        <label key="surveyplugin.admin.label"/>
-        <link linkId="surveyplugin-admin-link">/plugins/servlet/surveyplugin/admin</link>
-    </web-item>
+  <rest key="rest" path="/surveyplugin" version="1.0">
+    <description>Provides REST resources</description>
+  </rest>
+
+  <web-item key="conf-menu-item" name="Survey-Plugin Admin" section="system.admin/configuration" weight="10">
+    <description>Link to surveyplugin-admin page.</description>
+    <label key="surveyplugin.admin.label"/>
+    <link linkId="surveyplugin-admin-link">/plugins/servlet/surveyplugin/admin</link>
+  </web-item>
 </atlassian-plugin>
