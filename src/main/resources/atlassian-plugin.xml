@@ -155,13 +155,12 @@
     <resource type="download" name="logos/" location="/images/logos"/>
     <resource type="download" name="icons/" location="/images/icons"/>
 
-    <resource type="download" name="surveyplugin-admin.js" location="/templates/macros/vote/surveyplugin-vote.js"/>
+    <resource type="download" name="surveyplugin-vote.js" location="/templates/macros/vote/surveyplugin-vote.js"/>
     <!--<context>survey-plugin</context>-->
   </web-resource>
 
   <component key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper"/>
 
-  <!--<component-import key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper"/>-->
   <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager"/>
   <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
   <component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer"/>

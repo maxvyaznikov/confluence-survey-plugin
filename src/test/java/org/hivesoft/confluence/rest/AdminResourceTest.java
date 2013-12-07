@@ -1,8 +1,9 @@
-package org.hivesoft.confluence.admin;
+package org.hivesoft.confluence.rest;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
+import org.hivesoft.confluence.rest.AdminResource;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;

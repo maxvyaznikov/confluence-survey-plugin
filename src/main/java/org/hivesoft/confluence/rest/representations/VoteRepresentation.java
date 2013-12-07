@@ -1,4 +1,4 @@
-package org.hivesoft.confluence.macros.rest.representations;
+package org.hivesoft.confluence.rest.representations;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

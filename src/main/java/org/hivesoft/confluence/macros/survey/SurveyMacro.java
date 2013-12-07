@@ -37,7 +37,7 @@ import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.hivesoft.confluence.admin.AdminResource;
+import org.hivesoft.confluence.rest.AdminResource;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.survey.model.SurveySummary;

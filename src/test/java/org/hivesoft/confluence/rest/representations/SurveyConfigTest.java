@@ -1,4 +1,4 @@
-package org.hivesoft.confluence.admin.representations;
+package org.hivesoft.confluence.rest.representations;
 
 import org.junit.Test;
 

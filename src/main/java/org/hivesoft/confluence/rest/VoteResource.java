@@ -1,4 +1,4 @@
-package org.hivesoft.confluence.macros.rest;
+package org.hivesoft.confluence.rest;
 
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.PageManager;

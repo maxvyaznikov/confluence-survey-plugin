@@ -1,10 +1,10 @@
-package org.hivesoft.confluence.admin.callbacks;
+package org.hivesoft.confluence.rest.callbacks;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.hivesoft.confluence.admin.AdminResource;
-import org.hivesoft.confluence.admin.representations.SurveyConfig;
+import org.hivesoft.confluence.rest.AdminResource;
+import org.hivesoft.confluence.rest.representations.SurveyConfig;
 
 public class TransactionCallbackGetConfig implements com.atlassian.sal.api.transaction.TransactionCallback {
 

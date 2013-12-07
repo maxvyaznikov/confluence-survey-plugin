@@ -16,10 +16,9 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
-import org.hivesoft.confluence.admin.callbacks.SurveyPluginSettings;
+import org.hivesoft.confluence.rest.callbacks.SurveyPluginSettings;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.survey.model.Survey;
-import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.junit.Test;
 
 import java.util.HashMap;

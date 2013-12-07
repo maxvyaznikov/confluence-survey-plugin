@@ -1,8 +1,8 @@
-package org.hivesoft.confluence.admin.callbacks;
+package org.hivesoft.confluence.rest.callbacks;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import org.hivesoft.confluence.admin.AdminResource;
-import org.hivesoft.confluence.admin.representations.SurveyConfig;
+import org.hivesoft.confluence.rest.AdminResource;
+import org.hivesoft.confluence.rest.representations.SurveyConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
