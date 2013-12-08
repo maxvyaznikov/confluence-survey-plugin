@@ -9,7 +9,7 @@ AJS.toInit(function () {
   function populateForm() {
     AJS.$.ajax({
       url: baseUrl + "/rest/surveyplugin/1.0/votes",
-      dataType: "json",
+      dataType: "text",
       success: function (config) {
         alert(config);
         //AJS.$("#is-" + config.iconSet).attr("checked", "checked");
@@ -28,7 +28,14 @@ AJS.toInit(function () {
    });
    }
    */
-  populateForm();
+
+  AJS.$(".exportvote").click(function (e) {
+    e.preventDefault();
+    populateForm();
+  });
+
+
+  //populateForm();
   /*
    AJS.$("#locked").submit(function (e) {
    e.preventDefault();

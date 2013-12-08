@@ -21,7 +21,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/")
+@Path("/admin")
 public class AdminResource {
   public final static String SURVEY_PLUGIN_KEY_ICON_SET = "survey-plugin.iconSet";
   public final static String SURVEY_PLUGIN_ICON_SET_DEFAULT = "default";

@@ -8,7 +8,7 @@ AJS.toInit(function () {
 
   function populateForm() {
     AJS.$.ajax({
-      url: baseUrl + "/rest/surveyplugin/1.0/",
+      url: baseUrl + "/rest/surveyplugin/1.0/admin",
       dataType: "json",
       success: function (config) {
         AJS.$("#is-" + config.iconSet).attr("checked", "checked");
@@ -18,7 +18,7 @@ AJS.toInit(function () {
 
   function updateConfig() {
     AJS.$.ajax({
-      url: baseUrl + "/rest/surveyplugin/1.0/",
+      url: baseUrl + "/rest/surveyplugin/1.0/admin",
       type: "PUT",
       contentType: "application/json",
       data: '{ "iconSet": "' + AJS.$("input[name='is-rads']:checked").attr("id") + '" }',

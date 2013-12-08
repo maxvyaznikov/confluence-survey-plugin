@@ -141,7 +141,7 @@
   <web-resource key="admin-resources" name="survey-plugin admin Web Resources">
     <dependency>com.atlassian.auiplugin:ajs</dependency>
 
-    <resource type="download" name="surveyplugin-admin.js" location="/templates/admin/surveyplugin-admin.js"/>
+    <resource type="download" name="surveyplugin-admin.js" location="/js/surveyplugin-admin.js"/>
   </web-resource>
 
   <!-- web-resources for voting -->
@@ -155,7 +155,7 @@
     <resource type="download" name="logos/" location="/images/logos"/>
     <resource type="download" name="icons/" location="/images/icons"/>
 
-    <resource type="download" name="surveyplugin-vote.js" location="/templates/macros/vote/surveyplugin-vote.js"/>
+    <resource type="download" name="surveyplugin-vote.js" location="/js/surveyplugin-vote.js"/>
     <!--<context>survey-plugin</context>-->
   </web-resource>
 
