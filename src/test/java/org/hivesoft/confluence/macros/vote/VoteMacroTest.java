@@ -97,49 +97,7 @@ public class VoteMacroTest {
         //assertTrue(macroResultAsString.contains("someTitle"));
     }
 
-    @Test(expected = MacroException.class)
-    public void test_reconstructBallot_noTitle_exception() throws MacroException {
-        final HashMap<String, String> parameters = new HashMap<String, String>();
-        classUnderTest.reconstructBallot(parameters, "", new Page());
-    }
 
-    @Test
-    public void test_reconstructBallot_noChoices_success() throws MacroException {
-        final HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put(VoteMacro.KEY_TITLE, "someTitle");
-        final Ballot reconstructedBallot = classUnderTest.reconstructBallot(parameters, "", new Page());
-
-        assertEquals("someTitle", reconstructedBallot.getTitle());
-    }
-
-    @Test
-    public void test_reconstructBallot_someChoices_noVoter_success() throws MacroException {
-        final HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put(VoteMacro.KEY_TITLE, "someTitle");
-        String someChoices = "someChoice1\r\nsomeChoice2";
-
-        final Ballot reconstructedBallot = classUnderTest.reconstructBallot(parameters, someChoices, new Page());
-
-        assertEquals("someTitle", reconstructedBallot.getTitle());
-        assertEquals("someChoice1", reconstructedBallot.getChoice("someChoice1").getDescription());
-        assertEquals("someChoice2", reconstructedBallot.getChoice("someChoice2").getDescription());
-        assertFalse(reconstructedBallot.getChoice("someChoice1").getHasVotedFor(SOME_USER1.getName()));
-    }
-
-    @Test
-    public void test_reconstructBallot_someChoices_withVoter_success() throws MacroException {
-        final HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put(VoteMacro.KEY_TITLE, "someTitle");
-        String someChoices = "someChoice1\r\nsomeChoice2";
-
-        when(mockContentPropertyManager.getTextProperty(any(ContentEntityObject.class), anyString())).thenReturn(SOME_USER1.getName());
-        final Ballot reconstructedBallot = classUnderTest.reconstructBallot(parameters, someChoices, new Page());
-
-        assertEquals("someTitle", reconstructedBallot.getTitle());
-        assertEquals("someChoice1", reconstructedBallot.getChoice("someChoice1").getDescription());
-        assertEquals("someChoice2", reconstructedBallot.getChoice("someChoice2").getDescription());
-        assertTrue(reconstructedBallot.getChoice("someChoice1").getHasVotedFor(SOME_USER1.getName()));
-    }
 
     @Test
     public void test_MacroProperties_success() {

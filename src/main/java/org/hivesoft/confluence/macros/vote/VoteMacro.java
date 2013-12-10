@@ -37,6 +37,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.rest.AdminResource;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
@@ -55,7 +56,7 @@ import java.util.*;
 public class VoteMacro extends BaseMacro implements Macro {
   private static final Logger.Log LOG = Logger.getInstance(VoteMacro.class);
 
-  private static final String VOTE_MACRO = "vote";
+  public static final String VOTE_MACRO = "vote";
 
   public static final String REQUEST_PARAMETER_BALLOT = "ballot.title";
   public static final String REQUEST_PARAMETER_CHOICE = "vote.choice";
@@ -64,7 +65,7 @@ public class VoteMacro extends BaseMacro implements Macro {
   // prefix vote to make a vote unique in the textproperties
   public static final String VOTE_PREFIX = "vote.";
 
-  protected static final String KEY_TITLE = "title";
+  public static final String KEY_TITLE = "title";
   protected static final String KEY_RENDER_TITLE_LEVEL = "renderTitleLevel";
   protected static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
   protected static final String KEY_VOTERS = "voters";
@@ -140,7 +141,7 @@ public class VoteMacro extends BaseMacro implements Macro {
   public String execute(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
     final List<String> macros = new ArrayList<String>();
     try {
-      final String voteMacroTitle = getTitle(parameters);
+      final String voteMacroTitle = SurveyUtils.getVoteTitle(parameters);
       LOG.info("Try executing " + VOTE_MACRO + "-macro XHtml Style with title: '" + voteMacroTitle + "' and body: '" + body + "'");
       xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
         @Override
@@ -197,9 +198,10 @@ public class VoteMacro extends BaseMacro implements Macro {
       iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
     }
 
+    String title = SurveyUtils.getVoteTitle(parameters);
     // Rebuild the model for this ballot
-    @SuppressWarnings("unchecked")
-    Ballot ballot = reconstructBallot(parameters, body, contentObject);
+    Ballot ballot = SurveyUtils.reconstructBallot(title, body, contentObject, contentPropertyManager);
+    ballot.setChangeableVotes(Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES)));
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
     if (ballot.getChoices().size() != 0) {
@@ -265,51 +267,6 @@ public class VoteMacro extends BaseMacro implements Macro {
   }
 
   /**
-   * This method will take the data from the macros parameters, body, and page data to reconstruct a ballot object with all of the choices and previously cast votes populated.
-   *
-   * @param parameters    The macro parameters.
-   * @param body          The rendered body of the macro.
-   * @param contentObject The page content object where cast votes are stored.
-   * @return A fully populated ballot object.
-   */
-  protected Ballot reconstructBallot(Map<String, String> parameters, String body, ContentEntityObject contentObject) throws MacroException {
-    Ballot ballot = new Ballot(getTitle(parameters));
-    ballot.setChangeableVotes(Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES)));
-
-    for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
-      String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
-
-      if (!StringUtils.isBlank(line) && ((line.length() == 1 && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1)) {
-        Choice choice = new Choice(line);
-        ballot.addChoice(choice);
-
-        String votes = contentPropertyManager.getTextProperty(contentObject, VOTE_PREFIX + ballot.getTitle() + "." + line);
-
-        if (TextUtils.stringSet(votes)) {
-          for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
-            choice.voteFor(voteTokenizer.nextToken());
-          }
-        }
-      }
-    }
-    return ballot;
-  }
-
-  private String getTitle(Map<String, String> parameters) throws MacroException {
-    String ballotTitle = StringUtils.defaultString(parameters.get(KEY_TITLE)).trim();
-    if (StringUtils.isBlank(ballotTitle)) {
-      ballotTitle = StringUtils.defaultString(parameters.get("0")).trim();
-      if (StringUtils.isBlank(ballotTitle)) {
-        // neither Parameter 0 is present nor title-Parameter could be found
-        String logMessage = "Error: Please pass Parameter-0 or title-Argument (Required)!";
-        LOG.error(logMessage);
-        throw new MacroException(logMessage);
-      }
-    }
-    return ballotTitle;
-  }
-
-  /**
    * This is a helper method to set the content property value for a particular vote choice once it has been updated.
    *
    * @param choice        The choice that has been updated.
@@ -328,7 +285,6 @@ public class VoteMacro extends BaseMacro implements Macro {
       contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
     }
   }
-
 
   /**
    * If there is a vote in the request, store it in this page for the given ballot.

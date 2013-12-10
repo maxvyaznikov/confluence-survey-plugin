@@ -33,7 +33,8 @@ $generalUtil.htmlEncode($ballot.description)
 </div>
 #else
 <img class="exportvote" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote"
-    alt="csv export" />
+     alt="$generalUtil.urlEncode(${ballot.title})" title="csv export of current vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';"
+     onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';"/>
 <table class="grid">
   #set ($columnCount = 2)
   #if ($canSeeResults)
