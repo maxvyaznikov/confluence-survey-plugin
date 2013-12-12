@@ -60,17 +60,15 @@ import java.util.StringTokenizer;
 public class SurveyMacro extends VoteMacro implements Macro {
     private static final Logger LOG = Logger.getLogger(SurveyMacro.class);
 
-    private static final String SURVEY_MACRO = "survey";
+    public static final String SURVEY_MACRO = "survey";
 
-    private static final String KEY_CHOICES = "choices";
+    public static final String KEY_CHOICES = "choices";
     private static final String KEY_SHOW_SUMMARY = "showSummary";
     private static final String KEY_SHOW_LAST = "showLast";
     private static final String KEY_SHOW_COMMENTS = "showComments";
     private static final String KEY_START_BOUND = "startBound";
     private static final String KEY_ITERATE_STEP = "iterateStep";
 
-    private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
-    private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
 
     public SurveyMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
         super(pageManager, spaceManager, contentPropertyManager, userAccessor, userManager, renderer, xhtmlContent, pluginSettingsFactory, velocityAbstractionHelper);
@@ -160,7 +158,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
 
         // Create the survey model, 1.1.3 add the parameters map
-        Survey survey = createSurvey(body, contentObject, (String) parameters.get(KEY_CHOICES));
+        Survey survey = SurveyUtils.createSurvey(body, contentObject, (String) parameters.get(KEY_CHOICES), contentPropertyManager);
 
         final List<String> noneUniqueTitles = new ArrayList<String>();
         for (Ballot ballot : survey.getBallots()) {
@@ -263,101 +261,5 @@ public class SurveyMacro extends VoteMacro implements Macro {
         }
     }
 
-    /**
-     * Create a survey object for the given macro body pre-populated with all choices that have previously been made by the users.
-     *
-     * @param body          The rendered body of the macro.
-     * @param contentObject The content object from which the votes can be read.
-     * @return The survey object, pre-filled with the correct data.
-     */
-    protected Survey createSurvey(String body, ContentEntityObject contentObject, String choices) {
-        Survey survey = new Survey();
 
-        if (StringUtils.isBlank(body)) {
-            return survey;
-        }
-
-        // Reconstruct all of the votes that have been cast so far
-        for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
-            String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
-
-            // the parameter given list must override the inline Labels if none are there
-            String[] ballotLabels = null;
-            if (choices != null) {
-                ballotLabels = choices.split(",");
-            }
-
-            if ((!StringUtils.isBlank(line) && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1) {
-                String[] titleDescription = line.split("\\-", -1);
-
-                Ballot ballot = new Ballot(titleDescription[0].trim());
-                survey.addBallot(ballot);
-
-                if (titleDescription.length > 1) {
-                    ballot.setDescription(titleDescription[1].trim());
-                }
-
-                try {
-                    String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".commenters");
-
-                    if (TextUtils.stringSet(commenters)) {
-                        for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens(); ) {
-                            String commenter = commenterTokenizer.nextToken();
-                            if (TextUtils.stringSet(commenter)) {
-                                String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".comment." + commenter);
-                                ballot.addComment(new Comment(commenter, comment));
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    LOG.error("Try contentPropertyManager: " + contentPropertyManager + " or contentEntity: " + contentObject + " or ballot was broken: " + ballot, e);
-                }
-
-                int customChoice;
-                ArrayList<String> myChoicesList = new ArrayList<String>();
-                for (customChoice = 2; customChoice < titleDescription.length; customChoice++) {
-                    String temp = titleDescription[customChoice];
-                    myChoicesList.add(temp);
-                }
-
-                // 1.1.3: first take the list inLine
-                if (myChoicesList.size() > 1) { // should be a minimum of 2 choices
-                    ballotLabels = new String[myChoicesList.size()];
-                    myChoicesList.toArray(ballotLabels);
-                } else {
-                    if (ballotLabels == null) { // second was there no parameterList?
-                        ballotLabels = defaultBallotLabels;
-                    }
-                    // 3rd if there was a parameterList it will be in ballotLabels by default
-                }
-
-                // Load all of the choices and votes into the ballot
-                for (int i = 0; i < ballotLabels.length; i++) {
-                    Choice choice = new Choice(ballotLabels[i]);
-                    // 1.1.7.6 if this ballot is a default one, check whether there are old default items and convert see CSRVY-21 for details
-                    if (i < defaultBallotLabels.length && ballotLabels[i].equalsIgnoreCase(defaultBallotLabels[i])) {
-                        // check for old votes
-                        String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels[i]);
-                        if (TextUtils.stringSet(votes)) {
-                            // if present save the new (spaces reduced one)
-                            contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultBallotLabels[i], votes);
-                            // delete the old key
-                            contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels[i], null);
-                        }
-                    }
-                    ballot.addChoice(choice);
-
-                    // changed string to TextProperty
-                    String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + choice.getDescription());
-                    if (TextUtils.stringSet(votes)) {
-                        for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
-                            choice.voteFor(voteTokenizer.nextToken());
-                        }
-                    }
-                }
-            }
-        }
-
-        return survey;
-    }
 }

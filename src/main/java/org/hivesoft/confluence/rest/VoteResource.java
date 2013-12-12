@@ -56,7 +56,7 @@ public class VoteResource {
   @Path("/{voteTitle}/export")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public String getExportForBallotTitle(@PathParam("pageId") final long pageId, @PathParam("voteTitle") final String voteTitle) {
+  public String getExportForBallotTitle(@PathParam("pageId") long pageId, @PathParam("voteTitle") String voteTitle) {
 
     //todo: reconstruct ballot so the export can be done
     try {
@@ -71,7 +71,7 @@ public class VoteResource {
             final Map<String, String> parameters = macroDefinition.getParameters();
             String currentTitle = null;
             try {
-              currentTitle = SurveyUtils.getVoteTitle(parameters);
+              currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
             } catch (MacroException e) {
               e.printStackTrace();
             }

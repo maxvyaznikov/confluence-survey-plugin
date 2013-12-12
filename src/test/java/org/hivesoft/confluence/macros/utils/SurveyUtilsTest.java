@@ -5,12 +5,12 @@ import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.user.impl.DefaultUser;
+import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -91,6 +91,50 @@ public class SurveyUtilsTest {
     assertEquals("someChoice1", reconstructedBallot.getChoice("someChoice1").getDescription());
     assertEquals("someChoice2", reconstructedBallot.getChoice("someChoice2").getDescription());
     assertTrue(reconstructedBallot.getChoice("someChoice1").getHasVotedFor(SOME_USER1.getName()));
+  }
+
+  @Test
+  public void test_createSurvey_noParameters_success() {
+    final Survey returnedSurvey = SurveyUtils.createSurvey("", new Page(), "", mockContentPropertyManager);
+
+    assertEquals(0, returnedSurvey.getBallots().size());
+  }
+
+  @Test
+  public void test_createSurvey_oneParameter_success() {
+    final String someBallotTitle1 = "someBallotTitle1";
+    final Survey returnedSurvey = SurveyUtils.createSurvey(someBallotTitle1, new Page(), null, mockContentPropertyManager);
+
+    assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
+  }
+
+  @Test
+  public void test_createSurvey_twoParameters_success() {
+    final String someBallotTitle1 = "someBallotTitle1";
+    final String someBallotTitle2 = "someBallotTitle2";
+    final String someBallotDescription1 = "someBallotDescription1";
+    final Survey returnedSurvey = SurveyUtils.createSurvey(someBallotTitle1 + " - " + someBallotDescription1 + "\r\n" + someBallotTitle2, new Page(), "", mockContentPropertyManager);
+
+    assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
+    assertEquals(someBallotDescription1, returnedSurvey.getBallot(someBallotTitle1).getDescription());
+    assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
+  }
+
+  @Test
+  public void test_createSurvey_twoParametersWithCommenter_success() {
+    final String someBallotTitle1 = "someBallotTitle1";
+    final String someBallotTitle2 = "someBallotTitle2";
+
+    final Page somePage = new Page();
+
+    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".commenters")).thenReturn(SOME_USER1.getName());
+    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".comment." + SOME_USER1.getName())).thenReturn("someComment");
+
+    final Survey returnedSurvey = SurveyUtils.createSurvey(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, "", mockContentPropertyManager);
+
+    assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
+    assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
+    assertEquals("someComment", returnedSurvey.getBallot(someBallotTitle1).getCommentForUser(SOME_USER1.getName()).getComment());
   }
 
   //****** Helper Methods ******

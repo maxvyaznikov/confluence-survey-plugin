@@ -74,47 +74,5 @@ public class SurveyMacroTest {
         //assertTrue(macroResultAsString.contains("someTitle"));
     }
 
-    @Test
-    public void test_createSurvey_noParameters_success() {
-        final Survey returnedSurvey = classUnderTest.createSurvey("", new Page(), "");
 
-        assertEquals(0, returnedSurvey.getBallots().size());
-    }
-
-    @Test
-    public void test_createSurvey_oneParameter_success() {
-        final String someBallotTitle1 = "someBallotTitle1";
-        final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1, new Page(), null);
-
-        assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
-    }
-
-    @Test
-    public void test_createSurvey_twoParameters_success() {
-        final String someBallotTitle1 = "someBallotTitle1";
-        final String someBallotTitle2 = "someBallotTitle2";
-        final String someBallotDescription1 = "someBallotDescription1";
-        final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1 + " - " + someBallotDescription1 + "\r\n" + someBallotTitle2, new Page(), "");
-
-        assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
-        assertEquals(someBallotDescription1, returnedSurvey.getBallot(someBallotTitle1).getDescription());
-        assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
-    }
-
-    @Test
-    public void test_createSurvey_twoParametersWithCommenter_success() {
-        final String someBallotTitle1 = "someBallotTitle1";
-        final String someBallotTitle2 = "someBallotTitle2";
-
-        final Page somePage = new Page();
-
-        when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".commenters")).thenReturn(SOME_USER1.getName());
-        when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".comment." + SOME_USER1.getName())).thenReturn("someComment");
-
-        final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, "");
-
-        assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
-        assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
-        assertEquals("someComment", returnedSurvey.getBallot(someBallotTitle1).getCommentForUser(SOME_USER1.getName()).getComment());
-    }
 }

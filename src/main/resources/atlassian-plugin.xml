@@ -155,7 +155,7 @@
     <resource type="download" name="logos/" location="/images/logos"/>
     <resource type="download" name="icons/" location="/images/icons"/>
 
-    <resource type="download" name="surveyplugin-vote.js" location="/js/surveyplugin-vote.js"/>
+    <resource type="download" name="surveyplugin-survey.js" location="/js/surveyplugin-survey.js"/>
     <!--<context>survey-plugin</context>-->
   </web-resource>
 

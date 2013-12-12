@@ -34,10 +34,8 @@ import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.opensymphony.util.TextUtils;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
-import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.rest.AdminResource;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
@@ -141,7 +139,7 @@ public class VoteMacro extends BaseMacro implements Macro {
   public String execute(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
     final List<String> macros = new ArrayList<String>();
     try {
-      final String voteMacroTitle = SurveyUtils.getVoteTitle(parameters);
+      final String voteMacroTitle = SurveyUtils.getTitleInMacroParameters(parameters);
       LOG.info("Try executing " + VOTE_MACRO + "-macro XHtml Style with title: '" + voteMacroTitle + "' and body: '" + body + "'");
       xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
         @Override
@@ -198,7 +196,7 @@ public class VoteMacro extends BaseMacro implements Macro {
       iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
     }
 
-    String title = SurveyUtils.getVoteTitle(parameters);
+    String title = SurveyUtils.getTitleInMacroParameters(parameters);
     // Rebuild the model for this ballot
     Ballot ballot = SurveyUtils.reconstructBallot(title, body, contentObject, contentPropertyManager);
     ballot.setChangeableVotes(Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES)));
