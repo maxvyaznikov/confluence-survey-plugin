@@ -65,9 +65,6 @@ public class SurveyResource {
     if (page == null) {
       return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
     }
-    LOG.info("Found page with id=" + pageId + " and title=" + page.getTitle());
-
-    //page.addAttachment(new Attachment());
 
     final List<Survey> surveys = new ArrayList<Survey>();
     try {
@@ -101,7 +98,6 @@ public class SurveyResource {
       final String fileName = surveyTitle + "-summary-" + simpleDateFormat.format(currentDate.getTime()) + ".csv";
 
       final Survey survey = surveys.iterator().next();
-
       final StringWriter csvStringWriter = new StringWriter();
       CSVWriter writer = new CSVWriter(csvStringWriter, ';');
 
@@ -127,9 +123,6 @@ public class SurveyResource {
         }
       }
 
-      // feed in your array (or convert your data to an array)
-      //String[] entries = "first#second#third".split("#");
-      //writer.writeNext(entries);
       try {
         writer.close();
       } catch (IOException e) {
@@ -137,18 +130,12 @@ public class SurveyResource {
       }
 
       final byte[] csvBytes = csvStringWriter.toString().getBytes("UTF-8");
-
-      LOG.info("attachment does not already exist, carry on");
       final Attachment addedAttachment = transactionTemplate.execute(new TransactionCallbackAddAttachment(pageManager, page, fileName, csvBytes));
 
       if (addedAttachment == null) {
-        throw new IllegalArgumentException("Could not save Attachment");
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("There was a problem while trying to save the report as an Attachment").build();
       }
-      final String attachmentUrlPath = addedAttachment.getDownloadPath();
-      LOG.info("returning path to attachment: " + attachmentUrlPath);
-
-      final CSVExportRepresentation csvExportRepresentation = new CSVExportRepresentation(attachmentUrlPath);
-      return Response.ok(csvExportRepresentation).build();
+      return Response.ok(new CSVExportRepresentation(addedAttachment.getDownloadPath())).build();
     }
     return Response.status(Response.Status.BAD_REQUEST).entity("Could not find the specified survey macro on the specified page!").build();
   }
