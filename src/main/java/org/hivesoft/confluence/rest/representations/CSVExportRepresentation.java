@@ -12,7 +12,7 @@ public class CSVExportRepresentation {
   @XmlElement
   private String uri;
 
-  public void setUri(String uri) {
+  public CSVExportRepresentation(String uri) {
     this.uri = uri;
   }
 
