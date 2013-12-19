@@ -19,9 +19,8 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
   <div id="$generalUtil.urlEncode(${survey.title})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px; width: 100%;">
   #if( $survey.renderTitleLevel !=0 ) <h$survey.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16" title="$action.getText("surveyplugin.survey.locked")." /> #end <a name="${surveyTitleSummary}-a">$generalUtil.htmlEncode($survey.title)</a>#if ($survey.renderTitleLevel !=0)</h$survey.renderTitleLevel>#end
 
-  <img class="exportsurvey" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="17" width="17" name="vote"
-       alt="$generalUtil.urlEncode(${survey.title})" title="csv export of current survey" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';"
-       onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/export.png';"/>
+  <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="17" width="17" name="vote"
+       alt="$generalUtil.urlEncode(${survey.title})" title="csv export of current survey"/>
 #else
   #set( $surveyTitleSummary = "summary" )
 #end

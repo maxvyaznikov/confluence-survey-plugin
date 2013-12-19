@@ -34,3 +34,7 @@ td.surveyCommentPane {
     padding-left:10px;
 }
 
+.surveyIcon:hover {
+    opacity: .7;
+    cursor: pointer;
+}
