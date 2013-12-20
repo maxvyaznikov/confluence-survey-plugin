@@ -8,19 +8,23 @@
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *#
- 
+
 <meta name="application-base-url" content="$applicationProperties.getBaseUrl()"/>
 $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:resources")
 
-<link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all" />
+<link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all"/>
 
 #set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
 #if ( $survey.title )
-  <div id="$generalUtil.urlEncode(${survey.title})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px; width: 100%;">
-  #if( $survey.renderTitleLevel !=0 ) <h$survey.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16" title="$action.getText("surveyplugin.survey.locked")." /> #end <a name="${surveyTitleSummary}-a">$generalUtil.htmlEncode($survey.title)</a>#if ($survey.renderTitleLevel !=0)</h$survey.renderTitleLevel>#end
-
-  <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="17" width="17" name="vote"
-       alt="$generalUtil.urlEncode(${survey.title})" title="csv export of current survey"/>
+<div id="$generalUtil.urlEncode(${survey.title})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px; width: 100%;">
+  #if( $survey.renderTitleLevel !=0 )
+  <h$survey.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
+                                                            title="$action.getText("surveyplugin.survey.locked")."/> #end <a
+        name="${surveyTitleSummary}-a">$generalUtil.htmlEncode($survey.title)</a>#if ($survey.renderTitleLevel !=0)</h$survey.renderTitleLevel>#end
+  #if ($canSeeSurveyResults)
+    <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="17" width="17" name="vote"
+         alt="$generalUtil.urlEncode(${survey.title})" title="csv export of current survey"/>
+  #end
 #else
   #set( $surveyTitleSummary = "summary" )
 #end
@@ -30,88 +34,91 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 
 #set ($ballotNumber = 0)
 #if ( $survey.ballots.size()==0 )
-    <div class="aui-message Warning" style="margin-left:10px">
-      $action.getText("surveyplugin.survey.info.add.ballots")
-    </div>
+  <div class="aui-message Warning" style="margin-left:10px">
+    $action.getText("surveyplugin.survey.info.add.ballots")
+  </div>
 #else
-    #foreach ($ballot in $survey.ballots)
+  #foreach ($ballot in $survey.ballots)
 
-      ## Set up a few variables to let the vote macro do its thing...
-      #set ($canVote = ($canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $survey.changeableVotes)))
-      #set ($canSeeResults = ($canSeeSurveyResults && ( $ballot.getHasVoted($req.remoteUser) || ($canTakeSurvey && $ballot.locked) || !($canTakeSurvey) )))
-      #set ($canSeeVoters = $canSeeResults && $survey.visibleVoters)
-      #set ($userVote = false)
-      #set ($ballotNumberID = $generalUtil.htmlEncode("${ballotNumber}-${ballot.titleNoSpace}") )
+  ## Set up a few variables to let the vote macro do its thing...
+    #set ($canVote = ($canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $survey.changeableVotes)))
+    #set ($canSeeResults = ($canSeeSurveyResults && ( $ballot.getHasVoted($req.remoteUser) || ($canTakeSurvey && $ballot.locked) || !($canTakeSurvey) )))
+    #set ($canSeeVoters = $canSeeResults && $survey.visibleVoters)
+    #set ($userVote = false)
+    #set ($ballotNumberID = $generalUtil.htmlEncode("${ballotNumber}-${ballot.titleNoSpace}") )
 
-      <table class="surveyTable" >
-        <tr>
-          <td class="surveyVotePane">
-            #parse ("templates/macros/vote/votemacro.vm")
-          </td>
-          <td class="surveyCommentPane">
-            #if ($canTakeSurvey && $survey.visibleComments && !($ballot.locked))
-              #set ($currentComment = "")
-              #if ($ballot.getCommentForUser($req.remoteUser))
-                #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
-              #end
-              <div class="focusedComment commentblock surveyComment">
+    <table class="surveyTable">
+      <tr>
+        <td class="surveyVotePane">
+          #parse ("templates/macros/vote/votemacro.vm")
+        </td>
+        <td class="surveyCommentPane">
+          #if ($canTakeSurvey && $survey.visibleComments && !($ballot.locked))
+            #set ($currentComment = "")
+            #if ($ballot.getCommentForUser($req.remoteUser))
+              #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
+            #end
+            <div class="focusedComment commentblock surveyComment">
                 <span id="${ballotNumberID}CommentForm" style="display:none">
                   <form method="POST" action="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id">
-                    <input type="hidden" name="ballotTitle" value="$generalUtil.htmlEncode($ballot.title)" />
-                    <input type="hidden" name="ballotAnchor" value="${voteAnchor}" />
+                    <input type="hidden" name="ballotTitle" value="$generalUtil.htmlEncode($ballot.title)"/>
+                    <input type="hidden" name="ballotAnchor" value="${voteAnchor}"/>
                     <textarea name="comment" rows="5" cols="70" style="font:12px monospace;">$generalUtil.htmlEncode($currentComment)</textarea>
-                    <br />
+                    <br/>
                     <span style="align:right">
-                      <input type="submit" value="$action.getText('surveyplugin.survey.save')" />
-                      <input type="button" value="$action.getText('surveyplugin.survey.cancel')" onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='inline';document.getElementById('${ballotNumberID}CommentForm').style.display='none';" />
+                      <input type="submit" value="$action.getText('surveyplugin.survey.save')"/>
+                      <input type="button" value="$action.getText('surveyplugin.survey.cancel')"
+                             onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='inline';document.getElementById('${ballotNumberID}CommentForm').style.display='none';"/>
                     </span>
                   </form>
                 </span>
-                #if ($ballot.getCommentForUser($req.remoteUser))
-                  #set($rawWiki=$ballot.getCommentForUser($req.remoteUser).comment)
-                  <span id="${ballotNumberID}CommentDisplay">
+              #if ($ballot.getCommentForUser($req.remoteUser))
+                #set($rawWiki=$ballot.getCommentForUser($req.remoteUser).comment)
+                <span id="${ballotNumberID}CommentDisplay">
                     <span id="${ballotNumberID}CommentValue">$rawWiki</span>
-                    <br />
-                    <br />
-                    <a href="#" onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.edit")</a>
+                    <br/>
+                    <br/>
+                    <a href="#"
+                       onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.edit")</a>
                     <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id&ballotTitle=$generalUtil.urlEncode($ballot.title)&ballotAnchor=$generalUtil.urlEncode("${voteAnchor}")&comment=">$action.getText("surveyplugin.survey.comment.remove")</a>
                   </span>
-                #else
-                  <span id="${ballotNumberID}CommentDisplay">
-                    <a href="#" onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.add")</a>
+              #else
+                <span id="${ballotNumberID}CommentDisplay">
+                    <a href="#"
+                       onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.add")</a>
                   </span>
-                #end
-              </div>
-            #end
+              #end
+            </div>
+          #end
 
-            #if (($canSeeResults || ($canVote && $ballot.locked)) && $survey.visibleComments)
-              #foreach ($comment in $ballot.comments)
-                #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $ballot.locked))
-                  <div class="commentBox commentblock surveyComment"  >
-                    #set( $voteText = $action.getText("surveyplugin.survey.vote.not") )
-                    #if ($ballot.getVote($comment.username))
-                          #set($voteText=$ballot.getVote($comment.username).description)
-                    #end
-                    #if ($canSeeVoters)
-                          #set($voteText= $comment.username + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
-                    #end
-                    <b>$voteText:</b> $comment.comment
-                  </div>
-                #end
+          #if (($canSeeResults || ($canVote && $ballot.locked)) && $survey.visibleComments)
+            #foreach ($comment in $ballot.comments)
+              #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $ballot.locked))
+                <div class="commentBox commentblock surveyComment">
+                  #set( $voteText = $action.getText("surveyplugin.survey.vote.not") )
+                  #if ($ballot.getVote($comment.username))
+                    #set($voteText=$ballot.getVote($comment.username).description)
+                  #end
+                  #if ($canSeeVoters)
+                    #set($voteText= $comment.username + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
+                  #end
+                  <b>$voteText:</b> $comment.comment
+                </div>
               #end
             #end
-          </td>
-        </tr>
-      </table>
+          #end
+        </td>
+      </tr>
+    </table>
 
-      #set ($ballotNumber = $ballotNumber + 1)
-    #end
+    #set ($ballotNumber = $ballotNumber + 1)
+  #end
 
-    #if ($survey.surveySummary=="Bottom")
-      #parse ("templates/macros/survey/surveysummary.vm")
-    #end
+  #if ($survey.surveySummary=="Bottom")
+    #parse ("templates/macros/survey/surveysummary.vm")
+  #end
 #end
 
 #if ( $survey.title )
-  </div>
+</div>
 #end

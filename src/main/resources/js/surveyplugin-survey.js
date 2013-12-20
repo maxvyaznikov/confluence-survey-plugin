@@ -6,12 +6,19 @@ AJS.toInit(function () {
     baseUrl = AJS.$("meta[name='confluence-base-url']").attr("content");
   }
 
-  function getCSVExport(surveyOrVote, title) {
+  function getCSVExport(surveyOrVote, exportLink) {
     AJS.$.ajax({
-      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + title + "/export",
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + exportLink.alt + "/export",
       dataType: "json",
       success: function (csvExportRepresentation) {
-        alert(csvExportRepresentation.uri);
+        var inlineDialog = AJS.InlineDialog(AJS.$(exportLink), "myDialog",
+          function(content, trigger, showPopup) {
+            content.css({"padding":"20px"}).html('<p>The survey has been exported as a page attachment: <a href="'+csvExportRepresentation.uri+'">click to download</a></p>');
+            showPopup();
+            return false;
+          }
+        );
+        inlineDialog.show();
       },
       error: function(xhr, status, error) {
         var err = eval("(" + xhr.responseText + ")");
@@ -22,11 +29,11 @@ AJS.toInit(function () {
 
   AJS.$(".exportsurvey").click(function (e) {
     e.preventDefault();
-    getCSVExport("surveys", this.alt);
+    getCSVExport("surveys", this);
   });
 
   AJS.$(".exportvote").click(function (e) {
     e.preventDefault();
-    getCSVExport("votes", this.alt);
+    getCSVExport("votes", this);
   });
 });
