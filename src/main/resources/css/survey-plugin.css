@@ -3,9 +3,9 @@
     background-color: #fff;
     border-radius: 7px;
     padding: 2px;
-    border-width:1px;
-    border-style:solid;
-    border-color:#ddd;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ddd;
 }
 
 .greenbar-value {
@@ -16,7 +16,8 @@
 
 .greenbar-text {
     position: absolute;
-    top:0; left:0;
+    top: 0;
+    left: 0;
 
     color: #000;
     text-align: center;
@@ -24,17 +25,22 @@
 }
 
 table.surveyTable {
-    <!--width:100%;-->
-    padding:0;
-    margin:0;
+    padding: 0;
+    margin: 0;
 }
 
 td.surveyCommentPane {
-    vertical-align:middle;
-    padding-left:10px;
+    vertical-align: middle;
+    padding-left: 10px;
+}
+
+.surveyIcon {
+    padding: 1px;
 }
 
 .surveyIcon:hover {
-    opacity: .7;
     cursor: pointer;
+    background-color: lightgray;
+    padding: 1px;
 }
+
