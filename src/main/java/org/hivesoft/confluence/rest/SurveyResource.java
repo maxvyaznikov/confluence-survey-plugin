@@ -119,7 +119,7 @@ public class SurveyResource {
               comments.add(comment.getComment());
             }
           }
-          String[] line = new String[]{ballot.getTitle(), choice.getDescription(), choice.getVoteCount() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + "%, " + ballot.getPercentageOfVoteForChoice(choice), StringUtils.join(choice.getVoters().toArray(), ","), StringUtils.join(comments.toArray(), ",")};
+          String[] line = new String[]{ballot.getTitle(), choice.getDescription(), choice.getVoteCount() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + ", " + ballot.getPercentageOfVoteForChoice(choice) + "%", StringUtils.join(choice.getVoters().toArray(), ","), StringUtils.join(comments.toArray(), ",")};
           writer.writeNext(line);
         }
       }
