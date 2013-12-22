@@ -17,12 +17,15 @@ AJS.toInit(function () {
   }
 
   function updateConfig() {
-    AJS.$.ajax({
+    var upConfig = AJS.$.ajax({
       url: baseUrl + "/rest/surveyplugin/1.0/admin",
       type: "PUT",
       contentType: "application/json",
       data: '{ "iconSet": "' + AJS.$("input[name='is-rads']:checked").attr("id") + '" }',
       processData: false
+    });
+    upConfig.done(function () {
+      alert("iconSet has been updated to: " + AJS.$("input[name='is-rads']:checked").attr("id"));
     });
   }
 

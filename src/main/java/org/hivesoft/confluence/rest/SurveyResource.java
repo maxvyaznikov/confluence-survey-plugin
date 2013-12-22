@@ -104,6 +104,7 @@ public class SurveyResource {
       writer.writeNext(new String[]{
               i18nResolver.getText("surveyplugin.survey.summary.header.question"),
               i18nResolver.getText("surveyplugin.vote.choices"),
+              i18nResolver.getText("surveyplugin.vote.result"),
               i18nResolver.getText("surveyplugin.vote.voters"),
               i18nResolver.getText("surveyplugin.export.comments")
       });
@@ -118,7 +119,7 @@ public class SurveyResource {
               comments.add(comment.getComment());
             }
           }
-          String[] line = new String[]{ballot.getTitle(), choice.getDescription(), StringUtils.join(choice.getVoters().toArray(), ","), StringUtils.join(comments.toArray(), ",")};
+          String[] line = new String[]{ballot.getTitle(), choice.getDescription(), choice.getVoteCount() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + "%, " + ballot.getPercentageOfVoteForChoice(choice), StringUtils.join(choice.getVoters().toArray(), ","), StringUtils.join(comments.toArray(), ",")};
           writer.writeNext(line);
         }
       }

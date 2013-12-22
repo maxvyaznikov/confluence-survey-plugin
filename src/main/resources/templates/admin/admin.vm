@@ -22,13 +22,13 @@
           </div>
           <div class="radio">
             <input class="radio" type="radio" id="is-modern" name="is-rads"/>
-            <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/modern/green-yes.png" alt="Original"/>
+            <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/modern/green-yes.png" alt="Modern"/>
             <label for="is-modern">Modern</label>
           </div>
         </div>
       </div>
       <div class="field-group">
-        <input type="submit" value="$i18n.getText("surveyplugin.admin.save.label")" class="button">
+        <input id="iconset-submit" type="submit" value="$i18n.getText("surveyplugin.admin.save.label")" class="button">
       </div>
     </form>
   </body>

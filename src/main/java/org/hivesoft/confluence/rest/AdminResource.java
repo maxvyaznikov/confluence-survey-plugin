@@ -10,6 +10,7 @@
  */
 package org.hivesoft.confluence.rest;
 
+import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
@@ -23,6 +24,8 @@ import javax.ws.rs.core.Response;
 
 @Path("/admin")
 public class AdminResource {
+  private static final Logger.Log LOG = Logger.getInstance(AdminResource.class);
+
   public final static String SURVEY_PLUGIN_KEY_ICON_SET = "survey-plugin.iconSet";
   public final static String SURVEY_PLUGIN_ICON_SET_DEFAULT = "default";
 
@@ -48,6 +51,7 @@ public class AdminResource {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response putConfig(final SurveyConfig surveyConfig) {
     if (isUserNotAdmin()) return Response.status(Response.Status.UNAUTHORIZED).build();
+    LOG.debug("setting iconSet to: " + surveyConfig);
 
     transactionTemplate.execute(new TransactionCallbackSetConfig(pluginSettingsFactory, surveyConfig));
     return Response.noContent().build();

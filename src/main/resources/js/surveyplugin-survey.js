@@ -11,7 +11,7 @@ AJS.toInit(function () {
       url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + exportLink.alt + "/export",
       dataType: "json",
       success: function (csvExportRepresentation) {
-        var inlineDialog = AJS.InlineDialog(AJS.$(exportLink), "myDialog",
+        var inlineDialog = AJS.InlineDialog(AJS.$(exportLink), "exportDialog",
           function(content, trigger, showPopup) {
             content.css({"padding":"20px"}).html('<p>The survey has been exported as a page attachment: <a href="'+csvExportRepresentation.uri+'">click to download</a></p>');
             showPopup();

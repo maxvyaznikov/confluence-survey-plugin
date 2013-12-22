@@ -9,24 +9,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveyConfig {
 
-    @XmlElement
-    private String iconSet;
+  @XmlElement
+  private String iconSet;
 
-    public String getIconSet() {
-        return iconSet;
-    }
+  public String getIconSet() {
+    return iconSet;
+  }
 
-    public void setIconSet(String iconSet) {
-        this.iconSet = iconSet;
-    }
+  public void setIconSet(String iconSet) {
+    this.iconSet = iconSet;
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof SurveyConfig))
-            return false;
-        return (((SurveyConfig) obj).getIconSet().equals(this.iconSet));
-    }
+  @Override
+  public String toString() {
+    return "SurveyConfig{" +
+            "iconSet='" + iconSet + '\'' +
+            '}';
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || !(obj instanceof SurveyConfig))
+      return false;
+    return (((SurveyConfig) obj).getIconSet().equals(this.iconSet));
+  }
 }
