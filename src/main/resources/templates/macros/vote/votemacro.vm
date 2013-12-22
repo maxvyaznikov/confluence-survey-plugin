@@ -32,7 +32,7 @@ $generalUtil.htmlEncode($ballot.description)
   $action.getText("surveyplugin.vote.info.add.choices")
 </div>
 #else
-##<img class="exportvote" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote"
+##<img class="exportvote" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
 ##     alt="$generalUtil.urlEncode(${ballot.title})" title="csv export of current vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';"
 ##     onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';"/>
 
@@ -61,19 +61,19 @@ $generalUtil.htmlEncode($ballot.description)
         #if ($canVote && !($ballot.locked))
           #if ($choice.equals($userVote))
             <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=unvote#${voteAnchor}">
-              <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote"
+              <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
                    class="surveyIcon"/>
             </a>
           #else
             <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=vote#${voteAnchor}">
-              <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="17" width="17" name="vote"
+              <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
                    class="surveyIcon"/>
             </a>
           #end
         #elseif ($choice.equals($userVote))
-          <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="17" width="17"/>
+          <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>
         #else
-          <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="17" width="17"/>
+          <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
         #end
       </td>
 

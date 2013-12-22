@@ -20,6 +20,11 @@
             <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/original/green-yes.png" alt="Original"/>
             <label for="is-original">Original</label>
           </div>
+          <div class="radio">
+            <input class="radio" type="radio" id="is-modern" name="is-rads"/>
+            <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/modern/green-yes.png" alt="Original"/>
+            <label for="is-modern">Modern</label>
+          </div>
         </div>
       </div>
       <div class="field-group">

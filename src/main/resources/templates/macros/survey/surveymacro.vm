@@ -22,7 +22,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
                                                             title="$action.getText("surveyplugin.survey.locked")."/> #end <a
         name="${surveyTitleSummary}-a">$generalUtil.htmlEncode($survey.title)</a>#if ($survey.renderTitleLevel !=0)</h$survey.renderTitleLevel>#end
   #if ($canSeeSurveyResults)
-    <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="17" width="17" name="vote"
+    <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="16" width="16" name="vote"
          alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.export.icon.title')"/>
   #end
 #else
