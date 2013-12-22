@@ -34,7 +34,7 @@
   </xhtml-macro>
 
   <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-               icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png"
+               icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo-survey.png"
                documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
     <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
     <category name="confluence-content"/>
@@ -89,7 +89,7 @@
   </macro>
 
   <macro key="survey-wikistyle" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-         icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
+         icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo-survey.png">
     <category name="confluence-content"/>
     <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
     <parameters>
