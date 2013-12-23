@@ -188,6 +188,7 @@
           <instrumentation>
             <excludes>
               <exclude>org/apache/commons/**</exclude>
+              <exclude>au/com/bytecode/opencsv/**</exclude>
             </excludes>
           </instrumentation>
         </configuration>

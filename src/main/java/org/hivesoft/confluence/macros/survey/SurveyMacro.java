@@ -104,6 +104,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
     try {
       final String surveyMacroTitle = StringUtils.defaultString(parameters.get(KEY_TITLE)).trim();
       LOG.info("Try executing " + SURVEY_MACRO + "-macro XHtml Style with title: '" + surveyMacroTitle + "' body: '" + body + "'");
+      LOG.debug("conversionContext: " + conversionContext.getEntity().getBodyAsString());
       xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
         @Override
         public void handle(MacroDefinition macroDefinition) {

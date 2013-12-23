@@ -68,7 +68,7 @@ public class SurveyResource {
 
     final List<Survey> surveys = new ArrayList<Survey>();
     try {
-      xhtmlContent.handleMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.getContentEntityObject().toPageContext()), new MacroDefinitionHandler() {
+      xhtmlContent.handleMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionHandler() {
         @Override
         public void handle(MacroDefinition macroDefinition) {
           if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
