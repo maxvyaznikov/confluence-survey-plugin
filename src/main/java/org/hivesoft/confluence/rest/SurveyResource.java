@@ -82,13 +82,15 @@ public class SurveyResource {
             LOG.info("surveyTitle for export=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
               LOG.info("Try to reconstruct Survey...");
-              surveys.add(SurveyUtils.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters().get(SurveyMacro.KEY_CHOICES), contentPropertyManager));
+              final Survey survey = SurveyUtils.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters().get(SurveyMacro.KEY_CHOICES), contentPropertyManager);
+              survey.setTitle(surveyTitle);
+              surveys.add(survey);
             }
           }
         }
       });
     } catch (XhtmlException e) {
-      e.printStackTrace();
+      LOG.error("There was a failure while parsing the Xhtml content: " + e.getMessage(), e);
       return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity("There was a problem reconstructing the given survey with title: " + surveyTitle).build();
     }
 
