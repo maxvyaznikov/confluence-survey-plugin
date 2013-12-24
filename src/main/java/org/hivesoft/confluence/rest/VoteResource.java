@@ -5,7 +5,6 @@ import com.atlassian.confluence.content.render.xhtml.XhtmlException;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
-import com.atlassian.confluence.spaces.SpaceManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
@@ -34,23 +33,15 @@ public class VoteResource {
   private static final Logger.Log LOG = Logger.getInstance(VoteResource.class);
 
   protected final PageManager pageManager;
-  protected final SpaceManager spaceManager;
   protected final ContentPropertyManager contentPropertyManager;
   protected final PermissionEvaluator permissionEvaluator;
   protected final XhtmlContent xhtmlContent;
 
-  public VoteResource(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, XhtmlContent xhtmlContent) {
+  public VoteResource(PageManager pageManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, XhtmlContent xhtmlContent) {
     this.pageManager = pageManager;
-    this.spaceManager = spaceManager;
     this.contentPropertyManager = contentPropertyManager;
     this.permissionEvaluator = new PermissionEvaluator(userAccessor, userManager);
     this.xhtmlContent = xhtmlContent;
-  }
-
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public String getVotesForPage(@PathParam("pageId") String pageId) {
-    return "thanks for calling from Page: " + pageId;
   }
 
   @Path("/{voteTitle}/export")

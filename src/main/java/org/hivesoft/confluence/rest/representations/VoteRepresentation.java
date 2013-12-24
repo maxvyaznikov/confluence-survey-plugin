@@ -16,27 +16,30 @@ public class VoteRepresentation {
   @XmlElement
   private String voteAction;
 
-  public String getBallotTitle() {
-    return ballotTitle;
+  public VoteRepresentation(String ballotTitle, String voteChoice, String voteAction) {
+    this.ballotTitle = ballotTitle;
+    this.voteChoice = voteChoice;
+    this.voteAction = voteAction;
   }
 
-  public void setBallotTitle(String ballotTitle) {
-    this.ballotTitle = ballotTitle;
+  public String getBallotTitle() {
+    return ballotTitle;
   }
 
   public String getVoteChoice() {
     return voteChoice;
   }
 
-  public void setVoteChoice(String voteChoice) {
-    this.voteChoice = voteChoice;
-  }
-
   public String getVoteAction() {
     return voteAction;
   }
 
-  public void setVoteAction(String voteAction) {
-    this.voteAction = voteAction;
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || !(o instanceof VoteRepresentation)) return false;
+
+    VoteRepresentation that = (VoteRepresentation) o;
+
+    return that.getBallotTitle().equalsIgnoreCase(ballotTitle) && that.getVoteChoice().equalsIgnoreCase(voteChoice) && that.getVoteAction().equalsIgnoreCase(voteAction);
   }
 }
