@@ -12,15 +12,15 @@ AJS.toInit(function () {
       dataType: "json",
       success: function (csvExportRepresentation) {
         var inlineDialog = AJS.InlineDialog(AJS.$(exportLink), "exportDialog",
-          function(content, trigger, showPopup) {
-            content.css({"padding":"20px"}).html('<p>The survey has been exported as a page attachment: <a href="'+csvExportRepresentation.uri+'">click to download</a></p>');
+          function (content, trigger, showPopup) {
+            content.css({"padding": "20px"}).html('<p>The survey has been exported as a page attachment: <a href="' + csvExportRepresentation.uri + '">click to download</a></p>');
             showPopup();
             return false;
           }
         );
         inlineDialog.show();
       },
-      error: function(xhr, status, error) {
+      error: function (xhr, status, error) {
         var err = eval("(" + xhr.responseText + ")");
         alert(err.Message);
       }
@@ -31,9 +31,9 @@ AJS.toInit(function () {
     e.preventDefault();
     getCSVExport("surveys", this);
   });
-
-  AJS.$(".exportvote").click(function (e) {
-    e.preventDefault();
-    getCSVExport("votes", this);
-  });
+  /* voteResource has been deleted, so uncomment the call to it / no code for future, but at least the idea ;)
+   AJS.$(".exportvote").click(function (e) {
+   e.preventDefault();
+   getCSVExport("votes", this);
+   });*/
 });
