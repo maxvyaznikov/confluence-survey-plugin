@@ -102,8 +102,9 @@ public class SurveyMacro extends VoteMacro implements Macro {
     final List<String> macros = new ArrayList<String>();
     try {
       final String surveyMacroTitle = StringUtils.defaultString(parameters.get(KEY_TITLE)).trim();
-      LOG.info("Try executing " + SURVEY_MACRO + "-macro XHtml Style with title: '" + surveyMacroTitle + "' body: '" + body + "'");
-      LOG.debug("conversionContext: " + conversionContext.getEntity().getBodyAsString());
+      if (LOG.isInfoEnabled()) {
+        LOG.info("Try executing " + SURVEY_MACRO + "-macro XHtml Style with title: '" + surveyMacroTitle + "' body: '" + body + "'");
+      }
       xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
         @Override
         public void handle(MacroDefinition macroDefinition) {
@@ -251,7 +252,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
         StringWriter renderedTemplate = new StringWriter();
         renderer.render("templates/macros/survey/surveymacro.vm", contextMap, renderedTemplate);
         return renderedTemplate.toString();
-        //return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro.vm", contextMap);
       }
 
       return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro-denied.vm", contextMap);

@@ -33,7 +33,6 @@ public class SurveyUtils {
   private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
   private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
 
-  // 1.1.7.7 define the max length that is storable to the propertyEntry-key field
   protected static final int MAX_STORABLE_KEY_LENGTH = 200;
 
   public static void validateMaxStorableKeyLength(List<String> ballotAndChoiceNames) throws MacroException {
