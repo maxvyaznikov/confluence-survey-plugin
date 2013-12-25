@@ -34,8 +34,18 @@ td.surveyCommentPane {
     padding-left: 10px;
 }
 
+/*the iconBar is thought for 4* 16px icons, don't know of a more relative way*/
+.surveyIconBar {
+    background-color: #eeeeee;
+    width: 80px;
+}
+
 .surveyIcon {
     padding: 1px;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    margin-left: 1px;
+    margin-right: 1px;
 }
 
 .surveyIcon:hover {
