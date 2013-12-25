@@ -10,7 +10,8 @@
 
   <name>Survey and Vote Macros</name>
   <description>This project is a set of two macros that are designed to gather information from confluence users. The vote macro allows users to vote on a single issue and will tally the results as
-    they are cast. The survey macro builds on the vote macro to collect user votes and comments on many issues.
+    they are cast. The survey macro builds on the vote macro to collect user votes and comments on many given questions and provide advanced functionality, like
+    a export and a summary part.
   </description>
   <url>https://plugins.atlassian.com/plugin/details/195</url>
   <scm>
@@ -70,7 +71,6 @@
     </dependency>
     <!-- END: provided through Confluence-->
 
-    <!-- for planed csv export of results -->
     <dependency>
       <groupId>net.sf.opencsv</groupId>
       <artifactId>opencsv</artifactId>
