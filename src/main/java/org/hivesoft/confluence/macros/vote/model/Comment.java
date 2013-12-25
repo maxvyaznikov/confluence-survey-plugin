@@ -11,9 +11,7 @@
 package org.hivesoft.confluence.macros.vote.model;
 
 /**
- * <p>
  * This class holds comments entered by users for a ballot.
- * </p>
  */
 public class Comment {
     private String username;

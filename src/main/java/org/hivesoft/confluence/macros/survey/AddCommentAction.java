@@ -20,11 +20,8 @@ import org.apache.log4j.Logger;
 import java.util.Map;
 
 /**
- * <p>
- * This is an action class to handle the comment post for
- * a survey ballot since the page display showing
+ * This is an action class to handle the comment post for a survey ballot since the page display showing
  * the macro cannot handle post data.
- * </p>
  */
 public class AddCommentAction extends AbstractPageAction {
     private static final Logger LOG = Logger.getLogger(AddCommentAction.class);
