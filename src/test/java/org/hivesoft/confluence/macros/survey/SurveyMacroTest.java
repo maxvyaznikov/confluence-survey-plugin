@@ -31,7 +31,6 @@ public class SurveyMacroTest {
     private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
 
     PageManager mockPageManager = mock(PageManager.class);
-    SpaceManager mockSpaceManager = mock(SpaceManager.class);
     ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
     UserAccessor mockUserAccessor = mock(UserAccessor.class);
     UserManager mockUserManager = mock(UserManager.class);
@@ -42,7 +41,7 @@ public class SurveyMacroTest {
 
     ConversionContext mockConversionContext = mock(ConversionContext.class);
 
-    SurveyMacro classUnderTest = new SurveyMacro(mockPageManager, mockSpaceManager, mockContentPropertyManager, mockUserAccessor, mockUserManager, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
+    SurveyMacro classUnderTest = new SurveyMacro(mockPageManager, mockContentPropertyManager, mockUserAccessor, mockUserManager, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
 
     @Test
     public void test_MacroProperties_success() {

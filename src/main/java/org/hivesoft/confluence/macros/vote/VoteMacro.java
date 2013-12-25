@@ -74,16 +74,14 @@ public class VoteMacro extends BaseMacro implements Macro {
 
   protected final PluginSettingsFactory pluginSettingsFactory;
   protected final PageManager pageManager;
-  protected final SpaceManager spaceManager;
   protected final ContentPropertyManager contentPropertyManager;
   protected final PermissionEvaluator permissionEvaluator;
   protected final TemplateRenderer renderer;
   protected final XhtmlContent xhtmlContent;
   protected final VelocityAbstractionHelper velocityAbstractionHelper;
 
-  public VoteMacro(PageManager pageManager, SpaceManager spaceManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
+  public VoteMacro(PageManager pageManager,  ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
     this.pageManager = pageManager;
-    this.spaceManager = spaceManager;
     this.contentPropertyManager = contentPropertyManager;
     this.permissionEvaluator = new PermissionEvaluator(userAccessor, userManager);
     this.renderer = renderer;
