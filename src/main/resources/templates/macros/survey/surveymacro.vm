@@ -27,8 +27,8 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
       <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="16" width="16"
            alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.export.icon.title')"/>
     #end
-    ##<img class=" surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png" border="0" align="absmiddle" height="16" width="16" name="vote"
-    ##     alt="$generalUtil.urlEncode(${survey.title})" title="Resetting all vote data"/>
+    ##<img class="resetsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png" border="0" align="absmiddle" height="16" width="16" name="vote"
+    ##     alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.reset.icon.title')"/>
   </div>
 #else
   #set( $surveyTitleSummary = "summary" )

@@ -36,4 +36,8 @@ AJS.toInit(function () {
    e.preventDefault();
    getCSVExport("votes", this);
    });*/
+  AJS.$(".resetsurvey").click(function (e){
+    e.preventDefault();
+    //AJS.
+  });
 });
