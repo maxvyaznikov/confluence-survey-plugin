@@ -28,8 +28,13 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 $generalUtil.htmlEncode($ballot.description)
 
 #if ( $ballot.choices.size()==0 )
-<div class="aui-message Warning" style="margin-left:10px">
-  $action.getText("surveyplugin.vote.info.add.choices")
+<div class="aui-message info" style="margin-left:10px">
+  <p class="title">
+    <span class="aui-icon icon-info"></span>
+    <strong>$action.getText("surveyplugin.noinfo").</strong>
+  </p>
+
+  <p>$action.getText("surveyplugin.vote.info.add.choices").</p>
 </div>
 #else
 ##<img class="exportvote" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"

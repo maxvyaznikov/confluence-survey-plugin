@@ -16,7 +16,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 
 #set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
 #if ( $survey.title )
-<div id="$generalUtil.urlEncode(${survey.title})" class="greybox surveybox" style="background: #fAfAfA; float: left; margin-left:10px; padding-left:10px; width: 100%;">
+<div id="$generalUtil.urlEncode(${survey.title})" class="surveyBox" >
   #if( $survey.renderTitleLevel !=0 )
   <h$survey.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
                                                             title="$action.getText("surveyplugin.survey.locked")."/> #end <a
@@ -39,8 +39,12 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 
 #set ($ballotNumber = 0)
 #if ( $survey.ballots.size()==0 )
-  <div class="aui-message Warning" style="margin-left:10px">
-    $action.getText("surveyplugin.survey.info.add.ballots")
+  <div class="aui-message info" style="margin-left:10px">
+    <p class="title">
+      <span class="aui-icon icon-info"></span>
+      <strong>$action.getText("surveyplugin.noinfo").</strong>
+    </p>
+    <p>$action.getText("surveyplugin.survey.info.add.ballots")</p>
   </div>
 #else
   #foreach ($ballot in $survey.ballots)

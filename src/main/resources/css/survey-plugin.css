@@ -54,3 +54,10 @@ td.surveyCommentPane {
     padding: 1px;
 }
 
+.surveyBox {
+    background: #fAfAfA;
+    float: left;
+    margin-left:10px;
+    padding-left:10px;
+    width: 100%;
+}
