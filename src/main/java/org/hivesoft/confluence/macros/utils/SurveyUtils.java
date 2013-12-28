@@ -10,22 +10,13 @@
  */
 package org.hivesoft.confluence.macros.utils;
 
-import com.atlassian.confluence.core.ContentEntityObject;
-import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
-import org.hivesoft.confluence.macros.vote.model.Ballot;
-import org.hivesoft.confluence.macros.vote.model.Choice;
-import org.hivesoft.confluence.macros.vote.model.Comment;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 public class SurveyUtils {
   private static final Logger.Log LOG = Logger.getInstance(SurveyUtils.class);
