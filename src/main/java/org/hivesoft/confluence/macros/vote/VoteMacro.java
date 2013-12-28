@@ -241,7 +241,7 @@ public class VoteMacro extends BaseMacro implements Macro {
       canSeeResults = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
     }
 
-    // 1.1.7.5 can see voters (clear text of the usernames)
+    Boolean canTakeSurvey = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
     ballot.setVisibleVoters(permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults));
 
     Boolean canVote = permissionEvaluator.getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
@@ -254,6 +254,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     contextMap.put("iconSet", iconSet);
     contextMap.put("canSeeResults", canSeeResults);
     contextMap.put("canVote", canVote);
+    contextMap.put("canTakeSurvey", canTakeSurvey);
     contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
     try {

@@ -126,7 +126,7 @@ $generalUtil.htmlEncode($ballot.description)
       #end
       #if ($ballot.visibleComments && $choiceNumber==0)
         <td class="surveyCommentPane" rowspan="$ballot.choices.size()">
-          #if ($canVote && $ballot.visibleComments && !($ballot.locked))
+          #if ($canTakeSurvey && $ballot.visibleComments && !($ballot.locked))
             #set ($currentComment = "")
             #if ($ballot.getCommentForUser($req.remoteUser))
               #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
