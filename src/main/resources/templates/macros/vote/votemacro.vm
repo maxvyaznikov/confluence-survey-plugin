@@ -149,17 +149,25 @@ $generalUtil.htmlEncode($ballot.description)
                 #set($rawWiki=$ballot.getCommentForUser($req.remoteUser).comment)
                 <span id="${ballotNumberID}CommentDisplay">
                     <span id="${ballotNumberID}CommentValue">$rawWiki</span>
-                    <br/>
-                    <br/>
+                  <div class="surveyIconBar">
                     <a href="#"
-                       onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.edit")</a>
-                    <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id&ballotTitle=$generalUtil.urlEncode($ballot.title)&ballotAnchor=$generalUtil.urlEncode("${voteAnchor}")&comment=">$action.getText("surveyplugin.survey.comment.remove")</a>
+                       onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">
+                      <img src="${workaroundRequireResourcePath}/icons/${iconSet}/comment_edit.png" border="0" align="absmiddle" height="16" width="16"
+                           class="surveyIcon" title="$action.getText("surveyplugin.survey.comment.edit")"/></a>
+                    <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id&ballotTitle=$generalUtil.urlEncode($ballot.title)&ballotAnchor=$generalUtil.urlEncode("${voteAnchor}")&comment=">
+                      <img src="${workaroundRequireResourcePath}/icons/${iconSet}/comment_remove.png" border="0" align="absmiddle" height="16" width="16"
+                           class="surveyIcon" title="$action.getText("surveyplugin.survey.comment.remove")"/></a>
+                  </div>
                   </span>
               #else
                 <span id="${ballotNumberID}CommentDisplay">
+                  <div class="surveyIconBar">
                     <a href="#"
-                       onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.add")</a>
-                  </span>
+                       onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">
+                      <img src="${workaroundRequireResourcePath}/icons/${iconSet}/comment_add.png" border="0" align="absmiddle" height="16" width="16"
+                           class="surveyIcon" title="$action.getText("surveyplugin.survey.comment.add")"/></a>
+                  </div>
+                </span>
               #end
             </div>
           #end

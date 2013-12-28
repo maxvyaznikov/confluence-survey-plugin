@@ -64,9 +64,9 @@
 .voteTable tbody tr:hover td {
     color: #009;
 }
-.voteTable tfoot {
+.voteTable tfoot td {
     font-style: italic;
-    border-bottom: 0px;
+    border-style: none;
 }
 
 table.surveyTable {
