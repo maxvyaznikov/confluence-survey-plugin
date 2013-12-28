@@ -20,7 +20,6 @@ import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.renderer.PageContext;
-import com.atlassian.confluence.spaces.SpaceManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
@@ -36,17 +35,19 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
-import org.hivesoft.confluence.macros.utils.SurveyManager;
-import org.hivesoft.confluence.rest.AdminResource;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
+import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
+import org.hivesoft.confluence.rest.AdminResource;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This macro defines a simple voting mechanism against a particular topic. Users may only vote once (unless changeable votes is true), can only vote for one choice, and cannot see the overall results
@@ -69,6 +70,7 @@ public class VoteMacro extends BaseMacro implements Macro {
   protected static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
   protected static final String KEY_VOTERS = "voters";
   protected static final String KEY_VIEWERS = "viewers";
+  protected static final String KEY_SHOW_COMMENTS = "showComments";
   protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
   protected static final String KEY_LOCKED = "locked";
@@ -81,7 +83,7 @@ public class VoteMacro extends BaseMacro implements Macro {
   protected final XhtmlContent xhtmlContent;
   protected final VelocityAbstractionHelper velocityAbstractionHelper;
 
-  public VoteMacro(PageManager pageManager,  ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
+  public VoteMacro(PageManager pageManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
     this.pageManager = pageManager;
     this.surveyManager = new SurveyManager(contentPropertyManager);
     this.permissionEvaluator = new PermissionEvaluator(userAccessor, userManager);
@@ -227,6 +229,8 @@ public class VoteMacro extends BaseMacro implements Macro {
     }
 
     ballot.setLocked(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
+    ballot.setVisibleComments(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), false));
+
 
     // 1.1.5 if viewers not defined and vote is locked then he may see the result && !TextUtils.stringSet(remoteUser) doesnt matter
     Boolean canSeeResults;

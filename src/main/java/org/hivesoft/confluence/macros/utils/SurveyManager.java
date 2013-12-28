@@ -63,6 +63,9 @@ public class SurveyManager {
         }
       }
     }
+
+    enrichBallotWithComments(contentObject, ballot);
+
     return ballot;
   }
 
@@ -100,21 +103,7 @@ public class SurveyManager {
           ballot.setDescription(titleDescription[1].trim());
         }
 
-        try {
-          String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".commenters");
-
-          if (TextUtils.stringSet(commenters)) {
-            for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens(); ) {
-              String commenter = commenterTokenizer.nextToken();
-              if (TextUtils.stringSet(commenter)) {
-                String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".comment." + commenter);
-                ballot.addComment(new Comment(commenter, comment));
-              }
-            }
-          }
-        } catch (Exception e) {
-          LOG.error("Try contentPropertyManager: " + contentPropertyManager + " or contentEntity: " + contentObject + " or ballot was broken: " + ballot, e);
-        }
+        enrichBallotWithComments(contentObject, ballot);
 
         int customChoice;
         ArrayList<String> myChoicesList = new ArrayList<String>();
@@ -162,6 +151,24 @@ public class SurveyManager {
     }
 
     return survey;
+  }
+
+  private void enrichBallotWithComments(ContentEntityObject contentObject, final Ballot ballot) {
+    try {
+      String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".commenters");
+
+      if (TextUtils.stringSet(commenters)) {
+        for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens(); ) {
+          String commenter = commenterTokenizer.nextToken();
+          if (TextUtils.stringSet(commenter)) {
+            String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".comment." + commenter);
+            ballot.addComment(new Comment(commenter, comment));
+          }
+        }
+      }
+    } catch (Exception e) {
+      LOG.error("Try contentPropertyManager: " + contentPropertyManager + " or contentEntity: " + contentObject + " or ballot was broken: " + ballot, e);
+    }
   }
 
   /**

@@ -60,7 +60,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
   public static final String KEY_CHOICES = "choices";
   private static final String KEY_SHOW_SUMMARY = "showSummary";
   private static final String KEY_SHOW_LAST = "showLast";
-  private static final String KEY_SHOW_COMMENTS = "showComments";
   private static final String KEY_START_BOUND = "startBound";
   private static final String KEY_ITERATE_STEP = "iterateStep";
 

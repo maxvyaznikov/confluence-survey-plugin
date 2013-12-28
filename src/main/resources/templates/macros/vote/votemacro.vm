@@ -41,7 +41,8 @@ $generalUtil.htmlEncode($ballot.description)
 ##     alt="$generalUtil.urlEncode(${ballot.title})" title="csv export of current vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';"
 ##     onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';"/>
 
-<table class="grid">
+  #set ($ballotNumberID = $generalUtil.htmlEncode("0-${ballot.titleNoSpace}") )
+
   #set ($columnCount = 2)
   #if ($canSeeResults)
     #set ($columnCount = $columnCount + 1)
@@ -49,6 +50,12 @@ $generalUtil.htmlEncode($ballot.description)
   #if ($ballot.visibleVoters)
     #set ($columnCount = $columnCount + 1)
   #end
+  #if ($ballot.visibleComments)
+    #set ($columnCount = $columnCount + 1)
+  #end
+  #set ($choiceNumber=0)
+<table class="voteTable">
+  <thead>
   <tr>
     <th>$action.getText("surveyplugin.vote.choices")</th>
     <th>$action.getText("surveyplugin.vote.vote")</th>
@@ -58,7 +65,11 @@ $generalUtil.htmlEncode($ballot.description)
     #if ($ballot.visibleVoters)
       <th>$action.getText("surveyplugin.vote.voters")</th>
     #end
+    #if ($ballot.visibleComments)
+      <th>$action.getText("surveyplugin.vote.comments")</th>
+    #end
   </tr>
+  </thead>
   #foreach ($choice in $ballot.choices)
     <tr>
       <td>$choice.description</td>
@@ -113,26 +124,85 @@ $generalUtil.htmlEncode($ballot.description)
           #end
         </td>
       #end
-    </tr>
-  #end
-  #if ($ballot.visibleVoters)
-    <tr>
-      <td colspan="$columnCount">
-        <i>
-          $action.getText("surveyplugin.vote.voters.all"):
-          #set($voters = $ballot.getAllVoters())
-          #set($iCounter = 0)
-          #foreach($voter in $voters)
-            #set($iCounter=$iCounter+1)
-            #if ($visibleVotersWiki)
-              <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
-            #else
-              $voter#if ($iCounter!=$voters.size()),#end
+      #if ($ballot.visibleComments && $choiceNumber==0)
+        <td class="surveyCommentPane" rowspan="$ballot.choices.size()">
+          #if ($canVote && $ballot.visibleComments && !($ballot.locked))
+            #set ($currentComment = "")
+            #if ($ballot.getCommentForUser($req.remoteUser))
+              #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
+            #end
+            <div class="focusedComment commentblock surveyComment">
+                <span id="${ballotNumberID}CommentForm" style="display:none">
+                  <form method="POST" action="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id">
+                    <input type="hidden" name="ballotTitle" value="$generalUtil.htmlEncode($ballot.title)"/>
+                    <input type="hidden" name="ballotAnchor" value="${voteAnchor}"/>
+                    <textarea name="comment" rows="5" cols="70" style="font:12px monospace;">$generalUtil.htmlEncode($currentComment)</textarea>
+                    <br/>
+                    <span style="align:right">
+                      <input type="submit" value="$action.getText('surveyplugin.survey.save')"/>
+                      <input type="button" value="$action.getText('surveyplugin.survey.cancel')"
+                             onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='inline';document.getElementById('${ballotNumberID}CommentForm').style.display='none';"/>
+                    </span>
+                  </form>
+                </span>
+              #if ($ballot.getCommentForUser($req.remoteUser))
+                #set($rawWiki=$ballot.getCommentForUser($req.remoteUser).comment)
+                <span id="${ballotNumberID}CommentDisplay">
+                    <span id="${ballotNumberID}CommentValue">$rawWiki</span>
+                    <br/>
+                    <br/>
+                    <a href="#"
+                       onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.edit")</a>
+                    <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id&ballotTitle=$generalUtil.urlEncode($ballot.title)&ballotAnchor=$generalUtil.urlEncode("${voteAnchor}")&comment=">$action.getText("surveyplugin.survey.comment.remove")</a>
+                  </span>
+              #else
+                <span id="${ballotNumberID}CommentDisplay">
+                    <a href="#"
+                       onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">$action.getText("surveyplugin.survey.comment.add")</a>
+                  </span>
+              #end
+            </div>
+          #end
+
+          #if (($canSeeResults || ($canVote && $ballot.locked)) && $survey.visibleComments)
+            #foreach ($comment in $ballot.comments)
+              #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $ballot.locked))
+                <div class="commentBox commentblock surveyComment">
+                  #set( $voteText = $action.getText("surveyplugin.survey.vote.not") )
+                  #if ($ballot.getVote($comment.username))
+                    #set($voteText=$ballot.getVote($comment.username).description)
+                  #end
+                  #if ($canSeeVoters)
+                    #set($voteText= $comment.username + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
+                  #end
+                  <b>$voteText:</b> $comment.comment
+                </div>
+              #end
             #end
           #end
-        </i>
+        </td>
+      #end
+    </tr>
+    #set ($choiceNumber = $choiceNumber + 1)
+  #end
+  #if ($ballot.visibleVoters)
+    <tfoot>
+    <tr>
+      <td colspan="$columnCount">
+        $action.getText("surveyplugin.vote.voters.all"):
+        #set($voters = $ballot.getAllVoters())
+        #set($iCounter = 0)
+        #foreach($voter in $voters)
+          #set($iCounter=$iCounter+1)
+          #if ($visibleVotersWiki)
+            <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+          #else
+            $voter#if ($iCounter!=$voters.size()),#end
+          #end
+        #end
       </td>
     </tr>
+    </tfoot>
   #end
 </table>
 #end
