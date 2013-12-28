@@ -25,6 +25,7 @@
         <value name="5"/>
       </parameter>
       <parameter name="changeableVotes" type="boolean"/>
+      <parameter name="showComments" type="boolean" default="true"/>
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
@@ -80,6 +81,7 @@
         <value name="5"/>
       </parameter>
       <parameter name="changeableVotes" type="boolean"/>
+      <parameter name="showComments" type="boolean" default="true"/>
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>

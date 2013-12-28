@@ -36,6 +36,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.rest.AdminResource;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
@@ -74,7 +75,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
   protected final PluginSettingsFactory pluginSettingsFactory;
   protected final PageManager pageManager;
-  protected final ContentPropertyManager contentPropertyManager;
+  protected final SurveyManager surveyManager;
   protected final PermissionEvaluator permissionEvaluator;
   protected final TemplateRenderer renderer;
   protected final XhtmlContent xhtmlContent;
@@ -82,7 +83,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
   public VoteMacro(PageManager pageManager,  ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
     this.pageManager = pageManager;
-    this.contentPropertyManager = contentPropertyManager;
+    this.surveyManager = new SurveyManager(contentPropertyManager);
     this.permissionEvaluator = new PermissionEvaluator(userAccessor, userManager);
     this.renderer = renderer;
     this.xhtmlContent = xhtmlContent;
@@ -196,7 +197,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     String title = SurveyUtils.getTitleInMacroParameters(parameters);
     // Rebuild the model for this ballot
-    Ballot ballot = SurveyUtils.reconstructBallot(title, body, contentObject, contentPropertyManager);
+    Ballot ballot = surveyManager.reconstructBallot(title, body, contentObject);
     ballot.setChangeableVotes(Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES)));
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
@@ -263,26 +264,6 @@ public class VoteMacro extends BaseMacro implements Macro {
   }
 
   /**
-   * This is a helper method to set the content property value for a particular vote choice once it has been updated.
-   *
-   * @param choice        The choice that has been updated.
-   * @param ballotTitle   The title of the ballot that the choice belongs to.
-   * @param contentObject The content object for the current macro.
-   */
-  protected void setVoteContentProperty(Choice choice, String ballotTitle, ContentEntityObject contentObject) {
-    String propertyKey = VOTE_PREFIX + ballotTitle + "." + choice.getDescription();
-
-    if (choice.getVoteCount() == 0) {
-      contentPropertyManager.setTextProperty(contentObject, propertyKey, null);
-    } else {
-      Collection<String> voters = choice.getVoters();
-      String propertyValue = StringUtils.join(voters, ",");
-      // store property to text, for votes larger than usernames.length * votes > 255 chars
-      contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
-    }
-  }
-
-  /**
    * If there is a vote in the request, store it in this page for the given ballot.
    *
    * @param ballot        The ballot being voted on.
@@ -305,7 +286,7 @@ public class VoteMacro extends BaseMacro implements Macro {
       Choice previousChoice = ballot.getVote(remoteUsername);
       if (previousChoice != null && ballot.isChangeableVotes()) {
         previousChoice.removeVoteFor(remoteUsername);
-        setVoteContentProperty(previousChoice, ballot.getTitle(), contentObject);
+        surveyManager.setVoteContentProperty(previousChoice, ballot.getTitle(), contentObject);
       }
 
       Choice choice = ballot.getChoice(requestChoice);
@@ -313,10 +294,8 @@ public class VoteMacro extends BaseMacro implements Macro {
       if (choice != null && "vote".equalsIgnoreCase(requestVoteAction)) {
         LOG.debug("recordVote: found choice in requestChoice: " + choice.getDescription());
         choice.voteFor(remoteUsername);
-        setVoteContentProperty(choice, ballot.getTitle(), contentObject);
+        surveyManager.setVoteContentProperty(choice, ballot.getTitle(), contentObject);
       }
     }
   }
-
-
 }

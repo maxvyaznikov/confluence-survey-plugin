@@ -155,7 +155,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
     }
 
     // Create the survey model, 1.1.3 add the parameters map
-    Survey survey = SurveyUtils.createSurvey(body, contentObject, (String) parameters.get(KEY_CHOICES), contentPropertyManager);
+    Survey survey = surveyManager.createSurvey(body, contentObject, (String) parameters.get(KEY_CHOICES));
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
     for (Ballot ballot : survey.getBallots()) {
