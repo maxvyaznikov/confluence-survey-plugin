@@ -18,7 +18,8 @@
           name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a>#if ($survey.getRenderTitleLevelAdjustedOrZero(1) != 0)
   </h$survey.getRenderTitleLevelAdjustedOrZero(1)>#end
     #if ($survey.isSurveyComplete($req.remoteUser) || !($canTakeSurvey) || $survey.locked )
-    <table class="grid">
+    <table class="surveySummaryTable">
+      <thead>
       <tr>
         <th>$action.getText("surveyplugin.survey.summary.header.question")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.total")</th>
@@ -27,6 +28,7 @@
           <th>$action.getText("surveyplugin.vote.voters")</th>
         #end
       </tr>
+      </thead>
       #foreach ($ballot in $survey.ballots)
         #set ($average = $ballot.computeAverage())
         #set ($sAverage = $ballot.computeFormatedAverage("0.00"))
