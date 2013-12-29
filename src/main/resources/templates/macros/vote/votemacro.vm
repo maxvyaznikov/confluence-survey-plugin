@@ -14,16 +14,18 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 
 <link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all"/>
 
-#set ($userVote = $ballot.getVote($req.remoteUser))
-#set ($xhtmlContent = $action.getContentBean())
+#set ($canVote = ($canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $ballot.changeableVotes)))
+#set ($canSeeResults = ($canSeeSurveyResults && ( $ballot.getHasVoted($req.remoteUser) || ($canTakeSurvey && $ballot.locked) || !($canTakeSurvey) )))
+#set ($canSeeVoters = $canSeeResults && $ballot.visibleVoters)
 
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
 #if ($ballot.renderTitleLevel != 0)
-<h$ballot.renderTitleLevel>#end #if ($ballot.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
-                                                          title="$action.getText("surveyplugin.vote.locked")."/> #end <a
-        name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a>#if ($ballot.renderTitleLevel != 0) </h$ballot.renderTitleLevel> #end
-##set ($voteAnchor = "")
+<h$ballot.renderTitleLevel> #end
+#if ($ballot.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
+                          title="$action.getText("surveyplugin.vote.locked")."/> #end <a
+        name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a>
+#if ($ballot.renderTitleLevel != 0) </h$ballot.renderTitleLevel> #end
 
 $generalUtil.htmlEncode($ballot.description)
 
@@ -47,10 +49,10 @@ $generalUtil.htmlEncode($ballot.description)
   #if ($canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
-  #if ($ballot.visibleVoters)
+  #if ($ballot.visibleVoters && $canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
-  #if ($ballot.visibleComments)
+  #if ($ballot.visibleComments && ($canTakeSurvey || $canSeeResults) )
     #set ($columnCount = $columnCount + 1)
   #end
   #set ($choiceNumber=0)
@@ -62,7 +64,7 @@ $generalUtil.htmlEncode($ballot.description)
     #if ($canSeeResults)
       <th>$action.getText("surveyplugin.vote.result"): <span class="smalltext">($ballot.totalVoteCount $action.getText("surveyplugin.survey.summary.header.total"))</span></th>
     #end
-    #if ($ballot.visibleVoters)
+    #if ($ballot.visibleVoters && $canSeeResults)
       <th>$action.getText("surveyplugin.vote.voters")</th>
     #end
     #if ($ballot.visibleComments)
@@ -75,7 +77,7 @@ $generalUtil.htmlEncode($ballot.description)
       <td>$choice.description</td>
       <td align="center">
         #if ($canVote && !($ballot.locked))
-          #if ($choice.equals($userVote))
+          #if ($choice.getHasVotedFor($req.remoteUser))
             <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=unvote#${voteAnchor}">
               <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
                    class="surveyIcon"/>
@@ -86,7 +88,7 @@ $generalUtil.htmlEncode($ballot.description)
                    class="surveyIcon"/>
             </a>
           #end
-        #elseif ($choice.equals($userVote))
+        #elseif ($choice.getHasVotedFor($req.remoteUser))
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>
         #else
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
@@ -106,7 +108,7 @@ $generalUtil.htmlEncode($ballot.description)
         </td>
       #end
 
-      #if ($ballot.visibleVoters)
+      #if ($ballot.visibleVoters && $canSeeResults)
         <td>
           #if ($choice.getVoteCount())
             <i>
@@ -124,9 +126,9 @@ $generalUtil.htmlEncode($ballot.description)
           #end
         </td>
       #end
-      #if ($ballot.visibleComments && $choiceNumber==0)
+      #if ($ballot.visibleComments && ($canTakeSurvey || $canSeeResults) && $choiceNumber==0)
         <td class="surveyCommentPane" rowspan="$ballot.choices.size()">
-          #if ($canTakeSurvey && $ballot.visibleComments && !($ballot.locked))
+          #if (!($ballot.locked))
             #set ($currentComment = "")
             #if ($ballot.getCommentForUser($req.remoteUser))
               #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
@@ -193,7 +195,7 @@ $generalUtil.htmlEncode($ballot.description)
     </tr>
     #set ($choiceNumber = $choiceNumber + 1)
   #end
-  #if ($ballot.visibleVoters)
+  #if ($ballot.visibleVoters && $canSeeResults)
     <tfoot>
     <tr>
       <td colspan="$columnCount">

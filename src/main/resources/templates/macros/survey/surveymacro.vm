@@ -49,15 +49,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
   </div>
 #else
   #foreach ($ballot in $survey.ballots)
-
-  ## Set up a few variables to let the vote macro do its thing...
-    #set ($canVote = ($canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $survey.changeableVotes)))
-    #set ($canSeeResults = ($canSeeSurveyResults && ( $ballot.getHasVoted($req.remoteUser) || ($canTakeSurvey && $ballot.locked) || !($canTakeSurvey) )))
-    #set ($canSeeVoters = $canSeeResults && $survey.visibleVoters)
-    #set ($userVote = false)
-
     #parse ("templates/macros/vote/votemacro.vm")
-
   #end
 
   #if ($survey.surveySummary=="Bottom")

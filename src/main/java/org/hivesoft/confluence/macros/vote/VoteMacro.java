@@ -244,16 +244,13 @@ public class VoteMacro extends BaseMacro implements Macro {
     Boolean canTakeSurvey = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
     ballot.setVisibleVoters(permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults));
 
-    Boolean canVote = permissionEvaluator.getCanVote((String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
-
     // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
     contextMap.put("content", contentObject);
     contextMap.put("context", renderContext);
     contextMap.put("ballot", ballot);
     contextMap.put("iconSet", iconSet);
-    contextMap.put("canSeeResults", canSeeResults);
-    contextMap.put("canVote", canVote);
+    contextMap.put("canSeeSurveyResults", canSeeResults);
     contextMap.put("canTakeSurvey", canTakeSurvey);
     contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
