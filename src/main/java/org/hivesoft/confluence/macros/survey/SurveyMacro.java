@@ -200,19 +200,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
     }
     survey.setSurveySummary(surveySummary);
 
-    // check if any request parameters came in to vote on a ballot
-    HttpServletRequest request = ServletActionContext.getRequest();
-
-    if (request != null) {
-      // Try to retrieve the proper ballot
-      Ballot ballot = survey.getBallot(request.getParameter(REQUEST_PARAMETER_BALLOT));
-
-      // If there is a ballot found, cast the vote using our super's method
-      if (ballot != null) {
-        recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
-      }
-    }
-
     String renderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
     if (!StringUtils.isBlank(renderTitleLevel)) {
       survey.setRenderTitleLevel(Integer.valueOf(renderTitleLevel));
@@ -235,6 +222,17 @@ public class SurveyMacro extends VoteMacro implements Macro {
       survey.setVisibleVoters(true);
     }
 
+    // check if any request parameters came in to vote on a ballot
+    HttpServletRequest request = ServletActionContext.getRequest();
+    if (request != null) {
+      // Try to retrieve the proper ballot
+      Ballot ballot = survey.getBallot(request.getParameter(REQUEST_PARAMETER_BALLOT));
+
+      // If the ballot belongs to this macro instance
+      if (ballot != null) {
+        recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
+      }
+    }
 
     // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
@@ -259,6 +257,4 @@ public class SurveyMacro extends VoteMacro implements Macro {
       throw new MacroException(e);
     }
   }
-
-
 }

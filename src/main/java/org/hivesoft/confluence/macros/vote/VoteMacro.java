@@ -215,14 +215,6 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     SurveyUtils.validateMaxStorableKeyLength(ballot.getBallotTitlesWithChoiceNames());
 
-    // check if any request parameters came in to complete or uncomplete tasks
-    HttpServletRequest request = ServletActionContext.getRequest();
-
-    final String remoteUsername = permissionEvaluator.getRemoteUsername();
-    if (request != null) {
-      recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
-    }
-
     String renderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
     if (!StringUtils.isBlank(renderTitleLevel)) {
       ballot.setRenderTitleLevel(Integer.valueOf(renderTitleLevel));
@@ -231,18 +223,24 @@ public class VoteMacro extends BaseMacro implements Macro {
     ballot.setLocked(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
     ballot.setVisibleComments(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), false));
 
+    final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
-    // 1.1.5 if viewers not defined and vote is locked then he may see the result && !TextUtils.stringSet(remoteUser) doesnt matter
     Boolean canSeeResults;
     if (StringUtils.isBlank((String) parameters.get(KEY_VIEWERS)) && ballot.isLocked()) {
       canSeeResults = Boolean.TRUE;
     } else {
-      //canSeeResults = permissionEvaluator.getCanSeeResults((String) parameters.get(KEY_VIEWERS), (String) parameters.get(KEY_VOTERS), remoteUsername, ballot);
       canSeeResults = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
     }
 
     Boolean canTakeSurvey = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
     ballot.setVisibleVoters(permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults));
+
+    // check if any request parameters came in to complete or uncomplete tasks
+    HttpServletRequest request = ServletActionContext.getRequest();
+
+    if (request != null && ballot.getTitle().equals(request.getParameter(REQUEST_PARAMETER_BALLOT))) {
+      recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
+    }
 
     // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
