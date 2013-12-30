@@ -174,7 +174,7 @@ $generalUtil.htmlEncode($ballot.description)
             </div>
           #end
 
-          #if (($canSeeResults || ($canVote && $ballot.locked)) && $survey.visibleComments)
+          #if (($canSeeResults || ($canVote && $ballot.locked)) && $ballot.visibleComments)
             #foreach ($comment in $ballot.comments)
               #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $ballot.locked))
                 <div class="commentBox commentblock surveyComment">
