@@ -15,12 +15,15 @@ import com.atlassian.renderer.v2.macro.MacroException;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class SurveyUtils {
   private static final Logger.Log LOG = Logger.getInstance(SurveyUtils.class);
 
+  private static final String REGEX_COMMA_SEPARATED_STRINGS = "\\s*,[,\\s]*";
   protected static final int MAX_STORABLE_KEY_LENGTH = 200;
 
   public static void validateMaxStorableKeyLength(List<String> ballotAndChoiceNames) throws MacroException {
@@ -55,6 +58,14 @@ public class SurveyUtils {
     } else {
       return Boolean.valueOf(stringToParse);
     }
+  }
+
+
+  public static List<String> getListFromStringCommaSeparated(String stringToParse) {
+    if (StringUtils.isBlank(stringToParse)) {
+      return new ArrayList<String>();
+    }
+    return Arrays.asList(stringToParse.split(REGEX_COMMA_SEPARATED_STRINGS));
   }
 
   public static String getTitleInMacroParameters(Map<String, String> parameters) throws MacroException {

@@ -229,10 +229,10 @@ public class VoteMacro extends BaseMacro implements Macro {
     if (StringUtils.isBlank((String) parameters.get(KEY_VIEWERS)) && ballot.isLocked()) {
       canSeeResults = Boolean.TRUE;
     } else {
-      canSeeResults = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VIEWERS), remoteUsername);
+      canSeeResults = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(SurveyUtils.getListFromStringCommaSeparated((String) parameters.get(KEY_VIEWERS)), remoteUsername);
     }
 
-    Boolean canTakeSurvey = permissionEvaluator.getCanPerformAction((String) parameters.get(KEY_VOTERS), remoteUsername);
+    Boolean canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(SurveyUtils.getListFromStringCommaSeparated((String) parameters.get(KEY_VOTERS)), remoteUsername);
     ballot.setVisibleVoters(permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults));
 
     // check if any request parameters came in to complete or uncomplete tasks
@@ -256,7 +256,6 @@ public class VoteMacro extends BaseMacro implements Macro {
       StringWriter renderedTemplate = new StringWriter();
       renderer.render("templates/macros/vote/votemacro.vm", contextMap, renderedTemplate);
       return renderedTemplate.toString();
-      // return VelocityUtils.getRenderedTemplate("templates/macros/vote/votemacro.vm", contextMap);
     } catch (Exception e) {
       LOG.error("Error while trying to display Ballot!", e);
       throw new MacroException(e);

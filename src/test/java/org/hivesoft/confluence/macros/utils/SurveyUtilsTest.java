@@ -8,8 +8,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.Assert.*;
 
 public class SurveyUtilsTest {
   public static final String BALLOT_AND_CHOICENAME1 = "someBallot.withSomeChoiceName1";
@@ -48,6 +49,16 @@ public class SurveyUtilsTest {
     assertFalse(SurveyUtils.getBooleanFromString("false", true));
     assertTrue(SurveyUtils.getBooleanFromString("", true));
     assertFalse(SurveyUtils.getBooleanFromString(null, false));
+  }
+
+  @Test
+  public void test_getListFromStringCommaSeparated_success() {
+    final List<String> emptyList = SurveyUtils.getListFromStringCommaSeparated("");
+    assertTrue(emptyList.isEmpty());
+    final List<String> oneElement = SurveyUtils.getListFromStringCommaSeparated("User1 User2");
+    assertThat(oneElement, hasItem("User1 User2"));
+    final List<String> twoElements = SurveyUtils.getListFromStringCommaSeparated("User1, User2");
+    assertThat(twoElements, hasItems("User1", "User2"));
   }
 
 
