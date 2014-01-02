@@ -44,7 +44,7 @@ public class Ballot {
   }
 
   /**
-   * @return title assigned to the <code>Ballot</code>
+   * @return the title of the Ballot
    */
   public String getTitle() {
     return title;
@@ -58,8 +58,6 @@ public class Ballot {
   }
 
   /**
-   * Add an available {@link Choice} for this <code>Ballot</code>.
-   *
    * @param choice a {@link Choice} for this <code>Ballot</code>
    */
   public void addChoice(Choice choice) {
@@ -67,33 +65,27 @@ public class Ballot {
   }
 
   /**
-   * Determine if a user has already voted.
-   *
    * @param username the username of the prospective voter
-   * @return <code>true</code> if the user has already voted on this <code>Ballot</code>, <code>false</code> if s/he has not.
+   * @return true if the user has already voted
    */
   public boolean getHasVoted(String username) {
     return getVote(username) != null;
   }
 
   /**
-   * Return whether or not users should be allowed to change their vote once it has been cast.
-   *
-   * @return <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
+   * @return true if once cast votes are changeable
    */
   public boolean isChangeableVotes() {
     return changeableVotes;
   }
 
-  /**
-   * Set whether or not this ballot should allow users to change their vote once it has been cast.
-   *
-   * @param changeableVotes <code>true</code> if users can change their vote; <code>false</code> (default) otherwise.
-   */
   public void setChangeableVotes(boolean changeableVotes) {
     this.changeableVotes = changeableVotes;
   }
 
+  /**
+   * @return true if the comments functionality is enabled
+   */
   public boolean isVisibleComments() {
     return visibleComments;
   }
@@ -103,23 +95,19 @@ public class Ballot {
   }
 
   /**
-   * Return whether or not users should be allowed to see voters in clear text
-   *
-   * @return <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
+   * @return true if voters are visible to users
    */
   public boolean isVisibleVoters() {
     return visibleVoters;
   }
 
-  /**
-   * Set whether or not this ballot should allow users to see the voters in clear text
-   *
-   * @param visibleVoters <code>true</code> if users can see voters; <code>false</code> (default) otherwise.
-   */
   public void setVisibleVoters(boolean visibleVoters) {
     this.visibleVoters = visibleVoters;
   }
 
+  /**
+   * @return true if voters are visible in Wiki markup (linked to user profile) or in plaintext
+   */
   public boolean isVisibleVotersWiki() {
     return visibleVotersWiki;
   }
@@ -128,6 +116,9 @@ public class Ballot {
     this.visibleVotersWiki = visibleVotersWiki;
   }
 
+  /**
+   * @return true if this ballot is locked and not available anymore for participants
+   */
   public boolean isLocked() {
     return locked;
   }
@@ -136,6 +127,9 @@ public class Ballot {
     this.locked = locked;
   }
 
+  /**
+   * @return the level the heading of this item will be rendered in the wiki. h1..h5 (h0 would be disabling headers functionality)
+   */
   public int getRenderTitleLevel() {
     return renderTitleLevel;
   }
@@ -145,10 +139,8 @@ public class Ballot {
   }
 
   /**
-   * Get the choice voted for by a particular user
-   *
    * @param username the username whose vote is needed
-   * @return <code>Choice</code> that the user voted on, <code>null</code> if username has not voted.
+   * @return the {@link Choice} the user voted on or <code>null</code> if username has not voted.
    */
   public Choice getVote(String username) {
     Collection<Choice> userChoices = choices.values();
@@ -161,8 +153,6 @@ public class Ballot {
   }
 
   /**
-   * Retrieve a {@link Choice} on the <code>Ballot</code> based on its description.
-   *
    * @param description the description of the {@link Choice} to be retrieved
    * @return the {@link Choice} associated with the description
    */
@@ -171,8 +161,6 @@ public class Ballot {
   }
 
   /**
-   * Get all of the {@link Choice}s belonging to this <code>Ballot</code>.
-   *
    * @return all of the {@link Choice}s belonging to this <code>Ballot</code>
    */
   public Collection<Choice> getChoices() {
@@ -180,15 +168,13 @@ public class Ballot {
   }
 
   /**
-   * Get a count of all votes that have been cast on the <code>Ballot</code>.
-   *
    * @return a count of all votes that have been cast
    */
   public int getTotalVoteCount() {
     int totalVotes = 0;
     Collection<Choice> col = choices.values();
     for (Choice choice : col) {
-      totalVotes += choice.getVoteCount();
+      totalVotes += choice.getVoters().size();
     }
     return totalVotes;
   }
@@ -202,24 +188,20 @@ public class Ballot {
   public int getPercentageOfVoteForChoice(Choice choice) {
     int totalVoteCount = getTotalVoteCount();
     if (totalVoteCount != 0) {
-      return (100 * choice.getVoteCount()) / totalVoteCount;
+      return (100 * choice.getVoters().size()) / totalVoteCount;
     } else {
       return 0;
     }
   }
 
   /**
-   * Set the description for this ballot.
-   *
-   * @return A String description of this ballot.
+   * @return the description of this ballot.
    */
   public String getDescription() {
     return description;
   }
 
   /**
-   * Get the description for this ballot.
-   *
    * @param description - A String description of this ballot.
    */
   public void setDescription(String description) {
@@ -250,10 +232,6 @@ public class Ballot {
   }
 
   /**
-   * <p>
-   * Get all of the comments entered on this ballot.
-   * </p>
-   *
    * @return All comments entered for this ballot.
    */
   public Map<String, Comment> getComments() {
@@ -361,7 +339,7 @@ public class Ballot {
     //the first choice gets the highest number, so calculate last
     int iCur = startBound + (choices.size() - 1) * iterateStep;
     for (Choice choice : choices) {
-      total += iCur * choice.getVoteCount();
+      total += iCur * choice.getVoters().size();
       iCur -= iterateStep;
     }
     return ((float) total) / totalVoteCount;
@@ -374,6 +352,9 @@ public class Ballot {
     return new java.text.DecimalFormat(format).format((double) computeAverage());
   }
 
+  /**
+   * get the length of all storeAble keys
+   */
   public List<String> getBallotTitlesWithChoiceNames() {
     List<String> ballotChoiceNames = new ArrayList<String>();
     for (Choice choice : getChoices()) {

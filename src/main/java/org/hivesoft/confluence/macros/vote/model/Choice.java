@@ -11,7 +11,6 @@
 package org.hivesoft.confluence.macros.vote.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,111 +18,92 @@ import java.util.List;
  */
 public class Choice {
 
-    private String description;
-    private List<String> votes = new ArrayList<String>();
+  private String description;
+  private List<String> voters = new ArrayList<String>();
 
-    /**
-     * Create a <code>Choice</code> with the given description.
-     *
-     * @param description the description of the <code>Choice</code>
-     */
-    public Choice(String description) {
-        this.description = description;
+  /**
+   * @param description the description of the <code>Choice</code>
+   */
+  public Choice(String description) {
+    this.description = description;
+  }
+
+  /**
+   * @return the description of this <code>Choice</code>
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * @param voter the username to add to this <code>Choice</code>
+   */
+  public void voteFor(String voter) {
+    if (!getHasVotedFor(voter)) {
+      voters.add(voter);
     }
+  }
 
-    /**
-     * Get the description of this <code>Choice</code>.
-     *
-     * @return the description of this <code>Choice</code>
-     */
-    public String getDescription() {
-        return description;
-    }
+  /**
+   * @param voter the username to remove from this <code>Choice</code>
+   */
+  public void removeVoteFor(String voter) {
+    voters.remove(voter);
+  }
 
-    /**
-     * Add a vote for this <code>Choice</code>.
-     *
-     * @param voter the username to add to this <code>Choice</code>
-     */
-    public void voteFor(String voter) {
-        if (!getHasVotedFor(voter)) {
-            votes.add(voter);
-        }
-    }
+  /**
+   * @return all of the userNames that have voted for this <code>Choice</code>
+   */
+  public List<String> getVoters() {
+    return voters;
+  }
 
-    /**
-     * Remove a vote for this <code>Choice</code>.
-     *
-     * @param voter the username to remove from this <code>Choice</code>
-     */
-    public void removeVoteFor(String voter) {
-        votes.remove(voter);
-    }
+  /**
+   * Determine is a specific username has voted for this <code>Choice</code>.
+   *
+   * @param username username of the potential voter
+   * @return <code>true</code> if the user previously voted for this <code>Choice</code>, <code>false</code> otherwise.
+   */
+  public boolean getHasVotedFor(String username) {
+    return voters.contains(username);
+  }
 
-    /**
-     * Get all of the usernames of people that have voted for this <code>Choice</code>.
-     *
-     * @return all of the usernames of people that have voted for this <code>Choice</code>
-     */
-    public Collection<String> getVoters() {
-        return votes;
-    }
+  /**
+   * Determines if a <code>Choice</code> is equal to another <code>Choice</code>. Choices are considered equal if their description is the same.
+   *
+   * @param o the <code>Object</code> to determine equality with this <code>Choice</code>
+   * @return <code>true</code> if the description of the <code>Object</code> argument is the same as the description of this <code>Choice</code>, <code>false</code> otherwise.
+   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-    /**
-     * Get a count of the number of votes cast for this <code>Choice</code>.
-     *
-     * @return the number of votes cast for this <code>Choice</code>
-     */
-    public int getVoteCount() {
-        return votes.size();
-    }
+    Choice choice = (Choice) o;
 
-    /**
-     * Determine is a specific username has voted for this <code>Choice</code>.
-     *
-     * @param username username of the potential voter
-     * @return <code>true</code> if the user previously voted for this <code>Choice</code>, <code>false</code> otherwise.
-     */
-    public boolean getHasVotedFor(String username) {
-        return votes.contains(username);
-    }
+    if (!description.equals(choice.description)) return false;
 
-    /**
-     * Determines if a <code>Choice</code> is equal to another <code>Choice</code>. Choices are considered equal if their description is the same.
-     *
-     * @param o the <code>Object</code> to determine equality with this <code>Choice</code>
-     * @return <code>true</code> if the description of the <code>Object</code> argument is the same as the description of this <code>Choice</code>, <code>false</code> otherwise.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    return true;
+  }
 
-        Choice choice = (Choice) o;
+  /**
+   * Return a hash code for the <code>Choice</code>. The hash code for this implementation is simply the hash code of the description.
+   *
+   * @return hash code of the description
+   */
+  @Override
+  public int hashCode() {
+    return description.hashCode();
+  }
 
-        if (!description.equals(choice.description)) return false;
-
-        return true;
-    }
-
-    /**
-     * Return a hash code for the <code>Choice</code>. The hash code for this implementation is simply the hash code of the description.
-     *
-     * @return hash code of the description
-     */
-    @Override
-    public int hashCode() {
-        return description.hashCode();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-        return "Choice{" +
-                "description='" + description + '\'' +
-                ", votes=" + votes +
-                '}';
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return "Choice{" +
+            "description='" + description + '\'' +
+            ", voters=" + voters +
+            '}';
+  }
 }

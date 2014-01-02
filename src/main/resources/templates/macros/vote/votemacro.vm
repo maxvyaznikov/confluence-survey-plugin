@@ -101,7 +101,7 @@ $generalUtil.htmlEncode($ballot.description)
           <div class="greenbar-wrap">
             <div class="greenbar-value" style="width:$percentVotedFor%;">
               <div class="greenbar-text">
-                $choice.voteCount $action.getText("surveyplugin.survey.summary.votes"), $percentVotedFor%
+                $choice.voters.size() $action.getText("surveyplugin.survey.summary.votes"), $percentVotedFor%
               </div>
             </div>
           </div>
@@ -110,9 +110,9 @@ $generalUtil.htmlEncode($ballot.description)
 
       #if ($ballot.visibleVoters && $canSeeResults)
         <td>
-          #if ($choice.getVoteCount())
+          #set($voters = $choice.voters)
+          #if ($voters.size()>0)
             <i>
-              #set($voters = $choice.getVoters())
               #set($iCounter = 0)
               #foreach($voter in $voters)
                 #set($iCounter=$iCounter+1)

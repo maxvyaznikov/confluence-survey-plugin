@@ -181,7 +181,7 @@ public class SurveyManager {
   public void setVoteContentProperty(Choice choice, String ballotTitle, ContentEntityObject contentObject) {
     String propertyKey = VoteMacro.VOTE_PREFIX + ballotTitle + "." + choice.getDescription();
 
-    if (choice.getVoteCount() == 0) {
+    if (choice.getVoters().size() == 0) {
       contentPropertyManager.setTextProperty(contentObject, propertyKey, null);
     } else {
       Collection<String> voters = choice.getVoters();
