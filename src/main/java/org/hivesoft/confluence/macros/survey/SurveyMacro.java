@@ -153,7 +153,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
       iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
     }
 
-    // Create the survey model, 1.1.3 add the parameters map
     Survey survey = surveyManager.createSurvey(body, contentObject, (String) parameters.get(KEY_CHOICES));
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
@@ -221,6 +220,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
     if (permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults)) {
       survey.setVisibleVoters(true);
     }
+    survey.setVisibleVotersWiki(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
     // check if any request parameters came in to vote on a ballot
     HttpServletRequest request = ServletActionContext.getRequest();
@@ -237,12 +237,10 @@ public class SurveyMacro extends VoteMacro implements Macro {
     // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
     contextMap.put("content", contentObject);
-    contextMap.put("context", renderContext);
     contextMap.put("survey", survey);
     contextMap.put("iconSet", iconSet);
     contextMap.put("canSeeSurveyResults", canSeeResults);
     contextMap.put("canTakeSurvey", canTakeSurvey);
-    contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
     try {
       if (canSeeResults || canTakeSurvey) {

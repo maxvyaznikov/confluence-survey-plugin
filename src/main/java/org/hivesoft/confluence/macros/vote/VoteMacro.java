@@ -234,6 +234,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     Boolean canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(SurveyUtils.getListFromStringCommaSeparated((String) parameters.get(KEY_VOTERS)), remoteUsername);
     ballot.setVisibleVoters(permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults));
+    ballot.setVisibleVotersWiki(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
     // check if any request parameters came in to complete or uncomplete tasks
     HttpServletRequest request = ServletActionContext.getRequest();
@@ -245,12 +246,10 @@ public class VoteMacro extends BaseMacro implements Macro {
     // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
     contextMap.put("content", contentObject);
-    contextMap.put("context", renderContext);
     contextMap.put("ballot", ballot);
     contextMap.put("iconSet", iconSet);
     contextMap.put("canSeeSurveyResults", canSeeResults);
     contextMap.put("canTakeSurvey", canTakeSurvey);
-    contextMap.put(KEY_VISIBLE_VOTERS_WIKI, SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
 
     try {
       StringWriter renderedTemplate = new StringWriter();

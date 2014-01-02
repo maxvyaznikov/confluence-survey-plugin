@@ -28,6 +28,7 @@ public class Survey {
   private boolean locked = false;
   private boolean changeableVotes = false;
   private boolean visibleVoters = false;
+  private boolean visibleVotersWiki = false;
   private boolean visibleComments = true;
   private int renderTitleLevel = 2;
   private SurveySummary surveySummary = SurveySummary.Top;
@@ -136,6 +137,18 @@ public class Survey {
 
     for (Ballot ballot : ballots) {
       ballot.setVisibleVoters(visibleVoters);
+    }
+  }
+
+  public boolean isVisibleVotersWiki() {
+    return visibleVotersWiki;
+  }
+
+  public void setVisibleVotersWiki(boolean visibleVotersWiki) {
+    this.visibleVotersWiki = visibleVotersWiki;
+
+    for (Ballot ballot : ballots) {
+      ballot.setVisibleVotersWiki(visibleVotersWiki);
     }
   }
 

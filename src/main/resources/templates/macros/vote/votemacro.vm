@@ -116,7 +116,7 @@ $generalUtil.htmlEncode($ballot.description)
               #set($iCounter = 0)
               #foreach($voter in $voters)
                 #set($iCounter=$iCounter+1)
-                #if ($visibleVotersWiki)
+                #if ($ballot.visibleVotersWiki)
                   <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
                 #else
                   $voter#if ($iCounter!=$voters.size()),#end
@@ -204,7 +204,7 @@ $generalUtil.htmlEncode($ballot.description)
         #set($iCounter = 0)
         #foreach($voter in $voters)
           #set($iCounter=$iCounter+1)
-          #if ($visibleVotersWiki)
+          #if ($ballot.visibleVotersWiki)
             <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
           #else
             $voter#if ($iCounter!=$voters.size()),#end

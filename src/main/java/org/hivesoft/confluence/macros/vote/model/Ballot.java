@@ -29,6 +29,7 @@ public class Ballot {
   private boolean changeableVotes = false;
   private boolean visibleComments = false;
   private boolean visibleVoters = false;
+  private boolean visibleVotersWiki = false;
   private int renderTitleLevel = 3;
   private int startBound = DEFAULT_START_BOUND;
   private int iterateStep = DEFAULT_ITERATE_STEP;
@@ -117,6 +118,14 @@ public class Ballot {
    */
   public void setVisibleVoters(boolean visibleVoters) {
     this.visibleVoters = visibleVoters;
+  }
+
+  public boolean isVisibleVotersWiki() {
+    return visibleVotersWiki;
+  }
+
+  public void setVisibleVotersWiki(boolean visibleVotersWiki) {
+    this.visibleVotersWiki = visibleVotersWiki;
   }
 
   public boolean isLocked() {
