@@ -179,6 +179,7 @@ public class PermissionEvaluatorTest {
   public void test_getCanVote_inListViaGroup_success() {
     when(mockUserAccessor.hasMembership("someGroup", SOME_USER_NAME)).thenReturn(true);
     Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_VOTERS, "notThisUser, notThisUserEither, someGroup");
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
     final Boolean canVote = classUnderTest.getCanVote(SOME_USER_NAME, SurveyUtilsTest.createBallotWithParameters(parameters));

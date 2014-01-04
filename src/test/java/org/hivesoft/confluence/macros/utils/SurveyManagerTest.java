@@ -6,14 +6,14 @@ import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.survey.model.Survey;
-import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -73,11 +73,22 @@ public class SurveyManagerTest {
   }
 
   @Test
-  public void test_createSurvey_oneParameter_success() {
+  public void test_createSurvey_oneParameterDefaultChoices_success() {
     final String someBallotTitle1 = "someBallotTitle1";
     final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1, new Page(), new HashMap<String, String>());
 
     assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
+    assertThat(returnedSurvey.getBallot(someBallotTitle1).getChoices().size(), is(5));
+  }
+
+  @Test
+  public void test_createSurvey_oneParameterCustomChoices_success() {
+    final String someBallotTitle1 = "someBallotTitle1";
+    final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1 + " - subTitle - choice1 - choice2", new Page(), new HashMap<String, String>());
+
+    assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
+    assertThat(returnedSurvey.getBallot(someBallotTitle1).getChoices().size(), is(2));
+    assertThat(returnedSurvey.getBallot(someBallotTitle1).getChoices().iterator().next().getDescription(), is(equalTo("choice1")));
   }
 
   @Test
@@ -90,6 +101,7 @@ public class SurveyManagerTest {
     assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
     assertEquals(someBallotDescription1, returnedSurvey.getBallot(someBallotTitle1).getDescription());
     assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
+    assertThat(returnedSurvey.getBallot(someBallotTitle2).getChoices().size(), is(5));
   }
 
   @Test

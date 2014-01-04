@@ -13,13 +13,15 @@ public class SurveyConfig extends VoteConfig {
   public static final String KEY_SHOW_SUMMARY = "showSummary";
   public static final String KEY_SHOW_LAST = "showLast";
 
-
   private SurveySummary surveySummary = SurveySummary.Top;
   private List<String> choices;
 
   public SurveyConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     super(permissionEvaluator, parameters);
-
+    //start: parse again some parameters which are different on survey than on vote
+    renderTitleLevel = SurveyUtils.getIntegerFromString((String) parameters.get(KEY_RENDER_TITLE_LEVEL), 2);
+    showComments = SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true);
+    //end
     choices = SurveyUtils.getListFromStringCommaSeparated((String) parameters.get(KEY_CHOICES));
 
     if (!SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_SUMMARY), true)) {
@@ -29,8 +31,6 @@ public class SurveyConfig extends VoteConfig {
         surveySummary = SurveySummary.Bottom;
       }
     }
-
-
   }
 
   public SurveySummary getSurveySummary() {

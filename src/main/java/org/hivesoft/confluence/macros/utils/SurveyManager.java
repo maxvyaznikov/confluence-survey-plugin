@@ -107,7 +107,7 @@ public class SurveyManager {
         int customChoice;
         ArrayList<String> myChoicesList = new ArrayList<String>();
         for (customChoice = 2; customChoice < lineElements.length; customChoice++) {
-          String temp = lineElements[customChoice];
+          String temp = lineElements[customChoice].trim();
           myChoicesList.add(temp);
         }
 
@@ -115,7 +115,7 @@ public class SurveyManager {
         if (myChoicesList.size() > 1) { // should be a minimum of 2 choices
           ballotLabels = myChoicesList;
         } else {
-          if (ballotLabels == null) { // second was there no parameterList?
+          if (ballotLabels.isEmpty()) { // second was there no parameterList?
             ballotLabels = defaultBallotLabels;
           }
           // 3rd if there was a parameterList it will be in ballotLabels by default

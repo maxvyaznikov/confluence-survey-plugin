@@ -17,18 +17,18 @@ public class VoteConfig {
   public static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
   public static final String KEY_VOTERS = "voters";
   private static final String KEY_VIEWERS = "viewers";
-  private static final String KEY_SHOW_COMMENTS = "showComments";
+  protected static final String KEY_SHOW_COMMENTS = "showComments";
   private static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   private static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
   private static final String KEY_LOCKED = "locked";
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
 
-  private int renderTitleLevel;
+  protected int renderTitleLevel;
   private boolean changeableVotes;
   private List<String> voters;
   private List<String> viewers;
-  private boolean showComments;
+  protected boolean showComments;
   private boolean locked;
   private boolean visibleVoters;
   private boolean visibleVotersWiki;
@@ -97,7 +97,7 @@ public class VoteConfig {
     return renderTitleLevel;
   }
 
-  public boolean isChangeableVotes() {
+  public Boolean isChangeableVotes() {
     return changeableVotes;
   }
 
@@ -109,27 +109,27 @@ public class VoteConfig {
     return viewers;
   }
 
-  public boolean isShowComments() {
+  public Boolean isShowComments() {
     return showComments;
   }
 
-  public boolean isLocked() {
+  public Boolean isLocked() {
     return locked;
   }
 
-  public boolean isVisibleVoters() {
+  public Boolean isVisibleVoters() {
     return visibleVoters;
   }
 
-  public boolean isVisibleVotersWiki() {
+  public Boolean isVisibleVotersWiki() {
     return visibleVotersWiki;
   }
 
-  public boolean isCanSeeResults() {
+  public Boolean isCanSeeResults() {
     return canSeeResults;
   }
 
-  public boolean isCanTakeSurvey() {
+  public Boolean isCanTakeSurvey() {
     return canTakeSurvey;
   }
 

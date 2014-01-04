@@ -28,7 +28,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 #if ($ballot.config.renderTitleLevel != 0) </h$ballot.config.renderTitleLevel> #end
 
 $generalUtil.htmlEncode($ballot.description)
-
+debug-ballot: $ballot.choices
 #if ( $ballot.choices.size()==0 )
 <div class="aui-message info" style="margin-left:10px">
   <p class="title">
@@ -52,7 +52,7 @@ $generalUtil.htmlEncode($ballot.description)
   #if ($ballot.config.visibleVoters && $canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
-  #if ($ballot.config.visibleComments && ($canTakeSurvey || $canSeeResults) )
+  #if ($ballot.config.showComments && ($canTakeSurvey || $canSeeResults) )
     #set ($columnCount = $columnCount + 1)
   #end
   #set ($choiceNumber=0)
@@ -67,7 +67,7 @@ $generalUtil.htmlEncode($ballot.description)
     #if ($ballot.config.visibleVoters && $canSeeResults)
       <th>$action.getText("surveyplugin.vote.voters")</th>
     #end
-    #if ($ballot.config.visibleComments)
+    #if ($ballot.config.showComments)
       <th>$action.getText("surveyplugin.vote.comments")</th>
     #end
   </tr>
@@ -126,7 +126,7 @@ $generalUtil.htmlEncode($ballot.description)
           #end
         </td>
       #end
-      #if ($ballot.config.visibleComments && ($canTakeSurvey || $canSeeResults) && $choiceNumber==0)
+      #if ($ballot.config.showComments && ($canTakeSurvey || $canSeeResults) && $choiceNumber==0)
         <td class="surveyCommentPane" rowspan="$ballot.choices.size()">
           #if (!($ballot.config.locked))
             #set ($currentComment = "")
@@ -174,7 +174,7 @@ $generalUtil.htmlEncode($ballot.description)
             </div>
           #end
 
-          #if (($canSeeResults || ($canVote && $ballot.config.locked)) && $ballot.config.visibleComments)
+          #if (($canSeeResults || ($canVote && $ballot.config.locked)) && $ballot.config.showComments)
             #foreach ($comment in $ballot.comments)
               #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $ballot.config.locked))
                 <div class="commentBox commentblock surveyComment">
