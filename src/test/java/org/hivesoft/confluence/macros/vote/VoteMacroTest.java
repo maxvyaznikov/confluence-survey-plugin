@@ -153,8 +153,11 @@ public class VoteMacroTest {
 
   @Test
   public void test_recordVote_freshVote_success() {
+    Choice choiceToVoteOn = SurveyUtilsTest.createdDefaultChoice();
     Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    ballot.addChoice(choiceToVoteOn);
 
+    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
     when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
 
     classUnderTest.recordVote(ballot, mockRequest, new Page());
@@ -164,17 +167,20 @@ public class VoteMacroTest {
 
   @Test
   public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesTrue_success() {
-    Choice choice = new Choice("already Voted on");
+    Choice choiceAlreadyVotedOn = new Choice("already Voted on");
+    Choice choiceToVoteOn = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
 
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
     Ballot ballot = SurveyUtilsTest.createBallotWithParameters(parameters);
-    ballot.addChoice(choice);
+    ballot.addChoice(choiceAlreadyVotedOn);
+    ballot.addChoice(choiceToVoteOn);
 
-    choice.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+    choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
+    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
     when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
 
     classUnderTest.recordVote(ballot, mockRequest, new Page());
@@ -184,17 +190,18 @@ public class VoteMacroTest {
 
   @Test
   public void test_recordVote_alreadyVotedOnUnvoteChangeAbleVotesTrue_success() {
-    Choice choice = new Choice("already Voted on");
+    Choice choiceAlreadyVotedOn = new Choice("already Voted on");
 
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
     Ballot ballot = SurveyUtilsTest.createBallotWithParameters(parameters);
-    ballot.addChoice(choice);
+    ballot.addChoice(choiceAlreadyVotedOn);
 
-    choice.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+    choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
+    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
     when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("unvote");
 
     classUnderTest.recordVote(ballot, mockRequest, new Page());

@@ -8,7 +8,11 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 
 public class SurveyConfigTest {
@@ -40,12 +44,23 @@ public class SurveyConfigTest {
 
   @Test
   public void test_TitleAndSummary_success() {
-    classUnderTest = createSurveyConfigWithSurveySummaryTop(SurveySummary.Top);
+    classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.Top);
     assertEquals(SurveySummary.Top, classUnderTest.getSurveySummary());
-    classUnderTest = createSurveyConfigWithSurveySummaryTop(SurveySummary.None);
+    classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.None);
     assertEquals(SurveySummary.None, classUnderTest.getSurveySummary());
-    classUnderTest = createSurveyConfigWithSurveySummaryTop(SurveySummary.Bottom);
+    classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.Bottom);
     assertEquals(SurveySummary.Bottom, classUnderTest.getSurveySummary());
+  }
+
+  @Test
+  public void test_equalsAndHashCode() {
+    classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.Top);
+    VoteConfig classUnderTest2 = createSurveyConfigWithSurveySummary(SurveySummary.Top);
+
+    assertFalse(classUnderTest.equals(null));
+    assertFalse(classUnderTest.equals("someString"));
+    assertThat(classUnderTest, is(equalTo(classUnderTest2)));
+    assertThat(classUnderTest.hashCode(), is(equalTo(classUnderTest2.hashCode())));
   }
 
   private static SurveyConfig createSurveyConfigWithRenderTitleLevel(int level) {
@@ -56,7 +71,7 @@ public class SurveyConfigTest {
     return new SurveyConfig(mockPermissionEvaluator, parameters);
   }
 
-  private static SurveyConfig createSurveyConfigWithSurveySummaryTop(SurveySummary summary) {
+  private static SurveyConfig createSurveyConfigWithSurveySummary(SurveySummary summary) {
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
     Map<String, String> parameters = new HashMap<String, String>();
