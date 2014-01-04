@@ -64,9 +64,9 @@ public class SurveyConfigTest {
       parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, String.valueOf(false));
     } else if (summary == SurveySummary.Bottom) {
       parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, String.valueOf(true));
+      parameters.put(SurveyConfig.KEY_SHOW_LAST, String.valueOf(true));
     } else {
       parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, String.valueOf(true));
-      parameters.put(SurveyConfig.KEY_SHOW_LAST, String.valueOf(true));
     }
     return new SurveyConfig(mockPermissionEvaluator, parameters);
   }

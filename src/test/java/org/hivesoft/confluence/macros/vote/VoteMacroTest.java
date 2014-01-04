@@ -43,8 +43,6 @@ import static org.mockito.Mockito.*;
 public class VoteMacroTest {
   private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
 
-  private final static String SOME_BALLOT_TITLE="someBallotTitle";
-
   PageManager mockPageManager = mock(PageManager.class);
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
   PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
@@ -63,8 +61,8 @@ public class VoteMacroTest {
   public void setup() {
     when(mockPermissionEvaluator.getRemoteUsername()).thenReturn(SurveyUtilsTest.SOME_USER_NAME);
 
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT)).thenReturn(SurveyUtilsTest.SOME_BALLOT);
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE)).thenReturn(SurveyUtilsTest.SOME_CHOICE);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT)).thenReturn(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE)).thenReturn(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
     AuthenticatedUserThreadLocal.setUser(SOME_USER1);
 
     classUnderTest = new VoteMacro(mockPageManager, mockContentPropertyManager, mockPermissionEvaluator, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
@@ -145,7 +143,7 @@ public class VoteMacroTest {
 
   @Test
   public void test_recordVote_noUser_success() {
-    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
     when(mockPermissionEvaluator.getRemoteUsername()).thenReturn("");
 
     classUnderTest.recordVote(ballot, mockRequest, new Page());
@@ -155,7 +153,7 @@ public class VoteMacroTest {
 
   @Test
   public void test_recordVote_freshVote_success() {
-    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
 
     when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
 
@@ -169,6 +167,7 @@ public class VoteMacroTest {
     Choice choice = new Choice("already Voted on");
 
     Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
     Ballot ballot = SurveyUtilsTest.createBallotWithParameters(parameters);
@@ -188,6 +187,7 @@ public class VoteMacroTest {
     Choice choice = new Choice("already Voted on");
 
     Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
     Ballot ballot = SurveyUtilsTest.createBallotWithParameters(parameters);
@@ -205,7 +205,7 @@ public class VoteMacroTest {
   @Test
   public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesFalse_success() {
     Choice choice = new Choice("already Voted on");
-    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
     ballot.addChoice(choice);
 
     choice.voteFor(SurveyUtilsTest.SOME_USER_NAME);

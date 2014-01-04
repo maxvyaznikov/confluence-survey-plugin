@@ -86,6 +86,7 @@ public class PermissionEvaluatorTest {
   @Test
   public void test_canSeeResults_noRestrictionsAndHasVoted_success() {
     final Ballot defaultBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    defaultBallot.addChoice(SurveyUtilsTest.createdDefaultChoice());
     defaultBallot.getChoices().iterator().next().voteFor(SOME_USER_NAME);
     final Boolean canSeeResults = classUnderTest.getCanSeeResults("", "", SOME_USER_NAME, defaultBallot);
     assertTrue(canSeeResults);
@@ -108,6 +109,7 @@ public class PermissionEvaluatorTest {
   @Test
   public void test_canSeeResults_inListOfViewersAndHasVoted_success() {
     final Ballot defaultBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    defaultBallot.addChoice(SurveyUtilsTest.createdDefaultChoice());
     defaultBallot.getChoices().iterator().next().voteFor(SOME_USER_NAME);
     final Boolean canSeeResults = classUnderTest.getCanSeeResults(SOME_USER_NAME + ", notThisUserEither", "", SOME_USER_NAME, defaultBallot);
     assertTrue(canSeeResults);
@@ -131,6 +133,7 @@ public class PermissionEvaluatorTest {
   public void test_canSeeResults_inListOfViewersViaGroupMembershipAndHasVoted_success() {
     when(mockUserAccessor.hasMembership("someGroup", SOME_USER_NAME)).thenReturn(true);
     final Ballot defaultBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    defaultBallot.addChoice(SurveyUtilsTest.createdDefaultChoice());
     defaultBallot.getChoices().iterator().next().voteFor(SOME_USER_NAME);
     final Boolean canSeeResults = classUnderTest.getCanSeeResults("someGroup, notThisUserEither", "", SOME_USER_NAME, defaultBallot);
     assertTrue(canSeeResults);
@@ -140,6 +143,7 @@ public class PermissionEvaluatorTest {
   public void test_canSeeResults_inListOfViewersViaGroupMembershipAndVotersGroupAndHasVoted_success() {
     when(mockUserAccessor.hasMembership("someGroup", SOME_USER_NAME)).thenReturn(true);
     final Ballot defaultBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    defaultBallot.addChoice(SurveyUtilsTest.createdDefaultChoice());
     defaultBallot.getChoices().iterator().next().voteFor(SOME_USER_NAME);
     final Boolean canSeeResults = classUnderTest.getCanSeeResults("someGroup, notThisUserEither", "someGroup", SOME_USER_NAME, defaultBallot);
     assertTrue(canSeeResults);

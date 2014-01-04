@@ -21,6 +21,8 @@ public class VoteConfig {
   private static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   private static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
   private static final String KEY_LOCKED = "locked";
+  public static final String KEY_START_BOUND = "startBound";
+  public static final String KEY_ITERATE_STEP = "iterateStep";
 
   private int renderTitleLevel;
   private boolean changeableVotes;
@@ -56,6 +58,21 @@ public class VoteConfig {
     canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUsername);
     visibleVoters = permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
     visibleVotersWiki = SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
+
+    int startBound = DEFAULT_START_BOUND;
+    String sTmpParam = (String) parameters.get(KEY_START_BOUND);
+    if (sTmpParam != null) {
+      startBound = Integer.valueOf(sTmpParam);
+    }
+    int iterateStep = DEFAULT_ITERATE_STEP;
+    sTmpParam = (String) parameters.get(KEY_ITERATE_STEP);
+    if (sTmpParam != null) {
+      iterateStep = Integer.valueOf(sTmpParam);
+    }
+    if (startBound != DEFAULT_START_BOUND || iterateStep != DEFAULT_ITERATE_STEP) {
+      this.startBound = startBound;
+      this.iterateStep = iterateStep;
+    }
   }
 
   public VoteConfig(SurveyConfig surveyConfig) {
@@ -122,5 +139,63 @@ public class VoteConfig {
 
   public int getIterateStep() {
     return iterateStep;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    VoteConfig that = (VoteConfig) o;
+
+    if (canSeeResults != that.canSeeResults) return false;
+    if (canTakeSurvey != that.canTakeSurvey) return false;
+    if (changeableVotes != that.changeableVotes) return false;
+    if (iterateStep != that.iterateStep) return false;
+    if (locked != that.locked) return false;
+    if (renderTitleLevel != that.renderTitleLevel) return false;
+    if (showComments != that.showComments) return false;
+    if (startBound != that.startBound) return false;
+    if (visibleVoters != that.visibleVoters) return false;
+    if (visibleVotersWiki != that.visibleVotersWiki) return false;
+    if (!viewers.equals(that.viewers)) return false;
+    if (!voters.equals(that.voters)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = renderTitleLevel;
+    result = 31 * result + (changeableVotes ? 1 : 0);
+    result = 31 * result + voters.hashCode();
+    result = 31 * result + viewers.hashCode();
+    result = 31 * result + (showComments ? 1 : 0);
+    result = 31 * result + (locked ? 1 : 0);
+    result = 31 * result + (visibleVoters ? 1 : 0);
+    result = 31 * result + (visibleVotersWiki ? 1 : 0);
+    result = 31 * result + (canSeeResults ? 1 : 0);
+    result = 31 * result + (canTakeSurvey ? 1 : 0);
+    result = 31 * result + startBound;
+    result = 31 * result + iterateStep;
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "VoteConfig{" +
+            "renderTitleLevel=" + renderTitleLevel +
+            ", changeableVotes=" + changeableVotes +
+            ", voters=" + voters +
+            ", viewers=" + viewers +
+            ", showComments=" + showComments +
+            ", locked=" + locked +
+            ", visibleVoters=" + visibleVoters +
+            ", visibleVotersWiki=" + visibleVotersWiki +
+            ", canSeeResults=" + canSeeResults +
+            ", canTakeSurvey=" + canTakeSurvey +
+            ", startBound=" + startBound +
+            ", iterateStep=" + iterateStep +
+            '}';
   }
 }

@@ -22,8 +22,8 @@ public class SurveyUtilsTest {
   public static final String BALLOT_AND_CHOICE_NAME2 = "someBallot.withSomeChoiceName2";
   public static final String BALLOT_AND_CHOICE_NAME3 = "someBallot.withSomeChoiceName3";
 
-  public static final String SOME_BALLOT = "some Ballot";
-  public static final String SOME_CHOICE = "some Choice";
+  public static final String SOME_BALLOT_TITLE = "someBallotTitle";
+  public static final String SOME_CHOICE_DESCRIPTION = "someChoiceDescription";
   public static final String SOME_USER_NAME = "john doe";
 
 
@@ -83,10 +83,20 @@ public class SurveyUtilsTest {
   }
 
   public static Ballot createBallotWithParameters(Map<String, String> parameters) {
-    Ballot ballot = new Ballot(SOME_BALLOT, createDefaultVoteConfig(parameters));
-    Choice choice = new Choice(SOME_CHOICE);
-    ballot.addChoice(choice);
+    String titleInMacroParameters = SOME_BALLOT_TITLE;
+    try {
+      titleInMacroParameters = SurveyUtils.getTitleInMacroParameters(parameters);
+    } catch (MacroException e) {
+      e.printStackTrace();
+    }
+    Ballot ballot = new Ballot(titleInMacroParameters, createDefaultVoteConfig(parameters));
+    //Choice choice = new Choice(SOME_CHOICE_DESCRIPTION);
+    //ballot.addChoice(choice);
     return ballot;
+  }
+
+  public static Choice createdDefaultChoice(){
+    return new Choice(SOME_CHOICE_DESCRIPTION);
   }
 
   public static VoteConfig createDefaultVoteConfig(Map<String, String> parameters) {

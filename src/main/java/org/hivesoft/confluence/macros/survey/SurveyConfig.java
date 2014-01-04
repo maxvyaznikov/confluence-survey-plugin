@@ -12,8 +12,7 @@ public class SurveyConfig extends VoteConfig {
   public static final String KEY_CHOICES = "choices";
   public static final String KEY_SHOW_SUMMARY = "showSummary";
   public static final String KEY_SHOW_LAST = "showLast";
-  public static final String KEY_START_BOUND = "startBound";
-  public static final String KEY_ITERATE_STEP = "iterateStep";
+
 
   private SurveySummary surveySummary = SurveySummary.Top;
   private List<String> choices;
@@ -31,20 +30,7 @@ public class SurveyConfig extends VoteConfig {
       }
     }
 
-    int startBound = DEFAULT_START_BOUND;
-    String sTmpParam = (String) parameters.get(KEY_START_BOUND);
-    if (sTmpParam != null) {
-      startBound = Integer.valueOf(sTmpParam);
-    }
-    int iterateStep = DEFAULT_ITERATE_STEP;
-    sTmpParam = (String) parameters.get(KEY_ITERATE_STEP);
-    if (sTmpParam != null) {
-      iterateStep = Integer.valueOf(sTmpParam);
-    }
-    if (startBound != DEFAULT_START_BOUND || iterateStep != DEFAULT_ITERATE_STEP) {
-      this.startBound = startBound;
-      this.iterateStep = iterateStep;
-    }
+
   }
 
   public SurveySummary getSurveySummary() {
