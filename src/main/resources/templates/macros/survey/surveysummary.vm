@@ -10,21 +10,21 @@
  *#
 
 ## If the user can see results, only show them if they are not a voter or have completed the entire survey
-#if ($survey.surveySummary!="None" && $canSeeSurveyResults)
+#if ($survey.config.surveySummary!="None" && $survey.config.canSeeResults)
 
   #if ( $survey.ballots.size()>0 ) ##if the survey has no ballots dont show anything
-    #if ($survey.getRenderTitleLevelAdjustedOrZero(1) != 0)
-    <h$survey.getRenderTitleLevelAdjustedOrZero(1)>#else <br/>#end <a
-          name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a>#if ($survey.getRenderTitleLevelAdjustedOrZero(1) != 0)
-  </h$survey.getRenderTitleLevelAdjustedOrZero(1)>#end
-    #if ($survey.isSurveyComplete($req.remoteUser) || !($canTakeSurvey) || $survey.locked )
+    #if ($survey.config.getRenderTitleLevelAdjustedOrZero(1) != 0)
+    <h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#else <br/>#end <a
+          name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a>#if ($survey.config.getRenderTitleLevelAdjustedOrZero(1) != 0)
+  </h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#end
+    #if ($survey.isSurveyComplete($req.remoteUser) || !($survey.config.canTakeSurvey) || $survey.config.locked )
     <table class="surveySummaryTable">
       <thead>
       <tr>
         <th>$action.getText("surveyplugin.survey.summary.header.question")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.total")</th>
         <th>$action.getText("surveyplugin.survey.summary.header.average.bar")</th>
-        #if ($survey.visibleVoters)
+        #if ($survey.config.visibleVoters)
           <th>$action.getText("surveyplugin.vote.voters")</th>
         #end
       </tr>
@@ -49,14 +49,14 @@
               </div>
             </div>
           </td>
-          #if ($survey.visibleVoters)
+          #if ($survey.config.visibleVoters)
             <td>
               <i>
                 #set($voters = $ballot.getAllVoters())
                 #set($iCounter = 0)
                 #foreach($voter in $voters)
                   #set($iCounter=$iCounter+1)
-                  #if ($visibleVotersWiki)
+                  #if ($survey.config.visibleVotersWiki)
                     <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
                   #else
                     $voter#if ($iCounter!=$voters.size()),#end

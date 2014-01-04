@@ -176,7 +176,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
     contextMap.put("iconSet", iconSet);
 
     try {
-      if (survey.getSurveyConfig().isCanSeeResults() || survey.getSurveyConfig().isCanTakeSurvey()) {
+      if (survey.getConfig().isCanSeeResults() || survey.getConfig().isCanTakeSurvey()) {
         StringWriter renderedTemplate = new StringWriter();
         renderer.render("templates/macros/survey/surveymacro.vm", contextMap, renderedTemplate);
         return renderedTemplate.toString();

@@ -89,12 +89,12 @@ public class SurveyManager {
       String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
       // the parameter given list must override the inline Labels if none are there
-      List<String> ballotLabels = survey.getSurveyConfig().getChoices();
+      List<String> ballotLabels = survey.getConfig().getChoices();
 
       if ((!StringUtils.isBlank(line) && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1) {
         String[] lineElements = line.split("\\-", -1);
 
-        Ballot ballot = new Ballot(lineElements[0].trim(), new VoteConfig(survey.getSurveyConfig()));
+        Ballot ballot = new Ballot(lineElements[0].trim(), new VoteConfig(survey.getConfig()));
         survey.addBallot(ballot);
 
         //second element is the subtitle or description

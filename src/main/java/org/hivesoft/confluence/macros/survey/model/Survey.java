@@ -26,10 +26,10 @@ public class Survey {
   private String title;
   private List<Ballot> ballots = new ArrayList<Ballot>();
 
-  private SurveyConfig surveyConfig;
+  private SurveyConfig config;
 
-  public Survey(SurveyConfig surveyConfig) {
-    this.surveyConfig = surveyConfig;
+  public Survey(SurveyConfig config) {
+    this.config = config;
   }
 
   /**
@@ -90,8 +90,8 @@ public class Survey {
     return title;
   }
 
-  public SurveyConfig getSurveyConfig() {
-    return surveyConfig;
+  public SurveyConfig getConfig() {
+    return config;
   }
 
   /**

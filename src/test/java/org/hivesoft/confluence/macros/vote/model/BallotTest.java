@@ -48,7 +48,7 @@ public class BallotTest {
 
   @Test
   public void test_ballotsWithDefaults_success() {
-    assertNotNull(classUnderTest.getVoteConfig());
+    assertNotNull(classUnderTest.getConfig());
   }
 
   @Test

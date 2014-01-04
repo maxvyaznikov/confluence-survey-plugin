@@ -23,16 +23,14 @@ public class Ballot {
   private String description = "";
   private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
   private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
-  private VoteConfig voteConfig;
+  private VoteConfig config;
 
   /**
-   * Create a <code>Ballot</code>, specifying the title.
-   *
    * @param title the title for the <code>Ballot</code>
    */
-  public Ballot(String title, VoteConfig voteConfig) {
+  public Ballot(String title, VoteConfig config) {
     this.title = title;
-    this.voteConfig = voteConfig;
+    this.config = config;
   }
 
   /**
@@ -93,8 +91,8 @@ public class Ballot {
     return choices.values();
   }
 
-  public VoteConfig getVoteConfig() {
-    return voteConfig;
+  public VoteConfig getConfig() {
+    return config;
   }
 
   /**
@@ -172,35 +170,35 @@ public class Ballot {
    * @return The calculated EndBound Value (out of StartBound + iteration-steps)
    */
   public int getEndBound() {
-    return voteConfig.getStartBound() + (choices.size() - 1) * voteConfig.getIterateStep();
+    return config.getStartBound() + (choices.size() - 1) * config.getIterateStep();
   }
 
   /**
    * @return The calculated <code>real<code> LowerBound Value
    */
   public int getLowerBound() {
-    return voteConfig.getStartBound() > getEndBound() ? getEndBound() : voteConfig.getStartBound();
+    return config.getStartBound() > getEndBound() ? getEndBound() : config.getStartBound();
   }
 
   /**
    * @return The calculated <code>real<code> UpperBound Value
    */
   public int getUpperBound() {
-    return voteConfig.getStartBound() > getEndBound() ? voteConfig.getStartBound() : getEndBound();
+    return config.getStartBound() > getEndBound() ? config.getStartBound() : getEndBound();
   }
 
   public int getAveragePercentage(float average) {
-    if (voteConfig.getIterateStep() < 0)
-      return (int) (average - getLowerBound() - voteConfig.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() - voteConfig.getIterateStep());
+    if (config.getIterateStep() < 0)
+      return (int) (average - getLowerBound() - config.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() - config.getIterateStep());
     else
-      return (int) (average - getLowerBound() + voteConfig.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() + voteConfig.getIterateStep());
+      return (int) (average - getLowerBound() + config.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() + config.getIterateStep());
   }
 
   /**
    * @return The bounds for this ballot if different then the default
    */
   public String getBoundsIfNotDefault() {
-    return (voteConfig.getStartBound() == 1 && voteConfig.getIterateStep() == 1) ? "" : "(" + voteConfig.getStartBound() + "-" + getEndBound() + ")";
+    return (config.getStartBound() == 1 && config.getIterateStep() == 1) ? "" : "(" + config.getStartBound() + "-" + getEndBound() + ")";
   }
 
   /**
@@ -231,10 +229,10 @@ public class Ballot {
 
     Collection<Choice> choices = this.getChoices();
     //the first choice gets the highest number, so calculate last
-    int iCur = voteConfig.getStartBound() + (choices.size() - 1) * voteConfig.getIterateStep();
+    int iCur = config.getStartBound() + (choices.size() - 1) * config.getIterateStep();
     for (Choice choice : choices) {
       total += iCur * choice.getVoters().size();
-      iCur -= voteConfig.getIterateStep();
+      iCur -= config.getIterateStep();
     }
     return ((float) total) / totalVoteCount;
   }
@@ -290,7 +288,7 @@ public class Ballot {
             ", description='" + description + '\'' +
             ", choices=" + choices +
             ", comments=" + comments +
-            ", voteConfig=" + voteConfig +
+            ", config=" + config +
             '}';
   }
 }

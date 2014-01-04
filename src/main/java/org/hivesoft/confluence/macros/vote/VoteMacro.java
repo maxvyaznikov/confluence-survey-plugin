@@ -20,7 +20,6 @@ import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.renderer.PageContext;
-import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
@@ -31,7 +30,6 @@ import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
-import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
@@ -274,7 +272,7 @@ public class VoteMacro extends BaseMacro implements Macro {
 
       // If this is a re-vote situation, then unvote first
       Choice previousChoice = ballot.getVote(remoteUsername);
-      if (previousChoice != null && ballot.getVoteConfig().isChangeableVotes()) {
+      if (previousChoice != null && ballot.getConfig().isChangeableVotes()) {
         previousChoice.removeVoteFor(remoteUsername);
         surveyManager.setVoteContentProperty(previousChoice, ballot.getTitle(), contentObject);
       }

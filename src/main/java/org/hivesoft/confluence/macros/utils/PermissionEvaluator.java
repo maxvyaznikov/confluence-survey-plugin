@@ -126,10 +126,10 @@ public class PermissionEvaluator {
       return Boolean.FALSE;
     }
 
-    boolean isVoter = ballot.getVoteConfig().getVoters().isEmpty() || ballot.getVoteConfig().getVoters().contains(username);
+    boolean isVoter = ballot.getConfig().getVoters().isEmpty() || ballot.getConfig().getVoters().contains(username);
     if (!isVoter) {
       // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-      for (String currentUser : ballot.getVoteConfig().getVoters()) {
+      for (String currentUser : ballot.getConfig().getVoters()) {
         if (userAccessor.hasMembership(currentUser.trim(), username)) {
           isVoter = true;
           break;
@@ -140,6 +140,6 @@ public class PermissionEvaluator {
         return Boolean.FALSE;
     }
 
-    return !ballot.getHasVoted(username) || ballot.getVoteConfig().isChangeableVotes();
+    return !ballot.getHasVoted(username) || ballot.getConfig().isChangeableVotes();
   }
 }
