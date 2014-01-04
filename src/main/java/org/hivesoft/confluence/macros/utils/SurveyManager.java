@@ -13,40 +13,42 @@ package org.hivesoft.confluence.macros.utils;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.extras.common.log.Logger;
+import com.atlassian.renderer.v2.macro.MacroException;
 import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class SurveyManager {
   private static final Logger.Log LOG = Logger.getInstance(SurveyManager.class);
 
-  private final static String[] defaultBallotLabels = new String[]{"5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"};
-  private final static String[] defaultOldBallotLabels = new String[]{"5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"};
+  private final static List<String> defaultBallotLabels = new ArrayList<String>(Arrays.asList("5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"));
+  private final static List<String> defaultOldBallotLabels = new ArrayList<String>(Arrays.asList("5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"));
 
   private final ContentPropertyManager contentPropertyManager;
+  private final PermissionEvaluator permissionEvaluator;
 
-  public SurveyManager(ContentPropertyManager contentPropertyManager) {
+  public SurveyManager(ContentPropertyManager contentPropertyManager, PermissionEvaluator permissionEvaluator) {
     this.contentPropertyManager = contentPropertyManager;
+    this.permissionEvaluator = permissionEvaluator;
   }
 
   /**
    * This method will take the data from the macros parameters, body, and page data to reconstruct a ballot object with all of the choices and previously cast votes populated.
    * This method will probably only work from a VoteMacro context
    *
-   * @param title The title of the ballot
-   * @param body  The rendered body of the macro.
+   * @param body The rendered body of the macro.
    * @return A fully populated ballot object.
    */
-  public Ballot reconstructBallot(String title, String body, ContentEntityObject contentObject) {
-    Ballot ballot = new Ballot(title);
+  public Ballot reconstructBallot(Map<String, String> parameters, String body, ContentEntityObject contentObject) throws MacroException {
+    Ballot ballot = new Ballot(SurveyUtils.getTitleInMacroParameters(parameters), new VoteConfig(permissionEvaluator, parameters));
     for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
       String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
@@ -72,12 +74,11 @@ public class SurveyManager {
   /**
    * Create a survey object for the given macro body pre-populated with all choices that have previously been made by the users.
    *
-   * @param body    The rendered body of the macro.
-   * @param choices The list of potential choices, or null for the default choices
+   * @param body The rendered body of the macro.
    * @return The survey object, pre-filled with the correct data.
    */
-  public Survey createSurvey(String body, ContentEntityObject contentObject, String choices) {
-    Survey survey = new Survey();
+  public Survey createSurvey(String body, ContentEntityObject contentObject, Map<String, String> parameters) {
+    Survey survey = new Survey(new SurveyConfig(permissionEvaluator, parameters));
 
     if (StringUtils.isBlank(body)) {
       return survey;
@@ -88,34 +89,31 @@ public class SurveyManager {
       String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
       // the parameter given list must override the inline Labels if none are there
-      String[] ballotLabels = null;
-      if (choices != null) {
-        ballotLabels = choices.split(",");
-      }
+      List<String> ballotLabels = survey.getSurveyConfig().getChoices();
 
       if ((!StringUtils.isBlank(line) && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1) {
-        String[] titleDescription = line.split("\\-", -1);
+        String[] lineElements = line.split("\\-", -1);
 
-        Ballot ballot = new Ballot(titleDescription[0].trim());
+        Ballot ballot = new Ballot(lineElements[0].trim(), new VoteConfig(survey.getSurveyConfig()));
         survey.addBallot(ballot);
 
-        if (titleDescription.length > 1) {
-          ballot.setDescription(titleDescription[1].trim());
+        //second element is the subtitle or description
+        if (lineElements.length > 1) {
+          ballot.setDescription(lineElements[1].trim());
         }
 
         enrichBallotWithComments(contentObject, ballot);
 
         int customChoice;
         ArrayList<String> myChoicesList = new ArrayList<String>();
-        for (customChoice = 2; customChoice < titleDescription.length; customChoice++) {
-          String temp = titleDescription[customChoice];
+        for (customChoice = 2; customChoice < lineElements.length; customChoice++) {
+          String temp = lineElements[customChoice];
           myChoicesList.add(temp);
         }
 
         // 1.1.3: first take the list inLine
         if (myChoicesList.size() > 1) { // should be a minimum of 2 choices
-          ballotLabels = new String[myChoicesList.size()];
-          myChoicesList.toArray(ballotLabels);
+          ballotLabels = myChoicesList;
         } else {
           if (ballotLabels == null) { // second was there no parameterList?
             ballotLabels = defaultBallotLabels;
@@ -124,17 +122,18 @@ public class SurveyManager {
         }
 
         // Load all of the choices and votes into the ballot
-        for (int i = 0; i < ballotLabels.length; i++) {
-          Choice choice = new Choice(ballotLabels[i]);
+        for (String ballotLabel : ballotLabels) {
+          Choice choice = new Choice(ballotLabel);
           // 1.1.7.6 if this ballot is a default one, check whether there are old default items and convert see CSRVY-21 for details
-          if (i < defaultBallotLabels.length && ballotLabels[i].equalsIgnoreCase(defaultBallotLabels[i])) {
+          if (defaultBallotLabels.contains(ballotLabel)) {
+            int defaultIndex = defaultBallotLabels.indexOf(ballotLabel);
             // check for old votes
-            String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels[i]);
+            String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels.get(defaultIndex));
             if (TextUtils.stringSet(votes)) {
               // if present save the new (spaces reduced one)
-              contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultBallotLabels[i], votes);
+              contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultBallotLabels.get(defaultIndex), votes);
               // delete the old key
-              contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels[i], null);
+              contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels.get(defaultIndex), null);
             }
           }
           ballot.addChoice(choice);

@@ -10,6 +10,8 @@
  */
 package org.hivesoft.confluence.macros.vote.model;
 
+import org.hivesoft.confluence.macros.vote.VoteConfig;
+
 import java.util.*;
 
 /**
@@ -17,30 +19,20 @@ import java.util.*;
  * Each <code>Choice</code> can be assigned zero or more votes.
  */
 public class Ballot {
-
-  public static final int DEFAULT_START_BOUND = 1;
-  public static final int DEFAULT_ITERATE_STEP = 1;
-
   private String title;
   private String description = "";
   private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
   private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
-  private boolean locked = false;
-  private boolean changeableVotes = false;
-  private boolean visibleComments = false;
-  private boolean visibleVoters = false;
-  private boolean visibleVotersWiki = false;
-  private int renderTitleLevel = 3;
-  private int startBound = DEFAULT_START_BOUND;
-  private int iterateStep = DEFAULT_ITERATE_STEP;
+  private VoteConfig voteConfig;
 
   /**
    * Create a <code>Ballot</code>, specifying the title.
    *
    * @param title the title for the <code>Ballot</code>
    */
-  public Ballot(String title) {
+  public Ballot(String title, VoteConfig voteConfig) {
     this.title = title;
+    this.voteConfig = voteConfig;
   }
 
   /**
@@ -73,72 +65,6 @@ public class Ballot {
   }
 
   /**
-   * @return true if once cast votes are changeable
-   */
-  public boolean isChangeableVotes() {
-    return changeableVotes;
-  }
-
-  public void setChangeableVotes(boolean changeableVotes) {
-    this.changeableVotes = changeableVotes;
-  }
-
-  /**
-   * @return true if the comments functionality is enabled
-   */
-  public boolean isVisibleComments() {
-    return visibleComments;
-  }
-
-  public void setVisibleComments(boolean visibleComments) {
-    this.visibleComments = visibleComments;
-  }
-
-  /**
-   * @return true if voters are visible to users
-   */
-  public boolean isVisibleVoters() {
-    return visibleVoters;
-  }
-
-  public void setVisibleVoters(boolean visibleVoters) {
-    this.visibleVoters = visibleVoters;
-  }
-
-  /**
-   * @return true if voters are visible in Wiki markup (linked to user profile) or in plaintext
-   */
-  public boolean isVisibleVotersWiki() {
-    return visibleVotersWiki;
-  }
-
-  public void setVisibleVotersWiki(boolean visibleVotersWiki) {
-    this.visibleVotersWiki = visibleVotersWiki;
-  }
-
-  /**
-   * @return true if this ballot is locked and not available anymore for participants
-   */
-  public boolean isLocked() {
-    return locked;
-  }
-
-  public void setLocked(boolean locked) {
-    this.locked = locked;
-  }
-
-  /**
-   * @return the level the heading of this item will be rendered in the wiki. h1..h5 (h0 would be disabling headers functionality)
-   */
-  public int getRenderTitleLevel() {
-    return renderTitleLevel;
-  }
-
-  public void setRenderTitleLevel(int renderTitleLevel) {
-    this.renderTitleLevel = renderTitleLevel;
-  }
-
-  /**
    * @param username the username whose vote is needed
    * @return the {@link Choice} the user voted on or <code>null</code> if username has not voted.
    */
@@ -165,6 +91,10 @@ public class Ballot {
    */
   public Collection<Choice> getChoices() {
     return choices.values();
+  }
+
+  public VoteConfig getVoteConfig() {
+    return voteConfig;
   }
 
   /**
@@ -239,74 +169,38 @@ public class Ballot {
   }
 
   /**
-   * Set the StartBound for calculations (average)
-   *
-   * @param iStartBound - the Iteration shall start with
-   */
-  public void setStartBound(int iStartBound) {
-    startBound = iStartBound;
-  }
-
-  /**
-   * Get the StartBound for calculations (average)
-   *
-   * @return The StartBound for this ballots calcu/iteration.
-   */
-  public int getStartBound() {
-    return startBound;
-  }
-
-  /**
-   * Set the iterateStep for calculations (average)
-   *
-   * @param iIterateStep the Iteration shall iterate with
-   */
-  public void setIterateStep(int iIterateStep) {
-    iterateStep = iIterateStep;
-  }
-
-  /**
-   * Get the Iterations Step for calculations (average)
-   *
-   * @return The iteration Step for this ballots calcu/iteration.
-   */
-  public int getIterateStep() {
-    return iterateStep;
-  }
-
-  /**
    * @return The calculated EndBound Value (out of StartBound + iteration-steps)
    */
   public int getEndBound() {
-    return startBound + (choices.size() - 1) * iterateStep;
+    return voteConfig.getStartBound() + (choices.size() - 1) * voteConfig.getIterateStep();
   }
 
   /**
    * @return The calculated <code>real<code> LowerBound Value
    */
   public int getLowerBound() {
-    return getStartBound() > getEndBound() ? getEndBound() : getStartBound();
+    return voteConfig.getStartBound() > getEndBound() ? getEndBound() : voteConfig.getStartBound();
   }
 
   /**
    * @return The calculated <code>real<code> UpperBound Value
    */
   public int getUpperBound() {
-    return getStartBound() > getEndBound() ? getStartBound() : getEndBound();
+    return voteConfig.getStartBound() > getEndBound() ? voteConfig.getStartBound() : getEndBound();
   }
 
   public int getAveragePercentage(float average) {
-    if (iterateStep < 0)
-      return (int) (average - getLowerBound() - iterateStep) * 100 / (getUpperBound() - getLowerBound() - iterateStep);
+    if (voteConfig.getIterateStep() < 0)
+      return (int) (average - getLowerBound() - voteConfig.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() - voteConfig.getIterateStep());
     else
-      return (int) (average - getLowerBound() + iterateStep) * 100 / (getUpperBound() - getLowerBound() + iterateStep);
+      return (int) (average - getLowerBound() + voteConfig.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() + voteConfig.getIterateStep());
   }
 
   /**
    * @return The bounds for this ballot if different then the default
    */
   public String getBoundsIfNotDefault() {
-    return (startBound == 1 && iterateStep == 1) ? "" : "(" + getStartBound() + "-" + getEndBound() + ")";
+    return (voteConfig.getStartBound() == 1 && voteConfig.getIterateStep() == 1) ? "" : "(" + voteConfig.getStartBound() + "-" + getEndBound() + ")";
   }
 
   /**
@@ -337,10 +231,10 @@ public class Ballot {
 
     Collection<Choice> choices = this.getChoices();
     //the first choice gets the highest number, so calculate last
-    int iCur = startBound + (choices.size() - 1) * iterateStep;
+    int iCur = voteConfig.getStartBound() + (choices.size() - 1) * voteConfig.getIterateStep();
     for (Choice choice : choices) {
       total += iCur * choice.getVoters().size();
-      iCur -= iterateStep;
+      iCur -= voteConfig.getIterateStep();
     }
     return ((float) total) / totalVoteCount;
   }
@@ -376,10 +270,7 @@ public class Ballot {
 
     Ballot ballot = (Ballot) o;
 
-    if (!description.equals(ballot.description)) return false;
-    if (!title.equals(ballot.title)) return false;
-
-    return true;
+    return description.equals(ballot.description) && title.equals(ballot.title);
   }
 
   /**
@@ -392,20 +283,14 @@ public class Ballot {
     return result;
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public String toString() {
     return "Ballot{" +
-            "description='" + description + '\'' +
-            ", title='" + title + '\'' +
+            "title='" + title + '\'' +
+            ", description='" + description + '\'' +
             ", choices=" + choices +
             ", comments=" + comments +
-            ", changeableVotes=" + changeableVotes +
-            ", visibleVoters=" + visibleVoters +
-            ", startBound=" + startBound +
-            ", iterateStep=" + iterateStep +
+            ", voteConfig=" + voteConfig +
             '}';
   }
 }

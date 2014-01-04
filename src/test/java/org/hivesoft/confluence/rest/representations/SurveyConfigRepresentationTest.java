@@ -4,12 +4,12 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
-public class SurveyConfigTest {
-    private SurveyConfig classUnderTest;
+public class SurveyConfigRepresentationTest {
+    private SurveyConfigRepresentation classUnderTest;
 
     @Test
     public void test_equals_success() {
-        classUnderTest = new SurveyConfig();
+        classUnderTest = new SurveyConfigRepresentation();
 
         assertFalse(classUnderTest.equals(null));
         assertFalse(classUnderTest.equals("someString"));

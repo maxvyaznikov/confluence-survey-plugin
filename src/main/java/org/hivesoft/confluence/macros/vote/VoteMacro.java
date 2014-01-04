@@ -65,16 +65,6 @@ public class VoteMacro extends BaseMacro implements Macro {
   // prefix vote to make a vote unique in the textproperties
   public static final String VOTE_PREFIX = "vote.";
 
-  public static final String KEY_TITLE = "title";
-  protected static final String KEY_RENDER_TITLE_LEVEL = "renderTitleLevel";
-  protected static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
-  protected static final String KEY_VOTERS = "voters";
-  protected static final String KEY_VIEWERS = "viewers";
-  protected static final String KEY_SHOW_COMMENTS = "showComments";
-  protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
-  protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
-  protected static final String KEY_LOCKED = "locked";
-
   protected final PluginSettingsFactory pluginSettingsFactory;
   protected final PageManager pageManager;
   protected final SurveyManager surveyManager;
@@ -83,10 +73,10 @@ public class VoteMacro extends BaseMacro implements Macro {
   protected final XhtmlContent xhtmlContent;
   protected final VelocityAbstractionHelper velocityAbstractionHelper;
 
-  public VoteMacro(PageManager pageManager, ContentPropertyManager contentPropertyManager, UserAccessor userAccessor, UserManager userManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
+  public VoteMacro(PageManager pageManager, ContentPropertyManager contentPropertyManager, PermissionEvaluator permissionEvaluator, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
     this.pageManager = pageManager;
-    this.surveyManager = new SurveyManager(contentPropertyManager);
-    this.permissionEvaluator = new PermissionEvaluator(userAccessor, userManager);
+    this.permissionEvaluator = permissionEvaluator;
+    this.surveyManager = new SurveyManager(contentPropertyManager, permissionEvaluator);
     this.renderer = renderer;
     this.xhtmlContent = xhtmlContent;
     this.pluginSettingsFactory = pluginSettingsFactory;
@@ -147,7 +137,7 @@ public class VoteMacro extends BaseMacro implements Macro {
         public void handle(MacroDefinition macroDefinition) {
           if (VOTE_MACRO.equals(macroDefinition.getName())) {
             final Map<String, String> parameters = macroDefinition.getParameters();
-            String currentTitle = StringUtils.defaultString(parameters.get(KEY_TITLE)).trim();
+            String currentTitle = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE)).trim();
             if (!StringUtils.isBlank(currentTitle)) {
               if (macros.contains(currentTitle)) {
                 LOG.info("A " + VOTE_MACRO + "-macro should not have the same title " + currentTitle + " on the same page! In newer version it may become mandatory / unique.");
@@ -197,10 +187,9 @@ public class VoteMacro extends BaseMacro implements Macro {
       iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
     }
 
-    String title = SurveyUtils.getTitleInMacroParameters(parameters);
+    //String title = SurveyUtils.getTitleInMacroParameters(parameters);
     // Rebuild the model for this ballot
-    Ballot ballot = surveyManager.reconstructBallot(title, body, contentObject);
-    ballot.setChangeableVotes(Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES)));
+    Ballot ballot = surveyManager.reconstructBallot(parameters, body, contentObject);
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
     if (ballot.getChoices().size() != 0) {
@@ -215,6 +204,10 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     SurveyUtils.validateMaxStorableKeyLength(ballot.getBallotTitlesWithChoiceNames());
 
+
+
+    /*
+    ballot.setChangeableVotes(Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES)));
     String renderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
     if (!StringUtils.isBlank(renderTitleLevel)) {
       ballot.setRenderTitleLevel(Integer.valueOf(renderTitleLevel));
@@ -235,12 +228,14 @@ public class VoteMacro extends BaseMacro implements Macro {
     Boolean canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(SurveyUtils.getListFromStringCommaSeparated((String) parameters.get(KEY_VOTERS)), remoteUsername);
     ballot.setVisibleVoters(permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults));
     ballot.setVisibleVotersWiki(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
+*/
+
 
     // check if any request parameters came in to complete or uncomplete tasks
     HttpServletRequest request = ServletActionContext.getRequest();
 
     if (request != null && ballot.getTitle().equals(request.getParameter(REQUEST_PARAMETER_BALLOT))) {
-      recordVote(ballot, request, contentObject, (String) parameters.get(KEY_VOTERS));
+      recordVote(ballot, request, contentObject);
     }
 
     // now create a simple velocity context and render a template for the output
@@ -248,8 +243,6 @@ public class VoteMacro extends BaseMacro implements Macro {
     contextMap.put("content", contentObject);
     contextMap.put("ballot", ballot);
     contextMap.put("iconSet", iconSet);
-    contextMap.put("canSeeSurveyResults", canSeeResults);
-    contextMap.put("canTakeSurvey", canTakeSurvey);
 
     try {
       StringWriter renderedTemplate = new StringWriter();
@@ -267,9 +260,8 @@ public class VoteMacro extends BaseMacro implements Macro {
    * @param ballot        The ballot being voted on.
    * @param request       The request where the vote and username can be found.
    * @param contentObject The content object where any votes should be stored.
-   * @param voters        The list of usernames allowed to vote. If blank, all users can vote.
    */
-  protected void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject, String voters) {
+  protected void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject) {
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
     String requestBallotTitle = request.getParameter(REQUEST_PARAMETER_BALLOT);
     String requestChoice = request.getParameter(REQUEST_PARAMETER_CHOICE);
@@ -278,11 +270,11 @@ public class VoteMacro extends BaseMacro implements Macro {
     LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + requestVoteAction);
 
     // If there is a choice, make sure the vote is for this ballot and this user can vote
-    if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(voters, remoteUsername, ballot)) {
+    if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(remoteUsername, ballot)) {
 
       // If this is a re-vote situation, then unvote first
       Choice previousChoice = ballot.getVote(remoteUsername);
-      if (previousChoice != null && ballot.isChangeableVotes()) {
+      if (previousChoice != null && ballot.getVoteConfig().isChangeableVotes()) {
         previousChoice.removeVoteFor(remoteUsername);
         surveyManager.setVoteContentProperty(previousChoice, ballot.getTitle(), contentObject);
       }

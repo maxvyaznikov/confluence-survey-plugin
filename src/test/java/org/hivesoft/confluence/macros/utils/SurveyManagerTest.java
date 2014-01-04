@@ -6,9 +6,13 @@ import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -20,17 +24,18 @@ public class SurveyManagerTest {
   private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
 
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
+  PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
   SurveyManager classUnderTest;
 
   @Before
   public void setup() {
-    classUnderTest = new SurveyManager(mockContentPropertyManager);
+    classUnderTest = new SurveyManager(mockContentPropertyManager, mockPermissionEvaluator);
   }
 
   @Test
   public void test_reconstructBallot_noChoices_success() throws MacroException {
-    final Ballot reconstructedBallot = classUnderTest.reconstructBallot("someTitle", "", new Page());
+    final Ballot reconstructedBallot = classUnderTest.reconstructBallot(SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"), "", new Page());
 
     assertEquals("someTitle", reconstructedBallot.getTitle());
   }
@@ -39,7 +44,7 @@ public class SurveyManagerTest {
   public void test_reconstructBallot_someChoices_noVoter_success() throws MacroException {
     String someChoices = "someChoice1\r\nsomeChoice2";
 
-    final Ballot reconstructedBallot = classUnderTest.reconstructBallot("someTitle", someChoices, new Page());
+    final Ballot reconstructedBallot = classUnderTest.reconstructBallot(SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"), someChoices, new Page());
 
     assertEquals("someTitle", reconstructedBallot.getTitle());
     assertEquals("someChoice1", reconstructedBallot.getChoice("someChoice1").getDescription());
@@ -52,7 +57,7 @@ public class SurveyManagerTest {
     String someChoices = "someChoice1\r\nsomeChoice2";
 
     when(mockContentPropertyManager.getTextProperty(any(ContentEntityObject.class), anyString())).thenReturn(SOME_USER1.getName());
-    final Ballot reconstructedBallot = classUnderTest.reconstructBallot("someTitle", someChoices, new Page());
+    final Ballot reconstructedBallot = classUnderTest.reconstructBallot(SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"), someChoices, new Page());
 
     assertEquals("someTitle", reconstructedBallot.getTitle());
     assertEquals("someChoice1", reconstructedBallot.getChoice("someChoice1").getDescription());
@@ -62,7 +67,7 @@ public class SurveyManagerTest {
 
   @Test
   public void test_createSurvey_noParameters_success() {
-    final Survey returnedSurvey = classUnderTest.createSurvey("", new Page(), "");
+    final Survey returnedSurvey = classUnderTest.createSurvey("", new Page(), SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"));
 
     assertEquals(0, returnedSurvey.getBallots().size());
   }
@@ -70,7 +75,7 @@ public class SurveyManagerTest {
   @Test
   public void test_createSurvey_oneParameter_success() {
     final String someBallotTitle1 = "someBallotTitle1";
-    final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1, new Page(), null);
+    final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1, new Page(), new HashMap<String, String>());
 
     assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
   }
@@ -80,7 +85,7 @@ public class SurveyManagerTest {
     final String someBallotTitle1 = "someBallotTitle1";
     final String someBallotTitle2 = "someBallotTitle2";
     final String someBallotDescription1 = "someBallotDescription1";
-    final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1 + " - " + someBallotDescription1 + "\r\n" + someBallotTitle2, new Page(), "");
+    final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1 + " - " + someBallotDescription1 + "\r\n" + someBallotTitle2, new Page(), SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"));
 
     assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
     assertEquals(someBallotDescription1, returnedSurvey.getBallot(someBallotTitle1).getDescription());
@@ -97,10 +102,12 @@ public class SurveyManagerTest {
     when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".commenters")).thenReturn(SOME_USER1.getName());
     when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".comment." + SOME_USER1.getName())).thenReturn("someComment");
 
-    final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, "");
+    final Survey returnedSurvey = classUnderTest.createSurvey(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"));
 
     assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
     assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
     assertEquals("someComment", returnedSurvey.getBallot(someBallotTitle1).getCommentForUser(SOME_USER1.getName()).getComment());
   }
+
+
 }

@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SurveyConfig {
+public class SurveyConfigRepresentation {
 
   @XmlElement
   private String iconSet;
@@ -32,7 +32,7 @@ public class SurveyConfig {
 
   @Override
   public String toString() {
-    return "SurveyConfig{" +
+    return "SurveyConfigRepresentation{" +
             "iconSet='" + iconSet + '\'' +
             '}';
   }
@@ -42,8 +42,8 @@ public class SurveyConfig {
    */
   @Override
   public boolean equals(Object obj) {
-    if (obj == null || !(obj instanceof SurveyConfig))
+    if (obj == null || !(obj instanceof SurveyConfigRepresentation))
       return false;
-    return (((SurveyConfig) obj).getIconSet().equals(this.iconSet));
+    return (((SurveyConfigRepresentation) obj).getIconSet().equals(this.iconSet));
   }
 }

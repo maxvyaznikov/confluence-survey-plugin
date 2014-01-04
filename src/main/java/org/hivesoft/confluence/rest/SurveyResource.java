@@ -27,6 +27,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
 import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -58,10 +59,10 @@ public class SurveyResource {
   protected final I18nResolver i18nResolver;
   protected final SurveyManager surveyManager;
 
-  public SurveyResource(TransactionTemplate transactionTemplate, PageManager pageManager, ContentPropertyManager contentPropertyManager, XhtmlContent xhtmlContent, I18nResolver i18nResolver) {
+  public SurveyResource(TransactionTemplate transactionTemplate, PageManager pageManager, ContentPropertyManager contentPropertyManager, XhtmlContent xhtmlContent, I18nResolver i18nResolver, PermissionEvaluator permissionEvaluator) {
     this.transactionTemplate = transactionTemplate;
     this.pageManager = pageManager;
-    this.surveyManager = new SurveyManager(contentPropertyManager);
+    this.surveyManager = new SurveyManager(contentPropertyManager, permissionEvaluator);
     this.xhtmlContent = xhtmlContent;
     this.i18nResolver = i18nResolver;
   }
@@ -93,7 +94,7 @@ public class SurveyResource {
             LOG.info("surveyTitle for export=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
               LOG.info("Try to reconstruct Survey...");
-              final Survey survey = surveyManager.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters().get(SurveyMacro.KEY_CHOICES));
+              final Survey survey = surveyManager.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
               survey.setTitle(surveyTitle);
               surveys.add(survey);
             }

@@ -16,7 +16,7 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackGetConfig;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackSetConfig;
-import org.hivesoft.confluence.rest.representations.SurveyConfig;
+import org.hivesoft.confluence.rest.representations.SurveyConfigRepresentation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -49,11 +49,11 @@ public class AdminResource {
 
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response putConfig(final SurveyConfig surveyConfig) {
+  public Response putConfig(final SurveyConfigRepresentation surveyConfigRepresentation) {
     if (isUserNotAdmin()) return Response.status(Response.Status.UNAUTHORIZED).build();
-    LOG.debug("setting iconSet to: " + surveyConfig);
+    LOG.debug("setting iconSet to: " + surveyConfigRepresentation);
 
-    transactionTemplate.execute(new TransactionCallbackSetConfig(pluginSettingsFactory, surveyConfig));
+    transactionTemplate.execute(new TransactionCallbackSetConfig(pluginSettingsFactory, surveyConfigRepresentation));
     return Response.noContent().build();
   }
 

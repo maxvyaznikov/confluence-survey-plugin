@@ -1,371 +1,341 @@
 package org.hivesoft.confluence.macros.vote.model;
 
+import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.*;
 
 public class BallotTest {
 
-    private static final String SOME_BALLOT_TITLE = "someBallotTitle";
-    private static final String SOME_CHOICE_DESCRIPTION = "someChoice";
-    private static final String SOME_EXISTING_USER_NAME = "someExistingUser";
+  private static final String SOME_BALLOT_TITLE = "someBallotTitle";
+  private static final String SOME_CHOICE_DESCRIPTION = "someChoice";
+  private static final String SOME_EXISTING_USER_NAME = "someExistingUser";
 
-    Ballot classUnderTest;
+  Ballot classUnderTest;
 
+  @Before
+  public void setup() {
+    classUnderTest = new Ballot(SOME_BALLOT_TITLE, SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()));
+  }
 
-    @Before
-    public void setup() {
-        classUnderTest = new Ballot(SOME_BALLOT_TITLE);
-    }
+  @Test
+  public void test_getTitle_success() {
+    assertEquals(SOME_BALLOT_TITLE, classUnderTest.getTitle());
+  }
 
-    @Test
-    public void test_getTitle_success() {
-        assertEquals(SOME_BALLOT_TITLE, classUnderTest.getTitle());
-    }
+  @Test
+  public void test_getTitleNoSpace_success() {
+    classUnderTest = new Ballot(SOME_BALLOT_TITLE + " " + " more spaces", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()));
 
-    @Test
-    public void test_getTitleNoSpace_success() {
-        classUnderTest = new Ballot(SOME_BALLOT_TITLE + " " + " more spaces");
+    assertEquals(SOME_BALLOT_TITLE.toLowerCase() + "morespaces", classUnderTest.getTitleNoSpace());
+  }
 
-        assertEquals(SOME_BALLOT_TITLE.toLowerCase() + "morespaces", classUnderTest.getTitleNoSpace());
-    }
+  @Test
+  public void test_getDescription_success() {
+    assertEquals("", classUnderTest.getDescription());
 
-    @Test
-    public void test_getDescription_success() {
-        assertEquals("", classUnderTest.getDescription());
+    classUnderTest.setDescription("someDescription");
+    assertEquals("someDescription", classUnderTest.getDescription());
+  }
 
-        classUnderTest.setDescription("someDescription");
-        assertEquals("someDescription", classUnderTest.getDescription());
-    }
+  @Test
+  public void test_ballotsWithDefaults_success() {
+    assertNotNull(classUnderTest.getVoteConfig());
+  }
 
-    @Test
-    public void test_isChangeableVotes_DefaultFalse_success() {
-        assertEquals(false, classUnderTest.isChangeableVotes());
-    }
+  @Test
+  public void test_getVoteForExistingUser_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    someChoice.voteFor(SOME_EXISTING_USER_NAME);
 
-    @Test
-    public void test_isChangeableVotes_SetTrue_success() {
-        classUnderTest.setChangeableVotes(true);
+    classUnderTest.addChoice(someChoice);
 
-        assertEquals(true, classUnderTest.isChangeableVotes());
-    }
+    Choice result = classUnderTest.getVote(SOME_EXISTING_USER_NAME);
 
-    @Test
-    public void test_isVisibleVoters_DefaultFalse_success() {
-        assertEquals(false, classUnderTest.isVisibleVoters());
-    }
+    assertEquals(someChoice, result);
+    assertTrue(classUnderTest.getHasVoted(SOME_EXISTING_USER_NAME));
+  }
 
-    @Test
-    public void test_isVisibleVoters_SetTrue_success() {
-        classUnderTest.setVisibleVoters(true);
+  @Test
+  public void test_getVoteForNotExistingUser_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    someChoice.voteFor(SOME_EXISTING_USER_NAME);
 
-        assertEquals(true, classUnderTest.isVisibleVoters());
-    }
+    classUnderTest.addChoice(someChoice);
 
-    @Test
-    public void test_isLocked_DefaultFalse_success() {
-        assertEquals(false, classUnderTest.isLocked());
-    }
+    Choice result = classUnderTest.getVote("someDifferentNotExistingUser");
 
-    @Test
-    public void test_isLocked_SetTrue_success() {
-        classUnderTest.setLocked(true);
+    assertTrue(null == result);
+    assertFalse(classUnderTest.getHasVoted("someDifferentNotExistingUser"));
+  }
 
-        assertEquals(true, classUnderTest.isLocked());
-    }
+  @Test
+  public void test_getChoice_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
 
-    @Test
-    public void test_renderTitleLevel_DefaultThree_success() {
-        assertEquals(3, classUnderTest.getRenderTitleLevel());
-    }
+    classUnderTest.addChoice(someChoice);
 
-    @Test
-    public void test_renderTitleLevel_setZero_success() {
-        classUnderTest.setRenderTitleLevel(0);
+    Choice result = classUnderTest.getChoice(SOME_CHOICE_DESCRIPTION);
 
-        assertEquals(0, classUnderTest.getRenderTitleLevel());
-    }
+    assertEquals(someChoice, result);
+  }
 
-    @Test
-    public void test_getVoteForExistingUser_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        someChoice.voteFor(SOME_EXISTING_USER_NAME);
+  @Test
+  public void test_getChoice_NotExists_failure() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
 
-        classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoice);
 
-        Choice result = classUnderTest.getVote(SOME_EXISTING_USER_NAME);
+    Choice result = classUnderTest.getChoice("NotExistingChoice");
 
-        assertEquals(someChoice, result);
-        assertTrue(classUnderTest.getHasVoted(SOME_EXISTING_USER_NAME));
-    }
+    assertNull(result);
+  }
 
-    @Test
-    public void test_getVoteForNotExistingUser_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        someChoice.voteFor(SOME_EXISTING_USER_NAME);
+  @Test
+  public void test_getChoices_NoChoices_failure() {
+    Collection<Choice> result = classUnderTest.getChoices();
 
-        classUnderTest.addChoice(someChoice);
+    assertEquals(0, result.size());
+  }
 
-        Choice result = classUnderTest.getVote("someDifferentNotExistingUser");
+  @Test
+  public void test_getPercentageOfVoteForChoice_NoVotes_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
 
-        assertTrue(null == result);
-        assertFalse(classUnderTest.getHasVoted("someDifferentNotExistingUser"));
-    }
+    classUnderTest.addChoice(someChoice);
 
-    @Test
-    public void test_getChoice_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
 
-        classUnderTest.addChoice(someChoice);
+    assertEquals(0, percentageResult);
+  }
 
-        Choice result = classUnderTest.getChoice(SOME_CHOICE_DESCRIPTION);
+  @Test
+  public void test_getPercentageOfVoteForChoice_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "two");
 
-        assertEquals(someChoice, result);
-    }
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
 
-    @Test
-    public void test_getChoice_NotExists_failure() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    someChoice.voteFor("someUserOne");
+    someChoice.voteFor("someUserTwo");
+    someChoiceTwo.voteFor("someUserThree");
 
-        classUnderTest.addChoice(someChoice);
+    final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
+    final int percentageResultTwo = classUnderTest.getPercentageOfVoteForChoice(someChoiceTwo);
 
-        Choice result = classUnderTest.getChoice("NotExistingChoice");
+    assertEquals(66, percentageResult);
+    assertEquals(33, percentageResultTwo);
+  }
 
-        assertNull(result);
-    }
+  @Test(expected = IllegalArgumentException.class)
+  public void test_AddComment_NoUser_exception() {
+    Comment someComment = new Comment();
 
-    @Test
-    public void test_getChoices_NoChoices_failure() {
-        Collection<Choice> result = classUnderTest.getChoices();
+    classUnderTest.addComment(someComment);
+  }
 
-        assertEquals(0, result.size());
-    }
+  @Test
+  public void test_Comments_success() {
+    Comment someComment = new Comment(SOME_EXISTING_USER_NAME, "some crazy comment for a crazy plugin");
 
-    @Test
-    public void test_getPercentageOfVoteForChoice_NoVotes_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    classUnderTest.addComment(someComment);
 
-        classUnderTest.addChoice(someChoice);
+    final Map<String, Comment> result = classUnderTest.getComments();
 
-        final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
+    assertEquals(1, result.size());
+    assertEquals(someComment, result.get(someComment.getUsername()));
+  }
 
-        assertEquals(0, percentageResult);
-    }
+  @Test
+  public void test_getCommentForUser_success() {
+    final String comment = "some crazy comment for a crazy plugin";
+    Comment someComment = new Comment(SOME_EXISTING_USER_NAME, comment);
 
-    @Test
-    public void test_getPercentageOfVoteForChoice_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "two");
+    classUnderTest.addComment(someComment);
 
-        classUnderTest.addChoice(someChoice);
-        classUnderTest.addChoice(someChoiceTwo);
+    final Comment result = classUnderTest.getCommentForUser(SOME_EXISTING_USER_NAME);
 
-        someChoice.voteFor("someUserOne");
-        someChoice.voteFor("someUserTwo");
-        someChoiceTwo.voteFor("someUserThree");
+    assertEquals(someComment, result);
+    assertEquals(comment, someComment.getComment());
+  }
 
-        final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
-        final int percentageResultTwo = classUnderTest.getPercentageOfVoteForChoice(someChoiceTwo);
+  @Test
+  public void test_computeAverage_OneChoiceNoVotes_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
 
-        assertEquals(66, percentageResult);
-        assertEquals(33, percentageResultTwo);
-    }
+    classUnderTest.addChoice(someChoice);
 
-    @Test(expected = IllegalArgumentException.class)
-    public void test_AddComment_NoUser_exception() {
-        Comment someComment = new Comment();
+    final float result = classUnderTest.computeAverage();
 
-        classUnderTest.addComment(someComment);
-    }
+    assertEquals(0.0f, result, 0.0f);
+  }
 
-    @Test
-    public void test_Comments_success() {
-        Comment someComment = new Comment(SOME_EXISTING_USER_NAME, "some crazy comment for a crazy plugin");
+  @Test
+  public void test_computeAverage_OneChoiceOneVote_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    someChoice.voteFor(SOME_EXISTING_USER_NAME);
 
-        classUnderTest.addComment(someComment);
+    classUnderTest.addChoice(someChoice);
 
-        final Map<String, Comment> result = classUnderTest.getComments();
+    final float result = classUnderTest.computeAverage();
 
-        assertEquals(1, result.size());
-        assertEquals(someComment, result.get(someComment.getUsername()));
-    }
+    assertEquals(1.0f, result, 0.0f);
+  }
 
-    @Test
-    public void test_getCommentForUser_success() {
-        final String comment = "some crazy comment for a crazy plugin";
-        Comment someComment = new Comment(SOME_EXISTING_USER_NAME, comment);
+  @Test
+  public void test_computeAverage_ThreeChoicesOneVoteOnSecond_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
 
-        classUnderTest.addComment(someComment);
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
+    classUnderTest.addChoice(someChoiceThree);
 
-        final Comment result = classUnderTest.getCommentForUser(SOME_EXISTING_USER_NAME);
+    final float result = classUnderTest.computeAverage();
 
-        assertEquals(someComment, result);
-        assertEquals(comment, someComment.getComment());
-    }
+    assertEquals(2.0f, result, 0.0f);
+    assertEquals(66, classUnderTest.getAveragePercentage(result));
+  }
 
-    @Test
-    public void test_computeAverage_OneChoiceNoVotes_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+  @Test
+  public void test_computeAverage_NegativeIterateStepFromPositiveStart_ThreeChoicesTwoVotes_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
+    Choice someChoiceFour = new Choice(SOME_CHOICE_DESCRIPTION + "FOUR");
+    someChoiceFour.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    Choice someChoiceFive = new Choice(SOME_CHOICE_DESCRIPTION + "FIVE");
 
-        classUnderTest.addChoice(someChoice);
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_START_BOUND, "4");
+    parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-4");
 
-        final float result = classUnderTest.computeAverage();
+    classUnderTest = SurveyUtilsTest.createBallotWithParameters(parameters);
 
-        assertEquals(0.0f, result, 0.0f);
-    }
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
+    classUnderTest.addChoice(someChoiceThree);
+    classUnderTest.addChoice(someChoiceFour);
+    classUnderTest.addChoice(someChoiceFive);
 
-    @Test
-    public void test_computeAverage_OneChoiceOneVote_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        someChoice.voteFor(SOME_EXISTING_USER_NAME);
+    final float result = classUnderTest.computeAverage();
 
-        classUnderTest.addChoice(someChoice);
+    assertEquals(0.0f, result, 0.0f);
+    //probably it should be 40 but for now we take the 80% for the 4th one
+    assertEquals(80, classUnderTest.getAveragePercentage(result));
+  }
 
-        final float result = classUnderTest.computeAverage();
+  @Test
+  public void test_computeFormattedAverage_NegativeIterateStep_ThreeChoicesTwoVotes_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
+    someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
 
-        assertEquals(1.0f, result, 0.0f);
-    }
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_START_BOUND, "-1");
+    parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
 
-    @Test
-    public void test_computeAverage_ThreeChoicesOneVoteOnSecond_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
-        someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
-        Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
+    classUnderTest = SurveyUtilsTest.createBallotWithParameters(parameters);
 
-        classUnderTest.addChoice(someChoice);
-        classUnderTest.addChoice(someChoiceTwo);
-        classUnderTest.addChoice(someChoiceThree);
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
+    classUnderTest.addChoice(someChoiceThree);
 
-        final float result = classUnderTest.computeAverage();
+    final String format = "0.##";
+    final String result = classUnderTest.computeFormatedAverage(format);
 
-        assertEquals(2.0f, result, 0.0f);
-        assertEquals(66, classUnderTest.getAveragePercentage(result));
-    }
+    assertEquals(new java.text.DecimalFormat(format).format(-2.5), result);
+  }
 
-    @Test
-    public void test_computeAverage_NegativeIterateStepFromPositiveStart_ThreeChoicesTwoVotes_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
-        Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
-        Choice someChoiceFour = new Choice(SOME_CHOICE_DESCRIPTION + "FOUR");
-        someChoiceFour.voteFor(SOME_EXISTING_USER_NAME + "TWO");
-        Choice someChoiceFive = new Choice(SOME_CHOICE_DESCRIPTION + "FIVE");
+  @Test
+  public void test_getBounds_Default_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
 
-        classUnderTest.addChoice(someChoice);
-        classUnderTest.addChoice(someChoiceTwo);
-        classUnderTest.addChoice(someChoiceThree);
-        classUnderTest.addChoice(someChoiceFour);
-        classUnderTest.addChoice(someChoiceFive);
-        classUnderTest.setStartBound(4);
-        classUnderTest.setIterateStep(-4);
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
 
-        final float result = classUnderTest.computeAverage();
+    assertEquals(SurveyConfig.DEFAULT_START_BOUND, classUnderTest.getLowerBound());
+    assertEquals(SurveyConfig.DEFAULT_START_BOUND + SurveyConfig.DEFAULT_START_BOUND * (classUnderTest.getChoices().size() - 1), classUnderTest.getUpperBound());
+  }
 
-        assertEquals(0.0f, result, 0.0f);
-        //probably it should be 40 but for now we take the 80% for the 4th one
-        assertEquals(80, classUnderTest.getAveragePercentage(result));
-    }
+  @Test
+  public void test_getBoundsIfNotDefault_default_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
 
-    @Test
-    public void test_computeFormattedAverage_NegativeIterateStep_ThreeChoicesTwoVotes_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
-        someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
-        Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
-        someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
 
-        classUnderTest.addChoice(someChoice);
-        classUnderTest.addChoice(someChoiceTwo);
-        classUnderTest.addChoice(someChoiceThree);
-        classUnderTest.setStartBound(-1);
-        classUnderTest.setIterateStep(-3);
+    assertEquals("", classUnderTest.getBoundsIfNotDefault());
+  }
 
-        final String format = "0.##";
-        final String result = classUnderTest.computeFormatedAverage(format);
+  @Test
+  public void test_getBoundsIfNotDefault_notDefault_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
 
-        assertEquals(new java.text.DecimalFormat(format).format(-2.5), result);
-    }
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_START_BOUND, "3");
+    parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
 
-    @Test
-    public void test_getBounds_Default_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+    classUnderTest = SurveyUtilsTest.createBallotWithParameters(parameters);
 
-        classUnderTest.addChoice(someChoice);
-        classUnderTest.addChoice(someChoiceTwo);
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
 
-        assertEquals(Ballot.DEFAULT_START_BOUND, classUnderTest.getLowerBound());
-        assertEquals(Ballot.DEFAULT_START_BOUND + Ballot.DEFAULT_START_BOUND * (classUnderTest.getChoices().size() - 1), classUnderTest.getUpperBound());
-    }
+    assertEquals("(3-0)", classUnderTest.getBoundsIfNotDefault());
+  }
 
-    @Test
-    public void test_getBoundsIfNotDefault_default_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+  @Test
+  public void test_getAllVoters_success() {
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
+    someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
 
-        classUnderTest.addChoice(someChoice);
-        classUnderTest.addChoice(someChoiceTwo);
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
+    classUnderTest.addChoice(someChoiceThree);
 
-        assertEquals("", classUnderTest.getBoundsIfNotDefault());
-    }
+    Collection<String> userList = new ArrayList<String>();
+    userList.add(SOME_EXISTING_USER_NAME + "TWO");
+    userList.add(SOME_EXISTING_USER_NAME + "THREE");
 
-    @Test
-    public void test_getBoundsIfNotDefault_notDefault_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+    final Collection<String> allVoters = classUnderTest.getAllVoters();
 
-        classUnderTest.addChoice(someChoice);
-        classUnderTest.addChoice(someChoiceTwo);
+    assertEquals(userList, allVoters);
+  }
 
-        classUnderTest.setStartBound(3);
-        classUnderTest.setIterateStep(-3);
+  @Test
+  public void test_equalsAndHashCode() {
+    Ballot classUnderTest2 = new Ballot(SOME_BALLOT_TITLE, SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()));
 
-        assertEquals("(3-0)", classUnderTest.getBoundsIfNotDefault());
-    }
+    assertFalse(classUnderTest.equals("someString"));
+    assertTrue(classUnderTest.equals(classUnderTest2));
+    assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
+    assertTrue(classUnderTest.toString().equals(classUnderTest2.toString()));
 
-    @Test
-    public void test_getAllVoters_success() {
-        Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
-        Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
-        someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
-        Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
-        someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
+    classUnderTest2.setDescription("someDesc2");
+    assertFalse(classUnderTest.equals(classUnderTest2));
+    assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
+    assertFalse(classUnderTest.toString().equals(classUnderTest2.toString()));
 
-        classUnderTest.addChoice(someChoice);
-        classUnderTest.addChoice(someChoiceTwo);
-        classUnderTest.addChoice(someChoiceThree);
-
-        Collection<String> userList = new ArrayList<String>();
-        userList.add(SOME_EXISTING_USER_NAME + "TWO");
-        userList.add(SOME_EXISTING_USER_NAME + "THREE");
-
-        final Collection<String> allVoters = classUnderTest.getAllVoters();
-
-        assertEquals(userList, allVoters);
-    }
-
-    @Test
-    public void test_equalsAndHashCode() {
-        Ballot classUnderTest2 = new Ballot(SOME_BALLOT_TITLE);
-
-        assertFalse(classUnderTest.equals("someString"));
-        assertTrue(classUnderTest.equals(classUnderTest2));
-        assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
-        assertTrue(classUnderTest.toString().equals(classUnderTest2.toString()));
-
-        classUnderTest2.setDescription("someDesc2");
-        assertFalse(classUnderTest.equals(classUnderTest2));
-        assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
-        assertFalse(classUnderTest.toString().equals(classUnderTest2.toString()));
-
-        classUnderTest2 = new Ballot(SOME_BALLOT_TITLE + "2");
-        assertFalse(classUnderTest.equals(classUnderTest2));
-        assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
-    }
+    classUnderTest2 = new Ballot(SOME_BALLOT_TITLE + "2", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()));
+    assertFalse(classUnderTest.equals(classUnderTest2));
+    assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
+  }
 }

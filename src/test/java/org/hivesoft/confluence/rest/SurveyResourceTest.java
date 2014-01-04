@@ -15,6 +15,7 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,7 @@ public class SurveyResourceTest {
   PageManager mockPageManager = mock(PageManager.class);
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
   EventPublisher mockEventPublisher = mock(EventPublisher.class);
+  PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
   I18nResolver mockI18nResolver = mock(I18nResolver.class);
 
@@ -56,7 +58,7 @@ public class SurveyResourceTest {
     final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
     final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
 
-    classUnderTest = new SurveyResource(mockTransactionTemplate, mockPageManager, mockContentPropertyManager, xhtmlContent, mockI18nResolver);
+    classUnderTest = new SurveyResource(mockTransactionTemplate, mockPageManager, mockContentPropertyManager, xhtmlContent, mockI18nResolver, mockPermissionEvaluator);
   }
 
   @Test

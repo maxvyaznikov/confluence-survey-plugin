@@ -13,6 +13,7 @@ package org.hivesoft.confluence.macros.utils;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.renderer.v2.macro.MacroException;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 
 import java.util.ArrayList;
@@ -60,6 +61,14 @@ public class SurveyUtils {
     }
   }
 
+  public static int getIntegerFromString(String stringToParse, int defaultValue) {
+    if (StringUtils.defaultString(stringToParse).equals("")) {
+      return defaultValue;
+    } else {
+      return Integer.valueOf(stringToParse);
+    }
+  }
+
 
   public static List<String> getListFromStringCommaSeparated(String stringToParse) {
     if (StringUtils.isBlank(stringToParse)) {
@@ -69,7 +78,7 @@ public class SurveyUtils {
   }
 
   public static String getTitleInMacroParameters(Map<String, String> parameters) throws MacroException {
-    String ballotTitle = StringUtils.defaultString(parameters.get(VoteMacro.KEY_TITLE)).trim();
+    String ballotTitle = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE)).trim();
     if (StringUtils.isBlank(ballotTitle)) {
       ballotTitle = StringUtils.defaultString(parameters.get("0")).trim();
       if (StringUtils.isBlank(ballotTitle)) {

@@ -162,6 +162,7 @@
   </web-resource>
 
   <component key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.VelocityAbstractionHelper"/>
+  <component key="permissionEvaluator" class="org.hivesoft.confluence.macros.utils.PermissionEvaluator"/>
 
   <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager"/>
   <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>

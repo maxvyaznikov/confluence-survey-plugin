@@ -1,11 +1,15 @@
 package org.hivesoft.confluence.macros.survey.model;
 
+import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.utils.SurveyUtils;
+import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -15,203 +19,84 @@ import static org.mockito.Mockito.when;
 
 public class SurveyTest {
 
-    private static final String SOME_BALLOT_TITLE = "someBallotTitle";
+  private static final String SOME_BALLOT_TITLE = "someBallotTitle";
 
-    Survey classUnderTest;
+  Survey classUnderTest;
 
-    @Before
-    public void setup() {
-        classUnderTest = new Survey();
-    }
+  @Before
+  public void setup() {
+    classUnderTest = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+  }
 
-    @Test
-    public void test_getBallot_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        classUnderTest.addBallot(someBallot);
+  @Test
+  public void test_getBallot_success() {
+    Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest.addBallot(someBallot);
 
-        final Ballot result = classUnderTest.getBallot(SOME_BALLOT_TITLE);
+    final Ballot result = classUnderTest.getBallot(SOME_BALLOT_TITLE);
 
-        assertEquals(someBallot, result);
-    }
+    assertEquals(someBallot, result);
+  }
 
-    @Test
-    public void test_getBallotNotFound_failure() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        classUnderTest.addBallot(someBallot);
+  @Test
+  public void test_getBallotNotFound_failure() {
+    Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest.addBallot(someBallot);
 
-        final Ballot result = classUnderTest.getBallot("BallotNotFound");
+    final Ballot result = classUnderTest.getBallot("BallotNotFound");
 
-        assertNull(result);
-    }
+    assertNull(result);
+  }
 
-    @Test
-    public void test_getBallots_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
-        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
-        classUnderTest.setBallots(ballots);
+  @Test
+  public void test_getBallots_success() {
+    Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot someBallot2 = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE + "2");
+    final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
+    classUnderTest.setBallots(ballots);
 
-        final List<Ballot> result = classUnderTest.getBallots();
+    final List<Ballot> result = classUnderTest.getBallots();
 
-        assertEquals(ballots, result);
-    }
+    assertEquals(ballots, result);
+  }
 
-    @Test
-    public void test_isSurveyComplete_success() {
-        Ballot mockBallot = mock(Ballot.class);
-        classUnderTest.addBallot(mockBallot);
+  @Test
+  public void test_isSurveyComplete_success() {
+    Ballot mockBallot = mock(Ballot.class);
+    classUnderTest.addBallot(mockBallot);
 
-        when(mockBallot.getHasVoted(anyString())).thenReturn(true);
+    when(mockBallot.getHasVoted(anyString())).thenReturn(true);
 
-        final boolean completed = classUnderTest.isSurveyComplete("someUsername");
+    final boolean completed = classUnderTest.isSurveyComplete("someUsername");
 
-        assertTrue(completed);
-    }
+    assertTrue(completed);
+  }
 
-    @Test
-    public void test_isSurveyComplete_failure() {
-        Ballot mockBallot = mock(Ballot.class);
-        classUnderTest.addBallot(mockBallot);
+  @Test
+  public void test_isSurveyComplete_failure() {
+    Ballot mockBallot = mock(Ballot.class);
+    classUnderTest.addBallot(mockBallot);
 
-        when(mockBallot.getHasVoted(anyString())).thenReturn(false);
+    when(mockBallot.getHasVoted(anyString())).thenReturn(false);
 
-        final boolean completed = classUnderTest.isSurveyComplete("someUsername");
+    final boolean completed = classUnderTest.isSurveyComplete("someUsername");
 
-        assertFalse(completed);
-    }
+    assertFalse(completed);
+  }
 
+  @Test
+  public void test_getBallotTitlesWithChoiceNames_success() {
+    Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot someBallot2 = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE + "2");
 
-    @Test
-    public void test_isChangeableVotes_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
+    Choice choice = new Choice("someChoice");
+    someBallot.addChoice(choice);
 
-        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
-        classUnderTest.setBallots(ballots);
+    final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
+    classUnderTest.setBallots(ballots);
 
-        assertFalse(classUnderTest.isChangeableVotes());
-        assertFalse(classUnderTest.getBallot(SOME_BALLOT_TITLE).isChangeableVotes());
+    final List<String> result = classUnderTest.getBallotTitlesWithChoiceNames();
 
-        classUnderTest.setChangeableVotes(true);
-
-        assertTrue(classUnderTest.isChangeableVotes());
-        assertTrue(classUnderTest.getBallot(SOME_BALLOT_TITLE).isChangeableVotes());
-    }
-
-    @Test
-    public void test_isVisibleVoters_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
-
-        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
-        classUnderTest.setBallots(ballots);
-
-        assertFalse(classUnderTest.isVisibleVoters());
-        assertFalse(classUnderTest.getBallot(SOME_BALLOT_TITLE).isVisibleVoters());
-
-        classUnderTest.setVisibleVoters(true);
-
-        assertTrue(classUnderTest.isVisibleVoters());
-        assertTrue(classUnderTest.getBallot(SOME_BALLOT_TITLE).isVisibleVoters());
-    }
-
-    @Test
-    public void test_isLocked_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
-
-        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
-        classUnderTest.setBallots(ballots);
-
-        assertFalse(classUnderTest.isLocked());
-        assertFalse(classUnderTest.getBallot(SOME_BALLOT_TITLE).isLocked());
-
-        classUnderTest.setLocked(true);
-
-        assertTrue(classUnderTest.isLocked());
-        assertTrue(classUnderTest.getBallot(SOME_BALLOT_TITLE).isLocked());
-    }
-
-    @Test
-    public void test_renderTitleLevel_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
-
-        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
-        classUnderTest.setBallots(ballots);
-
-        assertEquals(2,classUnderTest.getRenderTitleLevel());
-        assertEquals(3,classUnderTest.getBallot(SOME_BALLOT_TITLE).getRenderTitleLevel());
-        assertEquals(3,classUnderTest.getRenderTitleLevelAdjustedOrZero(1));
-
-        classUnderTest.setRenderTitleLevel(0);
-
-        assertEquals(0,classUnderTest.getRenderTitleLevel());
-        assertEquals(0,classUnderTest.getBallot(SOME_BALLOT_TITLE).getRenderTitleLevel());
-        assertEquals(0,classUnderTest.getRenderTitleLevelAdjustedOrZero(1));
-
-        classUnderTest.setRenderTitleLevel(3);
-
-        assertEquals(3,classUnderTest.getRenderTitleLevel());
-        assertEquals(4,classUnderTest.getBallot(SOME_BALLOT_TITLE).getRenderTitleLevel());
-        assertEquals(4,classUnderTest.getRenderTitleLevelAdjustedOrZero(1));
-    }
-
-    @Test
-    public void test_isVisibleComments_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
-
-        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
-        classUnderTest.setBallots(ballots);
-
-        assertTrue(classUnderTest.isVisibleComments());
-
-        classUnderTest.setVisibleComments(false);
-
-        assertFalse(classUnderTest.isVisibleComments());
-    }
-
-    @Test
-    public void test_setStartBoundAndIterateStep_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
-
-        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
-        classUnderTest.setBallots(ballots);
-
-        assertEquals(Ballot.DEFAULT_START_BOUND, classUnderTest.getBallot(SOME_BALLOT_TITLE).getStartBound());
-        assertEquals(Ballot.DEFAULT_ITERATE_STEP, classUnderTest.getBallot(SOME_BALLOT_TITLE + "2").getIterateStep());
-
-        classUnderTest.setStartBoundAndIterateStep(4, 6);
-
-        assertEquals(4, classUnderTest.getBallot(SOME_BALLOT_TITLE).getStartBound());
-        assertEquals(6, classUnderTest.getBallot(SOME_BALLOT_TITLE + "2").getIterateStep());
-    }
-
-    @Test
-    public void test_TitleAndSummary_success() {
-        classUnderTest.setTitle("someTitle");
-        assertEquals("someTitle", classUnderTest.getTitle());
-
-        assertEquals(SurveySummary.Top, classUnderTest.getSurveySummary());
-        classUnderTest.setSurveySummary(SurveySummary.None);
-        assertEquals(SurveySummary.None, classUnderTest.getSurveySummary());
-    }
-
-    @Test
-    public void test_getBallotTitlesWithChoiceNames_success() {
-        Ballot someBallot = new Ballot(SOME_BALLOT_TITLE);
-        Ballot someBallot2 = new Ballot(SOME_BALLOT_TITLE + "2");
-
-        Choice choice = new Choice("someChoice");
-        someBallot.addChoice(choice);
-
-        final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
-        classUnderTest.setBallots(ballots);
-
-        final List<String> result = classUnderTest.getBallotTitlesWithChoiceNames();
-
-        assertEquals(SOME_BALLOT_TITLE + ".someChoice", result.get(0));
-    }
+    assertEquals(SOME_BALLOT_TITLE + ".someChoice", result.get(0));
+  }
 }

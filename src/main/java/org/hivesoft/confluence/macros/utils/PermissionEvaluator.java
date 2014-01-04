@@ -117,20 +117,19 @@ public class PermissionEvaluator {
    * Determine if a user is authorized to cast a vote, taking into account whether they are a voter (either explicitly or implicitly)
    * and whether or not they have already cast a vote. Only logged in users can vote.
    *
-   * @param voters   The list of usernames allowed to vote. If blank, all users can vote.
    * @param username the username of the user about to see the ballot.
    * @param ballot   the ballot that is about to be shown.
    * @return <code>true</code> if the user can cast a vote, <code>false</code> if they cannot.
    */
-  public Boolean getCanVote(String voters, String username, Ballot ballot) {
+  public Boolean getCanVote(String username, Ballot ballot) {
     if (!TextUtils.stringSet(username)) {
       return Boolean.FALSE;
     }
 
-    boolean isVoter = StringUtils.isBlank(voters) || Arrays.asList(voters.split(",")).contains(username);
+    boolean isVoter = ballot.getVoteConfig().getVoters().isEmpty() || ballot.getVoteConfig().getVoters().contains(username);
     if (!isVoter) {
       // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-      for (String currentUser : voters.split(",")) {
+      for (String currentUser : ballot.getVoteConfig().getVoters()) {
         if (userAccessor.hasMembership(currentUser.trim(), username)) {
           isVoter = true;
           break;
@@ -141,6 +140,6 @@ public class PermissionEvaluator {
         return Boolean.FALSE;
     }
 
-    return !ballot.getHasVoted(username) || ballot.isChangeableVotes();
+    return !ballot.getHasVoted(username) || ballot.getVoteConfig().isChangeableVotes();
   }
 }
