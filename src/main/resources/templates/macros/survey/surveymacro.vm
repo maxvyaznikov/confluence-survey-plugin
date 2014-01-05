@@ -19,7 +19,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 <div id="$generalUtil.urlEncode(${survey.title})" class="surveyBox">
   #if( $survey.renderTitleLevel !=0 )
   <h$survey.config.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
-                                                            title="$action.getText("surveyplugin.survey.locked")."/> #end <a
+                                                                   title="$action.getText("surveyplugin.survey.locked")."/> #end <a
         name="${surveyTitleSummary}-a">$generalUtil.htmlEncode($survey.title)</a>#if ($survey.config.renderTitleLevel !=0)</h$survey.config.renderTitleLevel>#end
 
   <div class="surveyIconBar">
@@ -29,6 +29,8 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
     #end
   ##<img class="resetsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png" border="0" align="absmiddle" height="16" width="16" name="vote"
   ##     alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.reset.icon.title')"/>
+  ##  <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" align="absmiddle" height="16" width="16"
+  ##       alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.lock.icon.title')"/>
   </div>
 #else
   #set( $surveyTitleSummary = "summary" )

@@ -40,4 +40,8 @@ AJS.toInit(function () {
     e.preventDefault();
     //AJS.
   });
+  AJS.$(".locksurvey").click(function (e){
+    e.preventDefault();
+    //AJS.
+  });
 });
