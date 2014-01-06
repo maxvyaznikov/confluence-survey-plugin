@@ -28,7 +28,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 #if ($ballot.config.renderTitleLevel != 0) </h$ballot.config.renderTitleLevel> #end
 
 $generalUtil.htmlEncode($ballot.description)
-debug-ballot: $ballot.choices
+
 #if ( $ballot.choices.size()==0 )
 <div class="aui-message info" style="margin-left:10px">
   <p class="title">
