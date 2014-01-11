@@ -49,4 +49,13 @@ public class SurveyConfig extends VoteConfig {
       return getRenderTitleLevel();
     return getRenderTitleLevel() + addSubLevel;
   }
+
+  @Override
+  public String toString() {
+    return "SurveyConfig{" +
+            "surveySummary=" + surveySummary +
+            ", choices=" + choices +
+            ", super=" + super.toString() +
+            '}';
+  }
 }

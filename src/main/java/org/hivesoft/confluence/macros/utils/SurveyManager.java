@@ -80,6 +80,12 @@ public class SurveyManager {
   public Survey createSurvey(String body, ContentEntityObject contentObject, Map<String, String> parameters) {
     Survey survey = new Survey(new SurveyConfig(permissionEvaluator, parameters));
 
+    try {
+      survey.setTitle(SurveyUtils.getTitleInMacroParameters(parameters));
+    } catch (MacroException e) {
+      //title of survey is currently NOT mandatory
+    }
+
     if (StringUtils.isBlank(body)) {
       return survey;
     }

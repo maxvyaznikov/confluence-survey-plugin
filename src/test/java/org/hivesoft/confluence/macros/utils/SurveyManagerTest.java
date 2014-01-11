@@ -66,10 +66,11 @@ public class SurveyManagerTest {
   }
 
   @Test
-  public void test_createSurvey_noParameters_success() {
+  public void test_createSurvey_noParametersWithTitle_success() {
     final Survey returnedSurvey = classUnderTest.createSurvey("", new Page(), SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"));
 
     assertEquals(0, returnedSurvey.getBallots().size());
+    assertThat(returnedSurvey.getTitle(), is(equalTo("someTitle")));
   }
 
   @Test
@@ -120,6 +121,4 @@ public class SurveyManagerTest {
     assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
     assertEquals("someComment", returnedSurvey.getBallot(someBallotTitle1).getCommentForUser(SOME_USER1.getName()).getComment());
   }
-
-
 }

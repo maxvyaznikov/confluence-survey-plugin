@@ -20,7 +20,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
   #if( $survey.renderTitleLevel !=0 )
   <h$survey.config.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
                                                                    title="$action.getText("surveyplugin.survey.locked")."/> #end <a
-        name="${surveyTitleSummary}-a">$generalUtil.htmlEncode($survey.title)</a>#if ($survey.config.renderTitleLevel !=0)</h$survey.config.renderTitleLevel>#end
+        name="${surveyTitleSummary}-a">$survey.title</a>#if ($survey.config.renderTitleLevel !=0)</h$survey.config.renderTitleLevel>#end
 
   <div class="surveyIconBar">
     #if ($survey.config.canSeeResults)

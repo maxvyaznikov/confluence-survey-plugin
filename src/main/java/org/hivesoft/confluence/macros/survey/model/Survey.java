@@ -105,4 +105,13 @@ public class Survey {
     }
     return ballotChoiceNames;
   }
+
+  @Override
+  public String toString() {
+    return "Survey{" +
+            "title='" + title + '\'' +
+            ", ballots=" + ballots +
+            ", config=" + config +
+            '}';
+  }
 }

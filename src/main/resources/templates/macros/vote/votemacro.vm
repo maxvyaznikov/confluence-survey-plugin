@@ -14,20 +14,21 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 
 <link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all"/>
 
-#set ($canVote = ($ballot.config.canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $ballot.config.changeableVotes)))
-#set ($canSeeResults = ($ballot.config.canSeeResults && ( $ballot.getHasVoted($req.remoteUser) || ($ballot.config.canTakeSurvey && $ballot.config.locked) || !($ballot.config.canTakeSurvey) )))
-#set ($canSeeVoters = $canSeeResults && $ballot.config.visibleVoters)
+#set ($config = $ballot.config)
+#set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $config.changeableVotes)))
+#set ($canSeeResults = ($config.canSeeResults && ( $ballot.getHasVoted($req.remoteUser) || ($config.canTakeSurvey && $config.locked) || !($config.canTakeSurvey) )))
+#set ($canSeeVoters = $canSeeResults && $config.visibleVoters)
 
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
-#if ($ballot.config.renderTitleLevel != 0)
-<h$ballot.config.renderTitleLevel> #end
-#if ($ballot.config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
-                          title="$action.getText("surveyplugin.vote.locked")."/> #end <a
-        name="${voteAnchor}">$generalUtil.htmlEncode($ballot.title)</a>
-#if ($ballot.config.renderTitleLevel != 0) </h$ballot.config.renderTitleLevel> #end
+#if ($config.renderTitleLevel != 0)
+<h$config.renderTitleLevel> #end
+#if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
+                                 title="$action.getText("surveyplugin.vote.locked")."/> #end <a
+        name="${voteAnchor}">$ballot.title</a>
+#if ($config.renderTitleLevel != 0) </h$config.renderTitleLevel> #end
 
-$generalUtil.htmlEncode($ballot.description)
+$ballot.description
 
 #if ( $ballot.choices.size()==0 )
 <div class="aui-message info" style="margin-left:10px">
@@ -43,16 +44,16 @@ $generalUtil.htmlEncode($ballot.description)
 ##     alt="$generalUtil.urlEncode(${ballot.title})" title="csv export of current vote" onmouseover="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png';"
 ##     onmouseout="this.src='${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png';"/>
 
-  #set ($ballotNumberID = $generalUtil.htmlEncode("0-${ballot.titleNoSpace}") )
+  #set ($ballotNumberID = "0-${ballot.titleNoSpace}" )
 
   #set ($columnCount = 2)
   #if ($canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
-  #if ($ballot.config.visibleVoters && $canSeeResults)
+  #if ($config.visibleVoters && $canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
-  #if ($ballot.config.showComments && ($canTakeSurvey || $canSeeResults) )
+  #if ($config.showComments && ($config.canTakeSurvey || $canSeeResults) )
     #set ($columnCount = $columnCount + 1)
   #end
   #set ($choiceNumber=0)
@@ -64,10 +65,10 @@ $generalUtil.htmlEncode($ballot.description)
     #if ($canSeeResults)
       <th>$action.getText("surveyplugin.vote.result"): <span class="smalltext">($ballot.totalVoteCount $action.getText("surveyplugin.survey.summary.header.total"))</span></th>
     #end
-    #if ($ballot.config.visibleVoters && $canSeeResults)
+    #if ($config.visibleVoters && $canSeeResults)
       <th>$action.getText("surveyplugin.vote.voters")</th>
     #end
-    #if ($ballot.config.showComments)
+    #if ($config.showComments)
       <th>$action.getText("surveyplugin.vote.comments")</th>
     #end
   </tr>
@@ -76,7 +77,7 @@ $generalUtil.htmlEncode($ballot.description)
     <tr>
       <td>$choice.description</td>
       <td align="center">
-        #if ($canVote && !($ballot.config.locked))
+        #if ($canVote && !($config.locked))
           #if ($choice.getHasVotedFor($req.remoteUser))
             <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=unvote#${voteAnchor}">
               <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
@@ -108,7 +109,7 @@ $generalUtil.htmlEncode($ballot.description)
         </td>
       #end
 
-      #if ($ballot.config.visibleVoters && $canSeeResults)
+      #if ($config.visibleVoters && $canSeeResults)
         <td>
           #set($voters = $choice.voters)
           #if ($voters.size()>0)
@@ -116,7 +117,7 @@ $generalUtil.htmlEncode($ballot.description)
               #set($iCounter = 0)
               #foreach($voter in $voters)
                 #set($iCounter=$iCounter+1)
-                #if ($ballot.config.visibleVotersWiki)
+                #if ($config.visibleVotersWiki)
                   <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
                 #else
                   $voter#if ($iCounter!=$voters.size()),#end
@@ -126,9 +127,9 @@ $generalUtil.htmlEncode($ballot.description)
           #end
         </td>
       #end
-      #if ($ballot.config.showComments && ($canTakeSurvey || $canSeeResults) && $choiceNumber==0)
+      #if ($config.showComments && ($config.canTakeSurvey || $canSeeResults) && $choiceNumber==0)
         <td class="surveyCommentPane" rowspan="$ballot.choices.size()">
-          #if (!($ballot.config.locked))
+          #if (!($config.locked))
             #set ($currentComment = "")
             #if ($ballot.getCommentForUser($req.remoteUser))
               #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
@@ -136,9 +137,9 @@ $generalUtil.htmlEncode($ballot.description)
             <div class="focusedComment commentblock surveyComment">
                 <span id="${ballotNumberID}CommentForm" style="display:none">
                   <form method="POST" action="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id">
-                    <input type="hidden" name="ballotTitle" value="$generalUtil.htmlEncode($ballot.title)"/>
+                    <input type="hidden" name="ballotTitle" value="$ballot.title"/>
                     <input type="hidden" name="ballotAnchor" value="${voteAnchor}"/>
-                    <textarea name="comment" rows="5" cols="70" style="font:12px monospace;">$generalUtil.htmlEncode($currentComment)</textarea>
+                    <textarea name="comment" rows="5" cols="70" style="font:12px monospace;">$currentComment</textarea>
                     <br/>
                     <span style="align:right">
                       <input type="submit" value="$action.getText('surveyplugin.survey.save')"/>
@@ -174,9 +175,9 @@ $generalUtil.htmlEncode($ballot.description)
             </div>
           #end
 
-          #if (($canSeeResults || ($canVote && $ballot.config.locked)) && $ballot.config.showComments)
+          #if (($canSeeResults || ($canVote && $config.locked)) && $config.showComments)
             #foreach ($comment in $ballot.comments)
-              #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $ballot.config.locked))
+              #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $config.locked))
                 <div class="commentBox commentblock surveyComment">
                   #set( $voteText = $action.getText("surveyplugin.survey.vote.not") )
                   #if ($ballot.getVote($comment.username))
@@ -195,7 +196,7 @@ $generalUtil.htmlEncode($ballot.description)
     </tr>
     #set ($choiceNumber = $choiceNumber + 1)
   #end
-  #if ($ballot.config.visibleVoters && $canSeeResults)
+  #if ($config.visibleVoters && $canSeeResults)
     <tfoot>
     <tr>
       <td colspan="$columnCount">
@@ -204,7 +205,7 @@ $generalUtil.htmlEncode($ballot.description)
         #set($iCounter = 0)
         #foreach($voter in $voters)
           #set($iCounter=$iCounter+1)
-          #if ($ballot.config.visibleVotersWiki)
+          #if ($config.visibleVotersWiki)
             <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
           #else
             $voter#if ($iCounter!=$voters.size()),#end

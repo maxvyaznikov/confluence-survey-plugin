@@ -34,7 +34,7 @@
         #set ($sAverage = $ballot.computeFormatedAverage("0.00"))
         <tr>
           <td>
-            $generalUtil.htmlEncode($ballot.title)
+            $ballot.title
           </td>
           <td align="center">
             $ballot.totalVoteCount
