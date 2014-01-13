@@ -36,12 +36,30 @@ AJS.toInit(function () {
    e.preventDefault();
    getCSVExport("votes", this);
    });*/
-  AJS.$(".resetsurvey").click(function (e){
+  AJS.$(".resetsurvey").click(function (e) {
     e.preventDefault();
-    //AJS.
+    //TBD
   });
-  AJS.$(".locksurvey").click(function (e){
+  AJS.$(".locksurvey").click(function (e) {
     e.preventDefault();
-    //AJS.
+    locklink = this;
+    var dialog = new AJS.Dialog({
+      width: 400,
+      height: 300,
+      id: "reset-dialog",
+      closeOnOutsideClick: true
+    });
+
+    dialog.addHeader("Confirmation");
+    dialog.addPanel("SinglePanel", "<p>Do you really want to lock this Survey?</p>", "singlePanel");
+    dialog.addButton("Ok", function (dialog) {
+      dialog.hide();
+      alert("The survey with title '" + locklink.alt + "' will be locked.");
+    });
+    dialog.addLink("Cancel", function (dialog) {
+      dialog.hide();
+    }, "#");
+
+    dialog.show();
   });
 });
