@@ -27,7 +27,7 @@
           </div>
         </div>
       </div>
-      <div class="field-group">
+      <div id="iconset-submit-div" class="field-group">
         <input id="iconset-submit" type="submit" value="$i18n.getText("surveyplugin.admin.save.label")" class="button">
       </div>
     </form>

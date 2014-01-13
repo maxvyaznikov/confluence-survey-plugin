@@ -13,7 +13,7 @@ AJS.toInit(function () {
       success: function (csvExportRepresentation) {
         var inlineDialog = AJS.InlineDialog(AJS.$(exportLink), "exportDialog",
           function (content, trigger, showPopup) {
-            content.css({"padding": "20px"}).html('<p>The survey has been exported as a page attachment: <a href="' + csvExportRepresentation.uri + '">click to download</a></p>');
+            content.css({"padding": "20px"}).html('<p>' + AJS.I18n.getText("surveyplugin.export.result.confirmation") + ': <a href="' + csvExportRepresentation.uri + '">' + AJS.I18n.getText("surveyplugin.click.to.download") + '</a></p>');
             showPopup();
             return false;
           }
@@ -25,6 +25,11 @@ AJS.toInit(function () {
         alert(err.Message);
       }
     });
+  }
+
+  function lockSurveyOrVote(surveyOrVote, lockLink) {
+    //TBD
+    alert("Locking or unlocking in progress for survey with title '" + locklink.title + "'.");
   }
 
   AJS.$(".exportsurvey").click(function (e) {
@@ -44,8 +49,6 @@ AJS.toInit(function () {
     e.preventDefault();
     locklink = this;
     var dialog = new AJS.Dialog({
-      width: 400,
-      height: 300,
       id: "reset-dialog",
       closeOnOutsideClick: true
     });
@@ -54,7 +57,7 @@ AJS.toInit(function () {
     dialog.addPanel("SinglePanel", "<p>Do you really want to lock this Survey?</p>", "singlePanel");
     dialog.addButton("Ok", function (dialog) {
       dialog.hide();
-      alert("The survey with title '" + locklink.alt + "' will be locked.");
+      lockSurveyOrVote("survey", locklink);
     });
     dialog.addLink("Cancel", function (dialog) {
       dialog.hide();

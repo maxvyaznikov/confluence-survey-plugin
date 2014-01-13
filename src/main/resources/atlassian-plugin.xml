@@ -143,12 +143,20 @@
   <web-resource key="admin-resources" name="survey-plugin admin Web Resources">
     <dependency>com.atlassian.auiplugin:ajs</dependency>
 
+    <transformation extension="js">
+      <transformer key="jsI18n"/>
+    </transformation>
+
     <resource type="download" name="surveyplugin-admin.js" location="/js/surveyplugin-admin.js"/>
   </web-resource>
 
   <!-- web-resources for voting -->
   <web-resource key="resources" name="survey-plugin Web Resources">
     <dependency>com.atlassian.auiplugin:ajs</dependency>
+
+    <transformation extension="js">
+      <transformer key="jsI18n"/>
+    </transformation>
 
     <resource type="download" name="survey-plugin.css" location="/css/survey-plugin.css">
       <property key="content-type" value="text/css"/>

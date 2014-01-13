@@ -25,7 +25,14 @@ AJS.toInit(function () {
       processData: false
     });
     upConfig.done(function () {
-      alert("iconSet has been updated to: " + AJS.$("input[name='is-rads']:checked").attr("id"));
+      var inlineDialog = AJS.InlineDialog(AJS.$("#iconset-submit-div"), "confirmationDialog",
+        function (content, trigger, showPopup) {
+          content.css({"padding": "20px"}).html('<p>' + AJS.I18n.getText('surveyplugin.admin.iconset.confirmation') + ': <b>' + AJS.$("label[for='" + AJS.$("input[name='is-rads']:checked").attr("id") + "']").text() + '</b></p>');
+          showPopup();
+          return false;
+        }
+      );
+      inlineDialog.show();
     });
   }
 
