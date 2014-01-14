@@ -28,8 +28,25 @@ AJS.toInit(function () {
   }
 
   function lockSurveyOrVote(surveyOrVote, lockLink) {
-    //TBD
-    alert("Locking or unlocking in progress for survey with title '" + locklink.title + "'.");
+    AJS.$.ajax({
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + lockLink.alt + "/lock",
+      type: "POST",
+      dataType: "json",
+      success: function (lockRepresentation) {
+        var inlineDialog = AJS.InlineDialog(AJS.$(lockLink), "lockDialog",
+          function (content, trigger, showPopup) {
+            content.css({"padding": "20px"}).html('<p>Survey is now locked: "' + lockRepresentation.locked + '. <b>Please reload the page to see the effect.</b></p>');
+            showPopup();
+            return false;
+          }
+        );
+        inlineDialog.show();
+      },
+      error: function (xhr, status, error) {
+        alert("There was a problem locking the survey. Returned status: " + status + ", error: " + error);
+      }
+    });
+
   }
 
   AJS.$(".exportsurvey").click(function (e) {
@@ -49,7 +66,7 @@ AJS.toInit(function () {
     e.preventDefault();
     locklink = this;
     var dialog = new AJS.Dialog({
-      id: "reset-dialog",
+      id: "lock-dialog",
       closeOnOutsideClick: true
     });
 
@@ -57,7 +74,7 @@ AJS.toInit(function () {
     dialog.addPanel("SinglePanel", "<p>Do you really want to lock this Survey?</p>", "singlePanel");
     dialog.addButton("Ok", function (dialog) {
       dialog.hide();
-      lockSurveyOrVote("survey", locklink);
+      lockSurveyOrVote("surveys", locklink);
     });
     dialog.addLink("Cancel", function (dialog) {
       dialog.hide();

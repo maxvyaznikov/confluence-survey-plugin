@@ -20,7 +20,7 @@ public class VoteConfig {
   protected static final String KEY_SHOW_COMMENTS = "showComments";
   private static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   private static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
-  private static final String KEY_LOCKED = "locked";
+  public static final String KEY_LOCKED = "locked";
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
 
