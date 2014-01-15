@@ -40,12 +40,12 @@ public class VoteConfig {
   protected int iterateStep = DEFAULT_ITERATE_STEP;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
-    renderTitleLevel = SurveyUtils.getIntegerFromString((String) parameters.get(KEY_RENDER_TITLE_LEVEL), 3);
-    changeableVotes = Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES));
-    voters = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString((String) parameters.get(KEY_VOTERS)));
-    viewers = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString((String) parameters.get(KEY_VIEWERS)));
-    showComments = SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), false);
-    locked = SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false);
+    renderTitleLevel = SurveyUtils.getIntegerFromString(parameters.get(KEY_RENDER_TITLE_LEVEL), 3);
+    changeableVotes = Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES));
+    voters = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_VOTERS)));
+    viewers = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_VIEWERS)));
+    showComments = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_COMMENTS), false);
+    locked = SurveyUtils.getBooleanFromString(parameters.get(KEY_LOCKED), false);
 
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
@@ -56,23 +56,11 @@ public class VoteConfig {
     }
 
     canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUsername);
-    visibleVoters = permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
-    visibleVotersWiki = SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
+    visibleVoters = permissionEvaluator.getCanSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
+    visibleVotersWiki = SurveyUtils.getBooleanFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
 
-    int startBound = DEFAULT_START_BOUND;
-    String sTmpParam = (String) parameters.get(KEY_START_BOUND);
-    if (sTmpParam != null) {
-      startBound = Integer.valueOf(sTmpParam);
-    }
-    int iterateStep = DEFAULT_ITERATE_STEP;
-    sTmpParam = (String) parameters.get(KEY_ITERATE_STEP);
-    if (sTmpParam != null) {
-      iterateStep = Integer.valueOf(sTmpParam);
-    }
-    if (startBound != DEFAULT_START_BOUND || iterateStep != DEFAULT_ITERATE_STEP) {
-      this.startBound = startBound;
-      this.iterateStep = iterateStep;
-    }
+    this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
+    this.iterateStep = SurveyUtils.getIntegerFromString(parameters.get(KEY_ITERATE_STEP), DEFAULT_ITERATE_STEP);
   }
 
   public VoteConfig(SurveyConfig surveyConfig) {
@@ -91,6 +79,9 @@ public class VoteConfig {
     canTakeSurvey = surveyConfig.isCanTakeSurvey();
     visibleVoters = surveyConfig.isVisibleVoters();
     visibleVotersWiki = surveyConfig.isVisibleVotersWiki();
+
+    startBound = surveyConfig.getStartBound();
+    iterateStep = surveyConfig.getIterateStep();
   }
 
   public int getRenderTitleLevel() {
