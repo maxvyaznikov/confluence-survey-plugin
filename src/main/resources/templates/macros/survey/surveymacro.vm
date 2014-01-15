@@ -29,8 +29,8 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
     #end
   ##<img class="resetsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png" border="0" align="absmiddle" height="16" width="16" name="vote"
   ##     alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.reset.icon.title')"/>
-    <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" align="absmiddle" height="16" width="16"
-         alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.lock.icon.title')"/>
+  ##  <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" align="absmiddle" height="16" width="16"
+  ##       alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.lock.icon.title')"/>
   </div>
 #else
   #set( $surveyTitleSummary = "summary" )
