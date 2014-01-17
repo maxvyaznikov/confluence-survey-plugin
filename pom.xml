@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <!--<groupId>org.hivesoft.confluence</groupId>-->
+  <!--<groupId>org.hivesoft.confluence</groupId>this cannot be exchanged currently as the groupId linked as a primary key on the marketplace-->
   <groupId>com.nearinfinity.confluence</groupId>
   <artifactId>survey-plugin</artifactId>
   <version>2.4.4-SNAPSHOT</version>
   <packaging>atlassian-plugin</packaging>
 
   <name>Survey and Vote Macros</name>
-  <description>This project is a set of two macros that are designed to gather information from confluence users. The vote macro allows users to vote on a single issue and will tally the results as
+  <description>Provides two macros that are designed to gather information from confluence users. The vote macro allows users to vote on a single issue and will tally the results as
     they are cast. The survey macro builds on the vote macro to collect user votes and comments on many given questions and provide advanced functionality, like
     a export and a summary part.
   </description>
@@ -26,9 +26,10 @@
     <developer>
       <name>Frank Stiller</name>
       <email>drohne1673@gmail.com</email>
+      <timezone>Europe/Berlin (UTC+01:00)</timezone>
       <roles>
-        <role>development</role>
-        <role>maintenance</role>
+        <role>architect</role>
+        <role>developer</role>
       </roles>
       <url>https://github.com/drohne1673</url>
     </developer>
