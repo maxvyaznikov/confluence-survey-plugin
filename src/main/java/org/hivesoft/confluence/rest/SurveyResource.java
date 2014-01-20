@@ -18,6 +18,7 @@ import com.atlassian.confluence.core.DefaultSaveContext;
 import com.atlassian.confluence.pages.Attachment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
+import com.atlassian.confluence.security.PermissionHelper;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionUpdater;
@@ -59,13 +60,17 @@ public class SurveyResource {
   protected final XhtmlContent xhtmlContent;
   protected final I18nResolver i18nResolver;
   protected final SurveyManager surveyManager;
+  protected final PermissionHelper permissionHelper;
+  protected final PermissionEvaluator permissionEvaluator;
 
-  public SurveyResource(TransactionTemplate transactionTemplate, PageManager pageManager, ContentPropertyManager contentPropertyManager, XhtmlContent xhtmlContent, I18nResolver i18nResolver, PermissionEvaluator permissionEvaluator) {
+  public SurveyResource(TransactionTemplate transactionTemplate, PageManager pageManager, ContentPropertyManager contentPropertyManager, XhtmlContent xhtmlContent, I18nResolver i18nResolver, PermissionEvaluator permissionEvaluator, PermissionHelper permissionHelper) {
     this.transactionTemplate = transactionTemplate;
     this.pageManager = pageManager;
+    this.permissionEvaluator = permissionEvaluator;
     this.surveyManager = new SurveyManager(contentPropertyManager, permissionEvaluator);
     this.xhtmlContent = xhtmlContent;
     this.i18nResolver = i18nResolver;
+    this.permissionHelper = permissionHelper;
   }
 
   @GET
@@ -77,6 +82,10 @@ public class SurveyResource {
 
     if (page == null) {
       return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
+    }
+
+    if (!permissionHelper.canAttachFile(permissionEvaluator.getRemoteUser(), page)) {
+      return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).entity("You are not authorized to add attachments and therefore cannot export surveys.").build();
     }
 
     final List<Survey> surveys = new ArrayList<Survey>();

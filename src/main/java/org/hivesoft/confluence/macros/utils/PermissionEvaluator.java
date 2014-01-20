@@ -12,6 +12,7 @@ package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
+import com.atlassian.user.User;
 import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -27,6 +28,10 @@ public class PermissionEvaluator {
   public PermissionEvaluator(UserAccessor userAccessor, UserManager userManager) {
     this.userAccessor = userAccessor;
     this.userManager = userManager;
+  }
+
+  public User getRemoteUser() {
+    return userAccessor.getUser(getRemoteUsername());
   }
 
   public String getRemoteUsername() {

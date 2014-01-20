@@ -25,7 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class SurveyMacroTest {
-  private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
+
 
   PageManager mockPageManager = mock(PageManager.class);
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);

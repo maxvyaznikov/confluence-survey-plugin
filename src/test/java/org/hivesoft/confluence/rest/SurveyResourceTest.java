@@ -9,12 +9,14 @@ import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Attachment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
+import com.atlassian.confluence.security.PermissionHelper;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
@@ -36,12 +38,14 @@ public class SurveyResourceTest {
 
   private final static long SOME_PAGE_ID = 123l;
   private final static String SOME_SURVEY_TITLE = "someSurveyTitle";
+  private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
 
   TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
   PageManager mockPageManager = mock(PageManager.class);
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
   EventPublisher mockEventPublisher = mock(EventPublisher.class);
   PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+  PermissionHelper mockPermissionHelper = mock(PermissionHelper.class);
 
   I18nResolver mockI18nResolver = mock(I18nResolver.class);
 
@@ -59,7 +63,7 @@ public class SurveyResourceTest {
     final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
     final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
 
-    classUnderTest = new SurveyResource(mockTransactionTemplate, mockPageManager, mockContentPropertyManager, xhtmlContent, mockI18nResolver, mockPermissionEvaluator);
+    classUnderTest = new SurveyResource(mockTransactionTemplate, mockPageManager, mockContentPropertyManager, xhtmlContent, mockI18nResolver, mockPermissionEvaluator, mockPermissionHelper);
   }
 
   @Test
@@ -78,9 +82,27 @@ public class SurveyResourceTest {
     somePage.setBodyAsString("123");
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
 
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
+    when(mockPermissionHelper.canAttachFile(SOME_USER1, somePage)).thenReturn(true);
+
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+  }
+
+  @Test
+  public void test_getCSVExportForSurvey_expectUserDoesNotHaveAddAttachmentPermission_failure() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("123");
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
+    when(mockPermissionHelper.canAttachFile(SOME_USER1, somePage)).thenReturn(false);
+
+    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(response.getStatus(), is(Response.Status.UNAUTHORIZED.getStatusCode()));
   }
 
   @Test
@@ -89,6 +111,10 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
+    when(mockPermissionHelper.canAttachFile(SOME_USER1, somePage)).thenReturn(true);
+
     Attachment mockAttachment = mock(Attachment.class);
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockTransactionTemplate.execute(any(TransactionCallback.class))).thenReturn(mockAttachment);
