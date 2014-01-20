@@ -17,6 +17,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
+import org.hivesoft.confluence.rest.representations.LockRepresentation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -98,5 +99,42 @@ public class SurveyResourceTest {
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
     assertThat((CSVExportRepresentation) response.getEntity(), is(equalTo(new CSVExportRepresentation("/someUri"))));
+  }
+
+  @Test
+  public void test_setLocked_expectPageNotFound_failure() throws UnsupportedEncodingException {
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(null);
+
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(Response.Status.NOT_FOUND.getStatusCode(), is(response.getStatus()));
+  }
+
+  @Test
+  public void test_setLockedToTrue_wasNotLocked_success() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(true))));
+  }
+
+  @Test
+  public void test_setLockedToFalse_wasLocked_success() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(false))));
   }
 }

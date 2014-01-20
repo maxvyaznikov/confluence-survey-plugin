@@ -68,56 +68,6 @@ public class SurveyResource {
     this.i18nResolver = i18nResolver;
   }
 
-  @POST
-  @Path("/{surveyTitle}/lock")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response setLocked(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
-    LOG.info("entered setLocked for pageId=" + pageId + " and surveyTitle=" + inSurveyTitle);
-    final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
-    final Page page = pageManager.getPage(pageId);
-
-    if (page == null) {
-      return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
-    }
-
-    final LockRepresentation lockRepresentation = new LockRepresentation(false);
-
-    try {
-      page.setBodyAsString(xhtmlContent.updateMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionUpdater() {
-        @Override
-        public MacroDefinition update(MacroDefinition macroDefinition) {
-          if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
-            final Map<String, String> parameters = macroDefinition.getParameters();
-            String currentTitle = null;
-            try {
-              currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
-            } catch (MacroException e) {
-              e.printStackTrace();
-            }
-            LOG.info("surveyTitle for locking=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
-            if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              LOG.debug("parameters have been found. Currently set to " + parameters);
-              //inverse the extracted state
-              lockRepresentation.setLocked(!SurveyUtils.getBooleanFromString(parameters.get(VoteConfig.KEY_LOCKED), false));
-              LOG.debug("updating macroDefinition with title: " + currentTitle + " to locked=" + lockRepresentation.isLocked());
-              parameters.put(VoteConfig.KEY_LOCKED, String.valueOf(lockRepresentation.isLocked()));
-              macroDefinition.setParameters(parameters);
-              LOG.debug("parameters have been modified and set to " + parameters);
-            }
-          }
-          return macroDefinition;
-        }
-      }));
-    } catch (XhtmlException e) {
-      LOG.error("There was a failure while parsing the Xhtml content: " + e.getMessage(), e);
-      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity("There was a problem reconstructing the given survey with title: " + surveyTitle).build();
-    }
-    pageManager.saveContentEntity(page, new DefaultSaveContext(true, false, true));
-
-    LOG.info("macroDefinitions have been updated. Returning: " + lockRepresentation.isLocked());
-    return Response.ok(lockRepresentation).build();
-  }
-
   @GET
   @Path("/{surveyTitle}/export")
   @Produces(MediaType.APPLICATION_JSON)
@@ -142,9 +92,7 @@ public class SurveyResource {
             } catch (MacroException e) {
               e.printStackTrace();
             }
-            LOG.info("surveyTitle for export=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              LOG.info("Try to reconstruct Survey...");
               final Survey survey = surveyManager.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
               survey.setTitle(surveyTitle);
               surveys.add(survey);
@@ -204,5 +152,52 @@ public class SurveyResource {
       return Response.ok(new CSVExportRepresentation(addedAttachment.getDownloadPath())).build();
     }
     return Response.status(Response.Status.BAD_REQUEST).entity("Could not find the specified survey macro on the specified page!").build();
+  }
+
+  @POST
+  @Path("/{surveyTitle}/lock")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response setLocked(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
+    LOG.info("entered setLocked for pageId=" + pageId + " and surveyTitle=" + inSurveyTitle);
+    final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
+    final Page page = pageManager.getPage(pageId);
+
+    if (page == null) {
+      return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
+    }
+
+    final LockRepresentation lockRepresentation = new LockRepresentation(false);
+
+    try {
+      page.setBodyAsString(xhtmlContent.updateMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionUpdater() {
+        @Override
+        public MacroDefinition update(MacroDefinition macroDefinition) {
+          if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
+            final Map<String, String> parameters = macroDefinition.getParameters();
+            String currentTitle = null;
+            try {
+              currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
+            } catch (MacroException e) {
+              e.printStackTrace();
+            }
+            LOG.info("surveyTitle for locking=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
+            if (surveyTitle.equalsIgnoreCase(currentTitle)) {
+              //inverse the extracted state
+              lockRepresentation.setLocked(!SurveyUtils.getBooleanFromString(parameters.get(VoteConfig.KEY_LOCKED), false));
+              parameters.put(VoteConfig.KEY_LOCKED, String.valueOf(lockRepresentation.isLocked()));
+              macroDefinition.setParameters(parameters);
+            }
+          }
+          return macroDefinition;
+        }
+      }));
+    } catch (XhtmlException e) {
+      LOG.error("There was a failure while parsing the Xhtml content: " + e.getMessage(), e);
+      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity("There was a problem reconstructing the given survey with title: " + surveyTitle).build();
+    }
+    pageManager.saveContentEntity(page, new DefaultSaveContext(true, false, true));
+
+    LOG.info("macroDefinitions have been updated. Returning: " + lockRepresentation.isLocked());
+    return Response.ok(lockRepresentation).build();
   }
 }
