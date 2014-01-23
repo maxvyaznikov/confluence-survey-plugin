@@ -137,13 +137,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
     // retrieve a reference to the body object this macro is in
     ContentEntityObject contentObject = ((PageContext) renderContext).getEntity();
 
-    PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-
-    String iconSet = (String) settings.get(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET);
-    if (StringUtils.isBlank(iconSet)) {
-      iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
-    }
-
     Survey survey = surveyManager.createSurvey(body, contentObject, parameters);
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
@@ -173,7 +166,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
     contextMap.put("content", contentObject);
     contextMap.put("survey", survey);
-    contextMap.put("iconSet", iconSet);
+    contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
 
     try {
       if (survey.getConfig().isCanSeeResults() || survey.getConfig().isCanTakeSurvey()) {
