@@ -14,16 +14,18 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 
 <link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all"/>
 
+#set ($config = $survey.config)
+
 #set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
 #if ( $survey.title )
 <div id="$generalUtil.urlEncode(${survey.title})" class="surveyBox">
   #if( $survey.renderTitleLevel !=0 )
-  <h$survey.config.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
+  <h$config.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
                                                                    title="$action.getText("surveyplugin.survey.locked")."/> #end <a
-        name="${surveyTitleSummary}-a">$survey.title</a>#if ($survey.config.renderTitleLevel !=0)</h$survey.config.renderTitleLevel>#end
+        name="${surveyTitleSummary}-a">$survey.title</a>#if ($config.renderTitleLevel !=0)</h$config.renderTitleLevel>#end
 
   <div class="surveyIconBar">
-    #if ($survey.config.canSeeResults)
+    #if ($config.canAttachFile($content))
       <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="16" width="16"
            alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.export.icon.title')"/>
     #end
@@ -35,7 +37,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 #else
   #set( $surveyTitleSummary = "summary" )
 #end
-#if ($survey.config.surveySummary=="Top")
+#if ($config.surveySummary=="Top")
   #parse ("templates/macros/survey/surveysummary.vm")
 #end
 
@@ -54,7 +56,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
     #parse ("templates/macros/vote/votemacro.vm")
   #end
 
-  #if ($survey.config.surveySummary=="Bottom")
+  #if ($config.surveySummary=="Bottom")
     #parse ("templates/macros/survey/surveysummary.vm")
   #end
 #end

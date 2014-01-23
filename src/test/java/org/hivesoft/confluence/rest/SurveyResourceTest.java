@@ -9,7 +9,6 @@ import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Attachment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
-import com.atlassian.confluence.security.PermissionHelper;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.event.api.EventPublisher;
@@ -45,7 +44,6 @@ public class SurveyResourceTest {
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
   EventPublisher mockEventPublisher = mock(EventPublisher.class);
   PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-  PermissionHelper mockPermissionHelper = mock(PermissionHelper.class);
 
   I18nResolver mockI18nResolver = mock(I18nResolver.class);
 
@@ -63,7 +61,7 @@ public class SurveyResourceTest {
     final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
     final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
 
-    classUnderTest = new SurveyResource(mockTransactionTemplate, mockPageManager, mockContentPropertyManager, xhtmlContent, mockI18nResolver, mockPermissionEvaluator, mockPermissionHelper);
+    classUnderTest = new SurveyResource(mockTransactionTemplate, mockPageManager, mockContentPropertyManager, xhtmlContent, mockI18nResolver, mockPermissionEvaluator);
   }
 
   @Test
@@ -82,8 +80,7 @@ public class SurveyResourceTest {
     somePage.setBodyAsString("123");
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
 
-    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
-    when(mockPermissionHelper.canAttachFile(SOME_USER1, somePage)).thenReturn(true);
+    when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
@@ -97,8 +94,7 @@ public class SurveyResourceTest {
     somePage.setBodyAsString("123");
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
 
-    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
-    when(mockPermissionHelper.canAttachFile(SOME_USER1, somePage)).thenReturn(false);
+    when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(false);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
@@ -112,8 +108,7 @@ public class SurveyResourceTest {
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
 
-    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
-    when(mockPermissionHelper.canAttachFile(SOME_USER1, somePage)).thenReturn(true);
+    when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
 
     Attachment mockAttachment = mock(Attachment.class);
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);

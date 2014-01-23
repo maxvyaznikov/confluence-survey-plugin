@@ -12,9 +12,12 @@ package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
+import org.hivesoft.confluence.rest.AdminResource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,5 +92,14 @@ public class SurveyUtils {
       }
     }
     return ballotTitle;
+  }
+
+  public static String getIconSetFromPluginSettings(PluginSettingsFactory pluginSettingsFactory) {
+    PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+    String iconSet = (String) settings.get(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET);
+    if (StringUtils.isBlank(iconSet)) {
+      iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
+    }
+    return iconSet;
   }
 }

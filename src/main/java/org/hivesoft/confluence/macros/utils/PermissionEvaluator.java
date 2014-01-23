@@ -10,6 +10,9 @@
  */
 package org.hivesoft.confluence.macros.utils;
 
+import com.atlassian.confluence.core.ContentEntityObject;
+import com.atlassian.confluence.pages.Attachment;
+import com.atlassian.confluence.security.PermissionManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.user.User;
@@ -24,10 +27,16 @@ public class PermissionEvaluator {
 
   final UserAccessor userAccessor;
   final UserManager userManager;
+  final PermissionManager permissionManager;
 
-  public PermissionEvaluator(UserAccessor userAccessor, UserManager userManager) {
+  public PermissionEvaluator(UserAccessor userAccessor, UserManager userManager, PermissionManager permissionManager) {
     this.userAccessor = userAccessor;
     this.userManager = userManager;
+    this.permissionManager = permissionManager;
+  }
+
+  public boolean canAttachFile(ContentEntityObject contentEntityObject) {
+    return permissionManager.hasCreatePermission(getRemoteUser(), contentEntityObject, Attachment.class);
   }
 
   public User getRemoteUser() {

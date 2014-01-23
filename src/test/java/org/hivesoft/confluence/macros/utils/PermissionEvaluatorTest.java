@@ -1,5 +1,6 @@
 package org.hivesoft.confluence.macros.utils;
 
+import com.atlassian.confluence.security.PermissionManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
@@ -23,12 +24,13 @@ public class PermissionEvaluatorTest {
 
   UserAccessor mockUserAccessor = mock(UserAccessor.class);
   UserManager mockUserManager = mock(UserManager.class);
+  PermissionManager mockPermissionManager = mock(PermissionManager.class);
 
   PermissionEvaluator classUnderTest;
 
   @Before
   public void setup() {
-    classUnderTest = new PermissionEvaluator(mockUserAccessor, mockUserManager);
+    classUnderTest = new PermissionEvaluator(mockUserAccessor, mockUserManager, mockPermissionManager);
   }
 
   @Test

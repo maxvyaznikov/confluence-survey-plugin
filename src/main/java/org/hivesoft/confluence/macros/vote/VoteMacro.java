@@ -28,7 +28,6 @@ import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.BaseMacro;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
@@ -39,7 +38,6 @@ import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
-import org.hivesoft.confluence.rest.AdminResource;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.StringWriter;
@@ -179,13 +177,6 @@ public class VoteMacro extends BaseMacro implements Macro {
     // retrieve a reference to the body object this macro is in
     ContentEntityObject contentObject = ((PageContext) renderContext).getEntity();
 
-    PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-    String iconSet = (String) settings.get(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET);
-    if (StringUtils.isBlank(iconSet)) {
-      iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
-    }
-
-    //String title = SurveyUtils.getTitleInMacroParameters(parameters);
     // Rebuild the model for this ballot
     Ballot ballot = surveyManager.reconstructBallot(parameters, body, contentObject);
 
@@ -202,33 +193,6 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     SurveyUtils.validateMaxStorableKeyLength(ballot.getBallotTitlesWithChoiceNames());
 
-
-
-    /*
-    ballot.setChangeableVotes(Boolean.parseBoolean((String) parameters.get(KEY_CHANGEABLE_VOTES)));
-    String renderTitleLevel = (String) parameters.get(KEY_RENDER_TITLE_LEVEL);
-    if (!StringUtils.isBlank(renderTitleLevel)) {
-      ballot.setRenderTitleLevel(Integer.valueOf(renderTitleLevel));
-    }
-
-    ballot.setLocked(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_LOCKED), false));
-    ballot.setVisibleComments(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), false));
-
-    final String remoteUsername = permissionEvaluator.getRemoteUsername();
-
-    Boolean canSeeResults;
-    if (StringUtils.isBlank((String) parameters.get(KEY_VIEWERS)) && ballot.isLocked()) {
-      canSeeResults = Boolean.TRUE;
-    } else {
-      canSeeResults = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(SurveyUtils.getListFromStringCommaSeparated((String) parameters.get(KEY_VIEWERS)), remoteUsername);
-    }
-
-    Boolean canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(SurveyUtils.getListFromStringCommaSeparated((String) parameters.get(KEY_VOTERS)), remoteUsername);
-    ballot.setVisibleVoters(permissionEvaluator.getCanSeeVoters((String) parameters.get(KEY_VISIBLE_VOTERS), canSeeResults));
-    ballot.setVisibleVotersWiki(SurveyUtils.getBooleanFromString((String) parameters.get(KEY_VISIBLE_VOTERS_WIKI), false));
-*/
-
-
     // check if any request parameters came in to complete or uncomplete tasks
     HttpServletRequest request = ServletActionContext.getRequest();
 
@@ -240,7 +204,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
     contextMap.put("content", contentObject);
     contextMap.put("ballot", ballot);
-    contextMap.put("iconSet", iconSet);
+    contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
 
     try {
       StringWriter renderedTemplate = new StringWriter();
@@ -251,6 +215,7 @@ public class VoteMacro extends BaseMacro implements Macro {
       throw new MacroException(e);
     }
   }
+
 
   /**
    * If there is a vote in the request, store it in this page for the given ballot.

@@ -1,5 +1,6 @@
 package org.hivesoft.confluence.macros.vote;
 
+import com.atlassian.confluence.pages.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
@@ -39,7 +40,11 @@ public class VoteConfig {
   protected int startBound = DEFAULT_START_BOUND;
   protected int iterateStep = DEFAULT_ITERATE_STEP;
 
+  protected final PermissionEvaluator permissionEvaluator;
+
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
+    this.permissionEvaluator = permissionEvaluator;
+
     renderTitleLevel = SurveyUtils.getIntegerFromString(parameters.get(KEY_RENDER_TITLE_LEVEL), 3);
     changeableVotes = Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES));
     voters = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_VOTERS)));
@@ -64,6 +69,7 @@ public class VoteConfig {
   }
 
   public VoteConfig(SurveyConfig surveyConfig) {
+    this.permissionEvaluator = surveyConfig.permissionEvaluator;
     renderTitleLevel = surveyConfig.getRenderTitleLevel();
     if (renderTitleLevel > 0) {
       renderTitleLevel++;
@@ -130,6 +136,10 @@ public class VoteConfig {
 
   public int getIterateStep() {
     return iterateStep;
+  }
+
+  public Boolean canAttachFile(Page page) {
+    return permissionEvaluator.canAttachFile(page);
   }
 
   @Override
