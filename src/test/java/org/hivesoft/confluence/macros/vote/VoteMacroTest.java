@@ -117,7 +117,7 @@ public class VoteMacroTest {
     parameters.put(VoteConfig.KEY_TITLE, "someTitle");
 
     ContentEntityObject somePage = new Page();
-    somePage.setBodyAsString("{vote:title=someTitle}{vote}");
+    somePage.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someTitle</ac:parameter></ac:macro><ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someVoteTitle</ac:parameter></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
@@ -128,6 +128,7 @@ public class VoteMacroTest {
     when(mockVelocityAbstractionHelper.getDefaultVelocityContext()).thenReturn(contextMap);
 
     final String macroResultAsString = classUnderTest.execute(parameters, "", mockConversionContext);
+    //TODO: find a way to remove the mock in templateRenderer otherwise it is a little stupid to simply fake it
     //assertTrue(macroResultAsString.contains("someTitle"));
   }
 

@@ -15,7 +15,6 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
@@ -34,10 +33,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class SurveyResourceTest {
-
   private final static long SOME_PAGE_ID = 123l;
   private final static String SOME_SURVEY_TITLE = "someSurveyTitle";
-  private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
 
   TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
   PageManager mockPageManager = mock(PageManager.class);
@@ -46,7 +43,6 @@ public class SurveyResourceTest {
   PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
   I18nResolver mockI18nResolver = mock(I18nResolver.class);
-
 
   SurveyResource classUnderTest;
 
