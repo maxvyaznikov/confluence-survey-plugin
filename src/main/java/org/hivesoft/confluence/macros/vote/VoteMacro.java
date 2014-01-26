@@ -33,6 +33,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
+import org.hivesoft.confluence.macros.survey.SurveyMacro;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
@@ -124,7 +125,7 @@ public class VoteMacro extends BaseMacro implements Macro {
   @Override
   @RequiresFormat(value = Format.View)
   public String execute(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
-    final List<String> macros = new ArrayList<String>();
+    final List<String> voteMacroTitles = new ArrayList<String>();
     try {
       final String voteMacroTitle = SurveyUtils.getTitleInMacroParameters(parameters);
       LOG.info("Try executing " + VOTE_MACRO + "-macro XHtml Style with title: '" + voteMacroTitle + "' and body: '" + body + "'");
@@ -135,20 +136,37 @@ public class VoteMacro extends BaseMacro implements Macro {
             final Map<String, String> parameters = macroDefinition.getParameters();
             String currentTitle = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE)).trim();
             if (!StringUtils.isBlank(currentTitle)) {
-              if (macros.contains(currentTitle)) {
-                LOG.info("A " + VOTE_MACRO + "-macro should not have the same title " + currentTitle + " on the same page! In newer version it may become mandatory / unique.");
-                if (macros.contains(voteMacroTitle)) {
-                  macros.add(voteMacroTitle.toUpperCase());
+              if (voteMacroTitles.contains(currentTitle)) {
+                LOG.info("A " + VOTE_MACRO + "-macro must not have the same title / question: " + currentTitle + " on the same page!");
+                if (voteMacroTitles.contains(voteMacroTitle)) {
+                  voteMacroTitles.add(voteMacroTitle + "vote");
                 }
               } else {
-                macros.add(currentTitle);
+                voteMacroTitles.add(currentTitle);
+              }
+            }
+          }
+          if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
+            //TODO fix line break evaluation
+            final String[] lines = macroDefinition.getBodyText().split("\n");
+            for (String line : lines) {
+              if (StringUtils.isNotBlank(line)) {
+                final String currentBallotTitle = line.split("\\-")[0].trim();
+                if (voteMacroTitles.contains(currentBallotTitle)) {
+                  LOG.info("A survey-macro should not have the same ballot as this vote " + currentBallotTitle);
+                  if (voteMacroTitles.contains(voteMacroTitle)) {
+                    voteMacroTitles.add(voteMacroTitle + "survey");
+                  }
+                } else {
+                  voteMacroTitles.add(currentBallotTitle);
+                }
               }
             }
           }
         }
       });
-      if (macros.contains(voteMacroTitle.toUpperCase())) {
-        throw new MacroExecutionException("The " + VOTE_MACRO + "-macro with title '" + voteMacroTitle + "' exists more then one time on this page. That is not allowed. Please change one of them!");
+      if (voteMacroTitles.contains(voteMacroTitle + "vote") || voteMacroTitles.contains(voteMacroTitle + "survey")) {
+        throw new MacroExecutionException("The " + VOTE_MACRO + "-macro with title '" + voteMacroTitle + "' exists more then one time on this page or has the same question than a survey. That is not allowed. Please change one of them!");
       }
     } catch (XhtmlException e) {
       throw new MacroExecutionException(e);

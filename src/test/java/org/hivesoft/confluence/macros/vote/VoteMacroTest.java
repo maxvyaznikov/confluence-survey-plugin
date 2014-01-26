@@ -47,31 +47,37 @@ public class VoteMacroTest {
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
   PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
   TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
-  XhtmlContent mockXhtmlContent = mock(XhtmlContent.class);
   PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
   VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
-
   ConversionContext mockConversionContext = mock(ConversionContext.class);
-
   HttpServletRequest mockRequest = mock(HttpServletRequest.class);
 
   VoteMacro classUnderTest;
 
   @Before
-  public void setup() {
-    when(mockPermissionEvaluator.getRemoteUsername()).thenReturn(SurveyUtilsTest.SOME_USER_NAME);
-
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT)).thenReturn(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE)).thenReturn(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+  public void setup() throws Exception {
     AuthenticatedUserThreadLocal.setUser(SOME_USER1);
 
-    classUnderTest = new VoteMacro(mockPageManager, mockContentPropertyManager, mockPermissionEvaluator, mockTemplateRenderer, mockXhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
+    XMLOutputFactory xmlOutputFactory = (XMLOutputFactory) new XmlOutputFactoryFactoryBean(true).getObject();
+
+    final EventPublisher mockEventPublisher = mock(EventPublisher.class);
+    final Unmarshaller<MacroDefinition> macroDefinitionUnmarshaller = new StorageMacroUnmarshaller(new DefaultXmlEventReaderFactory(), xmlOutputFactory, new AlwaysTransformMacroBody());
+    final DefaultXmlEventReaderFactory xmlEventReaderFactory = new DefaultXmlEventReaderFactory();
+    final Marshaller<MacroDefinition> macroDefinitionMarshaller = new StorageMacroMarshaller(xmlOutputFactory);
+
+    when(mockPermissionEvaluator.getRemoteUsername()).thenReturn(SurveyUtilsTest.SOME_USER_NAME);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT)).thenReturn(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE)).thenReturn(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+
+    final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
+    final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
+
+    classUnderTest = new VoteMacro(mockPageManager, mockContentPropertyManager, mockPermissionEvaluator, mockTemplateRenderer, xhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
   }
 
   @After
   public void tearDown() {
     AuthenticatedUserThreadLocal.setUser(null);
-
   }
 
   @Test(expected = MacroExecutionException.class)
@@ -81,20 +87,6 @@ public class VoteMacroTest {
 
   @Test(expected = MacroExecutionException.class)
   public void test_execute_voteTitleDuplicateDetected_exception() throws Exception {
-    XMLOutputFactory xmlOutputFactory = (XMLOutputFactory) new XmlOutputFactoryFactoryBean(true).getObject();
-
-    final EventPublisher mockEventPublisher = mock(EventPublisher.class);
-
-    final Unmarshaller<MacroDefinition> macroDefinitionUnmarshaller = new StorageMacroUnmarshaller(new DefaultXmlEventReaderFactory(), xmlOutputFactory, new AlwaysTransformMacroBody());
-    final DefaultXmlEventReaderFactory xmlEventReaderFactory = new DefaultXmlEventReaderFactory();
-    final Marshaller<MacroDefinition> macroDefinitionMarshaller = new StorageMacroMarshaller(xmlOutputFactory);
-
-    final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
-    final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
-
-
-    classUnderTest = new VoteMacro(mockPageManager, mockContentPropertyManager, mockPermissionEvaluator, mockTemplateRenderer, xhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
-
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someVoteTitle");
 
@@ -108,9 +100,23 @@ public class VoteMacroTest {
     classUnderTest.execute(parameters, "", mockConversionContext);
   }
 
-  /**
-   * Cannot test the result of the velocity content as some elements are not initialized, but the macro is running through
-   */
+  @Test(expected = MacroExecutionException.class)
+  public void test_execute_voteAndSurveyBallotTitleDuplicateDetected_exception() throws Exception {
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, "someVoteTitle");
+
+    ContentEntityObject somePage = new Page();
+    somePage.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someVoteTitle</ac:parameter></ac:macro>" +
+            "<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">someSurveyTitle</ac:parameter>" +
+            "<ac:plain-text-body><![CDATA[notTheFirst\nsomeVoteTitle\nsomeOther \"§$\"§$ ballotTitle]]></ac:plain-text-body></ac:macro>");
+    final PageContext pageContext = new PageContext(somePage);
+
+    when(mockConversionContext.getEntity()).thenReturn(somePage);
+    when(mockConversionContext.getPageContext()).thenReturn(pageContext);
+
+    classUnderTest.execute(parameters, "", mockConversionContext);
+  }
+
   @Test
   public void test_execute_simpleMacroWithTitle_success() throws Exception {
     final HashMap<String, String> parameters = new HashMap<String, String>();
@@ -222,6 +228,4 @@ public class VoteMacroTest {
 
     verify(mockContentPropertyManager, times(0)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
   }
-
-
 }
