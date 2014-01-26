@@ -108,7 +108,7 @@ public class VoteMacroTest {
     ContentEntityObject somePage = new Page();
     somePage.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someVoteTitle</ac:parameter></ac:macro>" +
             "<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">someSurveyTitle</ac:parameter>" +
-            "<ac:plain-text-body><![CDATA[notTheFirst\nsomeVoteTitle\nsomeOther \"§$\"§$ ballotTitle]]></ac:plain-text-body></ac:macro>");
+            "<ac:plain-text-body><![CDATA[notTheFirst\nsomeVoteTitle-subtitle\nsomeOther \"§$\"§$ ballotTitle]]></ac:plain-text-body></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);

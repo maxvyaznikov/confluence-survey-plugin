@@ -164,6 +164,12 @@ public class PermissionEvaluatorTest {
   }
 
   @Test
+  public void test_getCanVote_emptyUser_success() {
+    final Boolean canVote = classUnderTest.getCanVote("", SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
+    assertFalse(canVote);
+  }
+
+  @Test
   public void test_getCanVote_success() {
     final Boolean canVote = classUnderTest.getCanVote(SOME_USER_NAME, SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
     assertTrue(canVote);

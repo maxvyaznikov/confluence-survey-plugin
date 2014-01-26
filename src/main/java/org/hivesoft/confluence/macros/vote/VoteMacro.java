@@ -147,7 +147,6 @@ public class VoteMacro extends BaseMacro implements Macro {
             }
           }
           if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
-            //TODO fix line break evaluation
             final String[] lines = macroDefinition.getBodyText().split("\n");
             for (String line : lines) {
               if (StringUtils.isNotBlank(line)) {
