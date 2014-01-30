@@ -20,7 +20,6 @@ import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class PermissionEvaluator {
@@ -63,62 +62,6 @@ public class PermissionEvaluator {
       }
     }
     return Boolean.FALSE;
-  }
-
-  /**
-   * <p>
-   * Determine if a user is authorized to see the vote results. A user is only eligible to see results if they are specified as a viewer either implicitly (no viewers are specified) or explicitly
-   * (the user is specified in the viewers parameter. A user who is specified as a viewer can see the results in two cases:
-   * <ol>
-   * <li>The user is not allowed to vote.</li>
-   * <li>The user is allowed to vote and has already cast a vote.</li>
-   * </ol>
-   * </p>
-   *
-   * @param viewers  The list of userNames allowed to see the results after voting. If blank, all users can see results.
-   * @param voters   The list of userNames allowed to vote. If blank, all users can vote.
-   * @param username The username of the user about to see results.
-   * @param ballot   The ballot whose results are about to be shown.
-   * @return <code>true</code> if the user can see the results, <code>false</code> if they cannot.
-   */
-  public Boolean getCanSeeResults(String viewers, String voters, String username, Ballot ballot) {
-    // You can't see results if we don't know who you are
-    if (StringUtils.isBlank(username)) {
-      return Boolean.FALSE;
-    }
-
-    // If you're not a viewer, you can't see results
-    boolean isViewer = StringUtils.isBlank(viewers) || Arrays.asList(viewers.split(",")).contains(username);
-    if (!isViewer) {
-      // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-      for (String currentUser : viewers.split(",")) {
-        // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-        if (userAccessor.hasMembership(currentUser.trim(), username)) {
-          isViewer = true;
-          break;
-        }
-      }
-      if (!isViewer)
-        return Boolean.FALSE;
-    }
-
-    // If you're a viewer but not a voter, then you can always see the results
-    boolean isVoter = StringUtils.isBlank(voters) || Arrays.asList(voters.split(",")).contains(username);
-    if (!isVoter) {
-      // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-      for (String currentUser : voters.split(",")) {
-        // guess the current element is a group /if (com.atlassian.confluence.user.DefaultUserAccessor.hasMembership(lUsers[ino], username))
-        if (userAccessor.hasMembership(currentUser.trim(), username)) {
-          isVoter = true;
-          break;
-        }
-      }
-      if (!isVoter)
-        return Boolean.TRUE;
-    }
-
-    // If you are a voter, then you have to vote to see the results
-    return ballot.getHasVoted(username);
   }
 
   public boolean getCanSeeVoters(String visibleVoters, boolean canSeeResults) {
