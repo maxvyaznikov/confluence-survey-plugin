@@ -16,7 +16,6 @@ import com.atlassian.confluence.security.PermissionManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.user.User;
-import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 
@@ -79,24 +78,9 @@ public class PermissionEvaluator {
    * @return <code>true</code> if the user can cast a vote, <code>false</code> if they cannot.
    */
   public Boolean getCanVote(String username, Ballot ballot) {
-    if (!TextUtils.stringSet(username)) {
-      return Boolean.FALSE;
+    if (!isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), username)) {
+      return false;
     }
-
-    boolean isVoter = ballot.getConfig().getVoters().isEmpty() || ballot.getConfig().getVoters().contains(username);
-    if (!isVoter) {
-      // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
-      for (String currentUser : ballot.getConfig().getVoters()) {
-        if (userAccessor.hasMembership(currentUser.trim(), username)) {
-          isVoter = true;
-          break;
-        }
-      }
-
-      if (!isVoter) // user is not permitted via groupName either
-        return Boolean.FALSE;
-    }
-
     return !ballot.getHasVoted(username) || ballot.getConfig().isChangeableVotes();
   }
 }
