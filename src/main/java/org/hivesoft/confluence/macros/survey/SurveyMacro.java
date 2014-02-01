@@ -20,14 +20,12 @@ import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.renderer.PageContext;
-import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
@@ -39,7 +37,6 @@ import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
-import org.hivesoft.confluence.rest.AdminResource;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.StringWriter;
@@ -142,14 +139,43 @@ public class SurveyMacro extends VoteMacro implements Macro {
     final List<String> noneUniqueTitles = new ArrayList<String>();
     for (Ballot ballot : survey.getBallots()) {
       if (noneUniqueTitles.contains(ballot.getTitle())) {
-        throw new MacroException("The ballot-titles must be unique! The row starting with title of '" + ballot.getTitle() + "' violated that. Please rename your choices to unique answers!");
+        survey.getConfig().addRenderProblems("The ballot-titles must be unique! The row starting with title of '" + ballot.getTitle() + "' violated that. Please rename your choices to unique answers!");
+        //throw new MacroException("The ballot-titles must be unique! The row starting with title of '" + ballot.getTitle() + "' violated that. Please rename your choices to unique answers!");
       } else {
         noneUniqueTitles.add(ballot.getTitle());
       }
     }
 
-    SurveyUtils.validateMaxStorableKeyLength(survey.getBallotTitlesWithChoiceNames());
+    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(survey.getBallotTitlesWithChoiceNames());
+    survey.getConfig().addRenderProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
 
+    if (survey.getConfig().getRenderProblems().isEmpty()) {
+      castVoteIfRequestExists(contentObject, survey);
+    }
+
+    // now create a simple velocity context and render a template for the output
+    Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
+    contextMap.put("content", contentObject);
+    contextMap.put("survey", survey);
+    contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
+
+    try {
+      StringWriter renderedTemplate = new StringWriter();
+      if (!survey.getConfig().getRenderProblems().isEmpty()) {
+        renderer.render("templates/macros/survey/surveymacro-renderproblems.vm", contextMap, renderedTemplate);
+      } else if (survey.getConfig().isCanSeeResults() || survey.getConfig().isCanTakeSurvey()) {
+        renderer.render("templates/macros/survey/surveymacro.vm", contextMap, renderedTemplate);
+      } else {
+        renderer.render("templates/macros/survey/surveymacro-denied.vm", contextMap, renderedTemplate);
+      }
+      return renderedTemplate.toString();
+    } catch (Exception e) {
+      LOG.error("Error while trying to display Survey!", e);
+      throw new MacroException(e);
+    }
+  }
+
+  private void castVoteIfRequestExists(ContentEntityObject contentObject, Survey survey) {
     // check if any request parameters came in to vote on a ballot
     HttpServletRequest request = ServletActionContext.getRequest();
     if (request != null) {
@@ -160,25 +186,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
       if (ballot != null) {
         recordVote(ballot, request, contentObject);
       }
-    }
-
-    // now create a simple velocity context and render a template for the output
-    Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
-    contextMap.put("content", contentObject);
-    contextMap.put("survey", survey);
-    contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
-
-    try {
-      if (survey.getConfig().isCanSeeResults() || survey.getConfig().isCanTakeSurvey()) {
-        StringWriter renderedTemplate = new StringWriter();
-        renderer.render("templates/macros/survey/surveymacro.vm", contextMap, renderedTemplate);
-        return renderedTemplate.toString();
-      }
-
-      return VelocityUtils.getRenderedTemplate("templates/macros/survey/surveymacro-denied.vm", contextMap);
-    } catch (Exception e) {
-      LOG.error("Error while trying to display Survey!", e);
-      throw new MacroException(e);
     }
   }
 }

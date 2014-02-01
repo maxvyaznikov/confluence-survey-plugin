@@ -16,6 +16,8 @@ import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +52,7 @@ public class VoteConfig {
   protected int startBound = DEFAULT_START_BOUND;
   protected int iterateStep = DEFAULT_ITERATE_STEP;
 
+  protected List<String> renderProblems = new ArrayList<String>();
   protected final PermissionEvaluator permissionEvaluator;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
@@ -98,6 +101,10 @@ public class VoteConfig {
 
     startBound = surveyConfig.getStartBound();
     iterateStep = surveyConfig.getIterateStep();
+  }
+
+  public void addRenderProblems(String... problem) {
+    renderProblems.addAll(Arrays.asList(problem));
   }
 
   public int getRenderTitleLevel() {
@@ -150,6 +157,10 @@ public class VoteConfig {
 
   public Boolean canAttachFile(Page page) {
     return permissionEvaluator.canAttachFile(page);
+  }
+
+  public List<String> getRenderProblems() {
+    return renderProblems;
   }
 
   @Override

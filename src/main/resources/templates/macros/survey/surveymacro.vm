@@ -21,7 +21,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 <div id="$generalUtil.urlEncode(${survey.title})" class="surveyBox">
   #if( $survey.renderTitleLevel !=0 )
   <h$config.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
-                                                                   title="$action.getText("surveyplugin.survey.locked")."/> #end <a
+                                                            title="$action.getText("surveyplugin.survey.locked")."/> #end <a
         name="${surveyTitleSummary}-a">$survey.title</a>#if ($config.renderTitleLevel !=0)</h$config.renderTitleLevel>#end
 
   <div class="surveyIconBar">
@@ -41,25 +41,28 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
   #parse ("templates/macros/survey/surveysummary.vm")
 #end
 
+
 ##set ($ballotNumber = 0)
-#if ( $survey.ballots.size()==0 )
-  <div class="aui-message info" style="margin-left:10px">
-    <p class="title">
-      <span class="aui-icon icon-info"></span>
-      <strong>$action.getText("surveyplugin.noinfo").</strong>
-    </p>
+  #if ( $survey.ballots.size()==0 )
+    <div class="aui-message info" style="margin-left:10px">
+      <p class="title">
+        <span class="aui-icon icon-info"></span>
+        <strong>$action.getText("surveyplugin.noinfo").</strong>
+      </p>
 
-    <p>$action.getText("surveyplugin.survey.info.add.ballots")</p>
-  </div>
-#else
-  #foreach ($ballot in $survey.ballots)
-    #parse ("templates/macros/vote/votemacro.vm")
+      <p>$action.getText("surveyplugin.survey.info.add.ballots")</p>
+    </div>
+  #else
+    #foreach ($ballot in $survey.ballots)
+      #parse ("templates/macros/vote/votemacro.vm")
+    #end
+
+    #if ($config.surveySummary=="Bottom")
+      #parse ("templates/macros/survey/surveysummary.vm")
+    #end
   #end
 
-  #if ($config.surveySummary=="Bottom")
-    #parse ("templates/macros/survey/surveysummary.vm")
-  #end
-#end
+
 
 #if ( $survey.title )
 </div>

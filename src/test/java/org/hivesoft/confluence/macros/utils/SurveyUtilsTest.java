@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -35,17 +35,21 @@ public class SurveyUtilsTest {
     ballotAndChoicesWithValidLength.add(BALLOT_AND_CHOICE_NAME2);
     ballotAndChoicesWithValidLength.add(BALLOT_AND_CHOICE_NAME3);
 
-    SurveyUtils.validateMaxStorableKeyLength(ballotAndChoicesWithValidLength);
+    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballotAndChoicesWithValidLength);
+    assertThat(violatingMaxStorableKeyLengthItems.size(), is(equalTo(0)));
   }
 
-  @Test(expected = MacroException.class)
-  public void test_validateMaxStorableKeyLength_exception() throws MacroException {
+  @Test
+  public void test_validateMaxStorableKeyLength_failure() throws MacroException {
     List<String> ballotAndChoicesWithValidLength = new ArrayList<String>();
 
     ballotAndChoicesWithValidLength.add(getRandomString(SurveyUtils.MAX_STORABLE_KEY_LENGTH + 1));
-    ballotAndChoicesWithValidLength.add(getRandomString(SurveyUtils.MAX_STORABLE_KEY_LENGTH));
+    ballotAndChoicesWithValidLength.add(getRandomString(SurveyUtils.MAX_STORABLE_KEY_LENGTH / 2));
 
-    SurveyUtils.validateMaxStorableKeyLength(ballotAndChoicesWithValidLength);
+    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballotAndChoicesWithValidLength);
+
+    System.out.println(violatingMaxStorableKeyLengthItems);
+    assertThat(violatingMaxStorableKeyLengthItems.size(), is(equalTo(1)));
   }
 
   @Test
@@ -95,7 +99,7 @@ public class SurveyUtilsTest {
     return ballot;
   }
 
-  public static Choice createdDefaultChoice(){
+  public static Choice createdDefaultChoice() {
     return new Choice(SOME_CHOICE_DESCRIPTION);
   }
 

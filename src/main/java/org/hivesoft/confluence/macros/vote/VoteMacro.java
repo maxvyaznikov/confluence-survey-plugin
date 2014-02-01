@@ -201,20 +201,22 @@ public class VoteMacro extends BaseMacro implements Macro {
     if (ballot.getChoices().size() != 0) {
       for (Choice choice : ballot.getChoices()) {
         if (noneUniqueTitles.contains(choice.getDescription())) {
-          throw new MacroException("The choice-descriptions must be unique! The row starting with title of '" + choice.getDescription() + "' violated that. Please rename your choices to unique answers!");
+          ballot.getConfig().addRenderProblems("The choice-descriptions must be unique! The row starting with title of '" + choice.getDescription() + "' violated that. Please rename your choices to unique answers!");
         } else {
           noneUniqueTitles.add(choice.getDescription());
         }
       }
     }   //don't render a error (that's not nice), render a warning element within velocity
 
-    SurveyUtils.validateMaxStorableKeyLength(ballot.getBallotTitlesWithChoiceNames());
+    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballot.getBallotTitlesWithChoiceNames());
+    ballot.getConfig().addRenderProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
 
-    // check if any request parameters came in to complete or uncomplete tasks
-    HttpServletRequest request = ServletActionContext.getRequest();
-
-    if (request != null && ballot.getTitle().equals(request.getParameter(REQUEST_PARAMETER_BALLOT))) {
-      recordVote(ballot, request, contentObject);
+    if (ballot.getConfig().getRenderProblems().isEmpty()) {
+      // check if any request parameters came in to complete or uncomplete tasks
+      HttpServletRequest request = ServletActionContext.getRequest();
+      if (request != null && ballot.getTitle().equals(request.getParameter(REQUEST_PARAMETER_BALLOT))) {
+        recordVote(ballot, request, contentObject);
+      }
     }
 
     // now create a simple velocity context and render a template for the output
