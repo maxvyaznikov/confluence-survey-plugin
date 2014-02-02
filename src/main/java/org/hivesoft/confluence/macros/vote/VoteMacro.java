@@ -19,15 +19,11 @@ import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.PageManager;
-import com.atlassian.confluence.renderer.PageContext;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
-import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
-import com.atlassian.renderer.v2.macro.BaseMacro;
-import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
@@ -41,6 +37,7 @@ import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +47,7 @@ import java.util.Map;
  * This macro defines a simple voting mechanism against a particular topic. Users may only vote once (unless changeable votes is true), can only vote for one choice, and cannot see the overall results
  * until after they have voted.
  */
-public class VoteMacro extends BaseMacro implements Macro {
+public class VoteMacro implements Macro {
   private static final Logger.Log LOG = Logger.getInstance(VoteMacro.class);
 
   public static final String VOTE_MACRO = "vote";
@@ -97,22 +94,6 @@ public class VoteMacro extends BaseMacro implements Macro {
   }
 
   /**
-   * This macro generates tabular data, which is not an inline element.
-   */
-  @Override
-  public boolean isInline() {
-    return false;
-  }
-
-  /**
-   * The vote choices are the body of this macro.
-   */
-  @Override
-  public boolean hasBody() {
-    return true;
-  }
-
-  /**
    * Body should not be rendered, as we want to control it ourselves
    */
   public RenderMode getBodyRenderMode() {
@@ -126,8 +107,13 @@ public class VoteMacro extends BaseMacro implements Macro {
   @RequiresFormat(value = Format.View)
   public String execute(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
     final List<String> voteMacroTitles = new ArrayList<String>();
+    final String voteMacroTitle = SurveyUtils.getTitleInMacroParameters(parameters);
+    if (StringUtils.isBlank(voteMacroTitle)) {
+      final String message = "Title parameter is mandatory but was not present!";
+      LOG.error(message);
+      throw new MacroExecutionException(message);
+    }
     try {
-      final String voteMacroTitle = SurveyUtils.getTitleInMacroParameters(parameters);
       LOG.info("Try executing " + VOTE_MACRO + "-macro XHtml Style with title: '" + voteMacroTitle + "' and body: '" + body + "'");
       xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
         @Override
@@ -171,30 +157,10 @@ public class VoteMacro extends BaseMacro implements Macro {
       }
     } catch (XhtmlException e) {
       throw new MacroExecutionException(e);
-    } catch (MacroException e) {
-      throw new MacroExecutionException(e);
     }
 
-    try {
-      return execute(parameters, body, (RenderContext) conversionContext.getPageContext());
-    } catch (MacroException e) {
-      throw new MacroExecutionException(e);
-    }
-  }
-
-  /**
-   * Get the HTML rendering of this macro.
-   *
-   * @param parameters    Any parameters passed into this macro.
-   * @param body          The raw body of the macro
-   * @param renderContext The render context for the current page rendering.
-   * @return String representing the HTML rendering of this macro
-   * @throws MacroException If an exception occurs rendering the HTML
-   */
-  @Override
-  public String execute(@SuppressWarnings("rawtypes") Map parameters, String body, RenderContext renderContext) throws MacroException {
     // retrieve a reference to the body object this macro is in
-    ContentEntityObject contentObject = ((PageContext) renderContext).getEntity();
+    ContentEntityObject contentObject = conversionContext.getEntity();
 
     // Rebuild the model for this ballot
     Ballot ballot = surveyManager.reconstructBallot(parameters, body, contentObject);
@@ -214,7 +180,7 @@ public class VoteMacro extends BaseMacro implements Macro {
     ballot.getConfig().addRenderProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
 
     if (ballot.getConfig().getRenderProblems().isEmpty()) {
-      // check if any request parameters came in to complete or uncomplete tasks
+      // check if any request parameters came in to complete or incomplete tasks
       HttpServletRequest request = ServletActionContext.getRequest();
       if (request != null && ballot.getTitle().equals(request.getParameter(REQUEST_PARAMETER_BALLOT))) {
         recordVote(ballot, request, contentObject);
@@ -226,7 +192,6 @@ public class VoteMacro extends BaseMacro implements Macro {
     contextMap.put("content", contentObject);
     contextMap.put("ballot", ballot);
     contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
-
     try {
       StringWriter renderedTemplate = new StringWriter();
       if (ballot.getConfig().getRenderProblems().isEmpty()) {
@@ -235,9 +200,10 @@ public class VoteMacro extends BaseMacro implements Macro {
         renderer.render("templates/macros/vote/votemacro-renderproblems.vm", contextMap, renderedTemplate);
       }
       return renderedTemplate.toString();
-    } catch (Exception e) {
-      LOG.error("Error while trying to display Ballot!", e);
-      throw new MacroException(e);
+    } catch (IOException e) {
+      final String message = "Error while trying to display Ballot!";
+      LOG.error(message, e);
+      throw new MacroExecutionException(message, e);
     }
   }
 

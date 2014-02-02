@@ -10,8 +10,8 @@
  */
 package org.hivesoft.confluence.macros.utils;
 
+import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.extras.common.log.Logger;
-import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +30,7 @@ public class SurveyUtils {
   private static final String REGEX_COMMA_SEPARATED_STRINGS = "\\s*,[,\\s]*";
   protected static final int MAX_STORABLE_KEY_LENGTH = 200;
 
-  public static List<String> getViolatingMaxStorableKeyLengthItems(List<String> ballotAndChoiceNames) throws MacroException {
+  public static List<String> getViolatingMaxStorableKeyLengthItems(List<String> ballotAndChoiceNames) throws MacroExecutionException {
     // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
     List<String> exceedingKeyItems = new ArrayList<String>();
     for (String ballotChoiceKey : ballotAndChoiceNames) {
@@ -40,7 +40,7 @@ public class SurveyUtils {
           exceedingKeyItems.add("Choice to long: " + ballotChoiceKey + " Length: " + (ballotChoiceKey.getBytes("UTF-8").length + VoteMacro.VOTE_PREFIX.length() + " (allowed: " + MAX_STORABLE_KEY_LENGTH + ")"));
         }
       } catch (java.io.UnsupportedEncodingException e) {
-        throw new MacroException(e);
+        throw new MacroExecutionException(e);
       }
     }
     return exceedingKeyItems;
@@ -73,16 +73,11 @@ public class SurveyUtils {
     return Arrays.asList(stringToParse.split(REGEX_COMMA_SEPARATED_STRINGS));
   }
 
-  public static String getTitleInMacroParameters(Map<String, String> parameters) throws MacroException {
+  public static String getTitleInMacroParameters(Map<String, String> parameters) {
     String ballotTitle = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE)).trim();
     if (StringUtils.isBlank(ballotTitle)) {
+      //in case of the vote macro there was the possibility to pass the title anonymously
       ballotTitle = StringUtils.defaultString(parameters.get("0")).trim();
-      if (StringUtils.isBlank(ballotTitle)) {
-        // neither Parameter 0 is present nor title-Parameter could be found
-        String logMessage = "Error: Please pass Parameter-0 or title-Argument (Required)!";
-        LOG.error(logMessage);
-        throw new MacroException(logMessage);
-      }
     }
     return ballotTitle;
   }

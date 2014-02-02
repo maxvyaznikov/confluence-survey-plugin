@@ -82,8 +82,6 @@ public class SurveyMacroTest {
 
   @Test
   public void test_MacroProperties_success() {
-    assertTrue(classUnderTest.hasBody());
-    assertFalse(classUnderTest.isInline());
     assertEquals(RenderMode.NO_RENDER, classUnderTest.getBodyRenderMode());
   }
 

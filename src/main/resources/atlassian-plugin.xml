@@ -64,61 +64,6 @@
     </parameters>
   </xhtml-macro>
 
-  <macro key="vote-wikistyle" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
-         icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
-    <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
-    <category name="confluence-content"/>
-    <parameters>
-      <parameter name="title" type="string" required="true">
-        <alias name=""/>
-      </parameter>
-      <parameter name="renderTitleLevel" type="enum" default="3">
-        <value name="0"/>
-        <value name="1"/>
-        <value name="2"/>
-        <value name="3"/>
-        <value name="4"/>
-        <value name="5"/>
-      </parameter>
-      <parameter name="changeableVotes" type="boolean"/>
-      <parameter name="showComments" type="boolean" default="false"/>
-      <parameter name="voters" type="string" multiple="true"/>
-      <parameter name="viewers" type="string" multiple="true"/>
-      <parameter name="visibleVoters" type="boolean"/>
-      <parameter name="visibleVotersWiki" type="boolean"/>
-      <parameter name="locked" type="boolean"/>
-    </parameters>
-  </macro>
-
-  <macro key="survey-wikistyle" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
-         icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo-survey.png">
-    <category name="confluence-content"/>
-    <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
-    <parameters>
-      <parameter name="title" type="string"/>
-      <parameter name="renderTitleLevel" type="enum" default="2">
-        <value name="0"/>
-        <value name="1"/>
-        <value name="2"/>
-        <value name="3"/>
-        <value name="4"/>
-      </parameter>
-      <parameter name="choices" type="string"/>
-      <parameter name="changeableVotes" type="boolean"/>
-      <parameter name="showSummary" type="boolean" default="true"/>
-      <parameter name="showTopSummary" type="boolean" default="true"/>
-      <parameter name="showLast" type="boolean"/>
-      <parameter name="showComments" type="boolean" default="true"/>
-      <parameter name="startBound" type="string" default="1"/>
-      <parameter name="iterateStep" type="string" default="1"/>
-      <parameter name="voters" type="string" multiple="true"/>
-      <parameter name="viewers" type="string" multiple="true"/>
-      <parameter name="visibleVoters" type="boolean"/>
-      <parameter name="visibleVotersWiki" type="boolean"/>
-      <parameter name="locked" type="boolean"/>
-    </parameters>
-  </macro>
-
   <!-- The survey macro needs a place to post its comments. -->
   <!-- This action will catch a comment post and redirect back to the original page. -->
   <xwork name="surveyaction" key="surveyaction">

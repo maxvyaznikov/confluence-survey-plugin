@@ -19,13 +19,10 @@ import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.PageManager;
-import com.atlassian.confluence.renderer.PageContext;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
-import com.atlassian.renderer.RenderContext;
 import com.atlassian.renderer.v2.RenderMode;
-import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
@@ -54,22 +51,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
 
   public SurveyMacro(PageManager pageManager, ContentPropertyManager contentPropertyManager, PermissionEvaluator permissionEvaluator, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
     super(pageManager, contentPropertyManager, permissionEvaluator, renderer, xhtmlContent, pluginSettingsFactory, velocityAbstractionHelper);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean isInline() {
-    return false;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean hasBody() {
-    return true;
   }
 
   /**
@@ -112,27 +93,8 @@ public class SurveyMacro extends VoteMacro implements Macro {
       throw new MacroExecutionException(e);
     }
 
-    try {
-      return execute(parameters, body, (RenderContext) conversionContext.getPageContext());
-    } catch (MacroException e) {
-      throw new MacroExecutionException(e);
-    }
-  }
-
-
-  /**
-   * Get the HTML rendering of this macro, Confluence V. 3 and less.
-   *
-   * @param parameters    Any parameters passed into this macro. This macro expects is a single, unnamed parameter.
-   * @param body          The rendered body of the macro
-   * @param renderContext The render context for the current page rendering.
-   * @return String respresenting the HTML rendering of this macro
-   * @throws MacroException If an exception occurs rendering the HTML
-   */
-  @Override
-  public String execute(Map parameters, String body, RenderContext renderContext) throws MacroException {
     // retrieve a reference to the body object this macro is in
-    ContentEntityObject contentObject = ((PageContext) renderContext).getEntity();
+    ContentEntityObject contentObject = conversionContext.getEntity();
 
     Survey survey = surveyManager.createSurvey(body, contentObject, parameters);
 
@@ -170,7 +132,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
       return renderedTemplate.toString();
     } catch (Exception e) {
       LOG.error("Error while trying to display Survey!", e);
-      throw new MacroException(e);
+      throw new MacroExecutionException(e);
     }
   }
 

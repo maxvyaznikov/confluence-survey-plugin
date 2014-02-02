@@ -1,6 +1,6 @@
 package org.hivesoft.confluence.macros.utils;
 
-import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.confluence.macro.MacroExecutionException;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -28,7 +28,7 @@ public class SurveyUtilsTest {
 
 
   @Test
-  public void test_validateMaxStorableKeyLength_success() throws MacroException {
+  public void test_validateMaxStorableKeyLength_success() throws MacroExecutionException {
     List<String> ballotAndChoicesWithValidLength = new ArrayList<String>();
 
     ballotAndChoicesWithValidLength.add(BALLOT_AND_CHOICE_NAME1);
@@ -40,7 +40,7 @@ public class SurveyUtilsTest {
   }
 
   @Test
-  public void test_validateMaxStorableKeyLength_failure() throws MacroException {
+  public void test_validateMaxStorableKeyLength_failure() throws MacroExecutionException {
     List<String> ballotAndChoicesWithValidLength = new ArrayList<String>();
 
     ballotAndChoicesWithValidLength.add(getRandomString(SurveyUtils.MAX_STORABLE_KEY_LENGTH + 1));
@@ -87,12 +87,7 @@ public class SurveyUtilsTest {
   }
 
   public static Ballot createBallotWithParameters(Map<String, String> parameters) {
-    String titleInMacroParameters = SOME_BALLOT_TITLE;
-    try {
-      titleInMacroParameters = SurveyUtils.getTitleInMacroParameters(parameters);
-    } catch (MacroException e) {
-      e.printStackTrace();
-    }
+    String titleInMacroParameters = SurveyUtils.getTitleInMacroParameters(parameters);
     Ballot ballot = new Ballot(titleInMacroParameters, createDefaultVoteConfig(parameters));
     //Choice choice = new Choice(SOME_CHOICE_DESCRIPTION);
     //ballot.addChoice(choice);

@@ -23,7 +23,6 @@ import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionUpdater;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
-import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import org.apache.commons.lang3.StringUtils;
@@ -92,12 +91,7 @@ public class SurveyResource {
         public void handle(MacroDefinition macroDefinition) {
           if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
             final Map<String, String> parameters = macroDefinition.getParameters();
-            String currentTitle = null;
-            try {
-              currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
-            } catch (MacroException e) {
-              e.printStackTrace();
-            }
+            String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
               final Survey survey = surveyManager.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
               survey.setTitle(surveyTitle);
@@ -180,12 +174,7 @@ public class SurveyResource {
         public MacroDefinition update(MacroDefinition macroDefinition) {
           if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
             final Map<String, String> parameters = macroDefinition.getParameters();
-            String currentTitle = null;
-            try {
-              currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
-            } catch (MacroException e) {
-              e.printStackTrace();
-            }
+            String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
             LOG.info("surveyTitle for locking=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
               //inverse the extracted state

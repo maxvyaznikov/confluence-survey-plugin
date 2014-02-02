@@ -13,7 +13,6 @@ package org.hivesoft.confluence.macros.utils;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.extras.common.log.Logger;
-import com.atlassian.renderer.v2.macro.MacroException;
 import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
@@ -47,7 +46,7 @@ public class SurveyManager {
    * @param body The rendered body of the macro.
    * @return A fully populated ballot object.
    */
-  public Ballot reconstructBallot(Map<String, String> parameters, String body, ContentEntityObject contentObject) throws MacroException {
+  public Ballot reconstructBallot(Map<String, String> parameters, String body, ContentEntityObject contentObject) {
     Ballot ballot = new Ballot(SurveyUtils.getTitleInMacroParameters(parameters), new VoteConfig(permissionEvaluator, parameters));
     for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
       String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
@@ -80,11 +79,7 @@ public class SurveyManager {
   public Survey createSurvey(String body, ContentEntityObject contentObject, Map<String, String> parameters) {
     Survey survey = new Survey(new SurveyConfig(permissionEvaluator, parameters));
 
-    try {
-      survey.setTitle(SurveyUtils.getTitleInMacroParameters(parameters));
-    } catch (MacroException e) {
-      //title of survey is currently NOT mandatory
-    }
+    survey.setTitle(SurveyUtils.getTitleInMacroParameters(parameters));
 
     if (StringUtils.isBlank(body)) {
       return survey;

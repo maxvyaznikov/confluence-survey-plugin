@@ -141,8 +141,6 @@ public class VoteMacroTest {
 
   @Test
   public void test_MacroProperties_success() {
-    assertTrue(classUnderTest.hasBody());
-    assertFalse(classUnderTest.isInline());
     assertEquals(Macro.BodyType.PLAIN_TEXT, classUnderTest.getBodyType());
     assertEquals(RenderMode.NO_RENDER, classUnderTest.getBodyRenderMode());
     assertEquals(Macro.OutputType.BLOCK, classUnderTest.getOutputType());
