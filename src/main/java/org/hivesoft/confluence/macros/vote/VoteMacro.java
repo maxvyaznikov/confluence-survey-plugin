@@ -135,11 +135,11 @@ public class VoteMacro extends BaseMacro implements Macro {
           if (VOTE_MACRO.equals(macroDefinition.getName())) {
             final Map<String, String> parameters = macroDefinition.getParameters();
             String currentTitle = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE)).trim();
-            if (!StringUtils.isBlank(currentTitle)) {
+            if (voteMacroTitle.equalsIgnoreCase(currentTitle)) {
               if (voteMacroTitles.contains(currentTitle)) {
                 LOG.info("A " + VOTE_MACRO + "-macro must not have the same title / question: " + currentTitle + " on the same page!");
                 if (voteMacroTitles.contains(voteMacroTitle)) {
-                  voteMacroTitles.add(voteMacroTitle + "vote");
+                  voteMacroTitles.add(voteMacroTitle + ".vote");
                 }
               } else {
                 voteMacroTitles.add(currentTitle);
@@ -151,20 +151,22 @@ public class VoteMacro extends BaseMacro implements Macro {
             for (String line : lines) {
               if (StringUtils.isNotBlank(line)) {
                 final String currentBallotTitle = line.split("\\-")[0].trim();
-                if (voteMacroTitles.contains(currentBallotTitle)) {
-                  LOG.info("A survey-macro should not have the same ballot as this vote " + currentBallotTitle);
-                  if (voteMacroTitles.contains(voteMacroTitle)) {
-                    voteMacroTitles.add(voteMacroTitle + "survey");
+                if (voteMacroTitle.equalsIgnoreCase(currentBallotTitle)) {
+                  if (voteMacroTitles.contains(currentBallotTitle)) {
+                    LOG.info("A survey-macro should not have the same ballot as this vote " + currentBallotTitle);
+                    if (voteMacroTitles.contains(voteMacroTitle)) {
+                      voteMacroTitles.add(voteMacroTitle + ".survey");
+                    }
+                  } else {
+                    voteMacroTitles.add(currentBallotTitle);
                   }
-                } else {
-                  voteMacroTitles.add(currentBallotTitle);
                 }
               }
             }
           }
         }
       });
-      if (voteMacroTitles.contains(voteMacroTitle + "vote") || voteMacroTitles.contains(voteMacroTitle + "survey")) {
+      if (voteMacroTitles.contains(voteMacroTitle + ".vote") || voteMacroTitles.contains(voteMacroTitle + ".survey")) {
         throw new MacroExecutionException("The " + VOTE_MACRO + "-macro with title '" + voteMacroTitle + "' exists more then one time on this page or has the same question than a survey. That is not allowed. Please change one of them!");
       }
     } catch (XhtmlException e) {
@@ -227,7 +229,11 @@ public class VoteMacro extends BaseMacro implements Macro {
 
     try {
       StringWriter renderedTemplate = new StringWriter();
-      renderer.render("templates/macros/vote/votemacro.vm", contextMap, renderedTemplate);
+      if (ballot.getConfig().getRenderProblems().isEmpty()) {
+        renderer.render("templates/macros/vote/votemacro.vm", contextMap, renderedTemplate);
+      } else {
+        renderer.render("templates/macros/vote/votemacro-renderproblems.vm", contextMap, renderedTemplate);
+      }
       return renderedTemplate.toString();
     } catch (Exception e) {
       LOG.error("Error while trying to display Ballot!", e);

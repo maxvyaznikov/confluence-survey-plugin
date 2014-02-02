@@ -140,7 +140,6 @@ public class SurveyMacro extends VoteMacro implements Macro {
     for (Ballot ballot : survey.getBallots()) {
       if (noneUniqueTitles.contains(ballot.getTitle())) {
         survey.getConfig().addRenderProblems("The ballot-titles must be unique! The row starting with title of '" + ballot.getTitle() + "' violated that. Please rename your choices to unique answers!");
-        //throw new MacroException("The ballot-titles must be unique! The row starting with title of '" + ballot.getTitle() + "' violated that. Please rename your choices to unique answers!");
       } else {
         noneUniqueTitles.add(ballot.getTitle());
       }
