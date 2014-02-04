@@ -1,15 +1,19 @@
 Introduction
 ============
 
-Welcome to the readme Confluence-Survey-Plugin Page.
+The confluence-survey-plugin is as the name implies a plugin for Atlassian Confluence. Started quite a long time  back for compatibility to 2.1.4 to the very latest 5.4++. The latest compatibility can be accessed within the Marketplace @ https://marketplace.atlassian.com/195.
 
 Usage
 =====
 
-Since Version 1.2.9 the Macro Browser is quite comfortably described to use, but you are welcome to read the documentation 
-in the wiki at: https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage
+Since Version 1.2.9 the Macro Browser is quite comfortably described to use, but you are welcome to read the documentation in the wiki at: https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage
 
 This file is merely a placeholder for the wiki documentation.
+
+Plugin development
+==================
+
+The plugin is a maven artifact and therefore can be built with Maven 3 and JDK 7.
 
 Build status:
 -------------
