@@ -193,6 +193,17 @@
         <checksumPolicy>warn</checksumPolicy>
       </releases>
     </repository>
+    <repository>
+      <id>central</id>
+      <url>repo.maven.apache.org</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
