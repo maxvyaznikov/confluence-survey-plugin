@@ -38,7 +38,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <confluence.version>4.3.7</confluence.version>
     <confluence.data.version>4.3.7</confluence.data.version>
-    <amps.version>4.2.10</amps.version>
+    <amps.version>4.2.13</amps.version>
     <plugin.testrunner.version>1.1.1</plugin.testrunner.version>
     <!--workaround as #requireresource isnt working without templaterenderer as it seems-->
     <workaroundRequireResourcePathRelative>/download/resources/${project.groupId}.${project.artifactId}:resources</workaroundRequireResourcePathRelative>
@@ -178,4 +178,34 @@
       </plugin>
     </plugins>
   </build>
+
+  <repositories>
+    <repository>
+      <id>atlassian-public</id>
+      <url>https://maven.atlassian.com/repository/public</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>atlassian-public</id>
+      <url>https://maven.atlassian.com/repository/public</url>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+      </releases>
+      <snapshots>
+        <updatePolicy>never</updatePolicy>
+        <checksumPolicy>warn</checksumPolicy>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
