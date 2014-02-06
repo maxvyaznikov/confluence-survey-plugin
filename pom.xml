@@ -51,6 +51,12 @@
       <artifactId>confluence</artifactId>
       <version>${confluence.version}</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.atlassian.templaterenderer</groupId>
@@ -181,23 +187,24 @@
 
   <repositories>
     <repository>
+      <id>central</id>
+      <url>repo.maven.apache.org</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+        <updatePolicy>always</updatePolicy>
+      </releases>
+    </repository>
+    <repository>
       <id>atlassian-public</id>
       <url>https://maven.atlassian.com/repository/public</url>
       <snapshots>
         <enabled>true</enabled>
         <updatePolicy>never</updatePolicy>
         <checksumPolicy>warn</checksumPolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <checksumPolicy>warn</checksumPolicy>
-      </releases>
-    </repository>
-    <repository>
-      <id>central</id>
-      <url>repo.maven.apache.org</url>
-      <snapshots>
-        <enabled>true</enabled>
       </snapshots>
       <releases>
         <enabled>true</enabled>
