@@ -15,13 +15,6 @@ Plugin development
 
 The plugin is a maven artifact and therefore can be built with Maven 3 and JDK 7.
 
-Build status:
--------------
-
-| Branch | Status |
-| ------ | ------ |
-|   Master | [![Build Status](https://travis-ci.org/drohne1673/confluence-survey-plugin.png?branch=master)](https://travis-ci.org/drohne1673/confluence-survey-plugin) |
-
 History
 =======
 
