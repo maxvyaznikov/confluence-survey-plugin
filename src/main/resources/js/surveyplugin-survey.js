@@ -35,29 +35,32 @@ AJS.toInit(function () {
       success: function (lockRepresentation) {
         var inlineDialog = AJS.InlineDialog(AJS.$(lockLink), "lockDialog",
           function (content, trigger, showPopup) {
-            content.css({"padding": "20px"}).html('<p>Survey is now locked: "' + lockRepresentation.locked + '. <b>Please reload the page to see the effect.</b></p>');
+            content.css({"padding": "20px"}).html('<p>' + getLockedText(lockRepresentation.locked) + '.</p>');
             showPopup();
             return false;
           }
         );
         inlineDialog.show();
+        location.reload(true); //reload the wiki page
       },
       error: function (xhr, status, error) {
         alert("There was a problem locking the survey. Returned status: " + status + ", error: " + error);
       }
     });
+  }
 
+  function getLockedText(locked) {
+    if (locked) {
+      return AJS.I18n.getText("surveyplugin.locked.confirmation");
+    } else {
+      return AJS.I18n.getText("surveyplugin.unlocked.confirmation");
+    }
   }
 
   AJS.$(".exportsurvey").click(function (e) {
     e.preventDefault();
     getCSVExport("surveys", this);
   });
-  /* voteResource has been deleted, so uncomment the call to it / no code for future, but at least the idea ;)
-   AJS.$(".exportvote").click(function (e) {
-   e.preventDefault();
-   getCSVExport("votes", this);
-   });*/
   AJS.$(".resetsurvey").click(function (e) {
     e.preventDefault();
     //TBD
@@ -66,12 +69,16 @@ AJS.toInit(function () {
     e.preventDefault();
     locklink = this;
     var dialog = new AJS.Dialog({
+      width: 320,
+      height: 140,
       id: "lock-dialog",
       closeOnOutsideClick: true
     });
 
     dialog.addHeader("Confirmation");
-    dialog.addPanel("SinglePanel", "<p>Do you really want to lock this Survey?</p>", "singlePanel");
+    dialog.addPanel("SinglePanel", "<p>" + AJS.I18n.getText("surveyplugin.lock.confirmation.question") + "</p>", "singlePanel"
+    )
+    ;
     dialog.addButton("Ok", function (dialog) {
       dialog.hide();
       lockSurveyOrVote("surveys", locklink);
