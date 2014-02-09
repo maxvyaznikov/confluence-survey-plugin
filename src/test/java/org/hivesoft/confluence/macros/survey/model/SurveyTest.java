@@ -29,6 +29,13 @@ public class SurveyTest {
   }
 
   @Test
+  public void test_equalsHashCode() {
+    Survey classUnderTest2 = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+
+    assertThat(classUnderTest.toString(), is(classUnderTest2.toString()));
+  }
+
+  @Test
   public void test_getBallot_success() {
     Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
     classUnderTest.addBallot(someBallot);

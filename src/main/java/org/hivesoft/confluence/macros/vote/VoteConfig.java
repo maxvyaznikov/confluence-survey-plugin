@@ -29,10 +29,11 @@ public class VoteConfig {
   public static final String KEY_RENDER_TITLE_LEVEL = "renderTitleLevel";
   public static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
   public static final String KEY_VOTERS = "voters";
-  private static final String KEY_VIEWERS = "viewers";
+  protected static final String KEY_VIEWERS = "viewers";
+  protected static final String KEY_MANAGERS = "managers";
   protected static final String KEY_SHOW_COMMENTS = "showComments";
-  private static final String KEY_VISIBLE_VOTERS = "visibleVoters";
-  private static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
+  protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
+  protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
   public static final String KEY_LOCKED = "locked";
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
@@ -41,17 +42,18 @@ public class VoteConfig {
   private boolean changeableVotes;
   private List<String> voters;
   private List<String> viewers;
+  private List<String> managers;
   protected boolean showComments;
   private boolean locked;
   private boolean visibleVoters;
+
   private boolean visibleVotersWiki;
-
   private boolean canSeeResults;
+
   private boolean canTakeSurvey;
-
   protected int startBound = DEFAULT_START_BOUND;
-  protected int iterateStep = DEFAULT_ITERATE_STEP;
 
+  protected int iterateStep = DEFAULT_ITERATE_STEP;
   protected List<String> renderProblems = new ArrayList<String>();
   protected final PermissionEvaluator permissionEvaluator;
 
@@ -62,6 +64,7 @@ public class VoteConfig {
     changeableVotes = Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES));
     voters = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_VOTERS)));
     viewers = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_VIEWERS)));
+    managers = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_MANAGERS)));
     showComments = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_COMMENTS), false);
     locked = SurveyUtils.getBooleanFromString(parameters.get(KEY_LOCKED), false);
 
@@ -91,6 +94,7 @@ public class VoteConfig {
     changeableVotes = surveyConfig.isChangeableVotes();
     voters = surveyConfig.getVoters();
     viewers = surveyConfig.getViewers();
+    managers = surveyConfig.getManagers();
     showComments = surveyConfig.isShowComments();
     locked = surveyConfig.isLocked();
 
@@ -121,6 +125,10 @@ public class VoteConfig {
 
   public List<String> getViewers() {
     return viewers;
+  }
+
+  public List<String> getManagers() {
+    return managers;
   }
 
   public Boolean isShowComments() {
@@ -180,8 +188,10 @@ public class VoteConfig {
     if (startBound != that.startBound) return false;
     if (visibleVoters != that.visibleVoters) return false;
     if (visibleVotersWiki != that.visibleVotersWiki) return false;
-    if (!viewers.equals(that.viewers)) return false;
-    if (!voters.equals(that.voters)) return false;
+    if (managers != null ? !managers.equals(that.managers) : that.managers != null) return false;
+    if (renderProblems != null ? !renderProblems.equals(that.renderProblems) : that.renderProblems != null) return false;
+    if (viewers != null ? !viewers.equals(that.viewers) : that.viewers != null) return false;
+    if (voters != null ? !voters.equals(that.voters) : that.voters != null) return false;
 
     return true;
   }
@@ -190,8 +200,9 @@ public class VoteConfig {
   public int hashCode() {
     int result = renderTitleLevel;
     result = 31 * result + (changeableVotes ? 1 : 0);
-    result = 31 * result + voters.hashCode();
-    result = 31 * result + viewers.hashCode();
+    result = 31 * result + (voters != null ? voters.hashCode() : 0);
+    result = 31 * result + (viewers != null ? viewers.hashCode() : 0);
+    result = 31 * result + (managers != null ? managers.hashCode() : 0);
     result = 31 * result + (showComments ? 1 : 0);
     result = 31 * result + (locked ? 1 : 0);
     result = 31 * result + (visibleVoters ? 1 : 0);
@@ -200,6 +211,7 @@ public class VoteConfig {
     result = 31 * result + (canTakeSurvey ? 1 : 0);
     result = 31 * result + startBound;
     result = 31 * result + iterateStep;
+    result = 31 * result + (renderProblems != null ? renderProblems.hashCode() : 0);
     return result;
   }
 
@@ -210,6 +222,7 @@ public class VoteConfig {
             ", changeableVotes=" + changeableVotes +
             ", voters=" + voters +
             ", viewers=" + viewers +
+            ", managers=" + managers +
             ", showComments=" + showComments +
             ", locked=" + locked +
             ", visibleVoters=" + visibleVoters +
@@ -218,6 +231,7 @@ public class VoteConfig {
             ", canTakeSurvey=" + canTakeSurvey +
             ", startBound=" + startBound +
             ", iterateStep=" + iterateStep +
+            ", renderProblems=" + renderProblems +
             '}';
   }
 }
