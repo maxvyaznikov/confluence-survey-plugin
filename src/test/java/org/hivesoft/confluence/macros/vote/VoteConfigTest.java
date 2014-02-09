@@ -1,6 +1,8 @@
 package org.hivesoft.confluence.macros.vote;
 
-import org.apache.commons.lang3.StringUtils;
+import com.atlassian.confluence.security.PermissionManager;
+import com.atlassian.confluence.user.UserAccessor;
+import com.atlassian.sal.api.user.UserManager;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.junit.Test;
@@ -18,13 +20,18 @@ import static org.mockito.Mockito.when;
 
 public class VoteConfigTest {
 
+  PermissionManager mockPermissionManager = mock(PermissionManager.class);
+  UserManager mockUserManager = mock(UserManager.class);
+  UserAccessor mockUserAccessor = mock(UserAccessor.class);
+
+  PermissionEvaluator permissionEvaluator = new PermissionEvaluator(mockUserAccessor, mockUserManager, mockPermissionManager);
+
   VoteConfig classUnderTest;
 
   @Test
   public void test_createWithDefaultParameters_success() {
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     Map<String, String> parameters = new HashMap<String, String>();
-    classUnderTest = new VoteConfig(mockPermissionEvaluator, parameters);
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
     assertThat(classUnderTest.getRenderTitleLevel(), is(equalTo(3)));
     assertThat(classUnderTest.isChangeableVotes(), is(equalTo(false)));
@@ -41,9 +48,8 @@ public class VoteConfigTest {
 
   @Test
   public void test_createFromSurveyConfigWithDefaultParameters_success() {
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     Map<String, String> parameters = new HashMap<String, String>();
-    SurveyConfig surveyConfig = new SurveyConfig(mockPermissionEvaluator, parameters);
+    SurveyConfig surveyConfig = new SurveyConfig(permissionEvaluator, parameters);
     classUnderTest = new VoteConfig(surveyConfig);
 
     assertThat(classUnderTest.getRenderTitleLevel(), is(equalTo(3)));
@@ -62,19 +68,8 @@ public class VoteConfigTest {
   @Test
   public void test_createWithAllCustomParameters_success() {
     final String currentUserName = "spock";
-    List<String> viewers = new ArrayList<String>();
-    viewers.add(currentUserName);
-    viewers.add("kirk");
-    List<String> voters = new ArrayList<String>();
-    voters.add("me");
-    voters.add("myself");
-    voters.add("irene");
 
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    when(mockPermissionEvaluator.getRemoteUsername()).thenReturn(currentUserName);
-    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(viewers, currentUserName)).thenReturn(true);
-    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, currentUserName)).thenReturn(false);
-    when(mockPermissionEvaluator.getCanSeeVoters("true", true)).thenReturn(true);
+    when(mockUserManager.getRemoteUsername()).thenReturn(currentUserName);
 
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someRandomTitle");
@@ -83,13 +78,14 @@ public class VoteConfigTest {
     parameters.put(VoteConfig.KEY_SHOW_COMMENTS, "true");
     parameters.put(VoteConfig.KEY_START_BOUND, "6");
     parameters.put(VoteConfig.KEY_ITERATE_STEP, "4");
-    parameters.put(VoteConfig.KEY_VOTERS, StringUtils.join(voters, ','));
-    parameters.put(VoteConfig.KEY_VIEWERS, StringUtils.join(viewers, ','));
+    parameters.put(VoteConfig.KEY_VOTERS, "me, myself, irene");
+    parameters.put(VoteConfig.KEY_VIEWERS, currentUserName + ", kirk");
     parameters.put(VoteConfig.KEY_MANAGERS, "vader, yoda");
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS, "true");
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "true");
     parameters.put(VoteConfig.KEY_LOCKED, "true");
-    classUnderTest = new VoteConfig(mockPermissionEvaluator, parameters);
+
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
     assertThat(classUnderTest.getRenderTitleLevel(), is(equalTo(5)));
     assertThat(classUnderTest.isChangeableVotes(), is(equalTo(true)));
