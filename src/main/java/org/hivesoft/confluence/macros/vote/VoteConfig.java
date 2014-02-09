@@ -46,15 +46,17 @@ public class VoteConfig {
   protected boolean showComments;
   private boolean locked;
   private boolean visibleVoters;
-
   private boolean visibleVotersWiki;
+
   private boolean canSeeResults;
-
   private boolean canTakeSurvey;
-  protected int startBound = DEFAULT_START_BOUND;
+  private boolean canManageSurvey;
 
+  protected int startBound = DEFAULT_START_BOUND;
   protected int iterateStep = DEFAULT_ITERATE_STEP;
+
   protected List<String> renderProblems = new ArrayList<String>();
+
   protected final PermissionEvaluator permissionEvaluator;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
@@ -77,6 +79,8 @@ public class VoteConfig {
     }
 
     canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUsername);
+    canManageSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, remoteUsername);
+
     visibleVoters = permissionEvaluator.getCanSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
     visibleVotersWiki = SurveyUtils.getBooleanFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
 
@@ -100,6 +104,8 @@ public class VoteConfig {
 
     canSeeResults = surveyConfig.isCanSeeResults();
     canTakeSurvey = surveyConfig.isCanTakeSurvey();
+    canManageSurvey = surveyConfig.isCanManageSurvey();
+
     visibleVoters = surveyConfig.isVisibleVoters();
     visibleVotersWiki = surveyConfig.isVisibleVotersWiki();
 
@@ -153,6 +159,10 @@ public class VoteConfig {
 
   public Boolean isCanTakeSurvey() {
     return canTakeSurvey;
+  }
+
+  public boolean isCanManageSurvey() {
+    return canManageSurvey;
   }
 
   public int getStartBound() {

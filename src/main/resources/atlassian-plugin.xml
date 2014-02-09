@@ -58,6 +58,7 @@
       <parameter name="iterateStep" type="string" default="1"/>
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
+      <parameter name="managers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visibleVotersWiki" type="boolean"/>
       <parameter name="locked" type="boolean"/>

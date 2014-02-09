@@ -25,14 +25,16 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
         name="${surveyTitleSummary}-a">$survey.title</a>#if ($config.renderTitleLevel !=0)</h$config.renderTitleLevel>#end
 
   <div class="surveyIconBar">
-    #if ($config.canAttachFile($content))
-      <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="16" width="16"
-           alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.export.icon.title')"/>
+    #if ($config.canManageSurvey)
+      #if ($config.canAttachFile($content))
+        <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="16" width="16"
+             alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.export.icon.title')"/>
+      #end
+    ##<img class="resetsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png" border="0" align="absmiddle" height="16" width="16" name="vote"
+    ##     alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.reset.icon.title')"/>
+    ##  <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" align="absmiddle" height="16" width="16"
+    ##       alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.lock.icon.title')"/>
     #end
-  ##<img class="resetsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png" border="0" align="absmiddle" height="16" width="16" name="vote"
-  ##     alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.reset.icon.title')"/>
-  ##  <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" align="absmiddle" height="16" width="16"
-  ##       alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.lock.icon.title')"/>
   </div>
 #else
   #set( $surveyTitleSummary = "summary" )
@@ -43,24 +45,24 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 
 
 ##set ($ballotNumber = 0)
-  #if ( $survey.ballots.size()==0 )
-    <div class="aui-message info" style="margin-left:10px">
-      <p class="title">
-        <span class="aui-icon icon-info"></span>
-        <strong>$action.getText("surveyplugin.noinfo").</strong>
-      </p>
+#if ( $survey.ballots.size()==0 )
+  <div class="aui-message info" style="margin-left:10px">
+    <p class="title">
+      <span class="aui-icon icon-info"></span>
+      <strong>$action.getText("surveyplugin.noinfo").</strong>
+    </p>
 
-      <p>$action.getText("surveyplugin.survey.info.add.ballots")</p>
-    </div>
-  #else
-    #foreach ($ballot in $survey.ballots)
-      #parse ("templates/macros/vote/votemacro.vm")
-    #end
-
-    #if ($config.surveySummary=="Bottom")
-      #parse ("templates/macros/survey/surveysummary.vm")
-    #end
+    <p>$action.getText("surveyplugin.survey.info.add.ballots")</p>
+  </div>
+#else
+  #foreach ($ballot in $survey.ballots)
+    #parse ("templates/macros/vote/votemacro.vm")
   #end
+
+  #if ($config.surveySummary=="Bottom")
+    #parse ("templates/macros/survey/surveysummary.vm")
+  #end
+#end
 
 
 

@@ -7,9 +7,7 @@ import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -19,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class VoteConfigTest {
+  final static String CURRENT_USER_NAME = "spock";
 
   PermissionManager mockPermissionManager = mock(PermissionManager.class);
   UserManager mockUserManager = mock(UserManager.class);
@@ -31,6 +30,9 @@ public class VoteConfigTest {
   @Test
   public void test_createWithDefaultParameters_success() {
     Map<String, String> parameters = new HashMap<String, String>();
+
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
     assertThat(classUnderTest.getRenderTitleLevel(), is(equalTo(3)));
@@ -44,12 +46,20 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
+
+    assertThat(classUnderTest.isCanSeeResults(), is(true));
+    assertThat(classUnderTest.isCanTakeSurvey(), is(true));
+    assertThat(classUnderTest.isCanManageSurvey(), is(true));
   }
 
   @Test
   public void test_createFromSurveyConfigWithDefaultParameters_success() {
     Map<String, String> parameters = new HashMap<String, String>();
+
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
     SurveyConfig surveyConfig = new SurveyConfig(permissionEvaluator, parameters);
+
     classUnderTest = new VoteConfig(surveyConfig);
 
     assertThat(classUnderTest.getRenderTitleLevel(), is(equalTo(3)));
@@ -63,13 +73,17 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
+
+    assertThat(classUnderTest.isCanSeeResults(), is(true));
+    assertThat(classUnderTest.isCanTakeSurvey(), is(true));
+    assertThat(classUnderTest.isCanManageSurvey(), is(true));
   }
 
   @Test
   public void test_createWithAllCustomParameters_success() {
-    final String currentUserName = "spock";
 
-    when(mockUserManager.getRemoteUsername()).thenReturn(currentUserName);
+
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
 
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someRandomTitle");
@@ -79,7 +93,7 @@ public class VoteConfigTest {
     parameters.put(VoteConfig.KEY_START_BOUND, "6");
     parameters.put(VoteConfig.KEY_ITERATE_STEP, "4");
     parameters.put(VoteConfig.KEY_VOTERS, "me, myself, irene");
-    parameters.put(VoteConfig.KEY_VIEWERS, currentUserName + ", kirk");
+    parameters.put(VoteConfig.KEY_VIEWERS, CURRENT_USER_NAME + ", kirk");
     parameters.put(VoteConfig.KEY_MANAGERS, "vader, yoda");
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS, "true");
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "true");
@@ -101,5 +115,6 @@ public class VoteConfigTest {
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(false));
+    assertThat(classUnderTest.isCanManageSurvey(), is(false));
   }
 }
