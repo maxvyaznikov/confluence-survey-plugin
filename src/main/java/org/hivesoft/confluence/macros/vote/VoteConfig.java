@@ -177,6 +177,10 @@ public class VoteConfig {
     return permissionEvaluator.canAttachFile(page);
   }
 
+  public Boolean canCreatePage(Page page) {
+    return permissionEvaluator.canCreatePage(page);
+  }
+
   public List<String> getRenderProblems() {
     return renderProblems;
   }
