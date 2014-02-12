@@ -173,8 +173,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
               #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $config.locked))
                 <div class="commentBox commentblock surveyComment">
                   #set( $voteText = $action.getText("surveyplugin.survey.vote.not") )
-                  #if ($ballot.getVote($comment.username))
-                    #set($voteText=$ballot.getVote($comment.username).description)
+                  #if ($ballot.getChoiceForUserName($comment.username))
+                    #set($voteText=$ballot.getChoiceForUserName($comment.username).description)
                   #end
                   #if ($canSeeVoters)
                     #set($voteText= $comment.username + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)

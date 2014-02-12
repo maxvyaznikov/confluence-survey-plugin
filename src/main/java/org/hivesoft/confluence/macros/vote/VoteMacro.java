@@ -227,7 +227,7 @@ public class VoteMacro implements Macro {
     if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(remoteUsername, ballot)) {
 
       // If this is a re-vote situation, then unvote first
-      Choice previousChoice = ballot.getVote(remoteUsername);
+      Choice previousChoice = ballot.getChoiceForUserName(remoteUsername);
       if (previousChoice != null && ballot.getConfig().isChangeableVotes()) {
         previousChoice.removeVoteFor(remoteUsername);
         surveyManager.setVoteContentProperty(previousChoice, ballot.getTitle(), contentObject);

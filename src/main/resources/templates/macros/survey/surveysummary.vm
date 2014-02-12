@@ -31,7 +31,7 @@
       </thead>
       #foreach ($ballot in $survey.ballots)
         #set ($average = $ballot.computeAverage())
-        #set ($sAverage = $ballot.computeFormatedAverage("0.00"))
+        #set ($sAverage = $ballot.computeFormattedAverage("0.00"))
         <tr>
           <td>
             $ballot.title

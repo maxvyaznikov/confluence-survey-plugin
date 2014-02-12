@@ -58,7 +58,7 @@ public class BallotTest {
 
     classUnderTest.addChoice(someChoice);
 
-    Choice result = classUnderTest.getVote(SOME_EXISTING_USER_NAME);
+    Choice result = classUnderTest.getChoiceForUserName(SOME_EXISTING_USER_NAME);
 
     assertEquals(someChoice, result);
     assertTrue(classUnderTest.getHasVoted(SOME_EXISTING_USER_NAME));
@@ -71,7 +71,7 @@ public class BallotTest {
 
     classUnderTest.addChoice(someChoice);
 
-    Choice result = classUnderTest.getVote("someDifferentNotExistingUser");
+    Choice result = classUnderTest.getChoiceForUserName("someDifferentNotExistingUser");
 
     assertTrue(null == result);
     assertFalse(classUnderTest.getHasVoted("someDifferentNotExistingUser"));
@@ -257,7 +257,7 @@ public class BallotTest {
     classUnderTest.addChoice(someChoiceThree);
 
     final String format = "0.##";
-    final String result = classUnderTest.computeFormatedAverage(format);
+    final String result = classUnderTest.computeFormattedAverage(format);
 
     assertEquals(new java.text.DecimalFormat(format).format(-2.5), result);
   }
@@ -333,9 +333,9 @@ public class BallotTest {
     assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
     assertTrue(classUnderTest.toString().equals(classUnderTest2.toString()));
 
-    classUnderTest2.setDescription("someDesc2");
-    assertFalse(classUnderTest.equals(classUnderTest2));
-    assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
+    classUnderTest2.setDescription("someDesc2"); //only title matters
+    assertThat(classUnderTest, is(equalTo(classUnderTest2)));
+    assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
     assertFalse(classUnderTest.toString().equals(classUnderTest2.toString()));
 
     classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE + "2", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()));

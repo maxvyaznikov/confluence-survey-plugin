@@ -21,9 +21,10 @@ import java.util.*;
 public class Ballot {
   private String title;
   private String description = "";
+  private VoteConfig config;
+
   private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
   private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
-  private VoteConfig config;
 
   /**
    * @param title the title for the <code>Ballot</code>
@@ -48,6 +49,24 @@ public class Ballot {
   }
 
   /**
+   * @return the description of this ballot.
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * @param description - A String description of this ballot.
+   */
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public VoteConfig getConfig() {
+    return config;
+  }
+
+  /**
    * @param choice a {@link Choice} for this <code>Ballot</code>
    */
   public void addChoice(Choice choice) {
@@ -55,18 +74,10 @@ public class Ballot {
   }
 
   /**
-   * @param username the username of the prospective voter
-   * @return true if the user has already voted
-   */
-  public boolean getHasVoted(String username) {
-    return getVote(username) != null;
-  }
-
-  /**
    * @param username the username whose vote is needed
    * @return the {@link Choice} the user voted on or <code>null</code> if username has not voted.
    */
-  public Choice getVote(String username) {
+  public Choice getChoiceForUserName(String username) {
     Collection<Choice> userChoices = choices.values();
     for (Choice choice : userChoices) {
       if (choice.getHasVotedFor(username)) {
@@ -74,6 +85,14 @@ public class Ballot {
       }
     }
     return null;
+  }
+
+  /**
+   * @param username the username of the prospective voter
+   * @return true if the user has already voted
+   */
+  public boolean getHasVoted(String username) {
+    return getChoiceForUserName(username) != null;
   }
 
   /**
@@ -89,51 +108,6 @@ public class Ballot {
    */
   public Collection<Choice> getChoices() {
     return choices.values();
-  }
-
-  public VoteConfig getConfig() {
-    return config;
-  }
-
-  /**
-   * @return a count of all votes that have been cast
-   */
-  public int getTotalVoteCount() {
-    int totalVotes = 0;
-    Collection<Choice> col = choices.values();
-    for (Choice choice : col) {
-      totalVotes += choice.getVoters().size();
-    }
-    return totalVotes;
-  }
-
-  /**
-   * Get the percentage of the total vote represented by the provided {@link Choice}.
-   *
-   * @param choice - the {@link Choice} to determine the vote percentage of
-   * @return the percentage of the total vote represented by the provided {@link Choice}. The percentage is given as a whole number, rather than a floating point number.
-   */
-  public int getPercentageOfVoteForChoice(Choice choice) {
-    int totalVoteCount = getTotalVoteCount();
-    if (totalVoteCount != 0) {
-      return (100 * choice.getVoters().size()) / totalVoteCount;
-    } else {
-      return 0;
-    }
-  }
-
-  /**
-   * @return the description of this ballot.
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * @param description - A String description of this ballot.
-   */
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   /**
@@ -164,6 +138,20 @@ public class Ballot {
    */
   public Map<String, Comment> getComments() {
     return comments;
+  }
+
+  /**
+   * Return <code>Voters</code> containing the stored voters.
+   *
+   * @return Voters of the ballot
+   */
+  public Collection<String> getAllVoters() {
+    List<String> voters = new ArrayList<String>();
+    for (Choice choice : choices.values()) {
+      Collection<String> choiceVoters = choice.getVoters();
+      voters.addAll(choiceVoters);
+    }
+    return voters;
   }
 
   /**
@@ -202,17 +190,30 @@ public class Ballot {
   }
 
   /**
-   * Return <code>Voters</code> containing the stored voters.
-   *
-   * @return Voters of the ballot
+   * @return a count of all votes that have been cast
    */
-  public Collection<String> getAllVoters() {
-    List<String> voters = new ArrayList<String>();
-    for (Choice choice : choices.values()) {
-      Collection<String> choiceVoters = choice.getVoters();
-      voters.addAll(choiceVoters);
+  public int getTotalVoteCount() {
+    int totalVotes = 0;
+    Collection<Choice> col = choices.values();
+    for (Choice choice : col) {
+      totalVotes += choice.getVoters().size();
     }
-    return voters;
+    return totalVotes;
+  }
+
+  /**
+   * Get the percentage of the total vote represented by the provided {@link Choice}.
+   *
+   * @param choice - the {@link Choice} to determine the vote percentage of
+   * @return the percentage of the total vote represented by the provided {@link Choice}. The percentage is given as a whole number, rather than a floating point number.
+   */
+  public int getPercentageOfVoteForChoice(Choice choice) {
+    int totalVoteCount = getTotalVoteCount();
+    if (totalVoteCount != 0) {
+      return (100 * choice.getVoters().size()) / totalVoteCount;
+    } else {
+      return 0;
+    }
   }
 
   /**
@@ -240,7 +241,7 @@ public class Ballot {
   /**
    * format the output to a default of 2 digits, format like "0.##"
    */
-  public String computeFormatedAverage(String format) {
+  public String computeFormattedAverage(String format) {
     return new java.text.DecimalFormat(format).format((double) computeAverage());
   }
 
@@ -256,29 +257,18 @@ public class Ballot {
   }
 
   /**
-   * Determines if a <code>Ballot</code> is equal to another <code>Ballot</code>. Ballots are considered equal if their title is the same for both ballots.
-   *
-   * @param o the <code>Object</code> to determine equality with this <code>Ballot</code>
-   * @return <code>true</code> if the ballot title of the <code>Object</code> argument is the same as the title of this <code>Ballot</code>, <code>false</code> otherwise.
+   * Ballots are considered equal if their title is the same for both ballots.
    */
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof Ballot)) return false;
-
-    Ballot ballot = (Ballot) o;
-
-    return description.equals(ballot.description) && title.equals(ballot.title);
+    return title.equals(((Ballot) o).title);
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
   public int hashCode() {
-    int result = description.hashCode();
-    result = 31 * result + title.hashCode();
-    return result;
+    return title != null ? title.hashCode() : 0;
   }
 
   @Override

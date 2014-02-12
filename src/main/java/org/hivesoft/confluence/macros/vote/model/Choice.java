@@ -69,27 +69,17 @@ public class Choice {
   }
 
   /**
-   * Determines if a <code>Choice</code> is equal to another <code>Choice</code>. Choices are considered equal if their description is the same.
-   *
-   * @param o the <code>Object</code> to determine equality with this <code>Choice</code>
-   * @return <code>true</code> if the description of the <code>Object</code> argument is the same as the description of this <code>Choice</code>, <code>false</code> otherwise.
+   * {@inheritDoc}
    */
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
-    Choice choice = (Choice) o;
-
-    if (!description.equals(choice.description)) return false;
-
-    return true;
+    return description.equals(((Choice) o).description);
   }
 
   /**
-   * Return a hash code for the <code>Choice</code>. The hash code for this implementation is simply the hash code of the description.
-   *
-   * @return hash code of the description
+   * {@inheritDoc}
    */
   @Override
   public int hashCode() {
