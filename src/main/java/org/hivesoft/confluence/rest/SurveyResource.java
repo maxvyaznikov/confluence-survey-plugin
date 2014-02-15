@@ -101,57 +101,60 @@ public class SurveyResource {
         }
       });
     } catch (XhtmlException e) {
-      LOG.error("There was a failure while parsing the Xhtml content: " + e.getMessage(), e);
-      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity("There was a problem reconstructing the given survey with title: " + surveyTitle).build();
+      final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
+      LOG.error(message, e);
+      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(message).build();
     }
 
-    if (!surveys.isEmpty()) {
-      Calendar currentDate = new GregorianCalendar();
-      final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd'T'hhmmss");
-      final String fileName = surveyTitle + "-summary-" + simpleDateFormat.format(currentDate.getTime()) + ".csv";
+    if (surveys.isEmpty()) {
+      return Response.status(Response.Status.BAD_REQUEST).entity("Could not find the specified survey macro with title " + surveyTitle + " on the specified page!").build();
+    }
 
-      final Survey survey = surveys.iterator().next();
-      final StringWriter csvStringWriter = new StringWriter();
-      CSVWriter writer = new CSVWriter(csvStringWriter, ';');
+    Calendar currentDate = new GregorianCalendar();
+    final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd'T'hhmmss");
+    final String fileName = surveyTitle + "-summary-" + simpleDateFormat.format(currentDate.getTime()) + ".csv";
 
-      writer.writeNext(new String[]{
-              i18nResolver.getText("surveyplugin.survey.summary.header.question"),
-              i18nResolver.getText("surveyplugin.vote.choices"),
-              i18nResolver.getText("surveyplugin.vote.result"),
-              i18nResolver.getText("surveyplugin.vote.voters"),
-              i18nResolver.getText("surveyplugin.export.comments")
-      });
+    final Survey survey = surveys.iterator().next();
+    final StringWriter csvStringWriter = new StringWriter();
+    CSVWriter writer = new CSVWriter(csvStringWriter, ';');
 
-      List<String> comments = new ArrayList<String>();
-      for (Ballot ballot : survey.getBallots()) {
-        for (Choice choice : ballot.getChoices()) {
-          comments.clear();
-          for (String voter : choice.getVoters()) {
-            Comment comment = ballot.getCommentForUser(voter);
-            if (comment != null) {
-              comments.add(comment.getComment());
-            }
+    writer.writeNext(new String[]{
+            i18nResolver.getText("surveyplugin.survey.summary.header.question"),
+            i18nResolver.getText("surveyplugin.vote.choices"),
+            i18nResolver.getText("surveyplugin.vote.result"),
+            i18nResolver.getText("surveyplugin.vote.voters"),
+            i18nResolver.getText("surveyplugin.export.comments")
+    });
+
+    List<String> comments = new ArrayList<String>();
+    for (Ballot ballot : survey.getBallots()) {
+      for (Choice choice : ballot.getChoices()) {
+        comments.clear();
+        for (String voter : choice.getVoters()) {
+          Comment comment = ballot.getCommentForUser(voter);
+          if (comment != null) {
+            comments.add(comment.getComment());
           }
-          String[] line = new String[]{ballot.getTitle(), choice.getDescription(), choice.getVoters().size() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + ", " + ballot.getPercentageOfVoteForChoice(choice) + "%", StringUtils.join(choice.getVoters().toArray(), ","), StringUtils.join(comments.toArray(), ",")};
-          writer.writeNext(line);
         }
+        String[] line = new String[]{ballot.getTitle(), choice.getDescription(), choice.getVoters().size() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + ", " + ballot.getPercentageOfVoteForChoice(choice) + "%", StringUtils.join(choice.getVoters().toArray(), ","), StringUtils.join(comments.toArray(), ",")};
+        writer.writeNext(line);
       }
-
-      try {
-        writer.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-      final byte[] csvBytes = csvStringWriter.toString().getBytes("UTF-8");
-      final Attachment addedAttachment = transactionTemplate.execute(new TransactionCallbackAddAttachment(pageManager, page, fileName, csvBytes));
-
-      if (addedAttachment == null) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("There was a problem while trying to save the report as an Attachment").build();
-      }
-      return Response.ok(new CSVExportRepresentation(addedAttachment.getDownloadPath())).build();
     }
-    return Response.status(Response.Status.BAD_REQUEST).entity("Could not find the specified survey macro on the specified page!").build();
+
+    try {
+      writer.close();
+    } catch (IOException e) {
+      LOG.error("There was a problem while closing the stream", e);
+    }
+
+    final byte[] csvBytes = csvStringWriter.toString().getBytes("UTF-8");
+    final Attachment addedAttachment = transactionTemplate.execute(new TransactionCallbackAddAttachment(pageManager, page, fileName, csvBytes));
+
+    if (addedAttachment == null) {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("There was a problem while trying to save the report as an Attachment").build();
+    }
+    return Response.ok(new CSVExportRepresentation(addedAttachment.getDownloadPath())).build();
+
   }
 
   @POST
@@ -159,6 +162,7 @@ public class SurveyResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response setLocked(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
     LOG.info("entered setLocked for pageId=" + pageId + " and surveyTitle=" + inSurveyTitle);
+
     final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
     final Page page = pageManager.getPage(pageId);
 
@@ -187,12 +191,61 @@ public class SurveyResource {
         }
       }));
     } catch (XhtmlException e) {
-      LOG.error("There was a failure while parsing the Xhtml content: " + e.getMessage(), e);
-      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity("There was a problem reconstructing the given survey with title: " + surveyTitle).build();
+      final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
+      LOG.error(message, e);
+      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(message).build();
     }
+    //TODO: think of checking whether the user is in the proper permission list, e.g. managers ?!
     pageManager.saveContentEntity(page, new DefaultSaveContext(true, false, true));
 
     LOG.info("macroDefinitions have been updated. Returning: " + lockRepresentation.isLocked());
     return Response.ok(lockRepresentation).build();
+  }
+
+  @POST
+  @Path("/{surveyTitle}/reset")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response resetVotes(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
+    final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
+    final Page page = pageManager.getPage(pageId);
+
+    if (page == null) {
+      return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
+    }
+
+    final List<Survey> surveys = new ArrayList<Survey>();
+    try {
+      xhtmlContent.handleMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionHandler() {
+        @Override
+        public void handle(MacroDefinition macroDefinition) {
+          if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
+            final Map<String, String> parameters = macroDefinition.getParameters();
+            String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
+            if (surveyTitle.equalsIgnoreCase(currentTitle)) {
+              final Survey survey = surveyManager.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
+              survey.setTitle(surveyTitle);
+              surveys.add(survey);
+            }
+          }
+        }
+      });
+    } catch (XhtmlException e) {
+      final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
+      LOG.error(message, e);
+      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(message).build();
+    }
+
+    if (surveys.isEmpty()) {
+      return Response.status(Response.Status.BAD_REQUEST).entity("Could not find the specified survey macro with title " + surveyTitle + " on the specified page!").build();
+    }
+
+    //TODO: probably should add a proper permission check, e.g. is in the survey manager list
+
+    final Survey survey = surveys.iterator().next();
+    for (Ballot ballot : survey.getBallots()) {
+      //todo: carry on
+    }
+
+    return Response.noContent().build();
   }
 }

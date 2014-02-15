@@ -12,7 +12,6 @@ package org.hivesoft.confluence.rest.callbacks;
 
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.pages.Attachment;
-import com.atlassian.confluence.pages.AttachmentManager;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.extras.common.log.Logger;
@@ -38,21 +37,15 @@ public class TransactionCallbackAddAttachment implements TransactionCallback<Att
 
   @Override
   public Attachment doInTransaction() {
-    LOG.info("adding fileName: " + fileName);
+    LOG.info("Try to store attachment with fileName: " + fileName);
 
-    Attachment attachment = new Attachment();
-    attachment.setFileName(fileName);
-    attachment.setContentType("text/plain");
-    //attachment.setVersion(1);
-    attachment.setFileSize(attachmentData.length);
-    attachment.setComment("survey export");
-    attachment.setContent(contentEntityObject);
-
+    Attachment attachment = new Attachment(fileName, "text/plain", attachmentData.length, "survey export");
     contentEntityObject.addAttachment(attachment);
+
     try {
       pageManager.getAttachmentManager().saveAttachment(attachment, null, new ByteArrayInputStream(attachmentData));
     } catch (IOException e) {
-      LOG.warn("fileName made problems: " + e.getMessage(), e);
+      LOG.warn("There was a problem while trying to store the attachment: " + e.getMessage(), e);
     }
     return attachment;
   }
