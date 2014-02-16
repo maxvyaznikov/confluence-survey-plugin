@@ -103,7 +103,7 @@ public class SurveyResource {
     } catch (XhtmlException e) {
       final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
       LOG.error(message, e);
-      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(message).build();
+      return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     }
 
     if (surveys.isEmpty()) {
@@ -193,7 +193,7 @@ public class SurveyResource {
     } catch (XhtmlException e) {
       final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
       LOG.error(message, e);
-      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(message).build();
+      return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     }
     //TODO: think of checking whether the user is in the proper permission list, e.g. managers ?!
     pageManager.saveContentEntity(page, new DefaultSaveContext(true, false, true));
@@ -232,7 +232,7 @@ public class SurveyResource {
     } catch (XhtmlException e) {
       final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
       LOG.error(message, e);
-      return Response.status(Response.Status.BAD_REQUEST.getStatusCode()).entity(message).build();
+      return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     }
 
     if (surveys.isEmpty()) {

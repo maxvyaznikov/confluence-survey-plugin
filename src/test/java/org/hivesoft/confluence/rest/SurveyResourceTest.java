@@ -84,10 +84,22 @@ public class SurveyResourceTest {
   }
 
   @Test
-  public void test_getCSVExportForSurvey_expectUserDoesNotHaveAddAttachmentPermission_failure() throws UnsupportedEncodingException, XhtmlException {
+  public void test_getCSVExportForSurvey_badXhtmlContent_failure() throws UnsupportedEncodingException, XhtmlException {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
-    somePage.setBodyAsString("123");
+    somePage.setBodyAsString("<thisIsNoValidTag>");
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+
+    when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
+
+    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+  }
+
+  @Test
+  public void test_getCSVExportForSurvey_expectUserDoesNotHaveAddAttachmentPermission_failure() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
 
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(false);
@@ -128,6 +140,19 @@ public class SurveyResourceTest {
   }
 
   @Test
+  public void test_setLocked_badXhtmlContent_failure() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<badTag111><ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+  }
+
+  @Test
   public void test_setLockedToTrue_wasNotLocked_success() throws UnsupportedEncodingException, XhtmlException {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
@@ -153,5 +178,53 @@ public class SurveyResourceTest {
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
     assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(false))));
+  }
+
+  @Test
+  public void test_resetVotes_expectPageNotFound_failure() throws UnsupportedEncodingException {
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(null);
+
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(Response.Status.NOT_FOUND.getStatusCode(), is(response.getStatus()));
+  }
+
+  @Test
+  public void test_resetVotes_surveyNotFound_failure() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">notThisSurvey</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+  }
+
+  @Test
+  public void test_resetVotes_badXhtmlContent_failure() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<badContent><brokenTag2><ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">notThisSurvey</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+  }
+
+  @Test
+  public void test_resetVotes_success() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+
+    assertThat(response.getStatus(), is(Response.Status.NO_CONTENT.getStatusCode()));
   }
 }
