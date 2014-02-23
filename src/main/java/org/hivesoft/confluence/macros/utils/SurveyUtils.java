@@ -30,12 +30,17 @@ public class SurveyUtils {
   private static final String REGEX_COMMA_SEPARATED_STRINGS = "\\s*,[,\\s]*";
   protected static final int MAX_STORABLE_KEY_LENGTH = 200;
 
+  private SurveyUtils() {
+  }
+
+  /**
+   * ballot title and choices must no exceed 200 chars for their entity_key
+   * check for unicode-characters. They consume more space than they sometimes are allowed. add 5 to the calculated length (prefix for vote)
+   */
   public static List<String> getViolatingMaxStorableKeyLengthItems(List<String> ballotAndChoiceNames) throws MacroExecutionException {
-    // 1.1.7.7 ballot title and choices too long will crash the system if exceeding 200 chars for entity_key. So check this on rendering
     List<String> exceedingKeyItems = new ArrayList<String>();
     for (String ballotChoiceKey : ballotAndChoiceNames) {
       try {
-        // 1.1.7.8 check for unicode-characters. They consume more space than they sometimes are allowed. add 5 to the calculated length (prefix for vote)
         if (ballotChoiceKey.getBytes("UTF-8").length + VoteMacro.VOTE_PREFIX.length() > MAX_STORABLE_KEY_LENGTH) {
           exceedingKeyItems.add("Choice to long: " + ballotChoiceKey + " Length: " + (ballotChoiceKey.getBytes("UTF-8").length + VoteMacro.VOTE_PREFIX.length() + " (allowed: " + MAX_STORABLE_KEY_LENGTH + ")"));
         }

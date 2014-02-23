@@ -163,7 +163,7 @@ public class VoteMacro implements Macro {
     ContentEntityObject contentObject = conversionContext.getEntity();
 
     // Rebuild the model for this ballot
-    Ballot ballot = surveyManager.reconstructBallot(parameters, body, contentObject);
+    Ballot ballot = surveyManager.reconstructBallotFromPlainTextMacroBody(parameters, body, contentObject);
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
     if (ballot.getChoices().size() != 0) {
@@ -230,7 +230,7 @@ public class VoteMacro implements Macro {
       Choice previousChoice = ballot.getChoiceForUserName(remoteUsername);
       if (previousChoice != null && ballot.getConfig().isChangeableVotes()) {
         previousChoice.removeVoteFor(remoteUsername);
-        surveyManager.setVoteContentProperty(previousChoice, ballot.getTitle(), contentObject);
+        surveyManager.storeVotersForChoice(previousChoice, ballot.getTitle(), contentObject);
       }
 
       Choice choice = ballot.getChoice(requestChoice);
@@ -238,7 +238,7 @@ public class VoteMacro implements Macro {
       if (choice != null && "vote".equalsIgnoreCase(requestVoteAction)) {
         LOG.debug("recordVote: found choice in requestChoice: " + choice.getDescription());
         choice.voteFor(remoteUsername);
-        surveyManager.setVoteContentProperty(choice, ballot.getTitle(), contentObject);
+        surveyManager.storeVotersForChoice(choice, ballot.getTitle(), contentObject);
       }
     }
   }

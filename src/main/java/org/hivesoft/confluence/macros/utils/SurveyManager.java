@@ -28,8 +28,14 @@ import java.util.*;
 public class SurveyManager {
   private static final Logger.Log LOG = Logger.getInstance(SurveyManager.class);
 
-  private final static List<String> defaultBallotLabels = new ArrayList<String>(Arrays.asList("5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"));
-  private final static List<String> defaultOldBallotLabels = new ArrayList<String>(Arrays.asList("5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"));
+  private final static List<String> DEFAULT_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"));
+  private final static List<String> DEFAULT_OLD_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"));
+
+  private final static int SURVEY_BALLOT_INDEX_TITLE = 0;
+  private final static int SURVEY_BALLOT_INDEX_SUB_TITLE = 1;
+  private final static int SURVEY_BALLOT_INDEX_START_INLINE_CHOICES = 2;
+
+  private final static int MINIMUM_CHOICES_COUNT = 2;
 
   private final ContentPropertyManager contentPropertyManager;
   private final PermissionEvaluator permissionEvaluator;
@@ -42,13 +48,10 @@ public class SurveyManager {
   /**
    * This method will take the data from the macros parameters, body, and page data to reconstruct a ballot object with all of the choices and previously cast votes populated.
    * This method will probably only work from a VoteMacro context
-   *
-   * @param body The rendered body of the macro.
-   * @return A fully populated ballot object.
    */
-  public Ballot reconstructBallot(Map<String, String> parameters, String body, ContentEntityObject contentObject) {
+  public Ballot reconstructBallotFromPlainTextMacroBody(Map<String, String> parameters, String plainTextMacroBody, ContentEntityObject contentObject) {
     Ballot ballot = new Ballot(SurveyUtils.getTitleInMacroParameters(parameters), new VoteConfig(permissionEvaluator, parameters));
-    for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
+    for (StringTokenizer stringTokenizer = new StringTokenizer(plainTextMacroBody, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
       String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
       if (!StringUtils.isBlank(line) && ((line.length() == 1 && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1)) {
@@ -65,95 +68,86 @@ public class SurveyManager {
       }
     }
 
-    enrichBallotWithComments(contentObject, ballot);
-
-    return ballot;
+    return loadCommentsForBallot(contentObject, ballot);
   }
 
   /**
    * Create a survey object for the given macro body pre-populated with all choices that have previously been made by the users.
-   *
-   * @param body The rendered body of the macro.
-   * @return The survey object, pre-filled with the correct data.
    */
-  public Survey createSurvey(String body, ContentEntityObject contentObject, Map<String, String> parameters) {
+  public Survey reconstructSurveyFromPlainTextMacroBody(String plainTextMacroBody, ContentEntityObject contentObject, Map<String, String> parameters) {
     Survey survey = new Survey(new SurveyConfig(permissionEvaluator, parameters));
 
     survey.setTitle(SurveyUtils.getTitleInMacroParameters(parameters));
 
-    if (StringUtils.isBlank(body)) {
+    if (StringUtils.isBlank(plainTextMacroBody)) {
       return survey;
     }
 
-    // Reconstruct all of the votes that have been cast so far
-    for (StringTokenizer stringTokenizer = new StringTokenizer(body, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
+    for (StringTokenizer stringTokenizer = new StringTokenizer(plainTextMacroBody, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
       String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
-      // the parameter given list must override the inline Labels if none are there
-      List<String> ballotLabels = survey.getConfig().getChoices();
-
       if ((!StringUtils.isBlank(line) && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1) {
-        String[] lineElements = line.split("\\-", -1);
-
-        Ballot ballot = new Ballot(lineElements[0].trim(), new VoteConfig(survey.getConfig()));
+        Ballot ballot = reconstructBallotFromSurveyRow(contentObject, survey, line.split("\\-", -1));
         survey.addBallot(ballot);
-
-        //second element is the subtitle or description
-        if (lineElements.length > 1) {
-          ballot.setDescription(lineElements[1].trim());
-        }
-
-        enrichBallotWithComments(contentObject, ballot);
-
-        int customChoice;
-        ArrayList<String> myChoicesList = new ArrayList<String>();
-        for (customChoice = 2; customChoice < lineElements.length; customChoice++) {
-          String temp = lineElements[customChoice].trim();
-          myChoicesList.add(temp);
-        }
-
-        // 1.1.3: first take the list inLine
-        if (myChoicesList.size() > 1) { // should be a minimum of 2 choices
-          ballotLabels = myChoicesList;
-        } else {
-          if (ballotLabels.isEmpty()) { // second was there no parameterList?
-            ballotLabels = defaultBallotLabels;
-          }
-          // 3rd if there was a parameterList it will be in ballotLabels by default
-        }
-
-        // Load all of the choices and votes into the ballot
-        for (String ballotLabel : ballotLabels) {
-          Choice choice = new Choice(ballotLabel);
-          // 1.1.7.6 if this ballot is a default one, check whether there are old default items and convert see CSRVY-21 for details
-          if (defaultBallotLabels.contains(ballotLabel)) {
-            int defaultIndex = defaultBallotLabels.indexOf(ballotLabel);
-            // check for old votes
-            String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels.get(defaultIndex));
-            if (TextUtils.stringSet(votes)) {
-              // if present save the new (spaces reduced one)
-              contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultBallotLabels.get(defaultIndex), votes);
-              // delete the old key
-              contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + defaultOldBallotLabels.get(defaultIndex), null);
-            }
-          }
-          ballot.addChoice(choice);
-
-          // changed string to TextProperty
-          String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + choice.getDescription());
-          if (TextUtils.stringSet(votes)) {
-            for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
-              choice.voteFor(voteTokenizer.nextToken());
-            }
-          }
-        }
       }
     }
 
     return survey;
   }
 
-  private void enrichBallotWithComments(ContentEntityObject contentObject, final Ballot ballot) {
+  private Ballot reconstructBallotFromSurveyRow(ContentEntityObject contentObject, Survey survey, String[] lineElements) {
+    Ballot ballot = new Ballot(lineElements[SURVEY_BALLOT_INDEX_TITLE].trim(), new VoteConfig(survey.getConfig()));
+
+    if (lineElements.length > SURVEY_BALLOT_INDEX_SUB_TITLE) {
+      ballot.setDescription(lineElements[SURVEY_BALLOT_INDEX_SUB_TITLE].trim());
+    }
+
+    ballot = loadCommentsForBallot(contentObject, ballot);
+
+    List<String> inlineChoiceNames = new ArrayList<String>();
+    for (int customChoice = SURVEY_BALLOT_INDEX_START_INLINE_CHOICES; customChoice < lineElements.length; customChoice++) {
+      inlineChoiceNames.add(lineElements[customChoice].trim());
+    }
+
+    List<String> choiceNames = survey.getConfig().getChoices();
+    if (inlineChoiceNames.size() >= MINIMUM_CHOICES_COUNT) {
+      choiceNames = inlineChoiceNames;
+    } else if (choiceNames.isEmpty()) {
+      choiceNames = DEFAULT_CHOICE_NAMES;
+    }
+
+    for (String choiceName : choiceNames) {
+      Choice choice = new Choice(choiceName);
+
+      migrateOldDefaultVotesIfPresent(contentObject, ballot, choiceName);
+
+      String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + choice.getDescription());
+      if (TextUtils.stringSet(votes)) {
+        for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
+          choice.voteFor(voteTokenizer.nextToken());
+        }
+      }
+      ballot.addChoice(choice);
+    }
+    return ballot;
+  }
+
+  /**
+   * if this ballot is a default one, check whether there are old default items and convert see CSRVY-21 for details
+   */
+  private void migrateOldDefaultVotesIfPresent(ContentEntityObject contentObject, Ballot ballot, String choiceName) {
+    if (DEFAULT_CHOICE_NAMES.contains(choiceName)) {
+      int defaultIndex = DEFAULT_CHOICE_NAMES.indexOf(choiceName);
+
+      final String oldVotes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex));
+      if (TextUtils.stringSet(oldVotes)) {
+        contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_CHOICE_NAMES.get(defaultIndex), oldVotes);
+        contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex), null);
+      }
+    }
+  }
+
+  private Ballot loadCommentsForBallot(ContentEntityObject contentObject, final Ballot ballot) {
     try {
       String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".commenters");
 
@@ -169,16 +163,10 @@ public class SurveyManager {
     } catch (Exception e) {
       LOG.error("Try contentPropertyManager: " + contentPropertyManager + " or contentEntity: " + contentObject + " or ballot was broken: " + ballot, e);
     }
+    return ballot;
   }
 
-  /**
-   * This is a helper method to set the content property value for a particular vote choice once it has been updated.
-   *
-   * @param choice        The choice that has been updated.
-   * @param ballotTitle   The title of the ballot that the choice belongs to.
-   * @param contentObject The content object for the current macro.
-   */
-  public void setVoteContentProperty(Choice choice, String ballotTitle, ContentEntityObject contentObject) {
+  public void storeVotersForChoice(Choice choice, String ballotTitle, ContentEntityObject contentObject) {
     String propertyKey = VoteMacro.VOTE_PREFIX + ballotTitle + "." + choice.getDescription();
 
     if (choice.getVoters().size() == 0) {
@@ -186,7 +174,6 @@ public class SurveyManager {
     } else {
       Collection<String> voters = choice.getVoters();
       String propertyValue = StringUtils.join(voters, ",");
-      // store property to text, for votes larger than usernames.length * votes > 255 chars
       contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
     }
   }

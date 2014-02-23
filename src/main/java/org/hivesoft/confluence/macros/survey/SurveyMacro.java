@@ -96,7 +96,7 @@ public class SurveyMacro extends VoteMacro implements Macro {
     // retrieve a reference to the body object this macro is in
     ContentEntityObject contentObject = conversionContext.getEntity();
 
-    Survey survey = surveyManager.createSurvey(body, contentObject, parameters);
+    Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(body, contentObject, parameters);
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
     for (Ballot ballot : survey.getBallots()) {

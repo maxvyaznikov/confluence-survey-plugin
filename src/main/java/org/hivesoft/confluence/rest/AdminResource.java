@@ -14,6 +14,7 @@ import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
+import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackGetConfig;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackSetConfig;
 import org.hivesoft.confluence.rest.representations.SurveyConfigRepresentation;
@@ -42,24 +43,27 @@ public class AdminResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response getConfig() {
-    if (isUserNotAdmin()) return Response.status(Response.Status.UNAUTHORIZED).build();
-
-    return Response.ok(transactionTemplate.execute(new TransactionCallbackGetConfig(pluginSettingsFactory))).build();
+    if (isAdmin()) {
+      return Response.ok(transactionTemplate.execute(new TransactionCallbackGetConfig(pluginSettingsFactory))).build();
+    }
+    return Response.status(Response.Status.UNAUTHORIZED).build();
   }
 
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   public Response putConfig(final SurveyConfigRepresentation surveyConfigRepresentation) {
-    if (isUserNotAdmin()) return Response.status(Response.Status.UNAUTHORIZED).build();
-    LOG.debug("setting iconSet to: " + surveyConfigRepresentation);
+    if (isAdmin()) {
+      LOG.debug("setting iconSet to: " + surveyConfigRepresentation);
 
-    transactionTemplate.execute(new TransactionCallbackSetConfig(pluginSettingsFactory, surveyConfigRepresentation));
-    return Response.noContent().build();
+      transactionTemplate.execute(new TransactionCallbackSetConfig(pluginSettingsFactory, surveyConfigRepresentation));
+      return Response.noContent().build();
+    }
+    return Response.status(Response.Status.UNAUTHORIZED).build();
   }
 
-  private boolean isUserNotAdmin() {
+  private boolean isAdmin() {
     final String remoteUser = userManager.getRemoteUsername();
-    if (remoteUser == null || !userManager.isSystemAdmin(remoteUser)) {
+    if (StringUtils.isNotBlank(remoteUser) && userManager.isSystemAdmin(remoteUser)) {
       return true;
     }
     return false;

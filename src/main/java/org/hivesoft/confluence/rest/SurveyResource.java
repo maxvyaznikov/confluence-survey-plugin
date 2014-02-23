@@ -93,7 +93,7 @@ public class SurveyResource {
             final Map<String, String> parameters = macroDefinition.getParameters();
             String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              final Survey survey = surveyManager.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
+              final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
               survey.setTitle(surveyTitle);
               surveys.add(survey);
             }
@@ -222,7 +222,7 @@ public class SurveyResource {
             final Map<String, String> parameters = macroDefinition.getParameters();
             String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              final Survey survey = surveyManager.createSurvey(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
+              final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
               survey.setTitle(surveyTitle);
               surveys.add(survey);
             }
