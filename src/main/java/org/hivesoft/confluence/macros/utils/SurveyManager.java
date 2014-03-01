@@ -23,6 +23,7 @@ import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 public class SurveyManager {
@@ -177,4 +178,34 @@ public class SurveyManager {
       contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
     }
   }
+
+  public void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject) {
+    final String remoteUsername = permissionEvaluator.getRemoteUsername();
+    String requestBallotTitle = request.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT);
+    String requestChoice = request.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE);
+    String requestVoteAction = request.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION);
+
+    LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + requestVoteAction);
+
+    // If there is a choice, make sure the vote is for this ballot and this user can vote
+    if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(remoteUsername, ballot)) {
+
+      // If this is a re-vote situation, then unvote first
+      Choice previousChoice = ballot.getChoiceForUserName(remoteUsername);
+      if (previousChoice != null && ballot.getConfig().isChangeableVotes()) {
+        previousChoice.removeVoteFor(remoteUsername);
+        storeVotersForChoice(previousChoice, ballot.getTitle(), contentObject);
+      }
+
+      Choice choice = ballot.getChoice(requestChoice);
+
+      if (choice != null && "vote".equalsIgnoreCase(requestVoteAction)) {
+        LOG.debug("recordVote: found choice in requestChoice: " + choice.getDescription());
+        choice.voteFor(remoteUsername);
+        storeVotersForChoice(choice, ballot.getTitle(), contentObject);
+      }
+    }
+  }
+
+
 }

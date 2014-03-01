@@ -30,7 +30,7 @@ public class VoteConfig {
   public static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
   public static final String KEY_VOTERS = "voters";
   protected static final String KEY_VIEWERS = "viewers";
-  protected static final String KEY_MANAGERS = "managers";
+  public static final String KEY_MANAGERS = "managers";
   protected static final String KEY_SHOW_COMMENTS = "showComments";
   protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";

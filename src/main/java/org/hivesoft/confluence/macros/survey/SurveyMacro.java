@@ -15,14 +15,11 @@ import com.atlassian.confluence.content.render.xhtml.XhtmlException;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.Format;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFormat;
 import com.atlassian.confluence.core.ContentEntityObject;
-import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
-import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
-import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
@@ -30,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.survey.model.Survey;
-import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
+import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -44,21 +41,23 @@ import java.util.Map;
 /**
  * This macro defines a simple survey mechanism against set of topics using the vote macro as its collection mechanism.
  */
-public class SurveyMacro extends VoteMacro implements Macro {
+public class SurveyMacro implements Macro {
   private static final Logger LOG = Logger.getLogger(SurveyMacro.class);
 
   public static final String SURVEY_MACRO = "survey";
 
-  public SurveyMacro(PageManager pageManager, ContentPropertyManager contentPropertyManager, PermissionEvaluator permissionEvaluator, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
-    super(pageManager, contentPropertyManager, permissionEvaluator, renderer, xhtmlContent, pluginSettingsFactory, velocityAbstractionHelper);
-  }
+  private final PluginSettingsFactory pluginSettingsFactory;
+  private final SurveyManager surveyManager;
+  private final TemplateRenderer renderer;
+  private final XhtmlContent xhtmlContent;
+  private final VelocityAbstractionHelper velocityAbstractionHelper;
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public RenderMode getBodyRenderMode() {
-    return RenderMode.NO_RENDER;
+  public SurveyMacro(PluginSettingsFactory pluginSettingsFactory, SurveyManager surveyManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, VelocityAbstractionHelper velocityAbstractionHelper) {
+    this.pluginSettingsFactory = pluginSettingsFactory;
+    this.surveyManager = surveyManager;
+    this.renderer = renderer;
+    this.xhtmlContent = xhtmlContent;
+    this.velocityAbstractionHelper = velocityAbstractionHelper;
   }
 
   /**
@@ -136,16 +135,26 @@ public class SurveyMacro extends VoteMacro implements Macro {
     }
   }
 
+  @Override
+  public BodyType getBodyType() {
+    return BodyType.PLAIN_TEXT;
+  }
+
+  @Override
+  public OutputType getOutputType() {
+    return OutputType.BLOCK;
+  }
+
   private void castVoteIfRequestExists(ContentEntityObject contentObject, Survey survey) {
     // check if any request parameters came in to vote on a ballot
     HttpServletRequest request = ServletActionContext.getRequest();
     if (request != null) {
       // Try to retrieve the proper ballot
-      Ballot ballot = survey.getBallot(request.getParameter(REQUEST_PARAMETER_BALLOT));
+      Ballot ballot = survey.getBallot(request.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT));
 
       // If the ballot belongs to this macro instance
       if (ballot != null) {
-        recordVote(ballot, request, contentObject);
+        surveyManager.recordVote(ballot, request, contentObject);
       }
     }
   }

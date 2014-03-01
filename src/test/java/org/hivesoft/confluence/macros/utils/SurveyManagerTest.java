@@ -6,19 +6,23 @@ import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
+import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class SurveyManagerTest {
   private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
@@ -26,10 +30,16 @@ public class SurveyManagerTest {
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
   PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
+  HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+
   SurveyManager classUnderTest;
 
   @Before
   public void setup() {
+    when(mockPermissionEvaluator.getRemoteUsername()).thenReturn(SurveyUtilsTest.SOME_USER_NAME);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT)).thenReturn(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE)).thenReturn(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+
     classUnderTest = new SurveyManager(mockContentPropertyManager, mockPermissionEvaluator);
   }
 
@@ -120,5 +130,86 @@ public class SurveyManagerTest {
     assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
     assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
     assertEquals("someComment", returnedSurvey.getBallot(someBallotTitle1).getCommentForUser(SOME_USER1.getName()).getComment());
+  }
+
+  @Test
+  public void test_recordVote_noUser_success() {
+    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    when(mockPermissionEvaluator.getRemoteUsername()).thenReturn("");
+
+    classUnderTest.recordVote(ballot, mockRequest, new Page());
+
+    verify(mockContentPropertyManager, times(0)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
+  }
+
+  @Test
+  public void test_recordVote_freshVote_success() {
+    Choice choiceToVoteOn = SurveyUtilsTest.createdDefaultChoice();
+    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    ballot.addChoice(choiceToVoteOn);
+
+    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
+
+    classUnderTest.recordVote(ballot, mockRequest, new Page());
+
+    verify(mockContentPropertyManager, times(1)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
+  }
+
+  @Test
+  public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesTrue_success() {
+    Choice choiceAlreadyVotedOn = new Choice("already Voted on");
+    Choice choiceToVoteOn = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
+
+    Ballot ballot = SurveyUtilsTest.createBallotWithParameters(parameters);
+    ballot.addChoice(choiceAlreadyVotedOn);
+    ballot.addChoice(choiceToVoteOn);
+
+    choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+
+    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
+
+    classUnderTest.recordVote(ballot, mockRequest, new Page());
+
+    verify(mockContentPropertyManager, times(2)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
+  }
+
+  @Test
+  public void test_recordVote_alreadyVotedOnUnvoteChangeAbleVotesTrue_success() {
+    Choice choiceAlreadyVotedOn = new Choice("already Voted on");
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
+
+    Ballot ballot = SurveyUtilsTest.createBallotWithParameters(parameters);
+    ballot.addChoice(choiceAlreadyVotedOn);
+
+    choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+
+    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("unvote");
+
+    classUnderTest.recordVote(ballot, mockRequest, new Page());
+
+    verify(mockContentPropertyManager, times(1)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
+  }
+
+  @Test
+  public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesFalse_success() {
+    Choice choice = new Choice("already Voted on");
+    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    ballot.addChoice(choice);
+
+    choice.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+
+    classUnderTest.recordVote(ballot, mockRequest, new Page());
+
+    verify(mockContentPropertyManager, times(0)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
   }
 }

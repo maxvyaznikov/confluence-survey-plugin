@@ -15,22 +15,18 @@ import com.atlassian.confluence.content.render.xhtml.XhtmlException;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.Format;
 import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFormat;
 import com.atlassian.confluence.core.ContentEntityObject;
-import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
-import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
-import com.atlassian.renderer.v2.RenderMode;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
-import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -59,18 +55,14 @@ public class VoteMacro implements Macro {
   // prefix vote to make a vote unique in the textproperties
   public static final String VOTE_PREFIX = "vote.";
 
-  protected final PluginSettingsFactory pluginSettingsFactory;
-  protected final PageManager pageManager;
-  protected final SurveyManager surveyManager;
-  protected final PermissionEvaluator permissionEvaluator;
-  protected final TemplateRenderer renderer;
-  protected final XhtmlContent xhtmlContent;
-  protected final VelocityAbstractionHelper velocityAbstractionHelper;
+  private final PluginSettingsFactory pluginSettingsFactory;
+  private final SurveyManager surveyManager;
+  private final TemplateRenderer renderer;
+  private final XhtmlContent xhtmlContent;
+  private final VelocityAbstractionHelper velocityAbstractionHelper;
 
-  public VoteMacro(PageManager pageManager, ContentPropertyManager contentPropertyManager, PermissionEvaluator permissionEvaluator, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
-    this.pageManager = pageManager;
-    this.permissionEvaluator = permissionEvaluator;
-    this.surveyManager = new SurveyManager(contentPropertyManager, permissionEvaluator);
+  public VoteMacro(SurveyManager surveyManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, PluginSettingsFactory pluginSettingsFactory, VelocityAbstractionHelper velocityAbstractionHelper) {
+    this.surveyManager = surveyManager;
     this.renderer = renderer;
     this.xhtmlContent = xhtmlContent;
     this.pluginSettingsFactory = pluginSettingsFactory;
@@ -91,13 +83,6 @@ public class VoteMacro implements Macro {
   @Override
   public OutputType getOutputType() {
     return OutputType.BLOCK;
-  }
-
-  /**
-   * Body should not be rendered, as we want to control it ourselves
-   */
-  public RenderMode getBodyRenderMode() {
-    return RenderMode.NO_RENDER;
   }
 
   /**
@@ -183,7 +168,7 @@ public class VoteMacro implements Macro {
       // check if any request parameters came in to complete or incomplete tasks
       HttpServletRequest request = ServletActionContext.getRequest();
       if (request != null && ballot.getTitle().equals(request.getParameter(REQUEST_PARAMETER_BALLOT))) {
-        recordVote(ballot, request, contentObject);
+        surveyManager.recordVote(ballot, request, contentObject);
       }
     }
 
@@ -204,42 +189,6 @@ public class VoteMacro implements Macro {
       final String message = "Error while trying to display Ballot!";
       LOG.error(message, e);
       throw new MacroExecutionException(message, e);
-    }
-  }
-
-
-  /**
-   * If there is a vote in the request, store it in this page for the given ballot.
-   *
-   * @param ballot        The ballot being voted on.
-   * @param request       The request where the vote and username can be found.
-   * @param contentObject The content object where any votes should be stored.
-   */
-  protected void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject) {
-    final String remoteUsername = permissionEvaluator.getRemoteUsername();
-    String requestBallotTitle = request.getParameter(REQUEST_PARAMETER_BALLOT);
-    String requestChoice = request.getParameter(REQUEST_PARAMETER_CHOICE);
-    String requestVoteAction = request.getParameter(REQUEST_PARAMETER_VOTE_ACTION);
-
-    LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + requestVoteAction);
-
-    // If there is a choice, make sure the vote is for this ballot and this user can vote
-    if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(remoteUsername, ballot)) {
-
-      // If this is a re-vote situation, then unvote first
-      Choice previousChoice = ballot.getChoiceForUserName(remoteUsername);
-      if (previousChoice != null && ballot.getConfig().isChangeableVotes()) {
-        previousChoice.removeVoteFor(remoteUsername);
-        surveyManager.storeVotersForChoice(previousChoice, ballot.getTitle(), contentObject);
-      }
-
-      Choice choice = ballot.getChoice(requestChoice);
-
-      if (choice != null && "vote".equalsIgnoreCase(requestVoteAction)) {
-        LOG.debug("recordVote: found choice in requestChoice: " + choice.getDescription());
-        choice.voteFor(remoteUsername);
-        surveyManager.storeVotersForChoice(choice, ballot.getTitle(), contentObject);
-      }
     }
   }
 }
