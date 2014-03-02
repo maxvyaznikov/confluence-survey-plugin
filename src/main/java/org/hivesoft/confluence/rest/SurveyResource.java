@@ -181,10 +181,10 @@ public class SurveyResource {
             String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
             LOG.info("surveyTitle for locking=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              //inverse the extracted state
               lockRepresentation.setLocked(!SurveyUtils.getBooleanFromString(parameters.get(VoteConfig.KEY_LOCKED), false));
               parameters.put(VoteConfig.KEY_LOCKED, String.valueOf(lockRepresentation.isLocked()));
               macroDefinition.setParameters(parameters);
+              LOG.debug("locking state has been set to " + lockRepresentation.isLocked() + " for survey with title " + currentTitle);
             }
           }
           return macroDefinition;
