@@ -13,7 +13,6 @@ package org.hivesoft.confluence.macros.utils;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.extras.common.log.Logger;
-import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.survey.model.Survey;
@@ -61,7 +60,7 @@ public class SurveyManager {
 
         String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballot.getTitle() + "." + line);
 
-        if (TextUtils.stringSet(votes)) {
+        if (StringUtils.isNotBlank(votes)) {
           for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
             choice.voteFor(voteTokenizer.nextToken());
           }
@@ -123,7 +122,7 @@ public class SurveyManager {
       migrateOldDefaultVotesIfPresent(contentObject, ballot, choiceName);
 
       String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + choice.getDescription());
-      if (TextUtils.stringSet(votes)) {
+      if (StringUtils.isNotBlank(votes)) {
         for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
           choice.voteFor(voteTokenizer.nextToken());
         }
@@ -141,7 +140,7 @@ public class SurveyManager {
       int defaultIndex = DEFAULT_CHOICE_NAMES.indexOf(choiceName);
 
       final String oldVotes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex));
-      if (TextUtils.stringSet(oldVotes)) {
+      if (StringUtils.isNotBlank(oldVotes)) {
         contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_CHOICE_NAMES.get(defaultIndex), oldVotes);
         contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex), null);
       }
@@ -149,20 +148,16 @@ public class SurveyManager {
   }
 
   private Ballot loadCommentsForBallot(ContentEntityObject contentObject, final Ballot ballot) {
-    try {
-      String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".commenters");
+    String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".commenters");
 
-      if (TextUtils.stringSet(commenters)) {
-        for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens(); ) {
-          String commenter = commenterTokenizer.nextToken();
-          if (TextUtils.stringSet(commenter)) {
-            String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".comment." + commenter);
-            ballot.addComment(new Comment(commenter, comment));
-          }
+    if (StringUtils.isNotBlank(commenters)) {
+      for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens(); ) {
+        String commenter = commenterTokenizer.nextToken();
+        if (StringUtils.isNotBlank(commenter)) {
+          String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".comment." + commenter);
+          ballot.addComment(new Comment(commenter, comment));
         }
       }
-    } catch (Exception e) {
-      LOG.error("Try contentPropertyManager: " + contentPropertyManager + " or contentEntity: " + contentObject + " or ballot was broken: " + ballot, e);
     }
     return ballot;
   }

@@ -10,6 +10,7 @@ import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -48,6 +50,7 @@ public class SurveyManagerTest {
     final Ballot reconstructedBallot = classUnderTest.reconstructBallotFromPlainTextMacroBody(SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"), "", new Page());
 
     assertEquals("someTitle", reconstructedBallot.getTitle());
+    Assert.assertThat(reconstructedBallot.getChoices().size(), is(0));
   }
 
   @Test
@@ -76,7 +79,7 @@ public class SurveyManagerTest {
   }
 
   @Test
-  public void test_createSurvey_noParametersWithTitle_success() {
+  public void test_reconstructSurvey_noParametersWithTitle_success() {
     final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody("", new Page(), SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"));
 
     assertEquals(0, returnedSurvey.getBallots().size());
@@ -84,7 +87,7 @@ public class SurveyManagerTest {
   }
 
   @Test
-  public void test_createSurvey_oneParameterDefaultChoices_success() {
+  public void test_reconstructSurvey_oneParameterDefaultChoices_success() {
     final String someBallotTitle1 = "someBallotTitle1";
     final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody(someBallotTitle1, new Page(), new HashMap<String, String>());
 
@@ -93,7 +96,7 @@ public class SurveyManagerTest {
   }
 
   @Test
-  public void test_createSurvey_oneParameterCustomChoices_success() {
+  public void test_reconstructSurvey_oneParameterCustomChoices_success() {
     final String someBallotTitle1 = "someBallotTitle1";
     final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody(someBallotTitle1 + " - subTitle - choice1 - choice2", new Page(), new HashMap<String, String>());
 
@@ -103,20 +106,21 @@ public class SurveyManagerTest {
   }
 
   @Test
-  public void test_createSurvey_twoParameters_success() {
+  public void test_reconstructSurvey_twoParameters_success() {
     final String someBallotTitle1 = "someBallotTitle1";
     final String someBallotTitle2 = "someBallotTitle2";
     final String someBallotDescription1 = "someBallotDescription1";
+
     final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody(someBallotTitle1 + " - " + someBallotDescription1 + "\r\n" + someBallotTitle2, new Page(), SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"));
 
-    assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
-    assertEquals(someBallotDescription1, returnedSurvey.getBallot(someBallotTitle1).getDescription());
-    assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
+    assertThat(returnedSurvey.getBallot(someBallotTitle1).getTitle(), is(equalTo(someBallotTitle1)));
+    assertThat(returnedSurvey.getBallot(someBallotTitle1).getDescription(), is(equalTo(someBallotDescription1)));
+    assertThat(returnedSurvey.getBallot(someBallotTitle2).getTitle(), is(equalTo(someBallotTitle2)));
     assertThat(returnedSurvey.getBallot(someBallotTitle2).getChoices().size(), is(5));
   }
 
   @Test
-  public void test_createSurvey_twoParametersWithCommenter_success() {
+  public void test_reconstructSurvey_twoParametersWithCommenter_success() {
     final String someBallotTitle1 = "someBallotTitle1";
     final String someBallotTitle2 = "someBallotTitle2";
 
@@ -130,6 +134,22 @@ public class SurveyManagerTest {
     assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
     assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
     assertEquals("someComment", returnedSurvey.getBallot(someBallotTitle1).getCommentForUser(SOME_USER1.getName()).getComment());
+  }
+
+  @Test
+  public void test_reconstructSurvey_twoParametersWithVotes_success() {
+    final String someBallotTitle1 = "someBallotTitle1";
+    final String someBallotTitle2 = "someBallotTitle2";
+
+    final Page somePage = new Page();
+
+    when(mockContentPropertyManager.getTextProperty(somePage, VoteMacro.VOTE_PREFIX + someBallotTitle1 + ".5-Outstanding")).thenReturn(SOME_USER1.getName());
+
+    final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"));
+
+    assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
+    assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
+    assertThat(returnedSurvey.getBallot(someBallotTitle1).getChoice("5-Outstanding").getHasVotedFor(SOME_USER1.getName()), is(true));
   }
 
   @Test
