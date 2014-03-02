@@ -136,13 +136,6 @@ public class BallotTest {
     assertEquals(33, percentageResultTwo);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void test_AddComment_NoUser_exception() {
-    Comment someComment = new Comment();
-
-    classUnderTest.addComment(someComment);
-  }
-
   @Test
   public void test_Comments_success() {
     Comment someComment = new Comment(SOME_EXISTING_USER_NAME, "some crazy comment for a crazy plugin");
@@ -301,6 +294,33 @@ public class BallotTest {
     classUnderTest.addChoice(someChoiceTwo);
 
     assertThat(classUnderTest.getBoundsIfNotDefault(), is(equalTo("(3-0)")));
+  }
+
+  @Test
+  public void test_getBoundsIfNotDefault_oneDefault_success() {
+    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(SurveyConfig.KEY_START_BOUND, "3");
+
+    classUnderTest = SurveyUtilsTest.createBallotWithParameters(parameters);
+
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
+
+    assertThat(classUnderTest.getBoundsIfNotDefault(), is(equalTo("(3-4)")));
+
+    parameters.put(SurveyConfig.KEY_START_BOUND, "1");
+    parameters.put(SurveyConfig.KEY_ITERATE_STEP, "3");
+
+    classUnderTest = SurveyUtilsTest.createBallotWithParameters(parameters);
+
+    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
+
+    assertThat(classUnderTest.getBoundsIfNotDefault(), is(equalTo("(1-4)")));
   }
 
   @Test

@@ -19,16 +19,13 @@ import java.util.*;
  * Each <code>Choice</code> can be assigned zero or more votes.
  */
 public class Ballot {
-  private String title;
+  private final String title;
   private String description = "";
-  private VoteConfig config;
+  private final VoteConfig config;
 
   private Map<String, Choice> choices = new LinkedHashMap<String, Choice>();
   private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
 
-  /**
-   * @param title the title for the <code>Ballot</code>
-   */
   public Ballot(String title, VoteConfig config) {
     this.title = title;
     this.config = config;
@@ -116,10 +113,6 @@ public class Ballot {
    * @param comment - The comment to add.
    */
   public void addComment(Comment comment) {
-    if (comment.getUsername() == null) {
-      throw new IllegalArgumentException("All comments must have a username.");
-    }
-
     comments.put(comment.getUsername(), comment);
   }
 
@@ -268,7 +261,7 @@ public class Ballot {
 
   @Override
   public int hashCode() {
-    return title != null ? title.hashCode() : 0;
+    return title.hashCode();
   }
 
   @Override

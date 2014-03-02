@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class Choice {
 
-  private String description;
+  private final String description;
   private List<String> voters = new ArrayList<String>();
 
   /**
@@ -73,9 +73,7 @@ public class Choice {
    */
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    return description.equals(((Choice) o).description);
+    return this == o || o instanceof Choice && description.equals(((Choice) o).getDescription());
   }
 
   /**

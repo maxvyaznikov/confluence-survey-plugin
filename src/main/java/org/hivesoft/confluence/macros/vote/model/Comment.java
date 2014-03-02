@@ -17,34 +17,18 @@ public class Comment {
     private String username;
     private String comment;
 
-    public Comment() {
-    }
-
     /**
      * Create a new comment loaded with the given username and comment.
-     *
-     * @param username -The user who entered the comment.
-     * @param comment  - The comment.
      */
     public Comment(String username, String comment) {
         this.username = username;
         this.comment = comment;
     }
 
-    /**
-     * Get the text of this comment.
-     *
-     * @return The comment as a <code>String</code>
-     */
     public String getComment() {
         return comment;
     }
 
-    /**
-     * Get the name of the user that entered this comment.
-     *
-     * @return The username for this comment.
-     */
     public String getUsername() {
         return username;
     }
