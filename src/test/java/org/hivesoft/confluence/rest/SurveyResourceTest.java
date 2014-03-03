@@ -5,7 +5,6 @@ import com.atlassian.confluence.content.render.xhtml.storage.DefaultContentTrans
 import com.atlassian.confluence.content.render.xhtml.storage.macro.AlwaysTransformMacroBody;
 import com.atlassian.confluence.content.render.xhtml.storage.macro.StorageMacroMarshaller;
 import com.atlassian.confluence.content.render.xhtml.storage.macro.StorageMacroUnmarshaller;
-import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Attachment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
@@ -15,7 +14,10 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
+import org.hivesoft.confluence.macros.utils.SurveyManager;
+import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
 import org.junit.Before;
@@ -24,11 +26,13 @@ import org.junit.Test;
 import javax.ws.rs.core.Response;
 import javax.xml.stream.XMLOutputFactory;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,9 +42,8 @@ public class SurveyResourceTest {
 
   TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
   PageManager mockPageManager = mock(PageManager.class);
-  ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
+  SurveyManager mockSurveyManager = mock(SurveyManager.class);
   EventPublisher mockEventPublisher = mock(EventPublisher.class);
-  PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
   I18nResolver mockI18nResolver = mock(I18nResolver.class);
 
@@ -57,7 +60,7 @@ public class SurveyResourceTest {
     final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
     final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
 
-    classUnderTest = new SurveyResource(mockTransactionTemplate, mockPageManager, mockContentPropertyManager, xhtmlContent, mockI18nResolver, mockPermissionEvaluator);
+    classUnderTest = new SurveyResource(mockTransactionTemplate, mockPageManager, xhtmlContent, mockI18nResolver, mockSurveyManager);
   }
 
   @Test
@@ -76,6 +79,8 @@ public class SurveyResourceTest {
     somePage.setBodyAsString("123");
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
 
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
@@ -90,6 +95,8 @@ public class SurveyResourceTest {
     somePage.setBodyAsString("<thisIsNoValidTag>");
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
 
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
@@ -102,6 +109,8 @@ public class SurveyResourceTest {
     Page somePage = new Page();
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
 
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(false);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
@@ -115,12 +124,19 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
 
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    Attachment mockAttachment = mock(Attachment.class);
+
+    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
 
-    Attachment mockAttachment = mock(Attachment.class);
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockTransactionTemplate.execute(any(TransactionCallback.class))).thenReturn(mockAttachment);
+
+    when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
+
     when(mockAttachment.getContent()).thenReturn(somePage);
     when(mockAttachment.getDownloadPath()).thenReturn("/someUri");
 
@@ -221,7 +237,10 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 

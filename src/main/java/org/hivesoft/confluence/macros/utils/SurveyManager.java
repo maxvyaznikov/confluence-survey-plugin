@@ -45,6 +45,10 @@ public class SurveyManager {
     this.permissionEvaluator = permissionEvaluator;
   }
 
+  public PermissionEvaluator getPermissionEvaluator() {
+    return permissionEvaluator;
+  }
+
   /**
    * This method will take the data from the macros parameters, body, and page data to reconstruct a ballot object with all of the choices and previously cast votes populated.
    * This method will probably only work from a VoteMacro context

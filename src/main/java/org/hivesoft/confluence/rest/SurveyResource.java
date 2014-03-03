@@ -13,7 +13,6 @@ package org.hivesoft.confluence.rest;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.atlassian.confluence.content.render.xhtml.DefaultConversionContext;
 import com.atlassian.confluence.content.render.xhtml.XhtmlException;
-import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.core.DefaultSaveContext;
 import com.atlassian.confluence.pages.Attachment;
 import com.atlassian.confluence.pages.Page;
@@ -28,7 +27,6 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
 import org.hivesoft.confluence.macros.survey.model.Survey;
-import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
@@ -58,13 +56,11 @@ public class SurveyResource {
   protected final XhtmlContent xhtmlContent;
   protected final I18nResolver i18nResolver;
   protected final SurveyManager surveyManager;
-  protected final PermissionEvaluator permissionEvaluator;
 
-  public SurveyResource(TransactionTemplate transactionTemplate, PageManager pageManager, ContentPropertyManager contentPropertyManager, XhtmlContent xhtmlContent, I18nResolver i18nResolver, PermissionEvaluator permissionEvaluator) {
+  public SurveyResource(TransactionTemplate transactionTemplate, PageManager pageManager, XhtmlContent xhtmlContent, I18nResolver i18nResolver, SurveyManager surveyManager) {
     this.transactionTemplate = transactionTemplate;
     this.pageManager = pageManager;
-    this.permissionEvaluator = permissionEvaluator;
-    this.surveyManager = new SurveyManager(contentPropertyManager, permissionEvaluator);
+    this.surveyManager = surveyManager;
     this.xhtmlContent = xhtmlContent;
     this.i18nResolver = i18nResolver;
   }
@@ -80,7 +76,7 @@ public class SurveyResource {
       return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
     }
 
-    if (!permissionEvaluator.canAttachFile(page)) {
+    if (!surveyManager.getPermissionEvaluator().canAttachFile(page)) {
       return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).entity("You are not authorized to add attachments and therefore cannot export surveys.").build();
     }
 
