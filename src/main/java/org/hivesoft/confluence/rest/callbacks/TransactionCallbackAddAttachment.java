@@ -46,6 +46,7 @@ public class TransactionCallbackAddAttachment implements TransactionCallback<Att
       pageManager.getAttachmentManager().saveAttachment(attachment, null, new ByteArrayInputStream(attachmentData));
     } catch (IOException e) {
       LOG.warn("There was a problem while trying to store the attachment: " + e.getMessage(), e);
+      return null;
     }
     return attachment;
   }

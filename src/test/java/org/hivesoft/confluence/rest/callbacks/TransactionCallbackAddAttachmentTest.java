@@ -6,26 +6,44 @@ import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class TransactionCallbackAddAttachmentTest {
 
   PageManager mockPageManager = mock(PageManager.class);
+  AttachmentManager mockAttachmentManager = mock(AttachmentManager.class);
 
   TransactionCallbackAddAttachment classUnderTest;
 
   @Test
   public void test_doInTransaction_success() {
-    classUnderTest = new TransactionCallbackAddAttachment(mockPageManager, new Page(), "someFileName", new byte[]{'a', 'b'});
-    AttachmentManager mockAttachmentManager = mock(AttachmentManager.class);
     when(mockPageManager.getAttachmentManager()).thenReturn(mockAttachmentManager);
+
+    classUnderTest = new TransactionCallbackAddAttachment(mockPageManager, new Page(), "someFileName", new byte[]{'a', 'b'});
 
     final Attachment returnAttachment = classUnderTest.doInTransaction();
 
     assertThat("someFileName", is(equalTo(returnAttachment.getFileName())));
+  }
+
+  @Test
+  public void test_doInTransaction_IOException_expectNull_exception() throws IOException {
+
+    when(mockPageManager.getAttachmentManager()).thenReturn(mockAttachmentManager);
+    doThrow(new IOException("")).when(mockAttachmentManager).saveAttachment(any(Attachment.class), any(Attachment.class), any(InputStream.class));
+
+    classUnderTest = new TransactionCallbackAddAttachment(mockPageManager, new Page(), "someFileName", new byte[]{'a', 'b'});
+
+    final Attachment returnAttachment = classUnderTest.doInTransaction();
+
+    assertThat(returnAttachment, nullValue());
   }
 }

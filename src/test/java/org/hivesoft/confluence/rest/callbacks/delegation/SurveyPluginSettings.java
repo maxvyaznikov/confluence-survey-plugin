@@ -1,4 +1,4 @@
-package org.hivesoft.confluence.rest.callbacks;
+package org.hivesoft.confluence.rest.callbacks.delegation;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 

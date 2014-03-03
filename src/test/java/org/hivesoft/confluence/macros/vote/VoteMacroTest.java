@@ -23,7 +23,7 @@ import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
-import org.hivesoft.confluence.rest.callbacks.SurveyPluginSettings;
+import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
