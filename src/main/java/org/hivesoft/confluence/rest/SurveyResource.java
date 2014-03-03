@@ -13,7 +13,6 @@ package org.hivesoft.confluence.rest;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.atlassian.confluence.content.render.xhtml.DefaultConversionContext;
 import com.atlassian.confluence.content.render.xhtml.XhtmlException;
-import com.atlassian.confluence.core.DefaultSaveContext;
 import com.atlassian.confluence.pages.Attachment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
@@ -34,6 +33,7 @@ import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackAddAttachment;
+import org.hivesoft.confluence.rest.callbacks.TransactionCallbackStorePage;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
 
@@ -168,33 +168,39 @@ public class SurveyResource {
 
     final LockRepresentation lockRepresentation = new LockRepresentation(false);
 
+    String body;
     try {
-      page.setBodyAsString(xhtmlContent.updateMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionUpdater() {
+      body = xhtmlContent.updateMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionUpdater() {
         @Override
         public MacroDefinition update(MacroDefinition macroDefinition) {
           if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
             final Map<String, String> parameters = macroDefinition.getParameters();
             String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
-            LOG.info("surveyTitle for locking=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
+            LOG.debug("surveyTitle for locking=" + surveyTitle + ", currentTitle to check is=" + currentTitle);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              lockRepresentation.setLocked(!SurveyUtils.getBooleanFromString(parameters.get(VoteConfig.KEY_LOCKED), false));
+              final boolean currentLockState = SurveyUtils.getBooleanFromString(parameters.get(VoteConfig.KEY_LOCKED), false);
+              lockRepresentation.setLocked(!currentLockState);
               parameters.put(VoteConfig.KEY_LOCKED, String.valueOf(lockRepresentation.isLocked()));
               macroDefinition.setParameters(parameters);
-              LOG.debug("locking state has been set to " + lockRepresentation.isLocked() + " for survey with title " + currentTitle);
+              LOG.debug("Locking state found locked=" + currentLockState + " now set to " + lockRepresentation.isLocked() + " for survey with title " + currentTitle);
+              LOG.debug("Parameters set to: " + parameters + ", resulting in macroDefinition: " + macroDefinition);
+              return new MacroDefinition(macroDefinition.getName(), macroDefinition.getBody(), macroDefinition.getDefaultParameterValue(), macroDefinition.getParameters());
             }
           }
           return macroDefinition;
         }
-      }));
+      });
     } catch (XhtmlException e) {
       final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
       LOG.error(message, e);
       return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
     }
-    //TODO: think of checking whether the user is in the proper permission list, e.g. managers ?!
-    pageManager.saveContentEntity(page, new DefaultSaveContext(true, false, true));
+    LOG.debug("All macroDefinitions scanned. Resulting page is: " + body);
 
-    LOG.info("macroDefinitions have been updated. Returning: " + lockRepresentation.isLocked());
+    //TODO: think of checking whether the user is in the proper permission list, e.g. managers ?!
+    final Boolean pageUpdated = (Boolean) transactionTemplate.execute(new TransactionCallbackStorePage(pageManager, page, body));
+
+    LOG.info("macroDefinitions have been updated: " + pageUpdated + ". Returning: " + lockRepresentation.isLocked());
     return Response.ok(lockRepresentation).build();
   }
 
