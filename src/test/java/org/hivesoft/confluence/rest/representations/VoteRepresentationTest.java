@@ -21,5 +21,8 @@ public class VoteRepresentationTest {
     assertTrue(classUnderTest.equals(new VoteRepresentation("someBallotTitle", "someChoice", "vote")));
     assertFalse(classUnderTest.equals(null));
     assertFalse(classUnderTest.equals("someString"));
+    assertFalse(classUnderTest.equals(new VoteRepresentation("notThisBallotTitle", "someChoice", "vote")));
+    assertFalse(classUnderTest.equals(new VoteRepresentation("someBallotTitle", "notThisChoice", "vote")));
+    assertFalse(classUnderTest.equals(new VoteRepresentation("someBallotTitle", "someChoice", "notThisVote")));
   }
 }
