@@ -1,5 +1,6 @@
 package org.hivesoft.confluence.macros.vote;
 
+import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.security.PermissionManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
@@ -13,6 +14,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -82,7 +84,6 @@ public class VoteConfigTest {
   @Test
   public void test_createWithAllCustomParameters_success() {
 
-
     when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
 
     Map<String, String> parameters = new HashMap<String, String>();
@@ -116,5 +117,27 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(false));
     assertThat(classUnderTest.isCanManageSurvey(), is(false));
+  }
+
+  @Test
+  public void test_canAttachFile_success() {
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    classUnderTest = new VoteConfig(mockPermissionEvaluator, new HashMap<String, String>());
+
+    when(mockPermissionEvaluator.canAttachFile(any(Page.class))).thenReturn(true);
+
+    final Boolean canAttachFile = classUnderTest.canAttachFile(new Page());
+    assertThat(canAttachFile, is(true));
+  }
+
+  @Test
+  public void test_canCreatePage_success() {
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    classUnderTest = new VoteConfig(mockPermissionEvaluator, new HashMap<String, String>());
+
+    when(mockPermissionEvaluator.canCreatePage(any(Page.class))).thenReturn(true);
+
+    final Boolean canCreatePage = classUnderTest.canCreatePage(new Page());
+    assertThat(canCreatePage, is(true));
   }
 }
