@@ -72,12 +72,7 @@ public class VoteConfig {
 
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
-    if (viewers.isEmpty() && locked) {
-      canSeeResults = true;
-    } else {
-      canSeeResults = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(viewers, remoteUsername);
-    }
-
+    canSeeResults = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(viewers, remoteUsername);
     canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUsername);
     canManageSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, remoteUsername);
 

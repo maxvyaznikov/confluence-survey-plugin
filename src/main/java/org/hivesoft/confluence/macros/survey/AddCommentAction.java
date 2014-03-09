@@ -24,96 +24,96 @@ import java.util.Map;
  * the macro cannot handle post data.
  */
 public class AddCommentAction extends AbstractPageAction {
-    private static final Logger LOG = Logger.getLogger(AddCommentAction.class);
-    protected ContentPropertyManager contentPropertyManager;
-    protected String ballotTitle;
-    protected String ballotAnchor;
-    protected String comment;
+  private static final Logger LOG = Logger.getLogger(AddCommentAction.class);
+  protected ContentPropertyManager contentPropertyManager;
+  protected String ballotTitle;
+  protected String ballotAnchor;
+  protected String comment;
 
-    /**
-     * This method gets called when a post request is received and will add the comment to the indicated ballot.
-     *
-     * @return a string constant indicating success or failure.
-     */
-    public String execute() {
-        if (getRemoteUser() == null || !TextUtils.stringSet(ballotTitle)) {
-            return ERROR;
-        }
+  /**
+   * This method gets called when a post request is received and will add the comment to the indicated ballot.
+   *
+   * @return a string constant indicating success or failure.
+   */
+  public String execute() {
+    if (getRemoteUser() == null || !TextUtils.stringSet(ballotTitle)) {
+      return ERROR;
+    }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Entered AddCommentAction with ballotTitle=" + ballotTitle + ", ballotAnchor=" + ballotAnchor + ", comment=" + comment);
-        }
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Entered AddCommentAction with ballotTitle=" + ballotTitle + ", ballotAnchor=" + ballotAnchor + ", comment=" + comment);
+    }
 
-        String username = getRemoteUser().getName();
-        String commentersPropertyName = "survey." + ballotTitle + ".commenters";
-        String commentPropertyName = "survey." + ballotTitle + ".comment." + username;
+    String username = getRemoteUser().getName();
+    String commentersPropertyName = "survey." + ballotTitle + ".commenters";
+    String commentPropertyName = "survey." + ballotTitle + ".comment." + username;
 
-        String usernameRegex = "\\|" + username + "\\|";
+    String usernameRegex = "\\|" + username + "\\|";
 
-        String commenters = contentPropertyManager.getStringProperty(getPage(), commentersPropertyName);
-        //safely store string stored items into text
-        if (!StringUtils.isBlank(commenters)) {
-            if (StringUtils.isBlank(contentPropertyManager.getTextProperty(getPage(), commentersPropertyName))) {
-                contentPropertyManager.setTextProperty(getPage(), commentersPropertyName, commenters);
-                contentPropertyManager.setStringProperty(getPage(), commentersPropertyName, null);
-            }
-        } else {
-            commenters = contentPropertyManager.getTextProperty(getPage(), commentersPropertyName);
-        }
-
-        if (!StringUtils.isBlank(comment)) {
-            if (TextUtils.stringSet(commenters) && !commenters.matches(".*" + usernameRegex + ".*")) {
-                commenters += "|" + username + "|";
-            } else if (!TextUtils.stringSet(commenters)) {
-                commenters = "|" + username + "|";
-            }
-            contentPropertyManager.setTextProperty(getPage(), commentPropertyName, comment);
-        } else if (TextUtils.stringSet(commenters) && commenters.matches(".*" + usernameRegex + ".*")) {
-            commenters = commenters.replaceAll(usernameRegex, "");
-            contentPropertyManager.setTextProperty(getPage(), commentPropertyName, null);
-        }
-
-        //contentPropertyManager.setStringProperty(getPage(), commentersPropertyName, commenters);
-        //if there are more commenters than 255 chars
+    String commenters = contentPropertyManager.getStringProperty(getPage(), commentersPropertyName);
+    //safely store string stored items into text
+    if (StringUtils.isNotBlank(commenters)) {
+      if (StringUtils.isBlank(contentPropertyManager.getTextProperty(getPage(), commentersPropertyName))) {
         contentPropertyManager.setTextProperty(getPage(), commentersPropertyName, commenters);
-
-        ((Map) ActionContext.getContext().get("request")).put("surveySection", ballotAnchor);
-        return SUCCESS;
+        contentPropertyManager.setStringProperty(getPage(), commentersPropertyName, null);
+      }
+    } else {
+      commenters = contentPropertyManager.getTextProperty(getPage(), commentersPropertyName);
     }
 
-    /**
-     * This is a binding method for the ballot title request parameter.
-     *
-     * @param ballotTitle The ballotTitle request parameter.
-     */
-    public void setBallotTitle(String ballotTitle) {
-        this.ballotTitle = ballotTitle;
+    if (StringUtils.isNotBlank(comment)) {
+      if (StringUtils.isBlank(commenters)) {
+        commenters = "|" + username + "|";
+      } else {
+        if (!commenters.matches(".*" + usernameRegex + ".*")) {
+          commenters += "|" + username + "|";
+        }
+      }
+      contentPropertyManager.setTextProperty(getPage(), commentPropertyName, comment);
+    } else if (TextUtils.stringSet(commenters) && commenters.matches(".*" + usernameRegex + ".*")) {
+      commenters = commenters.replaceAll(usernameRegex, "");
+      contentPropertyManager.setTextProperty(getPage(), commentPropertyName, null);
     }
 
-    /**
-     * This is a binding method for the ballot anchor request parameter.
-     *
-     * @param ballotAnchor The ballotAnchor request parameter.
-     */
-    public void setBallotAnchor(String ballotAnchor) {
-        this.ballotAnchor = ballotAnchor;
-    }
+    contentPropertyManager.setTextProperty(getPage(), commentersPropertyName, commenters);
 
-    /**
-     * This is a binding method for the comment request parameter.
-     *
-     * @param comment The comment request parameter.
-     */
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+    ((Map) ActionContext.getContext().get("request")).put("surveySection", ballotAnchor);
+    return SUCCESS;
+  }
 
-    /**
-     * Injection method for confluence to provide this action with a ContentPropertyManager.
-     *
-     * @param contentPropertyManager The manager to access page properties.
-     */
-    public void setContentPropertyManager(ContentPropertyManager contentPropertyManager) {
-        this.contentPropertyManager = contentPropertyManager;
-    }
+  /**
+   * This is a binding method for the ballot title request parameter.
+   *
+   * @param ballotTitle The ballotTitle request parameter.
+   */
+  public void setBallotTitle(String ballotTitle) {
+    this.ballotTitle = ballotTitle;
+  }
+
+  /**
+   * This is a binding method for the ballot anchor request parameter.
+   *
+   * @param ballotAnchor The ballotAnchor request parameter.
+   */
+  public void setBallotAnchor(String ballotAnchor) {
+    this.ballotAnchor = ballotAnchor;
+  }
+
+  /**
+   * This is a binding method for the comment request parameter.
+   *
+   * @param comment The comment request parameter.
+   */
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
+
+  /**
+   * Injection method for confluence to provide this action with a ContentPropertyManager.
+   *
+   * @param contentPropertyManager The manager to access page properties.
+   */
+  public void setContentPropertyManager(ContentPropertyManager contentPropertyManager) {
+    this.contentPropertyManager = contentPropertyManager;
+  }
 }

@@ -17,7 +17,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
-import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
+import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;

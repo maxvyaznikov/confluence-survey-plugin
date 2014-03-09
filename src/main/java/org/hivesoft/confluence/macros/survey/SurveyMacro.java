@@ -25,7 +25,7 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.hivesoft.confluence.macros.VelocityAbstractionHelper;
+import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;

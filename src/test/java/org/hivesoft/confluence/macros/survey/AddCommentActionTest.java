@@ -18,91 +18,110 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class AddCommentActionTest {
-    private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
-    private final static DefaultUser SOME_USER2 = new DefaultUser("someUser2", "someUser2 FullName", "some2@testmail.de");
+  private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
+  private final static DefaultUser SOME_USER2 = new DefaultUser("someUser2", "someUser2 FullName", "some2@testmail.de");
 
-    ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
+  ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
 
-    AddCommentAction classUnderTest;
+  AddCommentAction classUnderTest;
 
-    @Before
-    public void setup() {
-        classUnderTest = new AddCommentAction();
-        classUnderTest.setContentPropertyManager(mockContentPropertyManager);
-        AuthenticatedUserThreadLocal.setUser(SOME_USER1);
-    }
+  @Before
+  public void setup() {
+    classUnderTest = new AddCommentAction();
+    classUnderTest.setContentPropertyManager(mockContentPropertyManager);
+    AuthenticatedUserThreadLocal.setUser(SOME_USER1);
+  }
 
-    @After
-    public void tearDown() {
-        AuthenticatedUserThreadLocal.setUser(null);
+  @After
+  public void tearDown() {
+    AuthenticatedUserThreadLocal.setUser(null);
 
-    }
+  }
 
-    @Test
-    public void test_execute_addComment_success() {
-        final String someBallotTitle = "someBallotName";
-        final String someComment = "someComment";
-        classUnderTest.setBallotTitle(someBallotTitle);
-        classUnderTest.setComment(someComment);
-        classUnderTest.setBallotAnchor("someBallotAnchor");
+  @Test
+  public void test_execute_addComment_success() {
+    final String someBallotTitle = "someBallotName";
+    final String someComment = "someComment";
+    classUnderTest.setBallotTitle(someBallotTitle);
+    classUnderTest.setComment(someComment);
+    classUnderTest.setBallotAnchor("someBallotAnchor");
 
-        ActionContext.getContext().put("request", new HashMap<String, String>());
+    ActionContext.getContext().put("request", new HashMap<String, String>());
 
-        when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER2.getName() + "|");
+    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("");
 
-        final String returnValue = classUnderTest.execute();
+    final String returnValue = classUnderTest.execute();
 
-        assertEquals(Action.SUCCESS, returnValue);
+    assertEquals(Action.SUCCESS, returnValue);
 
-        verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
-    }
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
+  }
 
-    @Test
-    public void test_execute_updateComment_success() {
-        final String someBallotTitle = "someBallotName";
-        final String someComment = "someComment";
-        classUnderTest.setBallotTitle(someBallotTitle);
-        classUnderTest.setComment(someComment);
-        classUnderTest.setBallotAnchor("someBallotAnchor");
+  @Test
+  public void test_execute_stringExists_addComment_success() {
+    final String someBallotTitle = "someBallotName";
+    final String someComment = "someComment";
+    classUnderTest.setBallotTitle(someBallotTitle);
+    classUnderTest.setComment(someComment);
+    classUnderTest.setBallotAnchor("someBallotAnchor");
 
-        ActionContext.getContext().put("request", new HashMap<String, String>());
+    ActionContext.getContext().put("request", new HashMap<String, String>());
 
-        when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
+    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER2.getName() + "|");
 
-        final String returnValue = classUnderTest.execute();
+    final String returnValue = classUnderTest.execute();
 
-        assertEquals(Action.SUCCESS, returnValue);
+    assertEquals(Action.SUCCESS, returnValue);
 
-        verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
-    }
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
+  }
 
-    @Test
-    public void test_execute_removeComment_success() {
-        final String someBallotTitle = "someBallotName";
-        final String someComment = "";
-        classUnderTest.setBallotTitle(someBallotTitle);
-        classUnderTest.setComment(someComment);
-        classUnderTest.setBallotAnchor("someBallotAnchor");
+  @Test
+  public void test_execute_stringExists_updateComment_success() {
+    final String someBallotTitle = "someBallotName";
+    final String someComment = "someComment";
+    classUnderTest.setBallotTitle(someBallotTitle);
+    classUnderTest.setComment(someComment);
+    classUnderTest.setBallotAnchor("someBallotAnchor");
 
-        ActionContext.getContext().put("request", new HashMap<String, String>());
+    ActionContext.getContext().put("request", new HashMap<String, String>());
 
-        when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
+    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
 
-        final String returnValue = classUnderTest.execute();
+    final String returnValue = classUnderTest.execute();
 
-        assertEquals(Action.SUCCESS, returnValue);
+    assertEquals(Action.SUCCESS, returnValue);
 
-        verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".commenters"), eq("|" + SOME_USER2.getName() + "|"));
-        verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), isNull(String.class));
-    }
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
+  }
 
-    @Test
-    public void test_execute_noBallot_success() {
-        classUnderTest.setBallotTitle(null);
+  @Test
+  public void test_execute_stringExists_removeComment_success() {
+    final String someBallotTitle = "someBallotName";
+    final String someComment = "";
+    classUnderTest.setBallotTitle(someBallotTitle);
+    classUnderTest.setComment(someComment);
+    classUnderTest.setBallotAnchor("someBallotAnchor");
 
-        final String returnValue = classUnderTest.execute();
+    ActionContext.getContext().put("request", new HashMap<String, String>());
 
-        assertEquals(Action.ERROR, returnValue);
-    }
+    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
+
+    final String returnValue = classUnderTest.execute();
+
+    assertEquals(Action.SUCCESS, returnValue);
+
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".commenters"), eq("|" + SOME_USER2.getName() + "|"));
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), isNull(String.class));
+  }
+
+  @Test
+  public void test_execute_noBallot_success() {
+    classUnderTest.setBallotTitle(null);
+
+    final String returnValue = classUnderTest.execute();
+
+    assertEquals(Action.ERROR, returnValue);
+  }
 
 }
