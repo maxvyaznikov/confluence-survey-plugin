@@ -18,23 +18,23 @@ import org.hivesoft.confluence.rest.representations.SurveyConfigRepresentation;
 
 public class TransactionCallbackGetConfig implements com.atlassian.sal.api.transaction.TransactionCallback {
 
-    PluginSettingsFactory pluginSettingsFactory;
+  PluginSettingsFactory pluginSettingsFactory;
 
-    public TransactionCallbackGetConfig(PluginSettingsFactory pluginSettingsFactory) {
-        this.pluginSettingsFactory = pluginSettingsFactory;
-    }
+  public TransactionCallbackGetConfig(PluginSettingsFactory pluginSettingsFactory) {
+    this.pluginSettingsFactory = pluginSettingsFactory;
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SurveyConfigRepresentation doInTransaction() {
-        PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-        SurveyConfigRepresentation surveyConfigRepresentation = new SurveyConfigRepresentation();
-        surveyConfigRepresentation.setIconSet((String) settings.get(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET));
-        if (StringUtils.isBlank(surveyConfigRepresentation.getIconSet())) {
-            surveyConfigRepresentation.setIconSet(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT);
-        }
-        return surveyConfigRepresentation;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public SurveyConfigRepresentation doInTransaction() {
+    PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+    SurveyConfigRepresentation surveyConfigRepresentation = new SurveyConfigRepresentation();
+    surveyConfigRepresentation.setIconSet((String) settings.get(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET));
+    if (StringUtils.isBlank(surveyConfigRepresentation.getIconSet())) {
+      surveyConfigRepresentation.setIconSet(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT);
     }
+    return surveyConfigRepresentation;
+  }
 }

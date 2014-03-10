@@ -19,9 +19,9 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
-import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
+import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
 import org.junit.After;
@@ -32,9 +32,7 @@ import javax.xml.stream.XMLOutputFactory;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

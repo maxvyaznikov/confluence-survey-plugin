@@ -18,35 +18,35 @@ import static org.mockito.Mockito.when;
 
 public class AdminServletTest {
 
-    private final UserManager mockUserManager = mock(UserManager.class);
-    private final LoginUriProvider mockLoginUriProvider = mock(LoginUriProvider.class);
-    private final TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
+  private final UserManager mockUserManager = mock(UserManager.class);
+  private final LoginUriProvider mockLoginUriProvider = mock(LoginUriProvider.class);
+  private final TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
 
-    private static final String TEST_USERNAME = "someUserName";
+  private static final String TEST_USERNAME = "someUserName";
 
-    AdminServlet classUnderTest = new AdminServlet(mockUserManager, mockLoginUriProvider, mockTemplateRenderer);
+  AdminServlet classUnderTest = new AdminServlet(mockUserManager, mockLoginUriProvider, mockTemplateRenderer);
 
-    @Test
-    public void test_doGet_success() throws IOException, ServletException {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        HttpServletResponse mockResponse = mock(HttpServletResponse.class);
+  @Test
+  public void test_doGet_success() throws IOException, ServletException {
+    HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+    HttpServletResponse mockResponse = mock(HttpServletResponse.class);
 
-        when(mockUserManager.getRemoteUsername()).thenReturn(TEST_USERNAME);
-        when(mockUserManager.isSystemAdmin(TEST_USERNAME)).thenReturn(true);
+    when(mockUserManager.getRemoteUsername()).thenReturn(TEST_USERNAME);
+    when(mockUserManager.isSystemAdmin(TEST_USERNAME)).thenReturn(true);
 
-        classUnderTest.doGet(mockRequest, mockResponse);
-    }
+    classUnderTest.doGet(mockRequest, mockResponse);
+  }
 
-    @Test
-    public void test_doGet_userNotFound_failure() throws IOException, ServletException, URISyntaxException {
-        HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-        HttpServletResponse mockResponse = mock(HttpServletResponse.class);
+  @Test
+  public void test_doGet_userNotFound_failure() throws IOException, ServletException, URISyntaxException {
+    HttpServletRequest mockRequest = mock(HttpServletRequest.class);
+    HttpServletResponse mockResponse = mock(HttpServletResponse.class);
 
-        when(mockUserManager.getRemoteUsername()).thenReturn(null);
-        when(mockRequest.getRequestURL()).thenReturn(new StringBuffer());
-        when(mockRequest.getQueryString()).thenReturn("/someWikiPage");
-        when(mockLoginUriProvider.getLoginUri(any(URI.class))).thenReturn(new URI("http://localhost:123/login"));
+    when(mockUserManager.getRemoteUsername()).thenReturn(null);
+    when(mockRequest.getRequestURL()).thenReturn(new StringBuffer());
+    when(mockRequest.getQueryString()).thenReturn("/someWikiPage");
+    when(mockLoginUriProvider.getLoginUri(any(URI.class))).thenReturn(new URI("http://localhost:123/login"));
 
-        classUnderTest.doGet(mockRequest, mockResponse);
-    }
+    classUnderTest.doGet(mockRequest, mockResponse);
+  }
 }

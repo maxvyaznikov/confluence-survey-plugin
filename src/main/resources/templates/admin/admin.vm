@@ -1,35 +1,36 @@
 <html>
-  <head>
-    <title>$i18n.getText("surveyplugin.admin.label")</title>
-    <meta name="decorator" content="atl.admin" />
-    <meta name="application-base-url" content="$applicationProperties.getBaseUrl()">
-    $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:admin-resources")
-  </head>
-  <body>
-    <form id="admin" class="aui">
-      <div class="field-group">
-        <label for="icon-set">$i18n.getText("surveyplugin.admin.iconset.label")</label>
-        <div id="icon-set" class="matrix">
-          <div class="radio">
-            <input class="radio" type="radio" id="is-default" name="is-rads"/>
-            <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/default/green-yes.png" alt="Default"/>
-            <label for="is-default">Default</label>
-          </div>
-          <div class="radio">
-            <input class="radio" type="radio" id="is-original" name="is-rads"/>
-            <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/original/green-yes.png" alt="Original"/>
-            <label for="is-original">Original</label>
-          </div>
-          <div class="radio">
-            <input class="radio" type="radio" id="is-modern" name="is-rads"/>
-            <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/modern/green-yes.png" alt="Modern"/>
-            <label for="is-modern">Modern</label>
-          </div>
-        </div>
+<head>
+  <title>$i18n.getText("surveyplugin.admin.label")</title>
+  <meta name="decorator" content="atl.admin"/>
+  <meta name="application-base-url" content="$applicationProperties.getBaseUrl()">
+  $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:admin-resources")
+</head>
+<body>
+<form id="admin" class="aui">
+  <div class="field-group">
+    <label for="icon-set">$i18n.getText("surveyplugin.admin.iconset.label")</label>
+
+    <div id="icon-set" class="matrix">
+      <div class="radio">
+        <input class="radio" type="radio" id="is-default" name="is-rads"/>
+        <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/default/green-yes.png" alt="Default"/>
+        <label for="is-default">Default</label>
       </div>
-      <div id="iconset-submit-div" class="field-group">
-        <input id="iconset-submit" type="submit" value="$i18n.getText("surveyplugin.admin.save.label")" class="button">
+      <div class="radio">
+        <input class="radio" type="radio" id="is-original" name="is-rads"/>
+        <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/original/green-yes.png" alt="Original"/>
+        <label for="is-original">Original</label>
       </div>
-    </form>
-  </body>
+      <div class="radio">
+        <input class="radio" type="radio" id="is-modern" name="is-rads"/>
+        <img src="$applicationProperties.getBaseUrl()/${workaroundRequireResourcePathRelative}/icons/modern/green-yes.png" alt="Modern"/>
+        <label for="is-modern">Modern</label>
+      </div>
+    </div>
+  </div>
+  <div id="iconset-submit-div" class="field-group">
+    <input id="iconset-submit" type="submit" value="$i18n.getText("surveyplugin.admin.save.label")" class="button">
+  </div>
+</form>
+</body>
 </html>

@@ -22,42 +22,42 @@ import java.io.IOException;
 import java.net.URI;
 
 public class AdminServlet extends HttpServlet {
-    private final UserManager userManager;
-    private final LoginUriProvider loginUriProvider;
+  private final UserManager userManager;
+  private final LoginUriProvider loginUriProvider;
 
-    private final TemplateRenderer renderer;
+  private final TemplateRenderer renderer;
 
-    public AdminServlet(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer renderer) {
-        this.userManager = userManager;
-        this.loginUriProvider = loginUriProvider;
-        this.renderer = renderer;
+  public AdminServlet(UserManager userManager, LoginUriProvider loginUriProvider, TemplateRenderer renderer) {
+    this.userManager = userManager;
+    this.loginUriProvider = loginUriProvider;
+    this.renderer = renderer;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    final String remoteUser = userManager.getRemoteUsername();
+    if (remoteUser == null || !userManager.isSystemAdmin(remoteUser)) {
+      redirectToLogin(request, response);
+      return;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        final String remoteUser = userManager.getRemoteUsername();
-        if (remoteUser == null || !userManager.isSystemAdmin(remoteUser)) {
-            redirectToLogin(request, response);
-            return;
-        }
+    response.setContentType("text/html;charset=utf-8");
+    renderer.render("templates/admin/admin.vm", response.getWriter());
+  }
 
-        response.setContentType("text/html;charset=utf-8");
-        renderer.render("templates/admin/admin.vm", response.getWriter());
-    }
+  private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.sendRedirect(loginUriProvider.getLoginUri(getUri(request)).toASCIIString());
+  }
 
-    private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.sendRedirect(loginUriProvider.getLoginUri(getUri(request)).toASCIIString());
+  private URI getUri(HttpServletRequest request) {
+    StringBuffer builder = request.getRequestURL();
+    if (request.getQueryString() != null) {
+      builder.append("?");
+      builder.append(request.getQueryString());
     }
-
-    private URI getUri(HttpServletRequest request) {
-        StringBuffer builder = request.getRequestURL();
-        if (request.getQueryString() != null) {
-            builder.append("?");
-            builder.append(request.getQueryString());
-        }
-        return URI.create(builder.toString());
-    }
+    return URI.create(builder.toString());
+  }
 }

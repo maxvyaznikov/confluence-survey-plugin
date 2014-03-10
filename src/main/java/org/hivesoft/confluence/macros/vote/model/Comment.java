@@ -14,22 +14,22 @@ package org.hivesoft.confluence.macros.vote.model;
  * This class holds comments entered by users for a ballot.
  */
 public class Comment {
-    private String username;
-    private String comment;
+  private String username;
+  private String comment;
 
-    /**
-     * Create a new comment loaded with the given username and comment.
-     */
-    public Comment(String username, String comment) {
-        this.username = username;
-        this.comment = comment;
-    }
+  /**
+   * Create a new comment loaded with the given username and comment.
+   */
+  public Comment(String username, String comment) {
+    this.username = username;
+    this.comment = comment;
+  }
 
-    public String getComment() {
-        return comment;
-    }
+  public String getComment() {
+    return comment;
+  }
 
-    public String getUsername() {
-        return username;
-    }
+  public String getUsername() {
+    return username;
+  }
 }

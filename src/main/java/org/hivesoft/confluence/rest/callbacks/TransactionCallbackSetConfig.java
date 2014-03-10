@@ -19,28 +19,28 @@ import org.hivesoft.confluence.rest.representations.SurveyConfigRepresentation;
 
 public class TransactionCallbackSetConfig implements TransactionCallback {
 
-    private PluginSettingsFactory pluginSettingsFactory;
-    private SurveyConfigRepresentation surveyConfigRepresentation;
+  private PluginSettingsFactory pluginSettingsFactory;
+  private SurveyConfigRepresentation surveyConfigRepresentation;
 
-    public TransactionCallbackSetConfig(PluginSettingsFactory pluginSettingsFactory, SurveyConfigRepresentation surveyConfigRepresentation) {
-        this.pluginSettingsFactory = pluginSettingsFactory;
-        this.surveyConfigRepresentation = surveyConfigRepresentation;
-    }
+  public TransactionCallbackSetConfig(PluginSettingsFactory pluginSettingsFactory, SurveyConfigRepresentation surveyConfigRepresentation) {
+    this.pluginSettingsFactory = pluginSettingsFactory;
+    this.surveyConfigRepresentation = surveyConfigRepresentation;
+  }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SurveyConfigRepresentation doInTransaction() {
-        PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
-        if (StringUtils.isBlank(surveyConfigRepresentation.getIconSet())) {
-            surveyConfigRepresentation.setIconSet(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT);
-        } else {
-            if (surveyConfigRepresentation.getIconSet().startsWith("is-")) {
-                surveyConfigRepresentation.setIconSet(surveyConfigRepresentation.getIconSet().substring("is-".length()));
-            }
-        }
-        pluginSettings.put(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET, surveyConfigRepresentation.getIconSet());
-        return surveyConfigRepresentation;
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public SurveyConfigRepresentation doInTransaction() {
+    PluginSettings pluginSettings = pluginSettingsFactory.createGlobalSettings();
+    if (StringUtils.isBlank(surveyConfigRepresentation.getIconSet())) {
+      surveyConfigRepresentation.setIconSet(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT);
+    } else {
+      if (surveyConfigRepresentation.getIconSet().startsWith("is-")) {
+        surveyConfigRepresentation.setIconSet(surveyConfigRepresentation.getIconSet().substring("is-".length()));
+      }
     }
+    pluginSettings.put(AdminResource.SURVEY_PLUGIN_KEY_ICON_SET, surveyConfigRepresentation.getIconSet());
+    return surveyConfigRepresentation;
+  }
 }

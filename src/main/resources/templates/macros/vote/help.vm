@@ -10,87 +10,88 @@
  *#
 
 <tr bgcolor=ffffff>
-  <td>
-    {vote:What is your favorite color?}<br />
-    Red<br />
-    Blue<br />
-    None of the above<br />
-    {vote}<br />
-    <br />
-    {vote:What is your favorite color?|changeableVotes=true|voters=user1,user2}<br />
-    Red<br />
-    Blue<br />
-    None of the above<br />
-    {vote}<br />
-  </td>
+<td>
+  {vote:What is your favorite color?}<br/>
+  Red<br/>
+  Blue<br/>
+  None of the above<br/>
+  {vote}<br/>
+  <br/>
+  {vote:What is your favorite color?|changeableVotes=true|voters=user1,user2}<br/>
+  Red<br/>
+  Blue<br/>
+  None of the above<br/>
+  {vote}<br/>
+</td>
 
-  <td>
-    <p>
-      The vote macro allows Confluence users to vote on any topic of interest.
-      Users are allowed to select only one of the given choices and vote one time,
-      and the results will not be visible to them until they have voted. Users
-      that have not logged in will be prompted to do so before allowing them to
-      cast a vote. This macro was created to support quick, informal votes on
-      various topics. The macro has a title and a series of choices, each choice
-      starting on its own line.
+<td>
+  <p>
+    The vote macro allows Confluence users to vote on any topic of interest.
+    Users are allowed to select only one of the given choices and vote one time,
+    and the results will not be visible to them until they have voted. Users
+    that have not logged in will be prompted to do so before allowing them to
+    cast a vote. This macro was created to support quick, informal votes on
+    various topics. The macro has a title and a series of choices, each choice
+    starting on its own line.
 
     <!-- Provide a list of all possible macro arguments -->
-    <table>
-      <tr>
-        <th>Parameter</th>
-        <th>Required</th>
-        <th>Default</th>
-        <th>Description</th>
-      </tr>
-      <tr>
-        <td><br /></td>
-        <td>true</td>
-        <td><br /></td>
-        <td>This is the title of the ballot and must be the first paramter.</td>
-      </tr>
-      <tr>
-        <td>voters</td>
-        <td>false</td>
-        <td>all users</td>
-        <td>This is a comma seperated list of usernames to who are allowed to 
-            cast a vote. Users not in this list will not be allowed to vote, but
-            if they are viewers will be shown the results of the vote. If this parameter
-            is not specified, all users with access to the page are considered voters.
-        </td>
-      </tr>
-      <tr>
-        <td>viewers</td>
-        <td>false</td>
-        <td>all users</td>
-        <td>This is a comma seperated list of usernames to who are allowed to see the survey results.
-            Users not in this list will be allowed to vote but
-            after doing so will simply be shown which item they voted for. If a user is in this
-            list but is not a voter, they will be taken straight to the results. If this parameter is not specified,
-            all users will be able to see the results.
-        </td>
-      </tr>
-      <tr>
-        <td>changeableVotes</td>
-        <td>false</td>
-        <td>false</td>
-        <td>This parameter, if set to true, will allow the voters to change their vote
-            after it has been cast.
-        </td>
-      </tr>
-      <tr>
-      	<td>locked</td>
-      	<td>false</td>
-      	<td>false</td>
-      	<td>Dont allow any further voting. Show a lock Symbol to indicate that.</td>
-      </tr>
-    </table>
-    </p>
+  <table>
+    <tr>
+      <th>Parameter</th>
+      <th>Required</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td><br/></td>
+      <td>true</td>
+      <td><br/></td>
+      <td>This is the title of the ballot and must be the first paramter.</td>
+    </tr>
+    <tr>
+      <td>voters</td>
+      <td>false</td>
+      <td>all users</td>
+      <td>This is a comma seperated list of usernames to who are allowed to
+        cast a vote. Users not in this list will not be allowed to vote, but
+        if they are viewers will be shown the results of the vote. If this parameter
+        is not specified, all users with access to the page are considered voters.
+      </td>
+    </tr>
+    <tr>
+      <td>viewers</td>
+      <td>false</td>
+      <td>all users</td>
+      <td>This is a comma seperated list of usernames to who are allowed to see the survey results.
+        Users not in this list will be allowed to vote but
+        after doing so will simply be shown which item they voted for. If a user is in this
+        list but is not a voter, they will be taken straight to the results. If this parameter is not specified,
+        all users will be able to see the results.
+      </td>
+    </tr>
+    <tr>
+      <td>changeableVotes</td>
+      <td>false</td>
+      <td>false</td>
+      <td>This parameter, if set to true, will allow the voters to change their vote
+        after it has been cast.
+      </td>
+    </tr>
+    <tr>
+      <td>locked</td>
+      <td>false</td>
+      <td>false</td>
+      <td>Dont allow any further voting. Show a lock Symbol to indicate that.</td>
+    </tr>
+  </table>
+  </p>
 
-    <p>Before the user logs in:</p>
-    <div align='center'>
+  <p>Before the user logs in:</p>
+
+  <div align='center'>
     <table class="grid">
       <tr>
-        <th colspan="2">What is your favorite color?  <span class="smalltext">(<a href="#">Log In</a> to vote.)</span></th>
+        <th colspan="2">What is your favorite color? <span class="smalltext">(<a href="#">Log In</a> to vote.)</span></th>
       </tr>
       <tr>
         <th>Choices</th>
@@ -115,10 +116,11 @@
         </td>
       </tr>
     </table>
-    </div>
+  </div>
 
-    <p>Before the logged-in user votes:</p>
-    <div align='center'>
+  <p>Before the logged-in user votes:</p>
+
+  <div align='center'>
     <table class="grid">
       <tr>
         <th colspan="2">What is your favorite color?</th>
@@ -146,10 +148,11 @@
         </td>
       </tr>
     </table>
-    </div>
+  </div>
 
-    <p>After the logged-in user votes:</p>
-    <div align='center'>
+  <p>After the logged-in user votes:</p>
+
+  <div align='center'>
     <table class="grid">
       <tr>
         <th colspan="3">What is your favorite color?</th>
@@ -211,6 +214,6 @@
         </td>
       </tr>
     </table>
-    </div>
-    </td>
+  </div>
+</td>
 </tr>

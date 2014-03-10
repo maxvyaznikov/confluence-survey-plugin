@@ -33,7 +33,7 @@ public class SurveyMacroWiki extends BaseMacro {
   public String execute(Map parameters, String body, RenderContext renderContext) throws MacroException {
     try {
       //the new survey-menu functionality does not work with legacy
-      parameters.put(SurveyConfig.KEY_MANAGERS,"DisablingFunctionalityToLegacyMacros");
+      parameters.put(SurveyConfig.KEY_MANAGERS, "DisablingFunctionalityToLegacyMacros");
       return surveyMacro.execute(parameters, body, new DefaultConversionContext(renderContext));
     } catch (MacroExecutionException e) {
       throw new MacroException(e);

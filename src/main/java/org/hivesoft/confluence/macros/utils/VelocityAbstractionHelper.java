@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class VelocityAbstractionHelper {
 
-    public Map<String, Object> getDefaultVelocityContext() {
-        return MacroUtils.defaultVelocityContext();
-    }
+  public Map<String, Object> getDefaultVelocityContext() {
+    return MacroUtils.defaultVelocityContext();
+  }
 }

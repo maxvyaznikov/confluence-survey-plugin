@@ -24,25 +24,24 @@
     width: 100%;
 }
 
-.surveySummaryTable
-{
+.surveySummaryTable {
     margin: 15px;
     text-align: left;
     border-collapse: collapse;
     border: 1px solid #69c;
 }
-.surveySummaryTable th
-{
+
+.surveySummaryTable th {
     padding: 12px 17px 12px 17px;
     font-weight: normal;
     border-bottom: 1px dashed #69c;
 }
-.surveySummaryTable td
-{
+
+.surveySummaryTable td {
     padding: 7px 17px 7px 17px;
 }
-.surveySummaryTable tbody tr:hover td
-{
+
+.surveySummaryTable tbody tr:hover td {
     background: #d0dafd;
 }
 
@@ -51,19 +50,23 @@
     border-collapse: collapse;
     text-align: left;
 }
+
 .voteTable th {
     font-size: 14px;
     font-weight: normal;
     padding: 10px 8px;
     border-bottom: 2px solid #6678b1;
 }
+
 .voteTable td {
     border-bottom: 1px solid #ccc;
     padding: 6px 8px;
 }
+
 .voteTable tbody tr:hover td {
     color: #009;
 }
+
 .voteTable tfoot td {
     font-style: italic;
     border-style: none;

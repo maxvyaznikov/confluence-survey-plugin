@@ -14,5 +14,6 @@
     <span class="aui-icon icon-warning"></span>
     <strong>$action.getText("surveyplugin.nopermission").</strong>
   </p>
+
   <p>$action.getText("surveyplugin.survey.viewable.nopermission").</p>
 </div>

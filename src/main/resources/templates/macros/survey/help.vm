@@ -10,10 +10,10 @@
  *#
 <tr bgcolor=ffffff>
   <td>
-    {survey:changeableVotes=true|voters=user1,user2|viewers=user3}<br />
-    Knowledge - This is the knowledge category.<br />
-    Communication - This is the communication category.<br />
-    {survey}<br />
+    {survey:changeableVotes=true|voters=user1,user2|viewers=user3}<br/>
+    Knowledge - This is the knowledge category.<br/>
+    Communication - This is the communication category.<br/>
+    {survey}<br/>
   </td>
 
   <td>
@@ -23,18 +23,19 @@
       and the results will not be visible to them until they have voted. Users
       that have not logged in will be prompted to do so before allowing them to
       cast a vote. This macro was created to support surveys of confluence users
-      on several categories and will provide them with the chance to give a 
+      on several categories and will provide them with the chance to give a
       rating (1 to 5) for each category as well as a comment.
     </p>
+
     <p>
       The body of this macro defines the categories that the users will be polled
-      on. Each line of the body will be treated as a seperate category and 
+      on. Each line of the body will be treated as a seperate category and
       should be written in the format "title - description". The title is
       always required but the dash and the description are optional.
     </p>
 
     <p>
-    <!-- Provide a list of all possible macro arguments -->
+      <!-- Provide a list of all possible macro arguments -->
     <table>
       <tr>
         <th>Parameter</th>
@@ -46,18 +47,18 @@
         <td>title</td>
         <td>false</td>
         <td>default no title</td>
-        <td>If a Title is specified the Survey gets a Box around which makes it looking more compact 
-            and feeling the votes are belonging more together.
+        <td>If a Title is specified the Survey gets a Box around which makes it looking more compact
+          and feeling the votes are belonging more together.
         </td>
       </tr>
       <tr>
         <td>voters</td>
         <td>false</td>
         <td>all users</td>
-        <td>This is a comma seperated list of usernames to who are allowed to 
-            cast a vote. Users not in this list will not be allowed to vote, but
-            if they are viewers will be shown the results of the vote. If this parameter
-            is not specified, all users with access to the page are considered voters.
+        <td>This is a comma seperated list of usernames to who are allowed to
+          cast a vote. Users not in this list will not be allowed to vote, but
+          if they are viewers will be shown the results of the vote. If this parameter
+          is not specified, all users with access to the page are considered voters.
         </td>
       </tr>
       <tr>
@@ -65,10 +66,10 @@
         <td>false</td>
         <td>all users</td>
         <td>This is a comma seperated list of usernames to who are allowed to see the survey results.
-            Users not in this list will be allowed to vote but
-            after doing so will simply be shown which item they voted for. If a user is in this
-            list but is not a voter, they will be taken straight to the results. If this parameter is not specified,
-            all users will be able to see the results.
+          Users not in this list will be allowed to vote but
+          after doing so will simply be shown which item they voted for. If a user is in this
+          list but is not a voter, they will be taken straight to the results. If this parameter is not specified,
+          all users will be able to see the results.
         </td>
       </tr>
       <tr>
@@ -76,31 +77,32 @@
         <td>false</td>
         <td>false</td>
         <td>This parameter, if set to true, will allow the users to change their responses
-            after they have been cast.
+          after they have been cast.
         </td>
       </tr>
       <tr>
-	<td>choices</td>
-	<td>false</td>
-	<td>default 1-5</td>
-	<td>A comma separated List of choices. This will override the Default (1-5) List, but can still be overriden by 
-	    a '-' separated list in each single line.
-	</td>
+        <td>choices</td>
+        <td>false</td>
+        <td>default 1-5</td>
+        <td>A comma separated List of choices. This will override the Default (1-5) List, but can still be overriden by
+          a '-' separated list in each single line.
+        </td>
       </tr>
       <tr>
-      	<td>showComments</td>
-      	<td>false</td>
-      	<td>true</td>
-      	<td>Show comments-menu (the whole set: show, add, edit, delete)</td>
+        <td>showComments</td>
+        <td>false</td>
+        <td>true</td>
+        <td>Show comments-menu (the whole set: show, add, edit, delete)</td>
       </tr>
       <tr>
-	<td>locked</td>
-	<td>false</td>
-	<td>false</td>
-	<td>Dont allow any further voting. Show a lock Symbol to indicate that. 
-	    Image for Survey will only be displayed if you have the title-flag also. (It is still shown on the vote-elements)</td>
+        <td>locked</td>
+        <td>false</td>
+        <td>false</td>
+        <td>Dont allow any further voting. Show a lock Symbol to indicate that.
+          Image for Survey will only be displayed if you have the title-flag also. (It is still shown on the vote-elements)
+        </td>
       </tr>
     </table>
     </p>
-    </td>
+  </td>
 </tr>
