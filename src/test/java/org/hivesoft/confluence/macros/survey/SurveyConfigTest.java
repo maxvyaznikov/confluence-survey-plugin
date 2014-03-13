@@ -37,6 +37,7 @@ public class SurveyConfigTest {
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
+    assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
   }
 
   @Test

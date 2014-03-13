@@ -37,6 +37,7 @@ public class VoteConfig {
   public static final String KEY_LOCKED = "locked";
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
+  public static final String KEY_SHOW_CONDENSED = "showCondensed";
 
   protected int renderTitleLevel;
   private boolean changeableVotes;
@@ -58,6 +59,7 @@ public class VoteConfig {
   protected List<String> renderProblems = new ArrayList<String>();
 
   protected final PermissionEvaluator permissionEvaluator;
+  private boolean showCondensed;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     this.permissionEvaluator = permissionEvaluator;
@@ -69,6 +71,7 @@ public class VoteConfig {
     managers = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_MANAGERS)));
     showComments = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_COMMENTS), false);
     locked = SurveyUtils.getBooleanFromString(parameters.get(KEY_LOCKED), false);
+    showCondensed = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_CONDENSED), false);
 
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
@@ -96,6 +99,7 @@ public class VoteConfig {
     managers = surveyConfig.getManagers();
     showComments = surveyConfig.isShowComments();
     locked = surveyConfig.isLocked();
+    showCondensed = surveyConfig.isShowCondensed();
 
     canSeeResults = surveyConfig.isCanSeeResults();
     canTakeSurvey = surveyConfig.isCanTakeSurvey();
@@ -160,6 +164,10 @@ public class VoteConfig {
     return canManageSurvey;
   }
 
+  public boolean isShowCondensed() {
+    return showCondensed;
+  }
+
   public int getStartBound() {
     return startBound;
   }
@@ -187,6 +195,7 @@ public class VoteConfig {
 
     VoteConfig that = (VoteConfig) o;
 
+    if (canManageSurvey != that.canManageSurvey) return false;
     if (canSeeResults != that.canSeeResults) return false;
     if (canTakeSurvey != that.canTakeSurvey) return false;
     if (changeableVotes != that.changeableVotes) return false;
@@ -194,6 +203,7 @@ public class VoteConfig {
     if (locked != that.locked) return false;
     if (renderTitleLevel != that.renderTitleLevel) return false;
     if (showComments != that.showComments) return false;
+    if (showCondensed != that.showCondensed) return false;
     if (startBound != that.startBound) return false;
     if (visibleVoters != that.visibleVoters) return false;
     if (visibleVotersWiki != that.visibleVotersWiki) return false;
@@ -218,9 +228,11 @@ public class VoteConfig {
     result = 31 * result + (visibleVotersWiki ? 1 : 0);
     result = 31 * result + (canSeeResults ? 1 : 0);
     result = 31 * result + (canTakeSurvey ? 1 : 0);
+    result = 31 * result + (canManageSurvey ? 1 : 0);
     result = 31 * result + startBound;
     result = 31 * result + iterateStep;
     result = 31 * result + (renderProblems != null ? renderProblems.hashCode() : 0);
+    result = 31 * result + (showCondensed ? 1 : 0);
     return result;
   }
 
@@ -238,9 +250,11 @@ public class VoteConfig {
             ", visibleVotersWiki=" + visibleVotersWiki +
             ", canSeeResults=" + canSeeResults +
             ", canTakeSurvey=" + canTakeSurvey +
+            ", canManageSurvey=" + canManageSurvey +
             ", startBound=" + startBound +
             ", iterateStep=" + iterateStep +
             ", renderProblems=" + renderProblems +
+            ", showCondensed=" + showCondensed +
             '}';
   }
 }
