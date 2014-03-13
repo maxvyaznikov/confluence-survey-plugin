@@ -170,7 +170,7 @@ public class Ballot {
 
   public int getAveragePercentage(float average) {
     if (config.getIterateStep() < 0) {
-      return -1 * (int) (getLowerBound() - average - config.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() - config.getIterateStep());
+      return (int) (-1 * ((float) getLowerBound() - average - (float) config.getIterateStep()) * 100.0f / ((float) getUpperBound() - (float) getLowerBound() - (float) config.getIterateStep()));
     } else {
       return (int) ((average - (float) getLowerBound() + (float) config.getIterateStep()) * 100.0f / ((float) getUpperBound() - (float) getLowerBound() + (float) config.getIterateStep()));
     }
