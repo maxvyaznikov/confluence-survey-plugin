@@ -169,10 +169,11 @@ public class Ballot {
   }
 
   public int getAveragePercentage(float average) {
-    if (config.getIterateStep() < 0)
-      return (int) (average - getLowerBound() - config.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() - config.getIterateStep());
-    else
-      return (int) (average - getLowerBound() + config.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() + config.getIterateStep());
+    if (config.getIterateStep() < 0) {
+      return -1 * (int) (getLowerBound() - average - config.getIterateStep()) * 100 / (getUpperBound() - getLowerBound() - config.getIterateStep());
+    } else {
+      return (int) ((average - (float) getLowerBound() + (float) config.getIterateStep()) * 100.0f / ((float) getUpperBound() - (float) getLowerBound() + (float) config.getIterateStep()));
+    }
   }
 
   /**

@@ -109,12 +109,14 @@ public class BallotTest {
   @Test
   public void test_getPercentageOfVoteForChoice_NoVotes_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
 
     classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
 
     final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
 
-    assertEquals(0, percentageResult);
+    assertThat(percentageResult, is(0));
   }
 
   @Test
@@ -132,12 +134,12 @@ public class BallotTest {
     final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
     final int percentageResultTwo = classUnderTest.getPercentageOfVoteForChoice(someChoiceTwo);
 
-    assertEquals(66, percentageResult);
-    assertEquals(33, percentageResultTwo);
+    assertThat(percentageResult, is(66));
+    assertThat(percentageResultTwo, is(33));
   }
 
   @Test
-  public void test_Comments_success() {
+  public void test_getComments_success() {
     Comment someComment = new Comment(SOME_EXISTING_USER_NAME, "some crazy comment for a crazy plugin");
 
     classUnderTest.addComment(someComment);
@@ -162,10 +164,12 @@ public class BallotTest {
   }
 
   @Test
-  public void test_computeAverage_OneChoiceNoVotes_success() {
+  public void test_computeAverage_TwoChoicesNoVotes_expectZero_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
 
     classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoiceTwo);
 
     final float result = classUnderTest.computeAverage();
 
@@ -173,15 +177,17 @@ public class BallotTest {
   }
 
   @Test
-  public void test_computeAverage_OneChoiceOneVote_success() {
+  public void test_computeAverage_TwoChoiceOneVote_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
     someChoice.voteFor(SOME_EXISTING_USER_NAME);
+    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
 
-    classUnderTest.addChoice(someChoice);
+    classUnderTest.addChoice(someChoice);    //2 * 1 => 2
+    classUnderTest.addChoice(someChoiceTwo); //1 * 0 => 0
 
     final float result = classUnderTest.computeAverage();
 
-    assertEquals(1.0f, result, 0.0f);
+    assertEquals(2.0f, result, 0.0f);
   }
 
   @Test
@@ -191,9 +197,9 @@ public class BallotTest {
     someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
     Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
 
-    classUnderTest.addChoice(someChoice);
-    classUnderTest.addChoice(someChoiceTwo);
-    classUnderTest.addChoice(someChoiceThree);
+    classUnderTest.addChoice(someChoice);      //3 - 100%
+    classUnderTest.addChoice(someChoiceTwo);   //2 -  66%
+    classUnderTest.addChoice(someChoiceThree); //1 -  33%
 
     final float result = classUnderTest.computeAverage();
 
@@ -202,7 +208,7 @@ public class BallotTest {
   }
 
   @Test
-  public void test_computeAverage_NegativeIterateStepFromPositiveStart_ThreeChoicesTwoVotes_success() {
+  public void test_computeAverage_NegativeIterateStepFromPositiveStart_FiveChoicesOneVoteOnFourth_expect40percent_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
     Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
@@ -217,23 +223,47 @@ public class BallotTest {
 
     classUnderTest = SurveyUtilsTest.createBallotWithParameters(parameters);
 
-    classUnderTest.addChoice(someChoice);
-    classUnderTest.addChoice(someChoiceTwo);
-    classUnderTest.addChoice(someChoiceThree);
-    classUnderTest.addChoice(someChoiceFour);
-    classUnderTest.addChoice(someChoiceFive);
+    classUnderTest.addChoice(someChoice);      //-12 -> 100%
+    classUnderTest.addChoice(someChoiceTwo);   //- 8 -> 80%
+    classUnderTest.addChoice(someChoiceThree); //- 4 -> 60
+    classUnderTest.addChoice(someChoiceFour);  //  0 -> 40
+    classUnderTest.addChoice(someChoiceFive);  //  4 -> 20
 
     final float result = classUnderTest.computeAverage();
 
     assertThat(result, is(equalTo(0.0f)));
-    //probably it should be 40 but for now we take the 80% for the 4th one
-    assertThat(classUnderTest.getAveragePercentage(result), is(equalTo(80)));
+    assertThat(classUnderTest.getAveragePercentage(result), is(equalTo(40)));
   }
 
   @Test
-  public void test_computeFormattedAverage_NegativeIterateStep_ThreeChoicesTwoVotes_success() {
+  public void test_computeAverage_ZeroToOne_TwoChoicesTwoOnFirstOneOnSecond_expect50percent_success() {
+    Choice someChoice = new Choice("one");
+    someChoice.voteFor(SOME_EXISTING_USER_NAME + "ONE");
+    someChoice.voteFor(SOME_EXISTING_USER_NAME + "THREE");
+    Choice someChoiceTwo = new Choice("two");
+    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(SurveyConfig.KEY_START_BOUND, "0");
+    parameters.put(SurveyConfig.KEY_ITERATE_STEP, "1");
+
+    classUnderTest = SurveyUtilsTest.createBallotWithParameters(parameters);
+
+    classUnderTest.addChoice(someChoice);      //1 -> 100%
+    classUnderTest.addChoice(someChoiceTwo);   //0 -> 50%
+
+    final float result = classUnderTest.computeAverage();
+
+    assertThat(result, is(equalTo(0.6666667F)));
+    assertThat(classUnderTest.getAveragePercentage(result), is(equalTo(83)));
+  }
+
+  @Test
+  public void test_computeFormattedAverage_NegativeIterateStep_ThreeChoicesThreeVotes_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "ONE");
     someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
     Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
     someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
@@ -245,14 +275,14 @@ public class BallotTest {
 
     classUnderTest = SurveyUtilsTest.createBallotWithParameters(parameters);
 
-    classUnderTest.addChoice(someChoice);
-    classUnderTest.addChoice(someChoiceTwo);
-    classUnderTest.addChoice(someChoiceThree);
+    classUnderTest.addChoice(someChoice);      //-7 ->
+    classUnderTest.addChoice(someChoiceTwo);   //-4 ->
+    classUnderTest.addChoice(someChoiceThree); //-1 ->
 
     final String format = "0.##";
     final String result = classUnderTest.computeFormattedAverage(format);
 
-    assertEquals(new java.text.DecimalFormat(format).format(-2.5), result);
+    assertEquals(new java.text.DecimalFormat(format).format(-3.0), result);
   }
 
   @Test

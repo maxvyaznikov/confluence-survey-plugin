@@ -17,7 +17,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 #set ($config = $survey.config)
 
 #set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
-#if ( $survey.title.length > 0 )
+#if ( $survey.title.length() > 0 )
 <div id="$generalUtil.urlEncode(${survey.title})" class="surveyBox">
   #if( $survey.renderTitleLevel !=0 )
   <h$config.renderTitleLevel>#end #if ($survey.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
@@ -66,6 +66,6 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
   #end
 #end
 
-#if ( $survey.title.length > 0 )
+#if ( $survey.title.length() > 0 )
 </div>
 #end
