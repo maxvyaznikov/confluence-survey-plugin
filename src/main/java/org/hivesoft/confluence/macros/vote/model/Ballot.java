@@ -176,6 +176,19 @@ public class Ballot {
     }
   }
 
+  public int getAveragePercentage() {
+    int choiceIndex = choices.values().size() - 1;
+    int totalVoteCount = 0;
+    int weightedChoices = 0;
+    for (Choice choice : choices.values()) {
+      final int voteCount = choice.getVoters().size();
+      weightedChoices += choiceIndex * voteCount;
+      choiceIndex--;
+      totalVoteCount += voteCount;
+    }
+    return weightedChoices * 100 / ((choices.values().size() - 1) * totalVoteCount);
+  }
+
   /**
    * @return The bounds for this ballot if different then the default
    */
@@ -188,8 +201,7 @@ public class Ballot {
    */
   public int getTotalVoteCount() {
     int totalVotes = 0;
-    Collection<Choice> col = choices.values();
-    for (Choice choice : col) {
+    for (Choice choice : choices.values()) {
       totalVotes += choice.getVoters().size();
     }
     return totalVotes;

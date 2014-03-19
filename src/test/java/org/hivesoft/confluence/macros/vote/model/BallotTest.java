@@ -233,6 +233,7 @@ public class BallotTest {
 
     assertThat(result, is(equalTo(0.0f)));
     assertThat(classUnderTest.getAveragePercentage(result), is(equalTo(40)));
+    assertThat(classUnderTest.getAveragePercentage(), is(25));
   }
 
   @Test

@@ -30,8 +30,6 @@
       </tr>
       </thead>
       #foreach ($ballot in $survey.ballots)
-        #set ($average = $ballot.computeAverage())
-        #set ($sAverage = $ballot.computeFormattedAverage("0.00"))
         <tr>
           <td>
             $ballot.title
@@ -39,12 +37,12 @@
           <td align="center">
             $ballot.totalVoteCount
           </td>
-          #set ($percentFill = $ballot.getAveragePercentage($average))
+          #set ($percentFill = $ballot.getAveragePercentage())
           <td>
             <div class="greenbar-wrap">
               <div class="greenbar-value" style="width:$percentFill%;">
                 <div class="greenbar-text">
-                  $sAverage $ballot.getBoundsIfNotDefault()
+                  $ballot.computeFormattedAverage("0.00") $ballot.getBoundsIfNotDefault()
                 </div>
               </div>
             </div>
