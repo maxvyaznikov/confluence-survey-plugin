@@ -13,7 +13,7 @@ AJS.toInit(function () {
       success: function (csvExportRepresentation) {
         var inlineDialog = AJS.InlineDialog(AJS.$(exportLink), "exportDialog",
           function (content, trigger, showPopup) {
-            content.css({"padding": "20px"}).html('<p>' + AJS.I18n.getText("surveyplugin.export.result.confirmation") + ': <a href="' + csvExportRepresentation.uri + '">' + AJS.I18n.getText("surveyplugin.click.to.download") + '</a></p>');
+            content.css({"padding": "20px"}).html('<p>' + AJS.I18n.getText("surveyplugin.export.result.confirmation") + ': <a href="' + baseUrl + csvExportRepresentation.uri + '">' + AJS.I18n.getText("surveyplugin.click.to.download") + '</a></p>');
             showPopup();
             return false;
           }
