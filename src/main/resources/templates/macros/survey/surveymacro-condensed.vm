@@ -17,8 +17,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 <table class="voteTable">
   <thead>
   <tr>
-    <th>Title</th>
-    <th>Description</th>
+    <th>$action.getText("surveyplugin.vote.title")</th>
+    <th>$action.getText("surveyplugin.vote.description")</th>
     #foreach($choice in $survey.ballots.get(0).choices)
       <th>$choice.description</th>
     #end
