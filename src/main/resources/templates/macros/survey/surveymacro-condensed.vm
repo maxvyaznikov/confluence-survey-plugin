@@ -1,0 +1,68 @@
+#*
+ * Copyright (c) 2006-2014, Confluence Community
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *#
+
+<meta name="application-base-url" content="$applicationProperties.getBaseUrl()"/>
+$webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:resources")
+
+<link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all"/>
+
+<table class="voteTable">
+  <thead>
+  <tr>
+    <th>Title</th>
+    <th>Description</th>
+    #foreach($choice in $survey.ballots.get(0).choices)
+      <th>$choice.description</th>
+    #end
+  </tr>
+  </thead>
+
+  #foreach ($ballot in $survey.ballots)
+
+    #set ($config = $ballot.config)
+    #set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $config.changeableVotes)))
+    #set ($canSeeResults = ($config.canSeeResults && ( $ballot.getHasVoted($req.remoteUser) || ($config.canTakeSurvey && $config.locked) || !($config.canTakeSurvey) )))
+    #set ($canSeeVoters = $canSeeResults && $config.visibleVoters)
+    #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
+    #set ($ballotNumberID = "0-${ballot.titleNoSpace}" )
+
+    #set ($columnCount = 2 + $ballot.choices) ##ballotTitle, description, choices
+    #set ($choiceNumber=0)
+    #set ($choiceNumber = $choiceNumber + 1)
+
+    <tr>
+      <td>$ballot.title</td>
+      <a id="$voteAnchor"/>
+      <td>$ballot.description</td>
+      #foreach ($choice in $ballot.choices)
+        <td align="center">
+          #if ($canVote && !($config.locked))
+            #if ($choice.getHasVotedFor($req.remoteUser))
+              <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=unvote#${voteAnchor}">
+                <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
+                     class="surveyIcon"/>
+              </a>
+            #else
+              <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=vote#${voteAnchor}">
+                <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
+                     class="surveyIcon"/>
+              </a>
+            #end
+          #elseif ($choice.getHasVotedFor($req.remoteUser))
+            <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>
+          #else
+            <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
+          #end
+        </td>
+      #end
+    </tr>
+  #end
+</table>

@@ -109,8 +109,10 @@ public class SurveyManager {
     ballot = loadCommentsForBallot(contentObject, ballot);
 
     List<String> inlineChoiceNames = new ArrayList<String>();
-    for (int customChoice = SURVEY_BALLOT_INDEX_START_INLINE_CHOICES; customChoice < lineElements.length; customChoice++) {
-      inlineChoiceNames.add(lineElements[customChoice].trim());
+    if (!ballot.getConfig().isShowCondensed()) { // only count inline elements if its not condensed!
+      for (int customChoice = SURVEY_BALLOT_INDEX_START_INLINE_CHOICES; customChoice < lineElements.length; customChoice++) {
+        inlineChoiceNames.add(lineElements[customChoice].trim());
+      }
     }
 
     List<String> choiceNames = survey.getConfig().getChoices();

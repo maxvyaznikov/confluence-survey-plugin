@@ -118,6 +118,7 @@
       <parameter name="managers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visibleVotersWiki" type="boolean"/>
+      <parameter name="showCondensed" type="boolean"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </xhtml-macro>

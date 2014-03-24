@@ -57,8 +57,12 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
     <p>$action.getText("surveyplugin.survey.info.add.ballots")</p>
   </div>
 #else
-  #foreach ($ballot in $survey.ballots)
-    #parse ("templates/macros/vote/votemacro.vm")
+  #if ($config.showCondensed)
+    #parse("templates/macros/survey/surveymacro-condensed.vm")
+  #else
+    #foreach ($ballot in $survey.ballots)
+      #parse ("templates/macros/vote/votemacro.vm")
+    #end
   #end
 
   #if ($config.surveySummary=="Bottom")

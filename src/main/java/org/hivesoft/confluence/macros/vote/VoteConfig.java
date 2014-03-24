@@ -47,19 +47,19 @@ public class VoteConfig {
   protected boolean showComments;
   private boolean locked;
   private boolean visibleVoters;
-  private boolean visibleVotersWiki;
+  private boolean showCondensed;
 
+  private boolean visibleVotersWiki;
   private boolean canSeeResults;
   private boolean canTakeSurvey;
+
   private boolean canManageSurvey;
 
   protected int startBound = DEFAULT_START_BOUND;
   protected int iterateStep = DEFAULT_ITERATE_STEP;
 
   protected List<String> renderProblems = new ArrayList<String>();
-
   protected final PermissionEvaluator permissionEvaluator;
-  private boolean showCondensed;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     this.permissionEvaluator = permissionEvaluator;
