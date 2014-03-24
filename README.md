@@ -13,7 +13,9 @@ This file is merely a placeholder for the wiki documentation.
 Plugin development
 ==================
 
-The plugin is a maven artifact and therefore can be built with Maven 3 and JDK 7.
+The plugin is a maven artifact and therefore can be built with  Apache Maven 3.0+ and JDK 7. (Limited by the availablity of newer Atlassian Plugins, they still build with Maven 2 and jdk 1.6)
+
+I am a back end developer, yes i am also annoyed with page reloads, but currently that is the best which can be done as there are quite some features to be implemented and changing the frontend behaviour is quite a overhaul.
 
 History
 =======
