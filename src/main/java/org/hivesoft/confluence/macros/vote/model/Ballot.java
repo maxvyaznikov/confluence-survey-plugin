@@ -168,6 +168,14 @@ public class Ballot {
     return config.getStartBound() > getEndBound() ? config.getStartBound() : getEndBound();
   }
 
+  public int getCurrentValueByIndex(int index) {
+    if (config.getIterateStep() > 0) {
+      return config.getStartBound() + config.getIterateStep() * index;
+    } else {
+      return config.getStartBound() - config.getIterateStep() * index;
+    }
+  }
+
   public int getAveragePercentage(float average) {
     if (config.getIterateStep() < 0) {
       return (int) (-1 * ((float) getLowerBound() - average - (float) config.getIterateStep()) * 100.0f / ((float) getUpperBound() - (float) getLowerBound() - (float) config.getIterateStep()));
@@ -185,6 +193,9 @@ public class Ballot {
       weightedChoices += choiceIndex * voteCount;
       choiceIndex--;
       totalVoteCount += voteCount;
+    }
+    if (totalVoteCount == 0) {
+      return 0;
     }
     return weightedChoices * 100 / ((choices.values().size() - 1) * totalVoteCount);
   }

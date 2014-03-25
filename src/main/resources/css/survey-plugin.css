@@ -63,6 +63,15 @@
     padding: 6px 8px;
 }
 
+.voteTable.condensed th {
+    text-align: center;
+}
+
+.voteTable td sub {
+    font-size: x-small;
+    color: gray;
+}
+
 .voteTable tbody tr:hover td {
     color: #009;
 }
