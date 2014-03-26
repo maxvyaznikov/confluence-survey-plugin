@@ -20,7 +20,6 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
   <thead>
   <tr>
     <th>$action.getText("surveyplugin.vote.title")</th>
-    <!--<th>$action.getText("surveyplugin.vote.description")</th>-->
     #set ($firstBallot = $survey.ballots.get(0))
     #set ($choiceIndex=$firstBallot.choices.size() - 1 )
     #foreach($choice in $firstBallot.choices)
@@ -34,14 +33,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 
     #set ($config = $ballot.config)
     #set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $config.changeableVotes)))
-    #set ($canSeeResults = ($config.canSeeResults && ( $ballot.getHasVoted($req.remoteUser) || ($config.canTakeSurvey && $config.locked) || !($config.canTakeSurvey) )))
-    #set ($canSeeVoters = $canSeeResults && $config.visibleVoters)
     #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
-    #set ($ballotNumberID = "0-${ballot.titleNoSpace}" )
-
-    #set ($columnCount = 2 + $ballot.choices) ##ballotTitle, description, choices
-    #set ($choiceNumber=0)
-    #set ($choiceNumber = $choiceNumber + 1)
 
     <tr>
       <td>$ballot.title #if($ballot.description.length()>0)<br/><sub>$ballot.description</sub>#end</td>
