@@ -10,6 +10,7 @@
  */
 package org.hivesoft.confluence.macros.utils;
 
+import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.extras.common.log.Logger;
@@ -208,5 +209,16 @@ public class SurveyManager {
     }
   }
 
+  /**
+   * Make sure the contentEntityObject is of type Page, as we need a actual Page to store/retrieve data
+   */
+  public ContentEntityObject getPageEntityFromConversionContext(ConversionContext conversionContext) {
+    ContentEntityObject contentObject = conversionContext.getEntity();
 
+    if (contentObject instanceof com.atlassian.confluence.pages.Comment) {
+      return ((com.atlassian.confluence.pages.Comment) contentObject).getOwner();
+    }
+
+    return contentObject;
+  }
 }

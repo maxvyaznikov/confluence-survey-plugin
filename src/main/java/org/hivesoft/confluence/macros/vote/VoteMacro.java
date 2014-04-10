@@ -144,10 +144,8 @@ public class VoteMacro implements Macro {
       throw new MacroExecutionException(e);
     }
 
-    // retrieve a reference to the body object this macro is in
-    ContentEntityObject contentObject = conversionContext.getEntity();
+    final ContentEntityObject contentObject = surveyManager.getPageEntityFromConversionContext(conversionContext);
 
-    // Rebuild the model for this ballot
     Ballot ballot = surveyManager.reconstructBallotFromPlainTextMacroBody(parameters, body, contentObject);
 
     final List<String> noneUniqueTitles = new ArrayList<String>();

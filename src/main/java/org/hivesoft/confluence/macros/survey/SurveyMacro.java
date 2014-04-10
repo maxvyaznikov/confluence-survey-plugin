@@ -17,6 +17,7 @@ import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFo
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
+import com.atlassian.confluence.pages.Comment;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
@@ -92,8 +93,7 @@ public class SurveyMacro implements Macro {
       throw new MacroExecutionException(e);
     }
 
-    // retrieve a reference to the body object this macro is in
-    ContentEntityObject contentObject = conversionContext.getEntity();
+    ContentEntityObject contentObject = surveyManager.getPageEntityFromConversionContext(conversionContext);
 
     Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(body, contentObject, parameters);
 

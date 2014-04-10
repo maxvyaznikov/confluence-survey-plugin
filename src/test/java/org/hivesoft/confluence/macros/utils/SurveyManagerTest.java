@@ -1,7 +1,9 @@
 package org.hivesoft.confluence.macros.utils;
 
+import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
+import com.atlassian.confluence.pages.Comment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.user.impl.DefaultUser;
@@ -18,8 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -231,5 +232,33 @@ public class SurveyManagerTest {
     classUnderTest.recordVote(ballot, mockRequest, new Page());
 
     verify(mockContentPropertyManager, times(0)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
+  }
+
+  @Test
+  public void test_getPageEntityFromConversionContext_startingWithComment() {
+    ConversionContext mockConversionContext = mock(ConversionContext.class);
+
+    Page page = new Page();
+    page.setId(123L);
+    final Comment comment = new Comment();
+    comment.setOwner(page);
+    when(mockConversionContext.getEntity()).thenReturn(comment);
+
+    final ContentEntityObject pageEntity = classUnderTest.getPageEntityFromConversionContext(mockConversionContext);
+
+    assertThat(pageEntity, is(instanceOf(Page.class)));
+  }
+
+  @Test
+  public void test_getPageEntityFromConversionContext_startingWithPage() {
+    ConversionContext mockConversionContext = mock(ConversionContext.class);
+
+    Page page = new Page();
+    page.setId(123L);
+    when(mockConversionContext.getEntity()).thenReturn(page);
+
+    final ContentEntityObject pageEntity = classUnderTest.getPageEntityFromConversionContext(mockConversionContext);
+
+    assertThat(pageEntity, is(instanceOf(Page.class)));
   }
 }
