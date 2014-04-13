@@ -10,9 +10,8 @@
  */
 package org.hivesoft.confluence.rest.callbacks;
 
-import com.atlassian.confluence.core.ContentEntityObject;
+import com.atlassian.confluence.pages.AbstractPage;
 import com.atlassian.confluence.pages.Attachment;
-import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.transaction.TransactionCallback;
@@ -24,13 +23,13 @@ public class TransactionCallbackAddAttachment implements TransactionCallback<Att
   private static final Logger.Log LOG = Logger.getInstance(TransactionCallbackAddAttachment.class);
 
   private PageManager pageManager;
-  private ContentEntityObject contentEntityObject;
+  private AbstractPage abstractPage;
   private String fileName;
   private byte[] attachmentData;
 
-  public TransactionCallbackAddAttachment(PageManager pageManager, Page contentEntityObject, String fileName, byte[] attachmentData) {
+  public TransactionCallbackAddAttachment(PageManager pageManager, AbstractPage abstractPage, String fileName, byte[] attachmentData) {
     this.pageManager = pageManager;
-    this.contentEntityObject = contentEntityObject;
+    this.abstractPage = abstractPage;
     this.fileName = fileName;
     this.attachmentData = attachmentData;
   }
@@ -40,7 +39,7 @@ public class TransactionCallbackAddAttachment implements TransactionCallback<Att
     LOG.info("Try to store attachment with fileName: " + fileName);
 
     Attachment attachment = new Attachment(fileName, "text/plain", attachmentData.length, "survey export");
-    contentEntityObject.addAttachment(attachment);
+    abstractPage.addAttachment(attachment);
 
     try {
       pageManager.getAttachmentManager().saveAttachment(attachment, null, new ByteArrayInputStream(attachmentData));

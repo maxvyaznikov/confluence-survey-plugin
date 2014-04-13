@@ -10,6 +10,7 @@
  */
 package org.hivesoft.confluence.macros.vote;
 
+import com.atlassian.confluence.pages.AbstractPage;
 import com.atlassian.confluence.pages.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
@@ -176,11 +177,11 @@ public class VoteConfig {
     return iterateStep;
   }
 
-  public Boolean canAttachFile(Page page) {
+  public Boolean canAttachFile(AbstractPage page) {
     return permissionEvaluator.canAttachFile(page);
   }
 
-  public Boolean canCreatePage(Page page) {
+  public Boolean canCreatePage(AbstractPage page) {
     return permissionEvaluator.canCreatePage(page);
   }
 

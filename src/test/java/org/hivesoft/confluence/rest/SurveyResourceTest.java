@@ -68,7 +68,7 @@ public class SurveyResourceTest {
 
   @Test
   public void test_getCSVExportForSurvey_expectPageNotFound_failure() throws UnsupportedEncodingException {
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(null);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(null);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
@@ -80,7 +80,7 @@ public class SurveyResourceTest {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("123");
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
@@ -96,7 +96,7 @@ public class SurveyResourceTest {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<thisIsNoValidTag>");
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
@@ -110,7 +110,7 @@ public class SurveyResourceTest {
   @Test
   public void test_getCSVExportForSurvey_expectUserDoesNotHaveAddAttachmentPermission_failure() throws UnsupportedEncodingException, XhtmlException {
     Page somePage = new Page();
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
@@ -143,7 +143,7 @@ public class SurveyResourceTest {
     when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
 
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockTransactionTemplate.execute(any(TransactionCallback.class))).thenReturn(mockAttachment);
 
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
@@ -172,7 +172,7 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<badTag111><ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
@@ -185,7 +185,7 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">notThisSurvey</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
@@ -199,7 +199,7 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
@@ -213,7 +213,7 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
