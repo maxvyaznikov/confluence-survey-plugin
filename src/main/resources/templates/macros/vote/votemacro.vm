@@ -189,8 +189,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
     </tr>
     #set ($choiceNumber = $choiceNumber + 1)
   #end
-  #if ($config.visibleVoters && $canSeeResults)
-    <tfoot>
+  <tfoot>
+    #if ($config.visibleVoters)
     <tr>
       <td colspan="$columnCount">
         $action.getText("surveyplugin.vote.voters.all"):
@@ -206,7 +206,25 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         #end
       </td>
     </tr>
-    </tfoot>
-  #end
+    #end
+    #if ($config.visiblePendingVoters)
+    <tr>
+      <td colspan="$columnCount">
+        #set($pendingVoters = $ballot.getAllPendingVoters($userAccessor))
+        $action.getText("surveyplugin.vote.voters.pending")
+        (<a href="mailto:$ballot.getEmailStringFor($userAccessor, $pendingVoters)">$action.getText("surveyplugin.vote.voters.pending.email")</a>):
+        #set($iCounter = 0)
+        #foreach($pending in $pendingVoters)
+          #set($iCounter = $iCounter + 1)
+          #if ($config.visibleVotersWiki)
+            <a href="$req.contextPath/display/~$pending" class="url fn confluence-userlink" data-username="$pending">$pending</a>#if ($iCounter != $pendingVoters.size()),#end
+          #else
+            $pending#if ($iCounter != $voters.size()),#end
+          #end
+        #end
+      </td>
+    </tr>
+    #end
+  </tfoot>
 </table>
 #end

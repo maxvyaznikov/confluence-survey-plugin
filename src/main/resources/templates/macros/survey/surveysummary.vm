@@ -27,6 +27,9 @@
         #if ($survey.config.visibleVoters)
           <th>$action.getText("surveyplugin.vote.voters")</th>
         #end
+        #if ($survey.config.visiblePendingVoters)
+          <th>$action.getText("surveyplugin.vote.voters.pending")</th>
+        #end
       </tr>
       </thead>
       #foreach ($ballot in $survey.ballots)
@@ -61,6 +64,23 @@
                   #end
                 #end
               </i>
+            </td>
+          #end
+          #if ($survey.config.visiblePendingVoters)
+            <td>
+              <i>
+                #set($pendingVoters = $ballot.getAllPendingVoters($userAccessor))
+                #set($iCounter = 0)
+                #foreach($pending in $pendingVoters)
+                  #set($iCounter = $iCounter + 1)
+                  #if ($survey.config.visibleVotersWiki)
+                    <a href="$req.contextPath/display/~$pending" class="url fn confluence-userlink" data-username="$pending">$pending</a>#if ($iCounter != $pendingVoters.size()),#end
+                  #else
+                    $pending#if ($iCounter != $pendingVoters.size()),#end
+                  #end
+                #end
+              </i>
+              (<a href="mailto:$ballot.getEmailStringFor($userAccessor, $pendingVoters)">$action.getText("surveyplugin.vote.voters.pending.email")</a>)
             </td>
           #end
         </tr>

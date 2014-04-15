@@ -29,6 +29,7 @@
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
+      <parameter name="visiblePendingVoters" type="boolean"/>
       <parameter name="visibleVotersWiki" type="boolean"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
@@ -58,6 +59,7 @@
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
+      <parameter name="visiblePendingVoters" type="boolean"/>
       <parameter name="visibleVotersWiki" type="boolean"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
@@ -86,6 +88,7 @@
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
+      <parameter name="visiblePendingVoters" type="boolean"/>
       <parameter name="visibleVotersWiki" type="boolean"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
@@ -117,6 +120,7 @@
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="managers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
+      <parameter name="visiblePendingVoters" type="boolean"/>
       <parameter name="visibleVotersWiki" type="boolean"/>
       <parameter name="showCondensed" type="boolean"/>
       <parameter name="locked" type="boolean"/>

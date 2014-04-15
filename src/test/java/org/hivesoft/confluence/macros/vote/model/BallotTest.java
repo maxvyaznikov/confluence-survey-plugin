@@ -1,5 +1,9 @@
 package org.hivesoft.confluence.macros.vote.model;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
@@ -8,9 +12,12 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import com.atlassian.confluence.user.UserAccessor;
+import com.atlassian.user.Group;
+import com.atlassian.user.User;
 
 public class BallotTest {
 
@@ -393,6 +400,87 @@ public class BallotTest {
   }
 
   @Test
+  public void test_getAllPossibleVoters_success() {
+    // Given:
+    classUnderTest.getConfig().getVoters().add("group1");
+    classUnderTest.getConfig().getVoters().add("user2");
+    classUnderTest.getConfig().getVoters().add("group3");
+
+    Group group1 = mock(Group.class);
+    Group group3 = mock(Group.class);
+
+    UserAccessor userAccessor = mock(UserAccessor.class);
+    when(userAccessor.getGroup("group1")).thenReturn(group1);
+    when(userAccessor.getGroup("group3")).thenReturn(group3);
+    when(userAccessor.getMemberNamesAsList(group1)).thenReturn(newArrayList("user11", "user12", "user13"));
+    when(userAccessor.getMemberNamesAsList(group3)).thenReturn(newArrayList("user31", "user32"));
+
+    when(userAccessor.isDeactivated("user12")).thenReturn(true);
+
+    // When:
+    Collection<String> result = classUnderTest.getAllPossibleVoters(userAccessor);
+
+    // Then:
+    assertEquals(newArrayList("user11", "user13", "user2", "user31", "user32"), result);
+  }
+
+  @Test
+  public void test_getAllPendingVoters_success() {
+    // Given:
+    classUnderTest.getConfig().getVoters().add("group1");
+    classUnderTest.getConfig().getVoters().add("user2");
+    classUnderTest.getConfig().getVoters().add("group3");
+
+    Group group1 = mock(Group.class);
+    Group group3 = mock(Group.class);
+
+    UserAccessor userAccessor = mock(UserAccessor.class);
+    when(userAccessor.getGroup("group1")).thenReturn(group1);
+    when(userAccessor.getGroup("group3")).thenReturn(group3);
+    when(userAccessor.getMemberNamesAsList(group1)).thenReturn(newArrayList("user11", "user12", "user13"));
+    when(userAccessor.getMemberNamesAsList(group3)).thenReturn(newArrayList("user31", "user32"));
+
+    when(userAccessor.isDeactivated("user12")).thenReturn(true);
+
+    Choice someChoiceOne = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "ONE");
+    someChoiceOne.voteFor("user21");
+    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    someChoiceTwo.voteFor("user11");
+    someChoiceOne.voteFor("user12"); // user has voted but is now deactivated
+    someChoiceOne.voteFor("user4"); // user has voted but is now deleted
+    someChoiceTwo.voteFor("user32");
+
+    classUnderTest.addChoice(someChoiceOne);
+    classUnderTest.addChoice(someChoiceTwo);
+
+    // When:
+    Collection<String> result = classUnderTest.getAllPendingVoters(userAccessor);
+
+    // Then:
+    assertEquals(newArrayList("user13", "user2", "user31"), result);
+  }
+
+  @Test
+  public void test_getEmailStringFor_success() {
+    // Given:
+    User user1 = mock(User.class);
+    when(user1.getEmail()).thenReturn("user1@example.com");
+    User user2 = mock(User.class);
+    when(user2.getEmail()).thenReturn("user2@ext.example.com");
+
+    UserAccessor userAccessor = mock(UserAccessor.class);
+    when(userAccessor.getUser("user1")).thenReturn(user1);
+    when(userAccessor.getUser("user2")).thenReturn(user2);
+
+    // When:
+    String result = classUnderTest.getEmailStringFor(userAccessor, newArrayList("user1", "user2"));
+
+    // Then:
+    assertEquals("user1@example.com,user2@ext.example.com", result);
+  }
+
+
+    @Test
   public void test_equalsAndHashCode_success() {
     Ballot classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()));
 
