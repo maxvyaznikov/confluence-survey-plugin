@@ -33,6 +33,7 @@ public class VoteConfig {
   public static final String KEY_MANAGERS = "managers";
   protected static final String KEY_SHOW_COMMENTS = "showComments";
   protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
+  protected static final String KEY_VISIBLE_PENDING_VOTERS = "visiblePendingVoters";
   protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
   public static final String KEY_LOCKED = "locked";
   public static final String KEY_START_BOUND = "startBound";
@@ -47,6 +48,7 @@ public class VoteConfig {
   protected boolean showComments;
   private boolean locked;
   private boolean visibleVoters;
+  private final boolean visiblePendingVoters;
   private boolean showCondensed;
 
   private boolean visibleVotersWiki;
@@ -80,6 +82,8 @@ public class VoteConfig {
     canManageSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, remoteUsername);
 
     visibleVoters = permissionEvaluator.getCanSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
+    visiblePendingVoters = permissionEvaluator.getCanSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS),
+      canSeeResults) && !voters.isEmpty();
     visibleVotersWiki = SurveyUtils.getBooleanFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
 
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
@@ -106,6 +110,7 @@ public class VoteConfig {
     canManageSurvey = surveyConfig.isCanManageSurvey();
 
     visibleVoters = surveyConfig.isVisibleVoters();
+    visiblePendingVoters = surveyConfig.isVisiblePendingVoters();
     visibleVotersWiki = surveyConfig.isVisibleVotersWiki();
 
     startBound = surveyConfig.getStartBound();
@@ -146,6 +151,10 @@ public class VoteConfig {
 
   public Boolean isVisibleVoters() {
     return visibleVoters;
+  }
+
+  public boolean isVisiblePendingVoters() {
+    return visiblePendingVoters;
   }
 
   public Boolean isVisibleVotersWiki() {
@@ -206,6 +215,7 @@ public class VoteConfig {
     if (showCondensed != that.showCondensed) return false;
     if (startBound != that.startBound) return false;
     if (visibleVoters != that.visibleVoters) return false;
+    if (visiblePendingVoters != that.visiblePendingVoters) return false;
     if (visibleVotersWiki != that.visibleVotersWiki) return false;
     if (managers != null ? !managers.equals(that.managers) : that.managers != null) return false;
     if (renderProblems != null ? !renderProblems.equals(that.renderProblems) : that.renderProblems != null) return false;
@@ -225,6 +235,7 @@ public class VoteConfig {
     result = 31 * result + (showComments ? 1 : 0);
     result = 31 * result + (locked ? 1 : 0);
     result = 31 * result + (visibleVoters ? 1 : 0);
+    result = 31 * result + (visiblePendingVoters ? 1 : 0);
     result = 31 * result + (visibleVotersWiki ? 1 : 0);
     result = 31 * result + (canSeeResults ? 1 : 0);
     result = 31 * result + (canTakeSurvey ? 1 : 0);
@@ -247,6 +258,7 @@ public class VoteConfig {
             ", showComments=" + showComments +
             ", locked=" + locked +
             ", visibleVoters=" + visibleVoters +
+            ", visiblePendingVoters=" + visiblePendingVoters +
             ", visibleVotersWiki=" + visibleVotersWiki +
             ", canSeeResults=" + canSeeResults +
             ", canTakeSurvey=" + canTakeSurvey +

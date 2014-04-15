@@ -46,6 +46,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getViewers().size(), is(equalTo(0)));
     assertThat(classUnderTest.getManagers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
+    assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
 
@@ -73,6 +74,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getViewers().size(), is(equalTo(0)));
     assertThat(classUnderTest.getManagers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
+    assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
@@ -98,6 +100,7 @@ public class VoteConfigTest {
     parameters.put(VoteConfig.KEY_VIEWERS, CURRENT_USER_NAME + ", kirk");
     parameters.put(VoteConfig.KEY_MANAGERS, "vader, yoda");
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS, "true");
+    parameters.put(VoteConfig.KEY_VISIBLE_PENDING_VOTERS, "true");
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "true");
     parameters.put(VoteConfig.KEY_LOCKED, "true");
     parameters.put(VoteConfig.KEY_SHOW_CONDENSED, "true");
@@ -113,6 +116,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getViewers().size(), is(equalTo(2)));
     assertThat(classUnderTest.getManagers().size(), is(equalTo(2)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(true)));
+    assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(true)));
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(true)));
     assertThat(classUnderTest.isLocked(), is(equalTo(true)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(true)));
@@ -120,6 +124,21 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(false));
     assertThat(classUnderTest.isCanManageSurvey(), is(false));
+  }
+
+  @Test
+  public void test_visiblePendingVotersAlsoDependsOnVotersNotEmpty_success() {
+
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_VOTERS, " ");
+    parameters.put(VoteConfig.KEY_VISIBLE_PENDING_VOTERS, "true");
+
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+
+    assertThat(classUnderTest.getVoters().size(), is(equalTo(0)));
+    assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
   }
 
   @Test
