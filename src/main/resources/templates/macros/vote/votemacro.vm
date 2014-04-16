@@ -219,7 +219,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
           #if ($config.visibleVotersWiki)
             <a href="$req.contextPath/display/~$pending" class="url fn confluence-userlink" data-username="$pending">$pending</a>#if ($iCounter != $pendingVoters.size()),#end
           #else
-            $pending#if ($iCounter != $voters.size()),#end
+            $pending#if ($iCounter != $pendingVoters.size()),#end
           #end
         #end
       </td>
