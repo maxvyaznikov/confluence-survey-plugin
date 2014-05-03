@@ -11,7 +11,6 @@
 package org.hivesoft.confluence.macros.vote;
 
 import com.atlassian.confluence.pages.AbstractPage;
-import com.atlassian.confluence.pages.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
@@ -82,9 +81,8 @@ public class VoteConfig {
     canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUsername);
     canManageSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, remoteUsername);
 
-    visibleVoters = permissionEvaluator.getCanSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults);
-    visiblePendingVoters = permissionEvaluator.getCanSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS),
-      canSeeResults) && !voters.isEmpty();
+    visibleVoters = permissionEvaluator.getCanSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults) && canManageSurvey;
+    visiblePendingVoters = permissionEvaluator.getCanSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS), canSeeResults) && !voters.isEmpty();
     visibleVotersWiki = SurveyUtils.getBooleanFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
 
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);

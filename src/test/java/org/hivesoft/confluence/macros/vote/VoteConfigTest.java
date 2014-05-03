@@ -115,7 +115,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getVoters().size(), is(equalTo(3)));
     assertThat(classUnderTest.getViewers().size(), is(equalTo(2)));
     assertThat(classUnderTest.getManagers().size(), is(equalTo(2)));
-    assertThat(classUnderTest.isVisibleVoters(), is(equalTo(true)));
+    assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(true)));
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(true)));
     assertThat(classUnderTest.isLocked(), is(equalTo(true)));
