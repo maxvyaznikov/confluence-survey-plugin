@@ -72,7 +72,7 @@ public class SurveyResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response getCSVExportForSurvey(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
     final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
-    //final Page page = pageManager.getPage(pageId);
+
     final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(pageId));
 
     AbstractPage page;

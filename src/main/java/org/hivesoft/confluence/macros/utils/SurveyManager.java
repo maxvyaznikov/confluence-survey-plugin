@@ -181,13 +181,18 @@ public class SurveyManager {
     }
   }
 
+  @Deprecated //for implicit voting on page queries
   public void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject) {
-    final String remoteUsername = permissionEvaluator.getRemoteUsername();
     String requestBallotTitle = request.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT);
     String requestChoice = request.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE);
     String requestVoteAction = request.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION);
 
+    recordVote(ballot, contentObject, requestBallotTitle, requestChoice, requestVoteAction);
+  }
+
+  public void recordVote(Ballot ballot, ContentEntityObject contentObject, String requestBallotTitle, String requestChoice, String requestVoteAction) {
     LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + requestVoteAction);
+    final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
     // If there is a choice, make sure the vote is for this ballot and this user can vote
     if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(remoteUsername, ballot)) {
