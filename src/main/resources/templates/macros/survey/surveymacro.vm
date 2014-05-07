@@ -65,7 +65,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
     #end
   #end
 
-  #if ($config.surveySummary=="Bottom")
+  #if ($survey.config.surveySummary=="Bottom")
     #parse ("templates/macros/survey/surveysummary.vm")
   #end
 #end
