@@ -17,6 +17,7 @@ import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFo
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
+import com.atlassian.confluence.pages.Comment;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
@@ -150,6 +151,10 @@ public class VoteMacro implements Macro {
     final ContentEntityObject contentObject = surveyManager.getPageEntityFromConversionContext(conversionContext);
 
     Ballot ballot = surveyManager.reconstructBallotFromPlainTextMacroBody(parameters, body, contentObject);
+
+    if (conversionContext.getEntity() instanceof Comment) {
+      ballot.getConfig().addRenderProblems("Voting within comments is currently unsupported. See https://github.com/drohne1673/confluence-survey-plugin/issues/25 for details");
+    }
 
     final List<String> noneUniqueTitles = new ArrayList<String>();
     if (ballot.getChoices().size() != 0) {
