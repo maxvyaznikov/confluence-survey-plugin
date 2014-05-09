@@ -17,7 +17,6 @@ import com.atlassian.confluence.content.render.xhtml.macro.annotation.RequiresFo
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
-import com.atlassian.confluence.pages.Comment;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
@@ -72,6 +71,9 @@ public class SurveyMacro implements Macro {
       final String surveyMacroTitle = StringUtils.defaultString(parameters.get(SurveyConfig.KEY_TITLE)).trim();
       if (LOG.isInfoEnabled()) {
         LOG.info("Try executing " + SURVEY_MACRO + "-macro XHtml Style with title: '" + surveyMacroTitle + "' body: '" + body + "'");
+      }
+      if (conversionContext.getEntity() == null) {
+        throw new MacroExecutionException("The survey could not be rendered. Probably this is not a persistable ContentObject");
       }
       xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
         @Override

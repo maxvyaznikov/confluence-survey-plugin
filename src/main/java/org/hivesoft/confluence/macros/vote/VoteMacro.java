@@ -98,6 +98,9 @@ public class VoteMacro implements Macro {
       LOG.error(message);
       throw new MacroExecutionException(message);
     }
+    if (conversionContext.getEntity() == null) {
+      throw new MacroExecutionException("The survey could not be rendered. Probably this is not a persistable ContentObject");
+    }
     try {
       LOG.info("Try executing " + VOTE_MACRO + "-macro XHtml Style with title: '" + voteMacroTitle + "' and body: '" + body + "'");
       xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
