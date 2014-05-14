@@ -38,7 +38,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <confluence.version>4.3.7</confluence.version>
     <confluence.data.version>4.3.7</confluence.data.version>
-    <amps.version>4.2.13</amps.version>
+    <amps.version>4.2.20</amps.version>
     <plugin.testrunner.version>1.1.1</plugin.testrunner.version>
     <!--workaround as #requireresource isnt working without templaterenderer as it seems-->
     <workaroundRequireResourcePathRelative>/download/resources/${project.groupId}.${project.artifactId}:resources</workaroundRequireResourcePathRelative>
