@@ -23,13 +23,16 @@ import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
+import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.stream.XMLOutputFactory;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
@@ -117,7 +120,10 @@ public class VoteMacroTest {
     somePage.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someTitle</ac:parameter></ac:macro><ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someVoteTitle</ac:parameter></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
 
-    Ballot ballot = new Ballot("someTitle", new VoteConfig(mock(PermissionEvaluator.class), parameters));
+    final Choice someChoice = new Choice("someChoice");
+    List<Choice> choices = new ArrayList<Choice>();
+    choices.add(someChoice);
+    Ballot ballot = new Ballot("someTitle", new VoteConfig(mock(PermissionEvaluator.class), parameters), choices);
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);

@@ -29,9 +29,6 @@ import java.util.*;
 public class SurveyManager {
   private static final Logger.Log LOG = Logger.getInstance(SurveyManager.class);
 
-  private final static List<String> DEFAULT_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"));
-  private final static List<String> DEFAULT_OLD_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"));
-
   private final static int SURVEY_BALLOT_INDEX_TITLE = 0;
   private final static int SURVEY_BALLOT_INDEX_SUB_TITLE = 1;
   private final static int SURVEY_BALLOT_INDEX_START_INLINE_CHOICES = 2;
@@ -55,25 +52,31 @@ public class SurveyManager {
    * This method will probably only work from a VoteMacro context
    */
   public Ballot reconstructBallotFromPlainTextMacroBody(Map<String, String> parameters, String plainTextMacroBody, ContentEntityObject contentObject) {
-    Ballot ballot = new Ballot(SurveyUtils.getTitleInMacroParameters(parameters), new VoteConfig(permissionEvaluator, parameters));
+    final String ballotTitle = SurveyUtils.getTitleInMacroParameters(parameters);
+    List<Choice> choices = new ArrayList<Choice>();
+
     for (StringTokenizer stringTokenizer = new StringTokenizer(plainTextMacroBody, "\r\n"); stringTokenizer.hasMoreTokens(); ) {
       String line = StringUtils.chomp(stringTokenizer.nextToken().trim());
 
       if (!StringUtils.isBlank(line) && ((line.length() == 1 && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1)) {
         Choice choice = new Choice(line);
-        ballot.addChoice(choice);
 
-        String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballot.getTitle() + "." + line);
+        String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + line);
 
         if (StringUtils.isNotBlank(votes)) {
           for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
             choice.voteFor(voteTokenizer.nextToken());
           }
         }
+
+        choices.add(choice);
       }
     }
+    final List<Comment> comments = loadCommentsForBallot(contentObject, ballotTitle);
 
-    return loadCommentsForBallot(contentObject, ballot);
+    Ballot ballot = new Ballot(ballotTitle, new VoteConfig(permissionEvaluator, parameters), choices, comments);
+
+    return ballot;
   }
 
   /**
@@ -101,16 +104,12 @@ public class SurveyManager {
   }
 
   private Ballot reconstructBallotFromSurveyRow(ContentEntityObject contentObject, Survey survey, String[] lineElements) {
-    Ballot ballot = new Ballot(lineElements[SURVEY_BALLOT_INDEX_TITLE].trim(), new VoteConfig(survey.getConfig()));
-
-    if (lineElements.length > SURVEY_BALLOT_INDEX_SUB_TITLE) {
-      ballot.setDescription(lineElements[SURVEY_BALLOT_INDEX_SUB_TITLE].trim());
-    }
-
-    ballot = loadCommentsForBallot(contentObject, ballot);
+    final String ballotTitle = lineElements[SURVEY_BALLOT_INDEX_TITLE].trim();
+    final VoteConfig config = new VoteConfig(survey.getConfig());
+    final ArrayList<Choice> choices = new ArrayList<Choice>();
 
     List<String> inlineChoiceNames = new ArrayList<String>();
-    if (!ballot.getConfig().isShowCondensed()) { // only count inline elements if its not condensed!
+    if (!config.isShowCondensed()) { // only count inline elements if its not condensed!
       for (int customChoice = SURVEY_BALLOT_INDEX_START_INLINE_CHOICES; customChoice < lineElements.length; customChoice++) {
         inlineChoiceNames.add(lineElements[customChoice].trim());
       }
@@ -120,53 +119,63 @@ public class SurveyManager {
     if (inlineChoiceNames.size() >= MINIMUM_CHOICES_COUNT) {
       choiceNames = inlineChoiceNames;
     } else if (choiceNames.isEmpty()) {
-      choiceNames = DEFAULT_CHOICE_NAMES;
+      choiceNames = SurveyUtils.DEFAULT_CHOICE_NAMES;
     }
 
     for (String choiceName : choiceNames) {
       Choice choice = new Choice(choiceName);
 
-      migrateOldDefaultVotesIfPresent(contentObject, ballot, choiceName);
+      migrateOldDefaultVotesIfPresent(contentObject, ballotTitle, choiceName);
 
-      String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + choice.getDescription());
+      String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballotTitle + "." + choice.getDescription());
       if (StringUtils.isNotBlank(votes)) {
         for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
           choice.voteFor(voteTokenizer.nextToken());
         }
       }
-      ballot.addChoice(choice);
+      choices.add(choice);
     }
+
+    final List<Comment> comments = loadCommentsForBallot(contentObject, ballotTitle);
+
+    Ballot ballot = new Ballot(ballotTitle, config, choices, comments);
+
+    if (lineElements.length > SURVEY_BALLOT_INDEX_SUB_TITLE) {
+      ballot.setDescription(lineElements[SURVEY_BALLOT_INDEX_SUB_TITLE].trim());
+    }
+
     return ballot;
   }
 
   /**
    * if this ballot is a default one, check whether there are old default items and convert see CSRVY-21 for details
    */
-  private void migrateOldDefaultVotesIfPresent(ContentEntityObject contentObject, Ballot ballot, String choiceName) {
-    if (DEFAULT_CHOICE_NAMES.contains(choiceName)) {
-      int defaultIndex = DEFAULT_CHOICE_NAMES.indexOf(choiceName);
+  private void migrateOldDefaultVotesIfPresent(ContentEntityObject contentObject, String ballotTitle, String choiceName) {
+    if (SurveyUtils.DEFAULT_CHOICE_NAMES.contains(choiceName)) {
+      int defaultIndex = SurveyUtils.DEFAULT_CHOICE_NAMES.indexOf(choiceName);
 
-      final String oldVotes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex));
+      final String oldVotes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex));
       if (StringUtils.isNotBlank(oldVotes)) {
-        contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_CHOICE_NAMES.get(defaultIndex), oldVotes);
-        contentPropertyManager.setTextProperty(contentObject, "vote." + ballot.getTitle() + "." + DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex), null);
+        contentPropertyManager.setTextProperty(contentObject, "vote." + ballotTitle + "." + SurveyUtils.DEFAULT_CHOICE_NAMES.get(defaultIndex), oldVotes);
+        contentPropertyManager.setTextProperty(contentObject, "vote." + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex), null);
       }
     }
   }
 
-  private Ballot loadCommentsForBallot(ContentEntityObject contentObject, final Ballot ballot) {
-    String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".commenters");
+  private List<Comment> loadCommentsForBallot(ContentEntityObject contentObject, String ballotTitle) {
+    List<Comment> comments = new ArrayList<Comment>();
+    final String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballotTitle + ".commenters");
 
     if (StringUtils.isNotBlank(commenters)) {
       for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens(); ) {
         String commenter = commenterTokenizer.nextToken();
         if (StringUtils.isNotBlank(commenter)) {
-          String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballot.getTitle() + ".comment." + commenter);
-          ballot.addComment(new Comment(commenter, comment));
+          String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballotTitle + ".comment." + commenter);
+          comments.add(new Comment(commenter, comment));
         }
       }
     }
-    return ballot;
+    return comments;
   }
 
   public void storeVotersForChoice(Choice choice, String ballotTitle, ContentEntityObject contentObject) {

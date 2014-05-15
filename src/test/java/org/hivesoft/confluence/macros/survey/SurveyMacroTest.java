@@ -20,6 +20,7 @@ import com.opensymphony.webwork.views.velocity.VelocityManager;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
+import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
@@ -85,8 +86,8 @@ public class SurveyMacroTest {
 
     final SurveyConfig config = new SurveyConfig(mock(PermissionEvaluator.class), parameters);
     Survey survey = new Survey(config);
-    survey.addBallot(new Ballot("Should this be exported?", config));
-    survey.addBallot(new Ballot("How do you like the modern iconSet?", config));
+    survey.addBallot(new Ballot("Should this be exported?", config, SurveyUtils.getDefaultChoices()));
+    survey.addBallot(new Ballot("How do you like the modern iconSet?", config, SurveyUtils.getDefaultChoices()));
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);
@@ -115,9 +116,9 @@ public class SurveyMacroTest {
 
     final SurveyConfig config = new SurveyConfig(mock(PermissionEvaluator.class), parameters);
     Survey survey = new Survey(config);
-    survey.addBallot(new Ballot("Should this be exported?", config));
-    survey.addBallot(new Ballot("How do you like the modern iconSet?", config));
-    survey.addBallot(new Ballot("Should this be exported?", config));
+    survey.addBallot(new Ballot("Should this be exported?", config, SurveyUtils.getDefaultChoices()));
+    survey.addBallot(new Ballot("How do you like the modern iconSet?", config, SurveyUtils.getDefaultChoices()));
+    survey.addBallot(new Ballot("Should this be exported?", config, SurveyUtils.getDefaultChoices()));
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);

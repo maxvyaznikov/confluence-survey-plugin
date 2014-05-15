@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -166,8 +167,7 @@ public class SurveyManagerTest {
   @Test
   public void test_recordVote_freshVote_success() {
     Choice choiceToVoteOn = SurveyUtilsTest.createdDefaultChoice();
-    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    ballot.addChoice(choiceToVoteOn);
+    Ballot ballot = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(choiceToVoteOn));
 
     when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
     when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
@@ -186,9 +186,7 @@ public class SurveyManagerTest {
     parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
-    Ballot ballot = SurveyUtilsTest.createBallotWithParameters(parameters);
-    ballot.addChoice(choiceAlreadyVotedOn);
-    ballot.addChoice(choiceToVoteOn);
+    Ballot ballot = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(choiceAlreadyVotedOn, choiceToVoteOn));
 
     choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
@@ -208,8 +206,7 @@ public class SurveyManagerTest {
     parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
-    Ballot ballot = SurveyUtilsTest.createBallotWithParameters(parameters);
-    ballot.addChoice(choiceAlreadyVotedOn);
+    Ballot ballot = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(choiceAlreadyVotedOn));
 
     choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
@@ -223,11 +220,9 @@ public class SurveyManagerTest {
 
   @Test
   public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesFalse_success() {
-    Choice choice = new Choice("already Voted on");
     Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    ballot.addChoice(choice);
 
-    choice.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+    ballot.getChoices().iterator().next().voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
     classUnderTest.recordVote(ballot, mockRequest, new Page());
 

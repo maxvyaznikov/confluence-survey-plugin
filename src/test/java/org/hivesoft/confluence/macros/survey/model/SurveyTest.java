@@ -1,8 +1,8 @@
 package org.hivesoft.confluence.macros.survey.model;
 
+import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
-import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -96,14 +96,11 @@ public class SurveyTest {
     Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
     Ballot someBallot2 = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE + "2");
 
-    Choice choice = new Choice("someChoice");
-    someBallot.addChoice(choice);
-
     final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
     classUnderTest.setBallots(ballots);
 
     final List<String> result = classUnderTest.getBallotTitlesWithChoiceNames();
 
-    assertThat(result.get(0), is(equalTo(SOME_BALLOT_TITLE + ".someChoice")));
+    assertThat(result.get(0), is(equalTo(SOME_BALLOT_TITLE + "." + SurveyUtils.getDefaultChoices().get(0).getDescription())));
   }
 }

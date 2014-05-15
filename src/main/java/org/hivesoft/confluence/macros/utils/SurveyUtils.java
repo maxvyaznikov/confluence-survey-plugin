@@ -17,6 +17,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
+import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.rest.AdminResource;
 
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ import java.util.Map;
 
 public class SurveyUtils {
   private static final Logger.Log LOG = Logger.getInstance(SurveyUtils.class);
+
+  final static List<String> DEFAULT_OLD_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"));
+  final static List<String> DEFAULT_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"));
 
   private static final String REGEX_COMMA_SEPARATED_STRINGS = "\\s*,[,\\s]*";
   protected static final int MAX_STORABLE_KEY_LENGTH = 200;
@@ -94,5 +98,13 @@ public class SurveyUtils {
       iconSet = AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT;
     }
     return iconSet;
+  }
+
+  public static List<Choice> getDefaultChoices() {
+    List<Choice> choices = new ArrayList<Choice>();
+    for (String choiceName : DEFAULT_CHOICE_NAMES) {
+      choices.add(new Choice(choiceName));
+    }
+    return choices;
   }
 }

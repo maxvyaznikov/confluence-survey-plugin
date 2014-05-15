@@ -5,6 +5,7 @@ import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
+import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -18,10 +19,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
 public class SurveyUtilsTest {
-  public static final String BALLOT_AND_CHOICE_NAME1 = "someBallot.withSomeChoiceName1";
-  public static final String BALLOT_AND_CHOICE_NAME2 = "someBallot.withSomeChoiceName2";
-  public static final String BALLOT_AND_CHOICE_NAME3 = "someBallot.withSomeChoiceName3";
-
   public static final String SOME_BALLOT_TITLE = "someBallotTitle";
   public static final String SOME_CHOICE_DESCRIPTION = "someChoiceDescription";
   public static final String SOME_USER_NAME = "john doe";
@@ -29,26 +26,21 @@ public class SurveyUtilsTest {
 
   @Test
   public void test_validateMaxStorableKeyLength_success() throws MacroExecutionException {
-    List<String> ballotAndChoicesWithValidLength = new ArrayList<String>();
-
-    ballotAndChoicesWithValidLength.add(BALLOT_AND_CHOICE_NAME1);
-    ballotAndChoicesWithValidLength.add(BALLOT_AND_CHOICE_NAME2);
-    ballotAndChoicesWithValidLength.add(BALLOT_AND_CHOICE_NAME3);
+    List<String> ballotAndChoicesWithValidLength = listOfBallotsWithValidKeyLength(3);
 
     final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballotAndChoicesWithValidLength);
+
     assertThat(violatingMaxStorableKeyLengthItems.size(), is(equalTo(0)));
   }
 
   @Test
   public void test_validateMaxStorableKeyLength_failure() throws MacroExecutionException {
-    List<String> ballotAndChoicesWithValidLength = new ArrayList<String>();
+    List<String> ballotAndChoicesWithInValidLength = listOfBallotsWithValidKeyLength(1);
 
-    ballotAndChoicesWithValidLength.add(getRandomString(SurveyUtils.MAX_STORABLE_KEY_LENGTH + 1));
-    ballotAndChoicesWithValidLength.add(getRandomString(SurveyUtils.MAX_STORABLE_KEY_LENGTH / 2));
+    ballotAndChoicesWithInValidLength.add(getRandomString(SurveyUtils.MAX_STORABLE_KEY_LENGTH + 1));
 
-    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballotAndChoicesWithValidLength);
+    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballotAndChoicesWithInValidLength);
 
-    System.out.println(violatingMaxStorableKeyLengthItems);
     assertThat(violatingMaxStorableKeyLengthItems.size(), is(equalTo(1)));
   }
 
@@ -70,8 +62,17 @@ public class SurveyUtilsTest {
     assertThat(twoElements, hasItems("User1", "User2"));
   }
 
-
   //****** Helper Methods ******
+
+  private List<String> listOfBallotsWithValidKeyLength(int count) {
+    List<String> ballotAndChoiceNames = new ArrayList<String>();
+
+    for (int i = 0; i < count; i++) {
+      ballotAndChoiceNames.add("someBallot.withSomeChoiceName" + i);
+    }
+    return ballotAndChoiceNames;
+  }
+
   private static String getRandomString(int length) {
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < length; i++) {
@@ -86,9 +87,25 @@ public class SurveyUtilsTest {
     return createBallotWithParameters(parameters);
   }
 
+  public static Ballot createDefaultBallotWithChoices(String title, List<Choice> choices) {
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, title);
+    return createBallotWithParametersAndChoices(parameters, choices);
+  }
+
+  public static Ballot createDefaultBallotWithComments(String title, List<Comment> comments) {
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, title);
+    return new Ballot(title, createDefaultVoteConfig(parameters), SurveyUtils.getDefaultChoices(), comments);
+  }
+
   public static Ballot createBallotWithParameters(Map<String, String> parameters) {
+    return createBallotWithParametersAndChoices(parameters, SurveyUtils.getDefaultChoices());
+  }
+
+  public static Ballot createBallotWithParametersAndChoices(Map<String, String> parameters, List<Choice> choices) {
     String titleInMacroParameters = SurveyUtils.getTitleInMacroParameters(parameters);
-    return new Ballot(titleInMacroParameters, createDefaultVoteConfig(parameters));
+    return new Ballot(titleInMacroParameters, createDefaultVoteConfig(parameters), choices);
   }
 
   public static Choice createdDefaultChoice() {
