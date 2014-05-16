@@ -138,10 +138,10 @@ public class BallotTest {
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithComments("someBallot", Arrays.asList(someComment));
 
-    final Map<String, Comment> result = classUnderTest.getComments();
+    final List<Comment> result = classUnderTest.getComments();
 
     assertEquals(1, result.size());
-    assertEquals(someComment, result.get(someComment.getUsername()));
+    assertEquals(someComment, result.get(0));
   }
 
   @Test

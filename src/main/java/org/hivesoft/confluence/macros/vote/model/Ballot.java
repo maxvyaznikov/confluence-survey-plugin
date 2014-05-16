@@ -18,7 +18,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A model object representing a voting ballot. Ballots can have several {@link Choice}s that can be voted on.
@@ -30,19 +32,17 @@ public class Ballot {
   private final VoteConfig config;
 
   private final List<Choice> choices;
-  private Map<String, Comment> comments = new LinkedHashMap<String, Comment>();
+  private final List<Comment> comments;
 
   public Ballot(String title, VoteConfig config, List<Choice> choices) {
-    this.title = title;
-    this.config = config;
-    this.choices = choices;
+    this(title, config, choices, new ArrayList<Comment>());
   }
 
   public Ballot(String title, VoteConfig config, List<Choice> choices, List<Comment> comments) {
-    this(title, config, choices);
-    for (Comment comment : comments) {
-      this.comments.put(comment.getUsername(), comment);
-    }
+    this.title = title;
+    this.config = config;
+    this.choices = choices;
+    this.comments = comments;
   }
 
   /**
@@ -82,8 +82,7 @@ public class Ballot {
    * @return the {@link Choice} the user voted on or <code>null</code> if username has not voted.
    */
   public Choice getChoiceForUserName(String username) {
-    Collection<Choice> userChoices = choices;
-    for (Choice choice : userChoices) {
+    for (Choice choice : choices) {
       if (choice.getHasVotedFor(username)) {
         return choice;
       }
@@ -126,13 +125,18 @@ public class Ballot {
    * @return The requested user's comment or null if not present.
    */
   public Comment getCommentForUser(String username) {
-    return comments.get(username);
+    for (Comment comment : comments) {
+      if (username.equals(comment.getUsername())) {
+        return comment;
+      }
+    }
+    return null;
   }
 
   /**
    * @return All comments entered for this ballot.
    */
-  public Map<String, Comment> getComments() {
+  public List<Comment> getComments() {
     return comments;
   }
 
