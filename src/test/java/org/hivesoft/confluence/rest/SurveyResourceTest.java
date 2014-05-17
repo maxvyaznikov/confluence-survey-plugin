@@ -20,8 +20,6 @@ import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
-import org.hivesoft.confluence.macros.vote.model.Choice;
-import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
 import org.junit.Before;
@@ -129,9 +127,9 @@ public class SurveyResourceTest {
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
-    final Ballot someBallot = new Ballot("Should this be exported?", someSurvey.getConfig(), SurveyUtils.getDefaultChoices());
+    final Ballot someBallot = new Ballot("Should this be exported?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices());
     someSurvey.addBallot(someBallot);
-    someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", someSurvey.getConfig(), SurveyUtils.getDefaultChoices()));
+    someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices()));
 
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     Attachment mockAttachment = mock(Attachment.class);

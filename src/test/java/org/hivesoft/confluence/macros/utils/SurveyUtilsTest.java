@@ -96,7 +96,7 @@ public class SurveyUtilsTest {
   public static Ballot createDefaultBallotWithComments(String title, List<Comment> comments) {
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, title);
-    return new Ballot(title, createDefaultVoteConfig(parameters), SurveyUtils.getDefaultChoices(), comments);
+    return new Ballot(title, "", createDefaultVoteConfig(parameters), SurveyUtils.getDefaultChoices(), comments);
   }
 
   public static Ballot createBallotWithParameters(Map<String, String> parameters) {
@@ -105,7 +105,7 @@ public class SurveyUtilsTest {
 
   public static Ballot createBallotWithParametersAndChoices(Map<String, String> parameters, List<Choice> choices) {
     String titleInMacroParameters = SurveyUtils.getTitleInMacroParameters(parameters);
-    return new Ballot(titleInMacroParameters, createDefaultVoteConfig(parameters), choices);
+    return new Ballot(titleInMacroParameters, "", createDefaultVoteConfig(parameters), choices);
   }
 
   public static Choice createdDefaultChoice() {

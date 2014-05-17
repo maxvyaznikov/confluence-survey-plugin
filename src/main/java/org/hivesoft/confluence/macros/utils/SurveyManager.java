@@ -74,7 +74,7 @@ public class SurveyManager {
     }
     final List<Comment> comments = loadCommentsForBallot(contentObject, ballotTitle);
 
-    Ballot ballot = new Ballot(ballotTitle, new VoteConfig(permissionEvaluator, parameters), choices, comments);
+    Ballot ballot = new Ballot(ballotTitle, "", new VoteConfig(permissionEvaluator, parameters), choices, comments);
 
     return ballot;
   }
@@ -138,11 +138,12 @@ public class SurveyManager {
 
     final List<Comment> comments = loadCommentsForBallot(contentObject, ballotTitle);
 
-    Ballot ballot = new Ballot(ballotTitle, config, choices, comments);
-
+    String description = "";
     if (lineElements.length > SURVEY_BALLOT_INDEX_SUB_TITLE) {
-      ballot.setDescription(lineElements[SURVEY_BALLOT_INDEX_SUB_TITLE].trim());
+      description = lineElements[SURVEY_BALLOT_INDEX_SUB_TITLE].trim();
     }
+    Ballot ballot = new Ballot(ballotTitle, description, config, choices, comments);
+
 
     return ballot;
   }

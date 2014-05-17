@@ -86,8 +86,8 @@ public class SurveyMacroTest {
 
     final SurveyConfig config = new SurveyConfig(mock(PermissionEvaluator.class), parameters);
     Survey survey = new Survey(config);
-    survey.addBallot(new Ballot("Should this be exported?", config, SurveyUtils.getDefaultChoices()));
-    survey.addBallot(new Ballot("How do you like the modern iconSet?", config, SurveyUtils.getDefaultChoices()));
+    survey.addBallot(new Ballot("Should this be exported?", "", config, SurveyUtils.getDefaultChoices()));
+    survey.addBallot(new Ballot("How do you like the modern iconSet?", "", config, SurveyUtils.getDefaultChoices()));
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);
@@ -116,9 +116,9 @@ public class SurveyMacroTest {
 
     final SurveyConfig config = new SurveyConfig(mock(PermissionEvaluator.class), parameters);
     Survey survey = new Survey(config);
-    survey.addBallot(new Ballot("Should this be exported?", config, SurveyUtils.getDefaultChoices()));
-    survey.addBallot(new Ballot("How do you like the modern iconSet?", config, SurveyUtils.getDefaultChoices()));
-    survey.addBallot(new Ballot("Should this be exported?", config, SurveyUtils.getDefaultChoices()));
+    survey.addBallot(new Ballot("Should this be exported?", "", config, SurveyUtils.getDefaultChoices()));
+    survey.addBallot(new Ballot("How do you like the modern iconSet?", "", config, SurveyUtils.getDefaultChoices()));
+    survey.addBallot(new Ballot("Should this be exported?", "", config, SurveyUtils.getDefaultChoices()));
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);

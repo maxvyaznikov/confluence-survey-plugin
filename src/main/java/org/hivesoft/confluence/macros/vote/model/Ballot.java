@@ -28,18 +28,19 @@ import java.util.List;
  */
 public class Ballot {
   private final String title;
-  private String description = "";
+  private final String description;
   private final VoteConfig config;
 
   private final List<Choice> choices;
   private final List<Comment> comments;
 
-  public Ballot(String title, VoteConfig config, List<Choice> choices) {
-    this(title, config, choices, new ArrayList<Comment>());
+  public Ballot(String title, String description, VoteConfig config, List<Choice> choices) {
+    this(title, description, config, choices, new ArrayList<Comment>());
   }
 
-  public Ballot(String title, VoteConfig config, List<Choice> choices, List<Comment> comments) {
+  public Ballot(String title, String description, VoteConfig config, List<Choice> choices, List<Comment> comments) {
     this.title = title;
+    this.description=description;
     this.config = config;
     this.choices = choices;
     this.comments = comments;
@@ -59,18 +60,8 @@ public class Ballot {
     return title.replaceAll(" ", "").toLowerCase();
   }
 
-  /**
-   * @return the description of this ballot.
-   */
   public String getDescription() {
     return description;
-  }
-
-  /**
-   * @param description - A String description of this ballot.
-   */
-  public void setDescription(String description) {
-    this.description = description;
   }
 
   public VoteConfig getConfig() {

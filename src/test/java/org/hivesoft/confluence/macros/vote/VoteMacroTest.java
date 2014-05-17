@@ -123,7 +123,7 @@ public class VoteMacroTest {
     final Choice someChoice = new Choice("someChoice");
     List<Choice> choices = new ArrayList<Choice>();
     choices.add(someChoice);
-    Ballot ballot = new Ballot("someTitle", new VoteConfig(mock(PermissionEvaluator.class), parameters), choices);
+    Ballot ballot = new Ballot("someTitle", "", new VoteConfig(mock(PermissionEvaluator.class), parameters), choices);
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);
