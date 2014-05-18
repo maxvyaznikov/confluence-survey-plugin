@@ -34,6 +34,7 @@ public class SurveyManager {
   private final static int SURVEY_BALLOT_INDEX_START_INLINE_CHOICES = 2;
 
   private final static int MINIMUM_CHOICES_COUNT = 2;
+  public static final char COMMENTERS_SEPARATOR = '|';
 
   private final ContentPropertyManager contentPropertyManager;
   private final PermissionEvaluator permissionEvaluator;
@@ -168,12 +169,9 @@ public class SurveyManager {
     final String commenters = contentPropertyManager.getTextProperty(contentObject, "survey." + ballotTitle + ".commenters");
 
     if (StringUtils.isNotBlank(commenters)) {
-      for (StringTokenizer commenterTokenizer = new StringTokenizer(commenters, "|"); commenterTokenizer.hasMoreTokens(); ) {
-        String commenter = commenterTokenizer.nextToken();
-        if (StringUtils.isNotBlank(commenter)) {
-          String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballotTitle + ".comment." + commenter);
-          comments.add(new Comment(commenter, comment));
-        }
+      for (String commenter : StringUtils.split(commenters, COMMENTERS_SEPARATOR)) {
+        String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballotTitle + ".comment." + commenter);
+        comments.add(new Comment(commenter, comment));
       }
     }
     return comments;

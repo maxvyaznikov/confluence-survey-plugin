@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -128,14 +129,24 @@ public class SurveyManagerTest {
 
     final Page somePage = new Page();
 
-    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".commenters")).thenReturn(SOME_USER1.getName());
-    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".comment." + SOME_USER1.getName())).thenReturn("someComment");
+    final String userName1 = SOME_USER1.getName();
+    final String userName2 = "someUser2";
+    final String commentUsers = userName1 + "|" + userName2;
+    final String commentForUser1 = "someComment";
+    final String commentForUser2 = "another Comment";
+    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".commenters")).thenReturn(commentUsers);
+    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".comment." + userName1)).thenReturn(commentForUser1);
+    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".comment." + userName2)).thenReturn(commentForUser2);
 
     final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, SurveyUtilsTest.createDefaultParametersWithTitle("someTitle"));
 
-    assertEquals(someBallotTitle1, returnedSurvey.getBallot(someBallotTitle1).getTitle());
-    assertEquals(someBallotTitle2, returnedSurvey.getBallot(someBallotTitle2).getTitle());
-    assertEquals("someComment", returnedSurvey.getBallot(someBallotTitle1).getCommentForUser(SOME_USER1.getName()).getComment());
+    final Ballot returnedBallot1 = returnedSurvey.getBallot(someBallotTitle1);
+
+    assertThat(returnedBallot1.getTitle(), is(someBallotTitle1));
+    assertThat(returnedSurvey.getBallot(someBallotTitle2).getTitle(), is(someBallotTitle2));
+    assertThat(returnedBallot1.getCommentForUser(userName1).getComment(), is(commentForUser1));
+    assertThat(returnedBallot1.getCommentForUser(userName2).getComment(), is(commentForUser2));
+    assertThat(returnedBallot1.getComments(), hasSize(2));
   }
 
   @Test
