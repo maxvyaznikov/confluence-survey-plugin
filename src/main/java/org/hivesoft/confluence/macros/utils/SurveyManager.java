@@ -34,7 +34,7 @@ public class SurveyManager {
   private final static int SURVEY_BALLOT_INDEX_START_INLINE_CHOICES = 2;
 
   private final static int MINIMUM_CHOICES_COUNT = 2;
-  public static final char COMMENTERS_SEPARATOR = '|';
+  protected static final char COMMENTERS_SEPARATOR = '|';
 
   private final ContentPropertyManager contentPropertyManager;
   private final PermissionEvaluator permissionEvaluator;

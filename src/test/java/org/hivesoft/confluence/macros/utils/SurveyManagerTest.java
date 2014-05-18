@@ -131,7 +131,7 @@ public class SurveyManagerTest {
 
     final String userName1 = SOME_USER1.getName();
     final String userName2 = "someUser2";
-    final String commentUsers = userName1 + "|" + userName2;
+    final String commentUsers = userName1 + SurveyManager.COMMENTERS_SEPARATOR + userName2;
     final String commentForUser1 = "someComment";
     final String commentForUser2 = "another Comment";
     when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".commenters")).thenReturn(commentUsers);
