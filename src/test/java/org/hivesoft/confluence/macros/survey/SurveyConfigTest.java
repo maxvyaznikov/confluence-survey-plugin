@@ -72,17 +72,6 @@ public class SurveyConfigTest {
     assertEquals(SurveySummary.Bottom, classUnderTest.getSurveySummary());
   }
 
-  @Test
-  public void test_equalsAndHashCode() {
-    classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.Top);
-    VoteConfig classUnderTest2 = createSurveyConfigWithSurveySummary(SurveySummary.Top);
-
-    assertFalse(classUnderTest.equals(null));
-    assertFalse(classUnderTest.equals("someString"));
-    assertThat(classUnderTest, is(equalTo(classUnderTest2)));
-    assertThat(classUnderTest.hashCode(), is(equalTo(classUnderTest2.hashCode())));
-  }
-
   private static SurveyConfig createSurveyConfigWithRenderTitleLevel(int level) {
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 

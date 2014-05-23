@@ -197,56 +197,6 @@ public class VoteConfig {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    VoteConfig that = (VoteConfig) o;
-
-    if (canManageSurvey != that.canManageSurvey) return false;
-    if (canSeeResults != that.canSeeResults) return false;
-    if (canTakeSurvey != that.canTakeSurvey) return false;
-    if (changeableVotes != that.changeableVotes) return false;
-    if (iterateStep != that.iterateStep) return false;
-    if (locked != that.locked) return false;
-    if (renderTitleLevel != that.renderTitleLevel) return false;
-    if (showComments != that.showComments) return false;
-    if (showCondensed != that.showCondensed) return false;
-    if (startBound != that.startBound) return false;
-    if (visibleVoters != that.visibleVoters) return false;
-    if (visiblePendingVoters != that.visiblePendingVoters) return false;
-    if (visibleVotersWiki != that.visibleVotersWiki) return false;
-    if (managers != null ? !managers.equals(that.managers) : that.managers != null) return false;
-    if (renderProblems != null ? !renderProblems.equals(that.renderProblems) : that.renderProblems != null) return false;
-    if (viewers != null ? !viewers.equals(that.viewers) : that.viewers != null) return false;
-    if (voters != null ? !voters.equals(that.voters) : that.voters != null) return false;
-
-    return true;
-  }
-
-  @Override
-  public int hashCode() {
-    int result = renderTitleLevel;
-    result = 31 * result + (changeableVotes ? 1 : 0);
-    result = 31 * result + (voters != null ? voters.hashCode() : 0);
-    result = 31 * result + (viewers != null ? viewers.hashCode() : 0);
-    result = 31 * result + (managers != null ? managers.hashCode() : 0);
-    result = 31 * result + (showComments ? 1 : 0);
-    result = 31 * result + (locked ? 1 : 0);
-    result = 31 * result + (visibleVoters ? 1 : 0);
-    result = 31 * result + (visiblePendingVoters ? 1 : 0);
-    result = 31 * result + (visibleVotersWiki ? 1 : 0);
-    result = 31 * result + (canSeeResults ? 1 : 0);
-    result = 31 * result + (canTakeSurvey ? 1 : 0);
-    result = 31 * result + (canManageSurvey ? 1 : 0);
-    result = 31 * result + startBound;
-    result = 31 * result + iterateStep;
-    result = 31 * result + (renderProblems != null ? renderProblems.hashCode() : 0);
-    result = 31 * result + (showCondensed ? 1 : 0);
-    return result;
-  }
-
-  @Override
   public String toString() {
     return "VoteConfig{" +
             "renderTitleLevel=" + renderTitleLevel +
