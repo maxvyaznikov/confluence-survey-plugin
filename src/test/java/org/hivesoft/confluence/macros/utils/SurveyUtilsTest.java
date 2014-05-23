@@ -114,14 +114,12 @@ public class SurveyUtilsTest {
 
   public static VoteConfig createDefaultVoteConfig(Map<String, String> parameters) {
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    VoteConfig voteConfig = new VoteConfig(mockPermissionEvaluator, parameters);
-    return voteConfig;
+    return new VoteConfig(mockPermissionEvaluator, parameters);
   }
 
   public static SurveyConfig createDefaultSurveyConfig(Map<String, String> parameters) {
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    SurveyConfig surveyConfig = new SurveyConfig(mockPermissionEvaluator, parameters);
-    return surveyConfig;
+    return new SurveyConfig(mockPermissionEvaluator, parameters);
   }
 
   public static Map<String, String> createDefaultParametersWithTitle(String title) {

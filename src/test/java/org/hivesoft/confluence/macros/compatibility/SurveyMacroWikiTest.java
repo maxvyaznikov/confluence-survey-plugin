@@ -20,9 +20,9 @@ import static org.mockito.Mockito.when;
 
 public class SurveyMacroWikiTest {
 
-  SurveyMacro mockSurveyMacro = mock(SurveyMacro.class);
+  private SurveyMacro mockSurveyMacro = mock(SurveyMacro.class);
 
-  SurveyMacroWiki classUnderTest;
+  private SurveyMacroWiki classUnderTest;
 
   @Test
   public void test_properties_success() {

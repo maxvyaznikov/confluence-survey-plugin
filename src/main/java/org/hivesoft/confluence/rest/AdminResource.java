@@ -63,9 +63,6 @@ public class AdminResource {
 
   private boolean isAdmin() {
     final String remoteUser = userManager.getRemoteUsername();
-    if (StringUtils.isNotBlank(remoteUser) && userManager.isSystemAdmin(remoteUser)) {
-      return true;
-    }
-    return false;
+    return StringUtils.isNotBlank(remoteUser) && userManager.isSystemAdmin(remoteUser);
   }
 }

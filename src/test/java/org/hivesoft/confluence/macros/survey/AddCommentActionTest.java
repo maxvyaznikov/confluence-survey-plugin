@@ -21,9 +21,9 @@ public class AddCommentActionTest {
   private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
   private final static DefaultUser SOME_USER2 = new DefaultUser("someUser2", "someUser2 FullName", "some2@testmail.de");
 
-  ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
+  private ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
 
-  AddCommentAction classUnderTest;
+  private AddCommentAction classUnderTest;
 
   @Before
   public void setup() {

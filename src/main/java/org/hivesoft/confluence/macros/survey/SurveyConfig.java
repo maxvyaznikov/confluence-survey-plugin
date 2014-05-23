@@ -19,15 +19,15 @@ public class SurveyConfig extends VoteConfig {
   public SurveyConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     super(permissionEvaluator, parameters);
     //start: parse again some parameters which are different on survey than on vote
-    renderTitleLevel = SurveyUtils.getIntegerFromString((String) parameters.get(KEY_RENDER_TITLE_LEVEL), 2);
-    showComments = SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_COMMENTS), true);
+    renderTitleLevel = SurveyUtils.getIntegerFromString(parameters.get(KEY_RENDER_TITLE_LEVEL), 2);
+    showComments = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_COMMENTS), true);
     //end
-    choices = SurveyUtils.getListFromStringCommaSeparated((String) parameters.get(KEY_CHOICES));
+    choices = SurveyUtils.getListFromStringCommaSeparated(parameters.get(KEY_CHOICES));
 
-    if (!SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_SUMMARY), true)) {
+    if (!SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_SUMMARY), true)) {
       surveySummary = SurveySummary.None;
     } else {
-      if (SurveyUtils.getBooleanFromString((String) parameters.get(KEY_SHOW_LAST), false)) {
+      if (SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_LAST), false)) {
         surveySummary = SurveySummary.Bottom;
       }
     }

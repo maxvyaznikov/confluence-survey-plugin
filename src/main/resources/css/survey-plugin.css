@@ -3,9 +3,7 @@
     background-color: #fff;
     border-radius: 7px;
     padding: 2px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #ddd;
+    border: 1px solid #ddd;
 }
 
 .greenbar-value {
@@ -99,10 +97,7 @@ td.surveyCommentPane {
 
 .surveyIcon {
     padding: 1px;
-    margin-bottom: 2px;
-    margin-top: 2px;
-    margin-left: 1px;
-    margin-right: 1px;
+    margin: 2px 1px;
 }
 
 .surveyIcon:hover {

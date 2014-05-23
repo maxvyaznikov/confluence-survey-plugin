@@ -25,10 +25,10 @@ import java.util.Map;
  */
 public class AddCommentAction extends AbstractPageAction {
   private static final Logger LOG = Logger.getLogger(AddCommentAction.class);
-  protected ContentPropertyManager contentPropertyManager;
-  protected String ballotTitle;
-  protected String ballotAnchor;
-  protected String comment;
+  private ContentPropertyManager contentPropertyManager;
+  private String ballotTitle;
+  private String ballotAnchor;
+  private String comment;
 
   /**
    * This method gets called when a post request is received and will add the comment to the indicated ballot.
