@@ -34,10 +34,6 @@ public class Ballot {
   private final List<Choice> choices;
   private final List<Comment> comments;
 
-  public Ballot(String title, String description, VoteConfig config, List<Choice> choices) {
-    this(title, description, config, choices, new ArrayList<Comment>());
-  }
-
   public Ballot(String title, String description, VoteConfig config, List<Choice> choices, List<Comment> comments) {
     this.title = title;
     this.description=description;

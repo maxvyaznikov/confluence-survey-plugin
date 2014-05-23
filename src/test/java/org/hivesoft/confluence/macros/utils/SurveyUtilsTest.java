@@ -105,7 +105,7 @@ public class SurveyUtilsTest {
 
   public static Ballot createBallotWithParametersAndChoices(Map<String, String> parameters, List<Choice> choices) {
     String titleInMacroParameters = SurveyUtils.getTitleInMacroParameters(parameters);
-    return new Ballot(titleInMacroParameters, "", createDefaultVoteConfig(parameters), choices);
+    return new Ballot(titleInMacroParameters, "", createDefaultVoteConfig(parameters), choices, new ArrayList<Comment>());
   }
 
   public static Choice createdDefaultChoice() {

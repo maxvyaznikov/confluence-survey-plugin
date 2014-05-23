@@ -42,7 +42,7 @@ public class BallotTest {
     classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
     assertEquals("", classUnderTest.getDescription());
 
-    classUnderTest = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "someDescription", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices());
+    classUnderTest = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "someDescription", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     assertEquals("someDescription", classUnderTest.getDescription());
   }
 
@@ -454,19 +454,19 @@ public class BallotTest {
   @Test
   public void test_equalsAndHashCode_success() {
     classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    Ballot classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices());
+    Ballot classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
 
     assertFalse(classUnderTest.equals("someString"));
     assertTrue(classUnderTest.equals(classUnderTest2));
     assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
     assertTrue(classUnderTest.toString().equals(classUnderTest2.toString()));
 
-    classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "someDesc", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices());
+    classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "someDesc", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     assertThat(classUnderTest, is(equalTo(classUnderTest2)));
     assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
     assertFalse(classUnderTest.toString().equals(classUnderTest2.toString()));
 
-    classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE + "2", "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices());
+    classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE + "2", "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     assertFalse(classUnderTest.equals(classUnderTest2));
     assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
   }

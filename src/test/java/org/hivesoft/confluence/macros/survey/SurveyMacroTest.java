@@ -23,12 +23,14 @@ import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
+import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.xml.stream.XMLOutputFactory;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,10 +86,7 @@ public class SurveyMacroTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
 
-    final SurveyConfig config = new SurveyConfig(mock(PermissionEvaluator.class), parameters);
-    Survey survey = new Survey(config);
-    survey.addBallot(new Ballot("Should this be exported?", "", config, SurveyUtils.getDefaultChoices()));
-    survey.addBallot(new Ballot("How do you like the modern iconSet?", "", config, SurveyUtils.getDefaultChoices()));
+    Survey survey = surveyWithBallots(parameters, "Should this be exported?", "How do you like the modern iconSet?");
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);
@@ -113,12 +112,7 @@ public class SurveyMacroTest {
             "How do you like the modern iconSet?\nShould this be exported?]]></ac:plain-text-body></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
 
-
-    final SurveyConfig config = new SurveyConfig(mock(PermissionEvaluator.class), parameters);
-    Survey survey = new Survey(config);
-    survey.addBallot(new Ballot("Should this be exported?", "", config, SurveyUtils.getDefaultChoices()));
-    survey.addBallot(new Ballot("How do you like the modern iconSet?", "", config, SurveyUtils.getDefaultChoices()));
-    survey.addBallot(new Ballot("Should this be exported?", "", config, SurveyUtils.getDefaultChoices()));
+    Survey survey = surveyWithBallots(parameters, "Should this be exported?", "How do you like the modern iconSet?", "Should this be exported?");
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);
@@ -126,5 +120,14 @@ public class SurveyMacroTest {
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), any(ContentEntityObject.class), eq(parameters))).thenReturn(survey);
 
     classUnderTest.execute(parameters, "Should this be exported?\nHow do you like the modern iconSet?\nShould this be exported?", mockConversionContext);
+  }
+
+  private Survey surveyWithBallots(Map<String, String> parameters, String... ballotTitles) {
+    final SurveyConfig config = new SurveyConfig(mock(PermissionEvaluator.class), parameters);
+    Survey survey = new Survey(config);
+    for (String ballotTitle : ballotTitles) {
+      survey.addBallot(new Ballot(ballotTitle, "", config, SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));
+    }
+    return survey;
   }
 }

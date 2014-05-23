@@ -24,6 +24,7 @@ import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
+import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
 import org.junit.After;
 import org.junit.Before;
@@ -123,7 +124,7 @@ public class VoteMacroTest {
     final Choice someChoice = new Choice("someChoice");
     List<Choice> choices = new ArrayList<Choice>();
     choices.add(someChoice);
-    Ballot ballot = new Ballot("someTitle", "", new VoteConfig(mock(PermissionEvaluator.class), parameters), choices);
+    Ballot ballot = new Ballot("someTitle", "", new VoteConfig(mock(PermissionEvaluator.class), parameters), choices, new ArrayList<Comment>());
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);

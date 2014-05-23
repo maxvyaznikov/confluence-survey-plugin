@@ -75,9 +75,7 @@ public class SurveyManager {
     }
     final List<Comment> comments = loadCommentsForBallot(contentObject, ballotTitle);
 
-    Ballot ballot = new Ballot(ballotTitle, "", new VoteConfig(permissionEvaluator, parameters), choices, comments);
-
-    return ballot;
+    return new Ballot(ballotTitle, "", new VoteConfig(permissionEvaluator, parameters), choices, comments);
   }
 
   /**
@@ -128,7 +126,7 @@ public class SurveyManager {
 
       migrateOldDefaultVotesIfPresent(contentObject, ballotTitle, choiceName);
 
-      String votes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballotTitle + "." + choice.getDescription());
+      String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + choice.getDescription());
       if (StringUtils.isNotBlank(votes)) {
         for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
           choice.voteFor(voteTokenizer.nextToken());
@@ -143,10 +141,8 @@ public class SurveyManager {
     if (lineElements.length > SURVEY_BALLOT_INDEX_SUB_TITLE) {
       description = lineElements[SURVEY_BALLOT_INDEX_SUB_TITLE].trim();
     }
-    Ballot ballot = new Ballot(ballotTitle, description, config, choices, comments);
 
-
-    return ballot;
+    return new Ballot(ballotTitle, description, config, choices, comments);
   }
 
   /**
@@ -156,10 +152,10 @@ public class SurveyManager {
     if (SurveyUtils.DEFAULT_CHOICE_NAMES.contains(choiceName)) {
       int defaultIndex = SurveyUtils.DEFAULT_CHOICE_NAMES.indexOf(choiceName);
 
-      final String oldVotes = contentPropertyManager.getTextProperty(contentObject, "vote." + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex));
+      final String oldVotes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex));
       if (StringUtils.isNotBlank(oldVotes)) {
-        contentPropertyManager.setTextProperty(contentObject, "vote." + ballotTitle + "." + SurveyUtils.DEFAULT_CHOICE_NAMES.get(defaultIndex), oldVotes);
-        contentPropertyManager.setTextProperty(contentObject, "vote." + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex), null);
+        contentPropertyManager.setTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_CHOICE_NAMES.get(defaultIndex), oldVotes);
+        contentPropertyManager.setTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex), null);
       }
     }
   }
