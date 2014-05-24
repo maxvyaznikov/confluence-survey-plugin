@@ -15,6 +15,7 @@ import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.extras.common.log.Logger;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
@@ -189,13 +190,13 @@ public class SurveyManager {
   public void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject) {
     String requestBallotTitle = request.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT);
     String requestChoice = request.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE);
-    String requestVoteAction = request.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION);
+    VoteAction voteAction = VoteAction.fromString(request.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION));
 
-    recordVote(ballot, contentObject, requestBallotTitle, requestChoice, requestVoteAction);
+    recordVote(ballot, contentObject, requestBallotTitle, requestChoice, voteAction);
   }
 
-  public void recordVote(Ballot ballot, ContentEntityObject contentObject, String requestBallotTitle, String requestChoice, String requestVoteAction) {
-    LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + requestVoteAction);
+  public void recordVote(Ballot ballot, ContentEntityObject contentObject, String requestBallotTitle, String requestChoice, VoteAction voteAction) {
+    LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + voteAction);
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
     // If there is a choice, make sure the vote is for this ballot and this user can vote
@@ -210,7 +211,7 @@ public class SurveyManager {
 
       Choice choice = ballot.getChoice(requestChoice);
 
-      if (choice != null && "vote".equalsIgnoreCase(requestVoteAction)) {
+      if (choice != null && voteAction == VoteAction.VOTE) {
         LOG.debug("recordVote: found choice in requestChoice: " + choice.getDescription());
         choice.voteFor(remoteUsername);
         storeVotersForChoice(choice, ballot.getTitle(), contentObject);
