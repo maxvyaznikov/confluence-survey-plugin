@@ -199,7 +199,7 @@ public class SurveyManager {
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
     // If there is a choice, make sure the vote is for this ballot and this user can vote
-    if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.getCanVote(remoteUsername, ballot)) {
+    if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.canVote(remoteUsername, ballot)) {
 
       // If this is a re-vote situation, then unvote first
       Choice previousChoice = ballot.getChoiceForUserName(remoteUsername);

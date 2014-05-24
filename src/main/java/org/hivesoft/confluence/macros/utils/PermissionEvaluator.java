@@ -34,20 +34,20 @@ public class PermissionEvaluator {
     this.permissionManager = permissionManager;
   }
 
-  public boolean canAttachFile(ContentEntityObject contentEntityObject) {
-    return permissionManager.hasCreatePermission(getRemoteUser(), contentEntityObject, Attachment.class);
-  }
-
-  public boolean canCreatePage(ContentEntityObject contentEntityObject) {
-    return permissionManager.hasPermission(getRemoteUser(), Permission.EDIT, contentEntityObject);
-  }
-
   public User getRemoteUser() {
     return userAccessor.getUser(getRemoteUsername());
   }
 
   public String getRemoteUsername() {
     return userManager.getRemoteUsername();
+  }
+
+  public boolean canAttachFile(ContentEntityObject contentEntityObject) {
+    return permissionManager.hasCreatePermission(getRemoteUser(), contentEntityObject, Attachment.class);
+  }
+
+  public boolean canCreatePage(ContentEntityObject contentEntityObject) {
+    return permissionManager.hasPermission(getRemoteUser(), Permission.EDIT, contentEntityObject);
   }
 
   public Boolean isPermissionListEmptyOrContainsGivenUser(List<String> listOfUsersOrGroups, String username) {
@@ -59,7 +59,6 @@ public class PermissionEvaluator {
       return Boolean.TRUE;
     }
 
-    // 1.1.7.2: next try one of the entries is a group. Check whether the user is in this group!
     for (String permittedElement : listOfUsersOrGroups) {
       if (userAccessor.hasMembership(permittedElement.trim(), username)) {
         return Boolean.TRUE;
@@ -68,10 +67,8 @@ public class PermissionEvaluator {
     return Boolean.FALSE;
   }
 
-  public boolean getCanSeeVoters(String visibleVoters, boolean canSeeResults) {
-    if (!canSeeResults || StringUtils.isBlank(visibleVoters))
-      return false;
-    return Boolean.parseBoolean(visibleVoters);
+  public boolean canSeeVoters(String visibleVoters, boolean canSeeResults) {
+    return !(!canSeeResults || StringUtils.isBlank(visibleVoters)) && Boolean.parseBoolean(visibleVoters);
   }
 
   /**
@@ -82,10 +79,7 @@ public class PermissionEvaluator {
    * @param ballot   the ballot that is about to be shown.
    * @return <code>true</code> if the user can cast a vote, <code>false</code> if they cannot.
    */
-  public Boolean getCanVote(String username, Ballot ballot) {
-    if (!isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), username)) {
-      return false;
-    }
-    return !ballot.getHasVoted(username) || ballot.getConfig().isChangeableVotes();
+  public Boolean canVote(String username, Ballot ballot) {
+    return isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), username) && (!ballot.getHasVoted(username) || ballot.getConfig().isChangeableVotes());
   }
 }

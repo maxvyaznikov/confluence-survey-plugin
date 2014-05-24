@@ -11,7 +11,6 @@
 package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.confluence.macro.MacroExecutionException;
-import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -26,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 public class SurveyUtils {
-  private static final Logger.Log LOG = Logger.getInstance(SurveyUtils.class);
-
   final static List<String> DEFAULT_OLD_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"));
   final static List<String> DEFAULT_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5-Outstanding", "4-More Than Satisfactory", "3-Satisfactory", "2-Less Than Satisfactory", "1-Unsatisfactory"));
 

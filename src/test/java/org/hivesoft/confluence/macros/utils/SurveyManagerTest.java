@@ -187,7 +187,7 @@ public class SurveyManagerTest {
     Choice choiceToVoteOn = SurveyUtilsTest.createdDefaultChoice();
     Ballot ballot = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(choiceToVoteOn));
 
-    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
     when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
 
     classUnderTest.recordVote(ballot, mockRequest, new Page());
@@ -208,7 +208,7 @@ public class SurveyManagerTest {
 
     choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
-    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
     when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
 
     classUnderTest.recordVote(ballot, mockRequest, new Page());
@@ -228,7 +228,7 @@ public class SurveyManagerTest {
 
     choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
-    when(mockPermissionEvaluator.getCanVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
     when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("unvote");
 
     classUnderTest.recordVote(ballot, mockRequest, new Page());

@@ -99,24 +99,24 @@ public class PermissionEvaluatorTest {
   @Test
   public void test_getCanSeeVoters_success() {
     //cant see results
-    assertFalse(classUnderTest.getCanSeeVoters("true", false));
+    assertFalse(classUnderTest.canSeeVoters("true", false));
     //visibleVoters Parameter null
-    assertFalse(classUnderTest.getCanSeeVoters(null, true));
+    assertFalse(classUnderTest.canSeeVoters(null, true));
     //visibleVoters Parameter not "true"
-    assertFalse(classUnderTest.getCanSeeVoters("something", true));
+    assertFalse(classUnderTest.canSeeVoters("something", true));
     //visibleVoters Parameter "true"
-    assertTrue(classUnderTest.getCanSeeVoters("true", true));
+    assertTrue(classUnderTest.canSeeVoters("true", true));
   }
 
   @Test
   public void test_getCanVote_emptyUser_success() {
-    final Boolean canVote = classUnderTest.getCanVote("", SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
+    final Boolean canVote = classUnderTest.canVote("", SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
     assertFalse(canVote);
   }
 
   @Test
   public void test_getCanVote_success() {
-    final Boolean canVote = classUnderTest.getCanVote(SOME_USER_NAME, SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
+    final Boolean canVote = classUnderTest.canVote(SOME_USER_NAME, SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
     assertTrue(canVote);
   }
 
@@ -124,7 +124,7 @@ public class PermissionEvaluatorTest {
   public void test_getCanVote_notInVotersList_success() {
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_VOTERS, "notThisUser, notThisUserEither");
-    final Boolean canVote = classUnderTest.getCanVote(SOME_USER_NAME, SurveyUtilsTest.createBallotWithParameters(parameters));
+    final Boolean canVote = classUnderTest.canVote(SOME_USER_NAME, SurveyUtilsTest.createBallotWithParameters(parameters));
     assertFalse(canVote);
   }
 
@@ -135,7 +135,7 @@ public class PermissionEvaluatorTest {
     parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_VOTERS, "notThisUser, notThisUserEither, someGroup");
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
-    final Boolean canVote = classUnderTest.getCanVote(SOME_USER_NAME, SurveyUtilsTest.createBallotWithParameters(parameters));
+    final Boolean canVote = classUnderTest.canVote(SOME_USER_NAME, SurveyUtilsTest.createBallotWithParameters(parameters));
     assertTrue(canVote);
   }
 }
