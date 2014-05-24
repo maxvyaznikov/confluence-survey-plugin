@@ -36,6 +36,7 @@ import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackAddAttachment;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackStorePage;
+import org.hivesoft.confluence.rest.exceptions.MacroReconstructionException;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
 
@@ -86,35 +87,16 @@ public class SurveyResource {
       return Response.status(Response.Status.BAD_REQUEST).entity("Currently we only support Pages and comments").build();
     }
 
-
     if (!surveyManager.getPermissionEvaluator().canAttachFile(page)) {
       return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).entity("You are not authorized to add attachments and therefore cannot export surveys.").build();
     }
 
     final List<Survey> surveys = new ArrayList<Survey>();
     try {
-      xhtmlContent.handleMacroDefinitions(contentEntityObject.getBodyAsString(), new DefaultConversionContext(contentEntityObject.toPageContext()), new MacroDefinitionHandler() {
-        @Override
-        public void handle(MacroDefinition macroDefinition) {
-          if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
-            final Map<String, String> parameters = macroDefinition.getParameters();
-            String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
-            if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), contentEntityObject, macroDefinition.getParameters());
-              survey.setTitle(surveyTitle);
-              surveys.add(survey);
-            }
-          }
-        }
-      });
-    } catch (XhtmlException e) {
-      final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
-      LOG.error(message, e);
-      return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
-    }
-
-    if (surveys.isEmpty()) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Could not find the specified survey macro with title " + surveyTitle + " on the specified page!").build();
+      final List<Survey> surveysFound = reconstructSurveysByTitle(surveyTitle, page);
+      surveys.addAll(surveysFound);
+    } catch (MacroReconstructionException e) {
+      return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }
 
     Calendar currentDate = new GregorianCalendar();
@@ -235,28 +217,10 @@ public class SurveyResource {
 
     final List<Survey> surveys = new ArrayList<Survey>();
     try {
-      xhtmlContent.handleMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionHandler() {
-        @Override
-        public void handle(MacroDefinition macroDefinition) {
-          if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
-            final Map<String, String> parameters = macroDefinition.getParameters();
-            String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
-            if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
-              survey.setTitle(surveyTitle);
-              surveys.add(survey);
-            }
-          }
-        }
-      });
-    } catch (XhtmlException e) {
-      final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
-      LOG.error(message, e);
-      return Response.status(Response.Status.BAD_REQUEST).entity(message).build();
-    }
-
-    if (surveys.isEmpty()) {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Could not find the specified survey macro with title " + surveyTitle + " on the specified page!").build();
+      final List<Survey> surveysFound = reconstructSurveysByTitle(surveyTitle, page);
+      surveys.addAll(surveysFound);
+    } catch (MacroReconstructionException e) {
+      return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }
 
     //TODO: probably should add a proper permission check, e.g. is in the survey manager list
@@ -267,5 +231,34 @@ public class SurveyResource {
     }
 
     return Response.noContent().build();
+  }
+
+  private List<Survey> reconstructSurveysByTitle(final String surveyTitle, final AbstractPage page) throws MacroReconstructionException {
+    final List<Survey> surveysFound = new ArrayList<Survey>();
+    try {
+      xhtmlContent.handleMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionHandler() {
+        @Override
+        public void handle(MacroDefinition macroDefinition) {
+          if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
+            final Map<String, String> parameters = macroDefinition.getParameters();
+            String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
+            if (surveyTitle.equalsIgnoreCase(currentTitle)) {
+              final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
+              survey.setTitle(surveyTitle);
+              surveysFound.add(survey);
+            }
+          }
+        }
+      });
+    } catch (XhtmlException e) {
+      final String message = "There was a problem while parsing the Xhtml content: " + e.getMessage() + " for surveyTitle: " + surveyTitle;
+      LOG.error(message, e);
+      throw new MacroReconstructionException(message, e);
+    }
+
+    if (surveysFound.isEmpty()) {
+      throw new MacroReconstructionException("Could not find the specified survey macro with title " + surveyTitle + " on the specified page!");
+    }
+    return surveysFound;
   }
 }
