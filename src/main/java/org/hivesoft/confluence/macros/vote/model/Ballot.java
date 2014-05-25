@@ -36,7 +36,7 @@ public class Ballot {
 
   public Ballot(String title, String description, VoteConfig config, List<Choice> choices, List<Comment> comments) {
     this.title = title;
-    this.description=description;
+    this.description = description;
     this.config = config;
     this.choices = choices;
     this.comments = comments;

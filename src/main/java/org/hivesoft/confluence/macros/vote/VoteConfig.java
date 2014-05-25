@@ -39,23 +39,25 @@ public class VoteConfig {
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
   public static final String KEY_SHOW_CONDENSED = "showCondensed";
+  private static final String KEY_ANONYMOUS_MODE = "anonymousMode";
 
   protected int renderTitleLevel;
-  private boolean changeableVotes;
-  private List<String> voters;
-  private List<String> viewers;
-  private List<String> managers;
+  private final boolean changeableVotes;
+  private final List<String> voters;
+  private final List<String> viewers;
+  private final List<String> managers;
   protected boolean showComments;
-  private boolean locked;
-  private boolean visibleVoters;
+  private final boolean locked;
+  private final boolean visibleVoters;
   private final boolean visiblePendingVoters;
-  private boolean showCondensed;
+  private final boolean showCondensed;
+  private final boolean anonymous;
 
-  private boolean visibleVotersWiki;
-  private boolean canSeeResults;
-  private boolean canTakeSurvey;
+  private final boolean visibleVotersWiki;
+  private final boolean canSeeResults;
+  private final boolean canTakeSurvey;
 
-  private boolean canManageSurvey;
+  private final boolean canManageSurvey;
 
   protected int startBound = DEFAULT_START_BOUND;
   protected int iterateStep = DEFAULT_ITERATE_STEP;
@@ -74,6 +76,7 @@ public class VoteConfig {
     showComments = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_COMMENTS), false);
     locked = SurveyUtils.getBooleanFromString(parameters.get(KEY_LOCKED), false);
     showCondensed = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_CONDENSED), false);
+    anonymous = SurveyUtils.getBooleanFromString(parameters.get(KEY_ANONYMOUS_MODE), false);
 
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
@@ -103,6 +106,7 @@ public class VoteConfig {
     showComments = surveyConfig.isShowComments();
     locked = surveyConfig.isLocked();
     showCondensed = surveyConfig.isShowCondensed();
+    anonymous = surveyConfig.isAnonymous();
 
     canSeeResults = surveyConfig.isCanSeeResults();
     canTakeSurvey = surveyConfig.isCanTakeSurvey();
@@ -174,6 +178,10 @@ public class VoteConfig {
 
   public boolean isShowCondensed() {
     return showCondensed;
+  }
+
+  public boolean isAnonymous() {
+    return anonymous;
   }
 
   public int getStartBound() {

@@ -17,6 +17,8 @@ import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
+import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.macros.vote.model.Ballot;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
