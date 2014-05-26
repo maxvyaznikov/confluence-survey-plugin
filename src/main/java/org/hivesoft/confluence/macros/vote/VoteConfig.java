@@ -39,30 +39,30 @@ public class VoteConfig {
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
   public static final String KEY_SHOW_CONDENSED = "showCondensed";
-  private static final String KEY_ANONYMOUS_MODE = "anonymousMode";
+  protected static final String KEY_ANONYMOUS_MODE = "anonymousMode";
 
-  protected int renderTitleLevel;
+  private final int renderTitleLevel;
   private final boolean changeableVotes;
   private final List<String> voters;
   private final List<String> viewers;
   private final List<String> managers;
-  protected boolean showComments;
+  private final boolean showComments;
   private final boolean locked;
   private final boolean visibleVoters;
   private final boolean visiblePendingVoters;
+  private final boolean visibleVotersWiki;
   private final boolean showCondensed;
   private final boolean anonymous;
 
-  private final boolean visibleVotersWiki;
   private final boolean canSeeResults;
   private final boolean canTakeSurvey;
-
   private final boolean canManageSurvey;
 
-  protected int startBound = DEFAULT_START_BOUND;
-  protected int iterateStep = DEFAULT_ITERATE_STEP;
+  private final int startBound;
+  private final int iterateStep;
 
-  protected List<String> renderProblems = new ArrayList<String>();
+  protected final List<String> renderProblems = new ArrayList<String>();
+
   protected final PermissionEvaluator permissionEvaluator;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
@@ -94,10 +94,8 @@ public class VoteConfig {
 
   public VoteConfig(SurveyConfig surveyConfig) {
     this.permissionEvaluator = surveyConfig.permissionEvaluator;
-    renderTitleLevel = surveyConfig.getRenderTitleLevel();
-    if (renderTitleLevel > 0) {
-      renderTitleLevel++;
-    }
+
+    renderTitleLevel = surveyConfig.getRenderTitleLevel() > 0 ? surveyConfig.getRenderTitleLevel() + 1 : 0;
 
     changeableVotes = surveyConfig.isChangeableVotes();
     voters = surveyConfig.getVoters();
@@ -217,13 +215,14 @@ public class VoteConfig {
             ", visibleVoters=" + visibleVoters +
             ", visiblePendingVoters=" + visiblePendingVoters +
             ", visibleVotersWiki=" + visibleVotersWiki +
+            ", showCondensed=" + showCondensed +
+            ", anonymous=" + anonymous +
             ", canSeeResults=" + canSeeResults +
             ", canTakeSurvey=" + canTakeSurvey +
             ", canManageSurvey=" + canManageSurvey +
             ", startBound=" + startBound +
             ", iterateStep=" + iterateStep +
             ", renderProblems=" + renderProblems +
-            ", showCondensed=" + showCondensed +
             '}';
   }
 }

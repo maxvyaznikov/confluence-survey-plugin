@@ -78,6 +78,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
+    assertThat(classUnderTest.isAnonymous(), is(false));
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(true));
@@ -104,6 +105,7 @@ public class VoteConfigTest {
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "true");
     parameters.put(VoteConfig.KEY_LOCKED, "true");
     parameters.put(VoteConfig.KEY_SHOW_CONDENSED, "true");
+    parameters.put(VoteConfig.KEY_ANONYMOUS_MODE, "true");
 
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
@@ -120,6 +122,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(true)));
     assertThat(classUnderTest.isLocked(), is(equalTo(true)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(true)));
+    assertThat(classUnderTest.isAnonymous(), is(true));
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(false));

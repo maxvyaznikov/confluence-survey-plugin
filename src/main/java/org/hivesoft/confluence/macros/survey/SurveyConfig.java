@@ -5,6 +5,7 @@ import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +18,7 @@ public class SurveyConfig extends VoteConfig {
   private List<String> choices;
 
   public SurveyConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
-    super(permissionEvaluator, parameters);
-    //start: parse again some parameters which are different on survey than on vote
-    renderTitleLevel = SurveyUtils.getIntegerFromString(parameters.get(KEY_RENDER_TITLE_LEVEL), 2);
-    showComments = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_COMMENTS), true);
-    //end
+    super(permissionEvaluator, getModifiedSurveyParameters(parameters));
     choices = SurveyUtils.getListFromStringCommaSeparated(parameters.get(KEY_CHOICES));
 
     if (!SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_SUMMARY), true)) {
@@ -31,6 +28,13 @@ public class SurveyConfig extends VoteConfig {
         surveySummary = SurveySummary.Bottom;
       }
     }
+  }
+
+  private static Map<String, String> getModifiedSurveyParameters(Map<String, String> parameters) {
+    Map<String, String> modifiedParameters = new HashMap<String, String>(parameters);
+    modifiedParameters.put(KEY_RENDER_TITLE_LEVEL, SurveyUtils.getIntegerFromString(parameters.get(KEY_RENDER_TITLE_LEVEL), 2) + "");
+    modifiedParameters.put(KEY_SHOW_COMMENTS, SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_COMMENTS), true) + "");
+    return modifiedParameters;
   }
 
   public SurveySummary getSurveySummary() {
