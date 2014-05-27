@@ -50,7 +50,7 @@ public class VoteResource {
   @POST
   @Path("/{voteTitle}/choices/{choiceName}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getCSVExportForSurvey(@PathParam("pageId") long pageId, @PathParam("voteTitle") String inVoteTitle, @PathParam("choiceName") String inChoiceName) throws UnsupportedEncodingException {
+  public Response castVote(@PathParam("pageId") long pageId, @PathParam("voteTitle") String inVoteTitle, @PathParam("choiceName") String inChoiceName) throws UnsupportedEncodingException {
     final String voteTitle = URLDecoder.decode(inVoteTitle, "UTF-8");
     final String choiceName = URLDecoder.decode(inChoiceName, "UTF-8");
 
