@@ -69,7 +69,7 @@
           #if ($survey.config.visiblePendingVoters)
             <td>
               <i>
-                #set($pendingVoters = $ballot.getAllPendingVoters($userAccessor))
+                #set($pendingVoters = $ballot.getAllPendingVoters())
                 #set($iCounter = 0)
                 #foreach($pending in $pendingVoters)
                   #set($iCounter = $iCounter + 1)
@@ -80,7 +80,7 @@
                   #end
                 #end
               </i>
-              (<a href="mailto:$ballot.getEmailStringFor($userAccessor, $pendingVoters)">$action.getText("surveyplugin.vote.voters.pending.email")</a>)
+              (<a href="mailto:$ballot.getEmailStringOfPendingVoters()">$action.getText("surveyplugin.vote.voters.pending.email")</a>)
             </td>
           #end
         </tr>

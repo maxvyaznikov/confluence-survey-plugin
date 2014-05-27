@@ -6,6 +6,7 @@ import com.atlassian.confluence.security.PermissionManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.user.User;
+import com.atlassian.user.impl.DefaultGroup;
 import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.junit.Before;
@@ -16,7 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -137,5 +141,51 @@ public class PermissionEvaluatorTest {
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
     final Boolean canVote = classUnderTest.canVote(SOME_USER_NAME, SurveyUtilsTest.createBallotWithParameters(parameters));
     assertTrue(canVote);
+  }
+
+  @Test
+  public void test_getUsersForGroupOrUser_oneGroupReturnsTwoUsers_success() {
+    final DefaultGroup group1 = new DefaultGroup("group1");
+    when(mockUserAccessor.getGroup("group1")).thenReturn(group1);
+    when(mockUserAccessor.getMemberNamesAsList(group1)).thenReturn(newArrayList("user1", "user2"));
+
+    final List<String> result = classUnderTest.getActiveUsersForGroupOrUser("group1");
+
+    assertThat(result, containsInAnyOrder("user1", "user2"));
+  }
+
+  @Test
+  public void test_getUsersForGroupOrUser_oneUserExistsAndIsNotDeactivated_success() {
+    final DefaultUser user1 = new DefaultUser("user1");
+    when(mockUserAccessor.getGroup(user1.getName())).thenReturn(null);
+    when(mockUserAccessor.getUser(user1.getName())).thenReturn(user1);
+    when(mockUserAccessor.isDeactivated(user1)).thenReturn(false);
+
+    final List<String> result = classUnderTest.getActiveUsersForGroupOrUser(user1.getName());
+
+    assertThat(result, containsInAnyOrder("user1"));
+  }
+
+  @Test
+  public void test_getUsersForGroupOrUser_oneUserDoesNotExist_success() {
+    final DefaultUser user1 = new DefaultUser("user1");
+    when(mockUserAccessor.getGroup(user1.getName())).thenReturn(null);
+    when(mockUserAccessor.getUser(user1.getName())).thenReturn(null);
+
+    final List<String> result = classUnderTest.getActiveUsersForGroupOrUser(user1.getName());
+
+    assertThat(result, hasSize(0));
+  }
+
+  @Test
+  public void test_getUsersForGroupOrUser_oneUserExistsButIsDeactivated_success() {
+    final DefaultUser user1 = new DefaultUser("user1");
+    when(mockUserAccessor.getGroup(user1.getName())).thenReturn(null);
+    when(mockUserAccessor.getUser(user1.getName())).thenReturn(user1);
+    when(mockUserAccessor.isDeactivated(user1)).thenReturn(true);
+
+    final List<String> result = classUnderTest.getActiveUsersForGroupOrUser(user1.getName());
+
+    assertThat(result, hasSize(0));
   }
 }

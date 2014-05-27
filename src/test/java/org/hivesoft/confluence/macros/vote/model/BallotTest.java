@@ -1,9 +1,9 @@
 package org.hivesoft.confluence.macros.vote.model;
 
-import com.atlassian.confluence.user.UserAccessor;
-import com.atlassian.user.Group;
 import com.atlassian.user.User;
+import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
@@ -14,6 +14,7 @@ import java.util.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -377,77 +378,71 @@ public class BallotTest {
     parameters.put(VoteConfig.KEY_TITLE, "someBallot");
     parameters.put(VoteConfig.KEY_VOTERS, "group1,user2,group3");
 
-    classUnderTest = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, createChoicesWithoutVotes(2));
+    final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
-    Group group1 = mock(Group.class);
-    Group group3 = mock(Group.class);
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList("user11", "user12", "user13"));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("user2")).thenReturn(newArrayList("user2"));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList("user31", "user32"));
 
-    UserAccessor userAccessor = mock(UserAccessor.class);
-    when(userAccessor.getGroup("group1")).thenReturn(group1);
-    when(userAccessor.getGroup("group3")).thenReturn(group3);
-    when(userAccessor.getMemberNamesAsList(group1)).thenReturn(newArrayList("user11", "user12", "user13"));
-    when(userAccessor.getMemberNamesAsList(group3)).thenReturn(newArrayList("user31", "user32"));
-
-    when(userAccessor.isDeactivated("user12")).thenReturn(true);
+    classUnderTest = new Ballot("someBallot", "subTitle", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
 
     // When:
-    Collection<String> result = classUnderTest.getAllPossibleVoters(userAccessor);
+    List<String> result = classUnderTest.getAllPossibleVoters();
 
     // Then:
-    assertEquals(newArrayList("user11", "user13", "user2", "user31", "user32"), result);
+    assertThat(result, containsInAnyOrder("user11", "user12", "user13", "user2", "user31", "user32"));
   }
 
   @Test
   public void test_getAllPendingVoters_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "ONE");
-    someChoice.voteFor("user21");
+    Choice someChoiceOne = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "ONE");
+    someChoiceOne.voteFor("user21");
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
     someChoiceTwo.voteFor("user11");
-    someChoice.voteFor("user12"); // user has voted but is now deactivated
-    someChoice.voteFor("user4"); // user has voted but is now deleted
+    someChoiceOne.voteFor("user12"); // user has voted but is now deactivated
+    someChoiceOne.voteFor("user4"); // user has voted but is now deleted
     someChoiceTwo.voteFor("user32");
 
 
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someBallotTitle");
     parameters.put(VoteConfig.KEY_VOTERS, "group1, user2, group3");
-    classUnderTest = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(someChoice, someChoiceTwo));
 
-    Group group1 = mock(Group.class);
-    Group group3 = mock(Group.class);
+    final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    classUnderTest = new Ballot("someBallotTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), newArrayList(someChoiceOne, someChoiceTwo), new ArrayList<Comment>());
 
-    UserAccessor userAccessor = mock(UserAccessor.class);
-    when(userAccessor.getGroup("group1")).thenReturn(group1);
-    when(userAccessor.getGroup("group3")).thenReturn(group3);
-    when(userAccessor.getMemberNamesAsList(group1)).thenReturn(newArrayList("user11", "user12", "user13"));
-    when(userAccessor.getMemberNamesAsList(group3)).thenReturn(newArrayList("user31", "user32"));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList("user11", "user12", "user13"));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("user2")).thenReturn(newArrayList("user2"));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList("user31", "user32"));
 
-    when(userAccessor.isDeactivated("user12")).thenReturn(true);
+    Collection<String> result = classUnderTest.getAllPendingVoters();
 
-    Collection<String> result = classUnderTest.getAllPendingVoters(userAccessor);
-
-    assertEquals(newArrayList("user13", "user2", "user31"), result);
+    assertThat(result, containsInAnyOrder("user13", "user2", "user31"));
   }
 
   @Test
   public void test_getEmailStringFor_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot("someBallot");
 
     // Given:
-    User user1 = mock(User.class);
-    when(user1.getEmail()).thenReturn("user1@example.com");
-    User user2 = mock(User.class);
-    when(user2.getEmail()).thenReturn("user2@ext.example.com");
+    User user1 = new DefaultUser("user1", "user one", "user1@example.com");
+    User user2 = new DefaultUser("user2", "user two", "user2@ext.example.com");
 
-    UserAccessor userAccessor = mock(UserAccessor.class);
-    when(userAccessor.getUser("user1")).thenReturn(user1);
-    when(userAccessor.getUser("user2")).thenReturn(user2);
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, "someTitle");
+    parameters.put(VoteConfig.KEY_VOTERS, user1.getName() + "," + user2.getName());
+
+    final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(user1.getName())).thenReturn(newArrayList(user1.getName()));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(user2.getName())).thenReturn(newArrayList(user2.getName()));
+    when(mockPermissionEvaluator.getUserByName(user1.getName())).thenReturn(user1);
+    when(mockPermissionEvaluator.getUserByName(user2.getName())).thenReturn(user2);
+    classUnderTest = new Ballot("someTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
 
     // When:
-    String result = classUnderTest.getEmailStringFor(userAccessor, newArrayList("user1", "user2"));
+    String result = classUnderTest.getEmailStringOfPendingVoters();
 
     // Then:
-    assertEquals("user1@example.com,user2@ext.example.com", result);
+    assertThat(result, is("user1@example.com,user2@ext.example.com"));
   }
 
 

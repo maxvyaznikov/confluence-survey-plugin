@@ -11,6 +11,8 @@
 package org.hivesoft.confluence.macros.vote;
 
 import com.atlassian.confluence.pages.AbstractPage;
+import com.atlassian.user.User;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
@@ -200,6 +202,18 @@ public class VoteConfig {
 
   public List<String> getRenderProblems() {
     return renderProblems;
+  }
+
+  public List<String> getAllPossibleVoters() {
+    List<String> userNames = Lists.newArrayList();
+    for (String configuredVoter : voters) {
+      userNames.addAll(permissionEvaluator.getActiveUsersForGroupOrUser(configuredVoter));
+    }
+    return userNames;
+  }
+
+  public User getUserByName(String voter) {
+    return permissionEvaluator.getUserByName(voter);
   }
 
   @Override

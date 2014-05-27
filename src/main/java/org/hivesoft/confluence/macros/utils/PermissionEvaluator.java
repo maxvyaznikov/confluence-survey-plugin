@@ -16,10 +16,12 @@ import com.atlassian.confluence.security.Permission;
 import com.atlassian.confluence.security.PermissionManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
+import com.atlassian.user.Group;
 import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PermissionEvaluator {
@@ -81,5 +83,27 @@ public class PermissionEvaluator {
    */
   public Boolean canVote(String username, Ballot ballot) {
     return isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), username) && (!ballot.getHasVoted(username) || ballot.getConfig().isChangeableVotes());
+  }
+
+  public List<String> getActiveUsersForGroupOrUser(String configuredVoter) {
+    List<String> userNames = new ArrayList<String>();
+    Group group = userAccessor.getGroup(configuredVoter);
+    if (group == null) {
+      final User user = userAccessor.getUser(configuredVoter);
+      if (user != null && !userAccessor.isDeactivated(user)) {
+        userNames.add(configuredVoter);
+      }
+    } else {
+      for (String userName : userAccessor.getMemberNamesAsList(group)) {
+        if (!userAccessor.isDeactivated(userName)) {
+          userNames.add(userName);
+        }
+      }
+    }
+    return userNames;
+  }
+
+  public User getUserByName(String voter) {
+    return userAccessor.getUser(voter);
   }
 }

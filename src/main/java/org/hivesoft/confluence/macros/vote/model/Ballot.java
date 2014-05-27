@@ -10,12 +10,9 @@
  */
 package org.hivesoft.confluence.macros.vote.model;
 
-import com.atlassian.confluence.user.UserAccessor;
-import com.atlassian.user.Group;
 import com.atlassian.user.User;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 
 import java.util.ArrayList;
@@ -135,69 +132,42 @@ public class Ballot {
   public Collection<String> getAllVoters() {
     List<String> voters = new ArrayList<String>();
     for (Choice choice : choices) {
-      Collection<String> choiceVoters = choice.getVoters();
-      voters.addAll(choiceVoters);
+      voters.addAll(choice.getVoters());
     }
     return voters;
   }
 
   /**
-   * Return possible <code>voters</code> determined by searching
-   * {@link VoteConfig#getVoters()} for configured users and all activated users
-   * of configured groups.
+   * Return possible <code>voters</code> determined by searching {@link VoteConfig#getVoters()}
+   * for configured users and all activated users of configured groups.
    *
-   * @param userAccessor to check whether {@code voter} is a Groups or a Users
-   *                     as well as retrieved members of groups.
-   * @return all possible Voters of the ballot. Empty list if no {@code voters}
-   * are configured. Never {@code null}.
+   * @return all possible Voters of the ballot. Empty list if no {@code voters}are configured. Never {@code null}.
    */
-  public Collection<String> getAllPossibleVoters(UserAccessor userAccessor) {
-    List<String> userNames = Lists.newArrayList();
-    for (String configuredVoter : config.getVoters()) {
-      Group group = userAccessor.getGroup(configuredVoter);
-      if (group == null) {
-        userNames.add(configuredVoter);
-      } else {
-        for (String userName : userAccessor.getMemberNamesAsList(group)) {
-          if (!userAccessor.isDeactivated(userName)) {
-            userNames.add(userName);
-          }
-        }
-      }
-    }
-    return userNames;
+  public List<String> getAllPossibleVoters() {
+    return config.getAllPossibleVoters();
   }
 
   /**
-   * Return pending {@code voters} determined by
-   * {@link #getAllPossibleVoters(UserAccessor)} - {@link #getAllVoters()}.
+   * Return pending {@code voters} determined by {@link #getAllPossibleVoters()} - {@link #getAllVoters()}.
    *
-   * @param userAccessor to check whether {@code voter} is a Groups or a Users
-   *                     as well as retrieved members of groups.
    * @return all pending {@code voters} of the ballot. Never {@code null}.
    */
-  public Collection<String> getAllPendingVoters(UserAccessor userAccessor) {
-    Collection<String> result = getAllPossibleVoters(userAccessor);
+  public Collection<String> getAllPendingVoters() {
+    List<String> result = getAllPossibleVoters();
     Iterables.removeAll(result, getAllVoters());
     return result;
   }
 
   /**
-   * Return comma separated list of email addresses for supplied {@code voters}
-   * determined by {@link #getAllPendingVoters(UserAccessor)}. {@code Voters}
-   * who cannot be found as users, will be skipped.
+   * Return comma separated list of email addresses for supplied {@code voters} determined by
+   * {@link #getAllPendingVoters()}. {@code Voters} who cannot be found as users, will be skipped.
    *
-   * @param userAccessor to retrieved {@link User} for the supplied
-   *                     {@code voters}.
-   * @param voters       a list of all {@code voters} whose email addresses should be
-   *                     included
-   * @return comma separated email addresses of supplied {@code voters}. Never
-   * {@code null}.
+   * @return comma separated email addresses of supplied {@code voters}. Never {@code null}.
    */
-  public String getEmailStringFor(UserAccessor userAccessor, Collection<String> voters) {
+  public String getEmailStringOfPendingVoters() {
     List<String> emails = new ArrayList<String>();
-    for (String voter : voters) {
-      User user = userAccessor.getUser(voter);
+    for (String voter : getAllPendingVoters()) {
+      User user = config.getUserByName(voter);
       if (user != null) {
         emails.add(user.getEmail());
       }
