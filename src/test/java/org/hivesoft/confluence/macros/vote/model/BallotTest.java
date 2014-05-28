@@ -12,8 +12,8 @@ import org.junit.Test;
 import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -44,13 +44,13 @@ public class BallotTest {
     assertEquals("", classUnderTest.getDescription());
 
     classUnderTest = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "someDescription", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
-    assertEquals("someDescription", classUnderTest.getDescription());
+    assertThat(classUnderTest.getDescription(), is("someDescription"));
   }
 
   @Test
   public void test_ballotsWithDefaults_success() {
     classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    assertNotNull(classUnderTest.getConfig());
+    assertThat(classUnderTest.getConfig(), is(notNullValue()));
   }
 
   @Test
@@ -62,8 +62,8 @@ public class BallotTest {
 
     Choice result = classUnderTest.getChoiceForUserName(SOME_EXISTING_USER_NAME);
 
-    assertEquals(someChoice, result);
-    assertTrue(classUnderTest.getHasVoted(SOME_EXISTING_USER_NAME));
+    assertThat(result, is(someChoice));
+    assertThat(classUnderTest.getHasVoted(SOME_EXISTING_USER_NAME), is(true));
   }
 
   @Test
@@ -141,21 +141,21 @@ public class BallotTest {
 
     final List<Comment> result = classUnderTest.getComments();
 
-    assertEquals(1, result.size());
-    assertEquals(someComment, result.get(0));
+    assertThat(result, hasSize(1));
+    assertThat(result.get(0), is(someComment));
   }
 
   @Test
   public void test_getCommentForUser_success() {
-    final String comment = "some crazy comment for a crazy plugin";
-    Comment someComment = new Comment(SOME_EXISTING_USER_NAME, comment);
+    final String commentString = "some crazy comment for a crazy plugin";
+    Comment someComment = new Comment(SOME_EXISTING_USER_NAME, commentString);
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithComments("someBallot", Arrays.asList(someComment));
 
     final Comment result = classUnderTest.getCommentForUser(SOME_EXISTING_USER_NAME);
 
-    assertEquals(someComment, result);
-    assertEquals(comment, someComment.getComment());
+    assertThat(result, is(someComment));
+    assertThat(someComment.getComment(), is(commentString));
   }
 
   @Test
@@ -166,13 +166,6 @@ public class BallotTest {
     assertThat(classUnderTest.getCurrentValueByIndex(0), is(1));
   }
 
-  private List<Choice> createChoicesWithoutVotes(int count) {
-    List<Choice> choices = new ArrayList<Choice>();
-    for (int i = 0; i < count; i++) {
-      choices.add(new Choice("someChoice" + i));
-    }
-    return choices;
-  }
 
   @Test
   public void test_getCurrentValueByIndex_customSteps_success() {
@@ -205,7 +198,7 @@ public class BallotTest {
 
     final float result = classUnderTest.computeAverage();
 
-    assertEquals(0.0f, result, 0.0f);
+    assertThat(result, is(0.0f));
     assertThat(classUnderTest.getAveragePercentage(), is(0));
   }
 
@@ -219,7 +212,7 @@ public class BallotTest {
 
     final float result = classUnderTest.computeAverage();
 
-    assertEquals(2.0f, result, 0.0f);
+    assertThat(result, is(2.0f));
   }
 
   @Test
@@ -233,7 +226,7 @@ public class BallotTest {
 
     final float result = classUnderTest.computeAverage();
 
-    assertEquals(2.0f, result, 0.0f);
+    assertThat(result, is(2.0f));
     assertThat(classUnderTest.getAveragePercentage(), is(50));
   }
 
@@ -299,22 +292,35 @@ public class BallotTest {
     final String format = "0.##";
     final String result = classUnderTest.computeFormattedAverage(format);
 
-    assertEquals(new java.text.DecimalFormat(format).format(-3.0), result);
+    assertThat(result, is(new java.text.DecimalFormat(format).format(-3.0)));
   }
 
   @Test
   public void test_getBounds_Default_success() {
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices("someBallot", createChoicesWithoutVotes(2));
 
-    assertEquals(SurveyConfig.DEFAULT_START_BOUND, classUnderTest.getLowerBound());
-    assertEquals(SurveyConfig.DEFAULT_START_BOUND + SurveyConfig.DEFAULT_START_BOUND * (classUnderTest.getChoices().size() - 1), classUnderTest.getUpperBound());
+    assertThat(classUnderTest.getLowerBound(), is(SurveyConfig.DEFAULT_START_BOUND));
+    assertThat(classUnderTest.getUpperBound(), is(SurveyConfig.DEFAULT_START_BOUND + SurveyConfig.DEFAULT_START_BOUND * (classUnderTest.getChoices().size() - 1)));
+  }
+
+  @Test
+  public void test_getBounds_NotDefault_success() {
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(SurveyConfig.KEY_START_BOUND, "-1");
+    parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
+
+    classUnderTest = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, createChoicesWithoutVotes(2));
+
+    assertThat(classUnderTest.getLowerBound(), is(-4));
+    assertThat(classUnderTest.getUpperBound(), is(-1));
   }
 
   @Test
   public void test_getBoundsIfNotDefault_default_success() {
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices("someBallot", createChoicesWithoutVotes(2));
 
-    assertEquals("", classUnderTest.getBoundsIfNotDefault());
+    assertThat(classUnderTest.getBoundsIfNotDefault(), is(""));
   }
 
   @Test
@@ -363,13 +369,9 @@ public class BallotTest {
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices("someBallot", Arrays.asList(someChoice, someChoiceTwo, someChoiceThree));
 
-    Collection<String> userList = new ArrayList<String>();
-    userList.add(SOME_EXISTING_USER_NAME + "TWO");
-    userList.add(SOME_EXISTING_USER_NAME + "THREE");
-
     final Collection<String> allVoters = classUnderTest.getAllVoters();
 
-    assertEquals(userList, allVoters);
+    assertThat(allVoters, containsInAnyOrder(SOME_EXISTING_USER_NAME + "TWO", SOME_EXISTING_USER_NAME + "THREE"));
   }
 
   @Test
@@ -464,5 +466,13 @@ public class BallotTest {
     classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE + "2", "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     assertFalse(classUnderTest.equals(classUnderTest2));
     assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
+  }
+
+  private List<Choice> createChoicesWithoutVotes(int count) {
+    List<Choice> choices = new ArrayList<Choice>();
+    for (int i = 0; i < count; i++) {
+      choices.add(new Choice("someChoice" + i));
+    }
+    return choices;
   }
 }
