@@ -16,6 +16,7 @@ import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import org.hivesoft.confluence.macros.enums.VoteAction;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -50,14 +51,18 @@ public class VoteResource {
   @POST
   @Path("/{voteTitle}/choices/{choiceName}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response castVote(@PathParam("pageId") long pageId, @PathParam("voteTitle") String inVoteTitle, @PathParam("choiceName") String inChoiceName) throws UnsupportedEncodingException {
-    final String voteTitle = URLDecoder.decode(inVoteTitle, "UTF-8");
+  public Response castVote(@PathParam("pageId") long pageId, @PathParam("voteTitle") String inVoteTitle, @PathParam("choiceName") String inChoiceName, String inVoteAction) throws UnsupportedEncodingException {
+    final String ballotTitle = URLDecoder.decode(inVoteTitle, "UTF-8");
     final String choiceName = URLDecoder.decode(inChoiceName, "UTF-8");
+    final VoteAction voteAction = VoteAction.fromString(inVoteAction);
 
     final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(pageId));
 
     //TODO: reconstruct ballot (surveys/votes)
-    //surveyManager.recordVote(ballot, contentEntityObject, voteTitle,..,...);
+
+    //reconstructBallotWithTitle(ballotTitle);
+
+    //surveyManager.recordVote(ballot, contentEntityObject, choiceName, voteAction);
 
     return Response.ok().build();
   }

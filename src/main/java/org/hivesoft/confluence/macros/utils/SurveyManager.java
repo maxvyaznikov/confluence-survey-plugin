@@ -192,15 +192,18 @@ public class SurveyManager {
     String requestChoice = request.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE);
     VoteAction voteAction = VoteAction.fromString(request.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION));
 
-    recordVote(ballot, contentObject, requestBallotTitle, requestChoice, voteAction);
+    //proceed only if the requested ballot is the actual ballot
+    if (ballot.getTitle().equals(requestBallotTitle)) {
+      recordVote(ballot, contentObject, requestChoice, voteAction);
+    }
   }
 
-  public void recordVote(Ballot ballot, ContentEntityObject contentObject, String requestBallotTitle, String requestChoice, VoteAction voteAction) {
-    LOG.debug("recordVote: found Ballot-Title=" + requestBallotTitle + ", choice=" + requestChoice + ", action=" + voteAction);
+  public void recordVote(Ballot ballot, ContentEntityObject contentObject, String requestChoice, VoteAction voteAction) {
+    LOG.debug("recordVote: found Ballot-Title=" + ballot.getTitle() + ", choice=" + requestChoice + ", action=" + voteAction);
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
 
-    // If there is a choice, make sure the vote is for this ballot and this user can vote
-    if (requestChoice != null && ballot.getTitle().equals(requestBallotTitle) && permissionEvaluator.canVote(remoteUsername, ballot)) {
+    // If there is a choice, make sure this user can vote
+    if (requestChoice != null && permissionEvaluator.canVote(remoteUsername, ballot)) {
 
       // If this is a re-vote situation, then unvote first
       Choice previousChoice = ballot.getChoiceForUserName(remoteUsername);
