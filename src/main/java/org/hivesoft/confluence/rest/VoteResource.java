@@ -58,6 +58,10 @@ public class VoteResource {
 
     final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(pageId));
 
+    if (contentEntityObject == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
     //TODO: reconstruct ballot (surveys/votes)
 
     //reconstructBallotWithTitle(ballotTitle);
