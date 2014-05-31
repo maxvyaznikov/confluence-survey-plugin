@@ -73,31 +73,34 @@ public class VoteResource {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
 
-    //TODO: reconstruct ballot (surveys/votes)
-
-    //reconstructBallotWithTitle(ballotTitle);
-
-    //surveyManager.recordVote(ballot, contentEntityObject, choiceName, voteAction);
+    try {
+      final Ballot ballot = reconstructBallotByTitleFromSurveyOrVote(ballotTitle, contentEntityObject);
+      surveyManager.recordVote(ballot, contentEntityObject, choiceName, voteAction);
+    } catch (MacroReconstructionException e) {
+      return Response.status(Response.Status.BAD_REQUEST).entity("There was a problem finding the specified ballot: " + e.getMessage()).build();
+    }
 
     return Response.ok().build();
   }
 
-  private List<Ballot> reconstructBallotByTitleFromSurveyOrVote(final String ballotTitle, final ContentEntityObject contentEntityObject) throws MacroReconstructionException {
+  private Ballot reconstructBallotByTitleFromSurveyOrVote(final String ballotTitle, final ContentEntityObject contentEntityObject) throws MacroReconstructionException {
     final List<Ballot> ballotsFound = new ArrayList<Ballot>();
     try {
       xhtmlContent.handleMacroDefinitions(contentEntityObject.getBodyAsString(), new DefaultConversionContext(contentEntityObject.toPageContext()), new MacroDefinitionHandler() {
                 @Override
                 public void handle(MacroDefinition macroDefinition) {
                   final Map<String, String> parameters = macroDefinition.getParameters();
-                  String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
                   if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
-                    //TODO: on a survey check the sub-items (ballots)
-
-                    final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), contentEntityObject, macroDefinition.getParameters());
-                    //survey.setTitle(surveyTitle);
-                    //<ballotsFound.add(survey);
+                    final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), contentEntityObject, parameters);
+                    final Ballot ballot = survey.getBallot(ballotTitle);
+                    if (null != ballot) {
+                      ballotsFound.add(ballot);
+                    }
                   } else if (VoteMacro.VOTE_MACRO.equals(macroDefinition.getName())) {
-                    //TODO reconstruct the ballot "directly"
+                    final Ballot ballot = surveyManager.reconstructBallotFromPlainTextMacroBody(parameters, macroDefinition.getBodyText(), contentEntityObject);
+                    if (ballot.getTitle().equals(ballotTitle)) {
+                      ballotsFound.add(ballot);
+                    }
                   }
                 }
               }
@@ -109,8 +112,10 @@ public class VoteResource {
     }
 
     if (ballotsFound.isEmpty()) {
-      throw new MacroReconstructionException("Could not find the specified survey macro with title " + ballotTitle + " on the specified page!");
+      throw new MacroReconstructionException("Could not find the specified ballot with title " + ballotTitle + " on the specified page!");
+    } else if (ballotsFound.size() > 1) {
+      throw new MacroReconstructionException("Found more than one ballot with title: " + ballotTitle + ". No Vote will be cast.");
     }
-    return ballotsFound;
+    return ballotsFound.get(0);
   }
 }
