@@ -72,17 +72,11 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       <td align="center">
         #if ($canVote && !($config.locked))
           #if ($choice.getHasVotedFor($req.remoteUser))
-            <a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=unvote#${voteAnchor}">
-              <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
-                   class="surveyIcon"/>
-            </a>
+            <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
+                 alt="$generalUtil.urlEncode($ballot.title)" title="$generalUtil.urlEncode($choice.description)"/>
           #else
             <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
                  alt="$generalUtil.urlEncode($ballot.title)" title="$generalUtil.urlEncode($choice.description)"/>
-            <!--<a href="${req.contextPath}$generalUtil.customGetPageUrl($content)&vote.choice=$generalUtil.urlEncode($choice.description)&ballot.title=$generalUtil.urlEncode($ballot.title)&vote.action=vote#${voteAnchor}">
-              <img src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16" name="vote"
-                   class="surveyIcon"/>
-            </a>-->
           #end
         #elseif ($choice.getHasVotedFor($req.remoteUser))
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>

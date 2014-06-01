@@ -170,14 +170,6 @@ public class VoteMacro implements Macro {
     final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballot.getBallotTitlesWithChoiceNames());
     ballot.getConfig().addRenderProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
 
-    if (ballot.getConfig().getRenderProblems().isEmpty()) {
-      // check if any request parameters came in to complete or incomplete tasks
-      HttpServletRequest request = ServletActionContext.getRequest();
-      if (request != null && ballot.getTitle().equals(request.getParameter(REQUEST_PARAMETER_BALLOT))) {
-        surveyManager.recordVote(ballot, request, contentObject);
-      }
-    }
-
     // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
     contextMap.put("content", contentObject);

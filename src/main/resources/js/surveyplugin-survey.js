@@ -16,7 +16,7 @@ AJS.toInit(function () {
       success: function () {
         var inlineDialog = AJS.InlineDialog(AJS.$(castVoteLink), "voteDialog",
           function (content, trigger, showPopup) {
-            content.css({"padding": "20px"}).html('<p>you successfully casted a vote.</p>');
+            content.css({"padding": "20px"}).html('<p>you successfully casted a ' + voteAction + '.</p>');
             showPopup();
             return false;
           }
@@ -84,7 +84,11 @@ AJS.toInit(function () {
   AJS.$(".castvote").click(function (e) {
     e.preventDefault();
     castVote(this, "vote");
-  })
+  });
+  AJS.$(".castunvote").click(function (e) {
+    e.preventDefault();
+    castVote(this, "unvote");
+  });
   AJS.$(".exportsurvey").click(function (e) {
     e.preventDefault();
     getCSVExport("surveys", this);

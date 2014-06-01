@@ -7,6 +7,7 @@ import com.atlassian.confluence.pages.Comment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.user.impl.DefaultUser;
+import org.hivesoft.confluence.macros.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
@@ -15,7 +16,6 @@ import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,15 +35,11 @@ public class SurveyManagerTest {
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
   PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
-  HttpServletRequest mockRequest = mock(HttpServletRequest.class);
-
   SurveyManager classUnderTest;
 
   @Before
   public void setup() {
     when(mockPermissionEvaluator.getRemoteUsername()).thenReturn(SurveyUtilsTest.SOME_USER_NAME);
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT)).thenReturn(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE)).thenReturn(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
 
     classUnderTest = new SurveyManager(mockContentPropertyManager, mockPermissionEvaluator);
   }
@@ -177,7 +173,7 @@ public class SurveyManagerTest {
     Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
     when(mockPermissionEvaluator.getRemoteUsername()).thenReturn("");
 
-    classUnderTest.recordVote(ballot, mockRequest, new Page());
+    classUnderTest.recordVote(ballot, new Page(), "someChoiceDoesn'tMatter", VoteAction.VOTE);
 
     verify(mockContentPropertyManager, times(0)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
   }
@@ -188,9 +184,8 @@ public class SurveyManagerTest {
     Ballot ballot = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(choiceToVoteOn));
 
     when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
 
-    classUnderTest.recordVote(ballot, mockRequest, new Page());
+    classUnderTest.recordVote(ballot, new Page(), choiceToVoteOn.getDescription(), VoteAction.VOTE);
 
     verify(mockContentPropertyManager, times(1)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
   }
@@ -209,9 +204,8 @@ public class SurveyManagerTest {
     choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
     when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("vote");
 
-    classUnderTest.recordVote(ballot, mockRequest, new Page());
+    classUnderTest.recordVote(ballot, new Page(), choiceToVoteOn.getDescription(), VoteAction.VOTE);
 
     verify(mockContentPropertyManager, times(2)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
   }
@@ -229,9 +223,8 @@ public class SurveyManagerTest {
     choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
     when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
-    when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION)).thenReturn("unvote");
 
-    classUnderTest.recordVote(ballot, mockRequest, new Page());
+    classUnderTest.recordVote(ballot, new Page(), choiceAlreadyVotedOn.getDescription(), VoteAction.UNVOTE);
 
     verify(mockContentPropertyManager, times(1)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
   }
@@ -242,7 +235,7 @@ public class SurveyManagerTest {
 
     ballot.getChoices().iterator().next().voteFor(SurveyUtilsTest.SOME_USER_NAME);
 
-    classUnderTest.recordVote(ballot, mockRequest, new Page());
+    classUnderTest.recordVote(ballot, new Page(), "choiceDoesn'tMatter", VoteAction.VOTE);
 
     verify(mockContentPropertyManager, times(0)).setTextProperty(any(ContentEntityObject.class), anyString(), anyString());
   }

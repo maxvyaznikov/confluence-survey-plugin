@@ -186,18 +186,6 @@ public class SurveyManager {
     }
   }
 
-  @Deprecated //for implicit voting on page queries
-  public void recordVote(Ballot ballot, HttpServletRequest request, ContentEntityObject contentObject) {
-    String requestBallotTitle = request.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT);
-    String requestChoice = request.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE);
-    VoteAction voteAction = VoteAction.fromString(request.getParameter(VoteMacro.REQUEST_PARAMETER_VOTE_ACTION));
-
-    //proceed only if the requested ballot is the actual ballot
-    if (ballot.getTitle().equals(requestBallotTitle)) {
-      recordVote(ballot, contentObject, requestChoice, voteAction);
-    }
-  }
-
   public boolean recordVote(Ballot ballot, ContentEntityObject contentObject, String requestChoice, VoteAction voteAction) {
     LOG.debug("recordVote: found Ballot-Title=" + ballot.getTitle() + ", choice=" + requestChoice + ", action=" + voteAction);
     final String remoteUsername = permissionEvaluator.getRemoteUsername();

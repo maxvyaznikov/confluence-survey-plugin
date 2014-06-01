@@ -116,10 +116,6 @@ public class SurveyMacro implements Macro {
     final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(survey.getBallotTitlesWithChoiceNames());
     survey.getConfig().addRenderProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
 
-    if (survey.getConfig().getRenderProblems().isEmpty()) {
-      castVoteIfRequestExists(contentObject, survey);
-    }
-
     // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
     contextMap.put("content", contentObject);
@@ -150,19 +146,5 @@ public class SurveyMacro implements Macro {
   @Override
   public OutputType getOutputType() {
     return OutputType.BLOCK;
-  }
-
-  private void castVoteIfRequestExists(ContentEntityObject contentObject, Survey survey) {
-    // check if any request parameters came in to vote on a ballot
-    HttpServletRequest request = ServletActionContext.getRequest();
-    if (request != null) {
-      // Try to retrieve the proper ballot
-      Ballot ballot = survey.getBallot(request.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT));
-
-      // If the ballot belongs to this macro instance
-      if (ballot != null) {
-        surveyManager.recordVote(ballot, request, contentObject);
-      }
-    }
   }
 }
