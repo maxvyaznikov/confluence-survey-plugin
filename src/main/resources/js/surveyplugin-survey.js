@@ -6,6 +6,30 @@ AJS.toInit(function () {
     baseUrl = AJS.$("meta[name='confluence-base-url']").attr("content");
   }
 
+  function castVote(castVoteLink, voteAction) {
+    AJS.$.ajax({
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/votes/" + castVoteLink.alt + "/choices/" + castVoteLink.title,
+      type: "POST",
+      dataType: "json",
+      contentType: "text/plain",
+      data: voteAction,
+      success: function () {
+        var inlineDialog = AJS.InlineDialog(AJS.$(castVoteLink), "voteDialog",
+          function (content, trigger, showPopup) {
+            content.css({"padding": "20px"}).html('<p>you successfully casted a vote.</p>');
+            showPopup();
+            return false;
+          }
+        );
+        inlineDialog.show();
+        location.reload(true); //reload the wiki page
+      },
+      error: function (xhr, status, error) {
+        alert("There was a problem casting a vote. Returned status: " + status + ", error: " + error);
+      }
+    });
+  }
+
   function getCSVExport(surveyOrVote, exportLink) {
     AJS.$.ajax({
       url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + exportLink.alt + "/export",
@@ -57,6 +81,10 @@ AJS.toInit(function () {
     }
   }
 
+  AJS.$(".castvote").click(function (e) {
+    e.preventDefault();
+    castVote(this, "vote");
+  })
   AJS.$(".exportsurvey").click(function (e) {
     e.preventDefault();
     getCSVExport("surveys", this);

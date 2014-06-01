@@ -24,15 +24,11 @@ import org.hivesoft.confluence.macros.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
-import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.rest.exceptions.MacroReconstructionException;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.UnsupportedEncodingException;
@@ -62,7 +58,9 @@ public class VoteResource {
   @POST
   @Path("/{voteTitle}/choices/{choiceName}")
   @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.TEXT_PLAIN)
   public Response castVote(@PathParam("pageId") long pageId, @PathParam("voteTitle") String inVoteTitle, @PathParam("choiceName") String inChoiceName, String inVoteAction) throws UnsupportedEncodingException {
+    LOG.debug("Entered VoteResource->castVote with pageId=" + pageId + ", inVoteTitle=" + inVoteTitle + ", inChoiceName=" + inChoiceName + ", inVoteAction=" + inVoteAction);
     final String ballotTitle = URLDecoder.decode(inVoteTitle, "UTF-8");
     final String choiceName = URLDecoder.decode(inChoiceName, "UTF-8");
     final VoteAction voteAction = VoteAction.fromString(inVoteAction);
@@ -70,7 +68,7 @@ public class VoteResource {
     final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(pageId));
 
     if (contentEntityObject == null) {
-      return Response.status(Response.Status.NOT_FOUND).build();
+      return Response.status(Response.Status.NOT_FOUND).entity("The page with id: " + pageId + " was not found").build();
     }
 
     try {

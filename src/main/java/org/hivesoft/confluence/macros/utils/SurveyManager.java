@@ -198,9 +198,10 @@ public class SurveyManager {
     }
   }
 
-  public void recordVote(Ballot ballot, ContentEntityObject contentObject, String requestChoice, VoteAction voteAction) {
+  public boolean recordVote(Ballot ballot, ContentEntityObject contentObject, String requestChoice, VoteAction voteAction) {
     LOG.debug("recordVote: found Ballot-Title=" + ballot.getTitle() + ", choice=" + requestChoice + ", action=" + voteAction);
     final String remoteUsername = permissionEvaluator.getRemoteUsername();
+    boolean voteRecorded = false;
 
     // If there is a choice, make sure this user can vote
     if (requestChoice != null && permissionEvaluator.canVote(remoteUsername, ballot)) {
@@ -210,6 +211,7 @@ public class SurveyManager {
       if (previousChoice != null && ballot.getConfig().isChangeableVotes()) {
         previousChoice.removeVoteFor(remoteUsername);
         storeVotersForChoice(previousChoice, ballot.getTitle(), contentObject);
+        voteRecorded = true;
       }
 
       Choice choice = ballot.getChoice(requestChoice);
@@ -218,8 +220,10 @@ public class SurveyManager {
         LOG.debug("recordVote: found choice in requestChoice: " + choice.getDescription());
         choice.voteFor(remoteUsername);
         storeVotersForChoice(choice, ballot.getTitle(), contentObject);
+        voteRecorded = true;
       }
     }
+    return voteRecorded;
   }
 
   /**

@@ -24,11 +24,13 @@ import org.junit.Test;
 
 import javax.ws.rs.core.Response;
 import javax.xml.stream.XMLOutputFactory;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -63,16 +65,17 @@ public class VoteResourceTest {
   }
 
   @Test
-  public void test_castVote_entityNotFound() throws Exception {
+  public void test_castVote_entityNotFound() throws UnsupportedEncodingException {
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(null);
 
     final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", "someChoiceName", VoteAction.VOTE.name());
 
     assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
+    assertThat(response.getEntity(), notNullValue());
   }
 
   @Test
-  public void test_castVote_badXhtmlContent() throws Exception {
+  public void test_castVote_badXhtmlContent() throws UnsupportedEncodingException {
     final Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<badHtmlContent>");
@@ -81,10 +84,11 @@ public class VoteResourceTest {
     final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", "someChoiceName", VoteAction.VOTE.name());
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+    assertThat(response.getEntity(), notNullValue());
   }
 
   @Test
-  public void test_castVote_foundBallotWithinSurvey_success() throws Exception {
+  public void test_castVote_foundBallotWithinSurvey_success() throws UnsupportedEncodingException {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
@@ -103,7 +107,7 @@ public class VoteResourceTest {
   }
 
   @Test
-  public void test_castVote_foundBallotDirectlyWithinVote_success() throws Exception {
+  public void test_castVote_foundBallotDirectlyWithinVote_success() throws UnsupportedEncodingException {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">" + SOME_BALLOT_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Choice1\n" +
@@ -112,6 +116,7 @@ public class VoteResourceTest {
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructBallotFromPlainTextMacroBody(any(Map.class), anyString(), eq(somePage))).thenReturn(someBallot);
+    when(mockSurveyManager.recordVote(someBallot, somePage, "Choice2", VoteAction.VOTE)).thenReturn(true);
 
     final Response response = classUnderTest.castVote(SOME_PAGE_ID, SOME_BALLOT_TITLE, "Choice2", VoteAction.VOTE.name());
 
