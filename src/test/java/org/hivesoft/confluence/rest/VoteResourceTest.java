@@ -72,6 +72,18 @@ public class VoteResourceTest {
   }
 
   @Test
+  public void test_castVote_badXhtmlContent() throws Exception {
+    final Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<badHtmlContent>");
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
+
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", "someChoiceName", VoteAction.VOTE.name());
+
+    assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+  }
+
+  @Test
   public void test_castVote_foundBallotWithinSurvey_success() throws Exception {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
