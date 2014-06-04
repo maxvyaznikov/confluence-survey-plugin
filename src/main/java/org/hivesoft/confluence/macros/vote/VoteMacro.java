@@ -148,7 +148,7 @@ public class VoteMacro implements Macro {
       throw new MacroExecutionException(e);
     }
 
-    final ContentEntityObject contentObject = surveyManager.getPageEntityFromConversionContext(conversionContext);
+    final ContentEntityObject contentObject = conversionContext.getEntity(); // surveyManager.getPageEntityFromConversionContext(conversionContext);
 
     Ballot ballot = surveyManager.reconstructBallotFromPlainTextMacroBody(parameters, body, contentObject);
 

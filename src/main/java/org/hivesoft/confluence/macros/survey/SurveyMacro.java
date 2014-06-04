@@ -23,17 +23,14 @@ import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
-import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +93,7 @@ public class SurveyMacro implements Macro {
       throw new MacroExecutionException(e);
     }
 
-    ContentEntityObject contentObject = surveyManager.getPageEntityFromConversionContext(conversionContext);
+    ContentEntityObject contentObject = conversionContext.getEntity(); // surveyManager.getPageEntityFromConversionContext(conversionContext);
 
     Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(body, contentObject, parameters);
 

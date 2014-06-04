@@ -16,7 +16,6 @@ import com.atlassian.confluence.content.render.xhtml.XhtmlException;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.pages.AbstractPage;
 import com.atlassian.confluence.pages.Attachment;
-import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
@@ -209,15 +208,15 @@ public class SurveyResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response resetVotes(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
     final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
-    final Page page = pageManager.getPage(pageId);
+    final ContentEntityObject contentEntityObject = pageManager.getById(pageId);
 
-    if (page == null) {
+    if (contentEntityObject == null) {
       return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
     }
 
     final List<Survey> surveys = new ArrayList<Survey>();
     try {
-      final List<Survey> surveysFound = reconstructSurveysByTitle(surveyTitle, page);
+      final List<Survey> surveysFound = reconstructSurveysByTitle(surveyTitle, contentEntityObject);
       surveys.addAll(surveysFound);
     } catch (MacroReconstructionException e) {
       return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -233,17 +232,17 @@ public class SurveyResource {
     return Response.noContent().build();
   }
 
-  private List<Survey> reconstructSurveysByTitle(final String surveyTitle, final AbstractPage page) throws MacroReconstructionException {
+  private List<Survey> reconstructSurveysByTitle(final String surveyTitle, final ContentEntityObject contentEntityObject) throws MacroReconstructionException {
     final List<Survey> surveysFound = new ArrayList<Survey>();
     try {
-      xhtmlContent.handleMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionHandler() {
+      xhtmlContent.handleMacroDefinitions(contentEntityObject.getBodyAsString(), new DefaultConversionContext(contentEntityObject.toPageContext()), new MacroDefinitionHandler() {
         @Override
         public void handle(MacroDefinition macroDefinition) {
           if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
             final Map<String, String> parameters = macroDefinition.getParameters();
             String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), page.getContentEntityObject(), macroDefinition.getParameters());
+              final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), contentEntityObject, macroDefinition.getParameters());
               survey.setTitle(surveyTitle);
               surveysFound.add(survey);
             }

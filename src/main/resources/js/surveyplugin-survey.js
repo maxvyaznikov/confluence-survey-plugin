@@ -6,17 +6,24 @@ AJS.toInit(function () {
     baseUrl = AJS.$("meta[name='confluence-base-url']").attr("content");
   }
 
-  function castVote(castVoteLink, voteAction) {
+  function castVote(castVoteLink, voteActionValue) {
+    var contentId = castVoteLink.getAttribute("contentid");
+    var voteTitle = castVoteLink.alt;
+    var encodedURI = encodeURIComponent(castVoteLink.title);
     AJS.$.ajax({
-      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/votes/" + castVoteLink.alt + "/choices/" + castVoteLink.title,
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + contentId + "/votes/" + voteTitle,
       type: "POST",
       dataType: "json",
-      contentType: "text/plain",
-      data: voteAction,
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        ballotTitle: "someBallotTitle",
+        voteChoice: encodedURI,
+        voteAction: voteActionValue
+      }),
       success: function () {
         var inlineDialog = AJS.InlineDialog(AJS.$(castVoteLink), "voteDialog",
           function (content, trigger, showPopup) {
-            content.css({"padding": "20px"}).html('<p>you successfully casted a ' + voteAction + '.</p>');
+            content.css({"padding": "20px"}).html('<p>' + voteActionValue == "vote" ? AJS.I18n.getText("surveyplugin.vote.add.success") : AJS.I18n.getText("surveyplugin.vote.remove.success") + '.</p>');
             showPopup();
             return false;
           }

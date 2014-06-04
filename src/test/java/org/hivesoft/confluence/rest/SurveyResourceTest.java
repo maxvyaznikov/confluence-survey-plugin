@@ -232,7 +232,7 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">notThisSurvey</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
@@ -245,7 +245,7 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<badContent><brokenTag2><ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">notThisSurvey</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
 
@@ -260,7 +260,7 @@ public class SurveyResourceTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
 
-    when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);

@@ -27,6 +27,7 @@ import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.rest.exceptions.MacroReconstructionException;
+import org.hivesoft.confluence.rest.representations.VoteRepresentation;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -56,19 +57,19 @@ public class VoteResource {
   }
 
   @POST
-  @Path("/{voteTitle}/choices/{choiceName}")
+  @Path("/{voteTitle}")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.TEXT_PLAIN)
-  public Response castVote(@PathParam("pageId") long pageId, @PathParam("voteTitle") String inVoteTitle, @PathParam("choiceName") String inChoiceName, String inVoteAction) throws UnsupportedEncodingException {
-    LOG.debug("Entered VoteResource->castVote with pageId=" + pageId + ", inVoteTitle=" + inVoteTitle + ", inChoiceName=" + inChoiceName + ", inVoteAction=" + inVoteAction);
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response castVote(@PathParam("pageId") long contentId, @PathParam("voteTitle") String inVoteTitle, VoteRepresentation voteRepresentation) throws UnsupportedEncodingException {
+    LOG.debug("Entered VoteResource->castVote with pageId=" + contentId + ", inVoteTitle=" + inVoteTitle + ", voteRepresentation=" + voteRepresentation);
     final String ballotTitle = URLDecoder.decode(inVoteTitle, "UTF-8");
-    final String choiceName = URLDecoder.decode(inChoiceName, "UTF-8");
-    final VoteAction voteAction = VoteAction.fromString(inVoteAction);
+    final String choiceName = URLDecoder.decode(voteRepresentation.getVoteChoice(), "UTF-8");
+    final VoteAction voteAction = VoteAction.fromString(voteRepresentation.getVoteAction());
 
-    final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(pageId));
+    final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(contentId));
 
     if (contentEntityObject == null) {
-      return Response.status(Response.Status.NOT_FOUND).entity("The page with id: " + pageId + " was not found").build();
+      return Response.status(Response.Status.NOT_FOUND).entity("The contentEntity with id: " + contentId + " was not found").build();
     }
 
     try {

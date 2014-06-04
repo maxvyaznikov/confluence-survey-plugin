@@ -26,6 +26,10 @@ public class VoteRepresentation {
   @XmlElement
   private String voteAction;
 
+  public VoteRepresentation() {
+    //for jaxb
+  }
+
   public VoteRepresentation(String ballotTitle, String voteChoice, String voteAction) {
     this.ballotTitle = ballotTitle;
     this.voteChoice = voteChoice;

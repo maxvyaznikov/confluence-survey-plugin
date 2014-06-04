@@ -68,15 +68,15 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
   </thead>
   #foreach ($choice in $ballot.choices)
     <tr>
-      <td>$choice.description</td>
+      <td>#if ($choice.description.startsWith("http")) <a href="$choice.description">$choice.description</a> #else $choice.description #end</td>
       <td align="center">
         #if ($canVote && !($config.locked))
           #if ($choice.getHasVotedFor($req.remoteUser))
             <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
-                 alt="$generalUtil.urlEncode($ballot.title)" title="$generalUtil.urlEncode($choice.description)"/>
+                 alt="$generalUtil.urlEncode($ballot.title)" contentid="$content.id" title="$choice.description"/>
           #else
             <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
-                 alt="$generalUtil.urlEncode($ballot.title)" title="$generalUtil.urlEncode($choice.description)"/>
+                 alt="$generalUtil.urlEncode($ballot.title)" contentid="$content.id" title="$choice.description"/>
           #end
         #elseif ($choice.getHasVotedFor($req.remoteUser))
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>

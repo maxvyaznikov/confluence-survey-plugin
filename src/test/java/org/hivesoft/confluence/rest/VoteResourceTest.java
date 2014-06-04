@@ -19,6 +19,7 @@ import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Comment;
+import org.hivesoft.confluence.rest.representations.VoteRepresentation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,6 +46,7 @@ public class VoteResourceTest {
   VoteResource classUnderTest;
 
   private final TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
+  //private final PageManager mockPageManager = mock(PageManager.class);
   private final PageManager mockPageManager = mock(PageManager.class);
   private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
   private final I18nResolver mockI18nResolver = mock(I18nResolver.class);
@@ -68,7 +70,9 @@ public class VoteResourceTest {
   public void test_castVote_entityNotFound() throws UnsupportedEncodingException {
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(null);
 
-    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", "someChoiceName", VoteAction.VOTE.name());
+    VoteRepresentation voteRepresentation = new VoteRepresentation("someTitle", "someChoiceName", VoteAction.VOTE.name());
+
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
     assertThat(response.getEntity(), notNullValue());
@@ -81,7 +85,9 @@ public class VoteResourceTest {
     somePage.setBodyAsString("<badHtmlContent>");
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", "someChoiceName", VoteAction.VOTE.name());
+    VoteRepresentation voteRepresentation = new VoteRepresentation("someTitle", "someChoiceName", VoteAction.VOTE.name());
+
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
     assertThat(response.getEntity(), notNullValue());
@@ -101,7 +107,9 @@ public class VoteResourceTest {
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
 
-    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "How do you like the modern iconSet?", "someChoiceName", VoteAction.VOTE.name());
+    VoteRepresentation voteRepresentation = new VoteRepresentation("someTitle", "someChoiceName", VoteAction.VOTE.name());
+
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "How do you like the modern iconSet?", voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
   }
@@ -118,7 +126,9 @@ public class VoteResourceTest {
     when(mockSurveyManager.reconstructBallotFromPlainTextMacroBody(any(Map.class), anyString(), eq(somePage))).thenReturn(someBallot);
     when(mockSurveyManager.recordVote(someBallot, somePage, "Choice2", VoteAction.VOTE)).thenReturn(true);
 
-    final Response response = classUnderTest.castVote(SOME_PAGE_ID, SOME_BALLOT_TITLE, "Choice2", VoteAction.VOTE.name());
+    VoteRepresentation voteRepresentation = new VoteRepresentation("someTitle", "Choice2", VoteAction.VOTE.name());
+
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, SOME_BALLOT_TITLE, voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
   }
