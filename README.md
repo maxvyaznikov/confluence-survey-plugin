@@ -1,7 +1,7 @@
 Introduction
 ============
 
-The confluence-survey-plugin is as the name implies a plugin for Atlassian Confluence. Started quite a long time  back for compatibility to 2.1.4 to the very latest 5.4++. The latest compatibility can be accessed within the Marketplace @ https://marketplace.atlassian.com/195.
+The confluence-survey-plugin is as the name implies a plugin for Atlassian Confluence. Started quite a long time  back for compatibility to 2.1.4 to the very latest 5.5++. The latest compatibility can be accessed within the Marketplace @ https://marketplace.atlassian.com/195.
 
 Usage
 =====
