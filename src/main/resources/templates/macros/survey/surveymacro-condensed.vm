@@ -23,7 +23,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
     #set ($firstBallot = $survey.ballots.get(0))
     #set ($choiceIndex=$firstBallot.choices.size() - 1 )
     #foreach($choice in $firstBallot.choices)
-      <th>$firstBallot.getCurrentValueByIndex($choiceIndex)<br/>#if ($choice.description.startsWith("http")) <a href="$choice.description">$choice.description</a> #else $choice.description #end</th>
+      #set($choiceDescriptionWithHtml = $choice.descriptionWithRenderedLinks)
+      <th>$firstBallot.getCurrentValueByIndex($choiceIndex)<br/>$choiceDescriptionWithHtml</th>
       #set ($choiceIndex = $choiceIndex - 1)
     #end
   </tr>

@@ -68,7 +68,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
   </thead>
   #foreach ($choice in $ballot.choices)
     <tr>
-      <td>#if ($choice.description.startsWith("http")) <a href="$choice.description">$choice.description</a> #else $choice.description #end</td>
+      #set($choiceDescriptionWithHtml = $choice.descriptionWithRenderedLinks)
+      <td>$choiceDescriptionWithHtml</td>
       <td align="center">
         #if ($canVote && !($config.locked))
           #if ($choice.getHasVotedFor($req.remoteUser))

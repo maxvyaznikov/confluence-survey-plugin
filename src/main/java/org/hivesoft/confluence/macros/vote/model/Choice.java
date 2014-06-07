@@ -12,6 +12,8 @@ package org.hivesoft.confluence.macros.vote.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A model object representing an available <code>Choice</code> that can be voted for on a {@link Ballot}.
@@ -33,6 +35,19 @@ public class Choice {
    */
   public String getDescription() {
     return description;
+  }
+
+  public String getDescriptionWithRenderedLinks() {
+    //final Pattern urlPattern = Pattern.compile("((https?://)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([/\\w\\.-;]*)*/?(\\??[a-z0-9=&]*))");
+    final Pattern urlPattern = Pattern.compile("(https?://[\\da-z\\.-]+\\.[a-z\\.]{2,6}[/\\w\\.-;=]*/?\\??[a-z0-9=&]*)");
+    final Matcher matcher = urlPattern.matcher(description);
+
+    StringBuffer result = new StringBuffer();
+    while (matcher.find()) {
+      matcher.appendReplacement(result, "<a href=\"" + matcher.group() + "\">" + matcher.group() + "</a>");
+    }
+    matcher.appendTail(result);
+    return result.toString();
   }
 
   /**

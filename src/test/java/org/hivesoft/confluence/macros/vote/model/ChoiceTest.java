@@ -3,8 +3,8 @@ package org.hivesoft.confluence.macros.vote.model;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
 
 public class ChoiceTest {
 
@@ -56,5 +56,16 @@ public class ChoiceTest {
     assertTrue(classUnderTest.equals(classUnderTest2));
     assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
     assertTrue(classUnderTest.toString().equals(classUnderTest2.toString()));
+  }
+
+  @Test
+  public void test_getDescriptionWithRenderedLinks() {
+    classUnderTest = new Choice("i am a choice to http://google.de");
+    assertThat(classUnderTest.getDescriptionWithRenderedLinks(), is("i am a choice to <a href=\"http://google.de\">http://google.de</a>"));
+    classUnderTest = new Choice("i am a choice to http://google.de but https://www.google.com is also ok");
+    assertThat(classUnderTest.getDescriptionWithRenderedLinks(),
+            is("i am a choice to <a href=\"http://google.de\">http://google.de</a> but <a href=\"https://www.google.com\">https://www.google.com</a> is also ok"));
+    classUnderTest = new Choice("no link here");
+    assertThat(classUnderTest.getDescriptionWithRenderedLinks(), is("no link here"));
   }
 }
