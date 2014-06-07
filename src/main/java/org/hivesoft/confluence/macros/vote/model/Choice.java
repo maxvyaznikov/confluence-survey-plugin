@@ -38,7 +38,6 @@ public class Choice {
   }
 
   public String getDescriptionWithRenderedLinks() {
-    //final Pattern urlPattern = Pattern.compile("((https?://)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([/\\w\\.-;]*)*/?(\\??[a-z0-9=&]*))");
     final Pattern urlPattern = Pattern.compile("(https?://[\\da-z\\.-]+\\.[a-z\\.]{2,6}[/\\w\\.-;=]*/?\\??[a-z0-9=&]*)");
     final Matcher matcher = urlPattern.matcher(description);
 

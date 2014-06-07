@@ -31,6 +31,7 @@ public class VoteRepresentation {
   }
 
   public VoteRepresentation(String ballotTitle, String voteChoice, String voteAction) {
+    this();
     this.ballotTitle = ballotTitle;
     this.voteChoice = voteChoice;
     this.voteAction = voteAction;
