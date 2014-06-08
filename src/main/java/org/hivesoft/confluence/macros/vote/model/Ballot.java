@@ -13,6 +13,7 @@ package org.hivesoft.confluence.macros.vote.model;
 import com.atlassian.user.User;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 
 import java.util.ArrayList;
@@ -53,8 +54,16 @@ public class Ballot {
     return title.replaceAll(" ", "").toLowerCase();
   }
 
+  public String getTitleWithRenderedLinks() {
+    return SurveyUtils.enrichStringWithHttpPattern(title);
+  }
+
   public String getDescription() {
     return description;
+  }
+
+  public String getDescriptionWithRenderedLinks() {
+    return SurveyUtils.enrichStringWithHttpPattern(description);
   }
 
   public VoteConfig getConfig() {

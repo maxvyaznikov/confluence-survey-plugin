@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SurveyUtils {
   final static List<String> DEFAULT_OLD_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"));
@@ -103,5 +105,17 @@ public class SurveyUtils {
       choices.add(new Choice(choiceName));
     }
     return choices;
+  }
+
+  public static String enrichStringWithHttpPattern(String stringToEnrich) {
+    final Pattern urlPattern = Pattern.compile("(https?://[\\da-z\\.-]+\\.[a-z\\.]{2,6}[/\\w\\.-;=]*/?\\??[a-z0-9=&]*)");
+    final Matcher matcher = urlPattern.matcher(stringToEnrich);
+
+    StringBuffer result = new StringBuffer();
+    while (matcher.find()) {
+      matcher.appendReplacement(result, "<a href=\"" + matcher.group() + "\">" + matcher.group() + "</a>");
+    }
+    matcher.appendTail(result);
+    return result.toString();
   }
 }

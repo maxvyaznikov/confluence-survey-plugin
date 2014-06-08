@@ -57,12 +57,12 @@ public class VoteResource {
   }
 
   @POST
-  @Path("/{voteTitle}")
+  @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response castVote(@PathParam("pageId") long contentId, @PathParam("voteTitle") String inVoteTitle, VoteRepresentation voteRepresentation) throws UnsupportedEncodingException {
-    LOG.debug("Entered VoteResource->castVote with pageId=" + contentId + ", inVoteTitle=" + inVoteTitle + ", voteRepresentation=" + voteRepresentation);
-    final String ballotTitle = URLDecoder.decode(inVoteTitle, "UTF-8");
+  public Response castVote(@PathParam("pageId") long contentId, VoteRepresentation voteRepresentation) throws UnsupportedEncodingException {
+    LOG.debug("Entered VoteResource->castVote with pageId=" + contentId + ", voteRepresentation=" + voteRepresentation);
+    final String ballotTitle = URLDecoder.decode(voteRepresentation.getBallotTitle(), "UTF-8");
     final String choiceName = URLDecoder.decode(voteRepresentation.getVoteChoice(), "UTF-8");
     final VoteAction voteAction = VoteAction.fromString(voteRepresentation.getVoteAction());
 

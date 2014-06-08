@@ -72,7 +72,7 @@ public class VoteResourceTest {
 
     VoteRepresentation voteRepresentation = new VoteRepresentation("someTitle", "someChoiceName", VoteAction.VOTE.name());
 
-    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", voteRepresentation);
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
     assertThat(response.getEntity(), notNullValue());
@@ -87,7 +87,7 @@ public class VoteResourceTest {
 
     VoteRepresentation voteRepresentation = new VoteRepresentation("someTitle", "someChoiceName", VoteAction.VOTE.name());
 
-    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "someTitle", voteRepresentation);
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
     assertThat(response.getEntity(), notNullValue());
@@ -107,9 +107,9 @@ public class VoteResourceTest {
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
 
-    VoteRepresentation voteRepresentation = new VoteRepresentation("someTitle", "someChoiceName", VoteAction.VOTE.name());
+    VoteRepresentation voteRepresentation = new VoteRepresentation("How do you like the modern iconSet?", "someChoiceName", VoteAction.VOTE.name());
 
-    final Response response = classUnderTest.castVote(SOME_PAGE_ID, "How do you like the modern iconSet?", voteRepresentation);
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
   }
@@ -126,9 +126,9 @@ public class VoteResourceTest {
     when(mockSurveyManager.reconstructBallotFromPlainTextMacroBody(any(Map.class), anyString(), eq(somePage))).thenReturn(someBallot);
     when(mockSurveyManager.recordVote(someBallot, somePage, "Choice2", VoteAction.VOTE)).thenReturn(true);
 
-    VoteRepresentation voteRepresentation = new VoteRepresentation("someTitle", "Choice2", VoteAction.VOTE.name());
+    VoteRepresentation voteRepresentation = new VoteRepresentation(SOME_BALLOT_TITLE, "Choice2", VoteAction.VOTE.name());
 
-    final Response response = classUnderTest.castVote(SOME_PAGE_ID, SOME_BALLOT_TITLE, voteRepresentation);
+    final Response response = classUnderTest.castVote(SOME_PAGE_ID, voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
   }

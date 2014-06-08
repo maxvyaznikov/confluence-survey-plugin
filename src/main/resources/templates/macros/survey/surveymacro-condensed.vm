@@ -37,17 +37,19 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
     #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
     <tr>
-      <td>$ballot.title #if($ballot.description.length()>0)<br/><sub>$ballot.description</sub>#end</td>
+      #set($ballotTitleWithHtml = $ballot.titleWithRenderedLinks)
+      #set($ballotDescriptionWithHtml = $ballot.descriptionWithRenderedLinks)
+      <td>$ballotTitleWithHtml #if($ballotDescriptionWithHtml.length()>0)<br/><sub>$ballotDescriptionWithHtml</sub>#end</td>
       <a id="$voteAnchor"/>
       #foreach ($choice in $ballot.choices)
         <td align="center">
           #if ($canVote && !($config.locked))
             #if ($choice.getHasVotedFor($req.remoteUser))
               <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
-                   alt="$generalUtil.urlEncode($ballot.title)" contentid="$content.id" title="$choice.description"/>
+                   alt="$ballot.title" contentid="$content.id" title="$choice.description"/>
             #else
               <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
-                   alt="$generalUtil.urlEncode($ballot.title)" contentid="$content.id" title="$choice.description"/>
+                   alt="$ballot.title" contentid="$content.id" title="$choice.description"/>
             #end
           #elseif ($choice.getHasVotedFor($req.remoteUser))
             <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>

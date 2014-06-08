@@ -8,15 +8,15 @@ AJS.toInit(function () {
 
   function castVote(castVoteLink, voteActionValue) {
     var contentId = castVoteLink.getAttribute("contentid");
-    var voteTitle = castVoteLink.alt;
+    var voteTitle = encodeURIComponent(castVoteLink.alt);
     var encodedURI = encodeURIComponent(castVoteLink.title);
     AJS.$.ajax({
-      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + contentId + "/votes/" + voteTitle,
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + contentId + "/votes",
       type: "POST",
       dataType: "json",
       contentType: "application/json; charset=utf-8",
       data: JSON.stringify({
-        ballotTitle: "someBallotTitle",
+        ballotTitle: voteTitle,
         voteChoice: encodedURI,
         voteAction: voteActionValue
       }),
