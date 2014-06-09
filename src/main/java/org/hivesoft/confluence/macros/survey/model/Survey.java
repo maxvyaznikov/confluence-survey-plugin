@@ -11,6 +11,7 @@
 package org.hivesoft.confluence.macros.survey.model;
 
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 
@@ -88,6 +89,10 @@ public class Survey {
 
   public String getTitle() {
     return title;
+  }
+
+  public String getTitleWithRenderedLinks() {
+    return SurveyUtils.enrichStringWithHttpPattern(title);
   }
 
   public SurveyConfig getConfig() {

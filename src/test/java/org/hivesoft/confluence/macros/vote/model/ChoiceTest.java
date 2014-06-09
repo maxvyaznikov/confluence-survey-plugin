@@ -60,12 +60,8 @@ public class ChoiceTest {
 
   @Test
   public void test_getDescriptionWithRenderedLinks() {
-    classUnderTest = new Choice("i am a choice to http://google.de");
-    assertThat(classUnderTest.getDescriptionWithRenderedLinks(), is("i am a choice to <a href=\"http://google.de\">http://google.de</a>"));
     classUnderTest = new Choice("i am a choice to http://google.de but https://www.google.com is also ok");
     assertThat(classUnderTest.getDescriptionWithRenderedLinks(),
-            is("i am a choice to <a href=\"http://google.de\">http://google.de</a> but <a href=\"https://www.google.com\">https://www.google.com</a> is also ok"));
-    classUnderTest = new Choice("no link here");
-    assertThat(classUnderTest.getDescriptionWithRenderedLinks(), is("no link here"));
+            is("i am a choice to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a> but <a href=\"https://www.google.com\" target=\"_blank\">https://www.google.com</a> is also ok"));
   }
 }

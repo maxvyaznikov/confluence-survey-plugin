@@ -33,9 +33,10 @@
       </tr>
       </thead>
       #foreach ($ballot in $survey.ballots)
+        #set($ballotTitleWithHtml = $ballot.titleWithRenderedLinks)
         <tr>
           <td>
-            $ballot.title
+            $ballotTitleWithHtml
           </td>
           <td align="center">
             $ballot.totalVoteCount

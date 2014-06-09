@@ -17,12 +17,13 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 #set ($config = $survey.config)
 
 #set ( $surveyTitleSummary = $generalUtil.urlEncode("${survey.title}-summary") )
+#set ( $surveyTitleWithHtml = $survey.titleWithRenderedLinks)
 #if ( $survey.title.length() > 0 )
 <div id="$generalUtil.urlEncode(${survey.title})" class="surveyBox">
   #if( $config.renderTitleLevel !=0 )
   <h$config.renderTitleLevel>#end #if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
                                                             title="$action.getText("surveyplugin.survey.locked")."/> #end <a
-        name="${surveyTitleSummary}-a">$survey.title</a>#if ($config.renderTitleLevel !=0)</h$config.renderTitleLevel>#end
+        name="${surveyTitleSummary}-a">$surveyTitleWithHtml</a>#if ($config.renderTitleLevel !=0)</h$config.renderTitleLevel>#end
 
   <div class="surveyIconBar">
     #if ($config.canManageSurvey)
@@ -30,8 +31,6 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
         <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="16" width="16"
              alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.export.icon.title')"/>
       #end
-    ##<img class="resetsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png" border="0" align="absmiddle" height="16" width="16" name="vote"
-    ##     alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.reset.icon.title')"/>
       #if ($config.canCreatePage($content))
         <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" align="absmiddle" height="16" width="16"
              alt="$generalUtil.urlEncode(${survey.title})" title="#if($config.locked)$action.getText('surveyplugin.unlock.icon.title')#else $action.getText('surveyplugin.lock.icon.title')#end"/>

@@ -113,7 +113,7 @@ public class SurveyUtils {
 
     StringBuffer result = new StringBuffer();
     while (matcher.find()) {
-      matcher.appendReplacement(result, "<a href=\"" + matcher.group() + "\">" + matcher.group() + "</a>");
+      matcher.appendReplacement(result, "<a href=\"" + matcher.group() + "\" target=\"_blank\">" + matcher.group() + "</a>");
     }
     matcher.appendTail(result);
     return result.toString();

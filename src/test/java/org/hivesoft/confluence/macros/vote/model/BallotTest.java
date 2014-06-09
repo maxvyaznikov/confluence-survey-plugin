@@ -12,9 +12,11 @@ import org.junit.Test;
 import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -466,6 +468,15 @@ public class BallotTest {
     classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE + "2", "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     assertFalse(classUnderTest.equals(classUnderTest2));
     assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
+  }
+
+  @Test
+  public void test_getTitleAndDescriptionWithRenderedLinks() {
+    classUnderTest = new Ballot("i am a choice to http://google.de but https://www.google.com is also ok", "someLinkDescription: http://www.heise.de", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    assertThat(classUnderTest.getTitleWithRenderedLinks(),
+            is("i am a choice to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a> but <a href=\"https://www.google.com\" target=\"_blank\">https://www.google.com</a> is also ok"));
+    assertThat(classUnderTest.getDescriptionWithRenderedLinks(),
+            is("someLinkDescription: <a href=\"http://www.heise.de\" target=\"_blank\">http://www.heise.de</a>"));
   }
 
   private List<Choice> createChoicesWithoutVotes(int count) {

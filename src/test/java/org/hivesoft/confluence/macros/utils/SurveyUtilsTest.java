@@ -62,6 +62,14 @@ public class SurveyUtilsTest {
     assertThat(twoElements, hasItems("User1", "User2"));
   }
 
+  @Test
+  public void test_getDescriptionWithRenderedLinks() {
+    assertThat(SurveyUtils.enrichStringWithHttpPattern("i am a choice to http://google.de"), is("i am a choice to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a>"));
+    assertThat(SurveyUtils.enrichStringWithHttpPattern("i am a choice to http://google.de but https://www.google.com is also ok"),
+            is("i am a choice to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a> but <a href=\"https://www.google.com\" target=\"_blank\">https://www.google.com</a> is also ok"));
+    assertThat(SurveyUtils.enrichStringWithHttpPattern("no link here"), is("no link here"));
+  }
+
   //****** Helper Methods ******
 
   private List<String> listOfBallotsWithValidKeyLength(int count) {
