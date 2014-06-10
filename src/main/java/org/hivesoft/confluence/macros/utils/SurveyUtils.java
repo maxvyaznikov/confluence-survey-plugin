@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 public class SurveyUtils {
   final static List<String> DEFAULT_OLD_CHOICE_NAMES = new ArrayList<String>(Arrays.asList("5 - Outstanding", "4 - More Than Satisfactory", "3 - Satisfactory", "2 - Less Than Satisfactory", "1 - Unsatisfactory"));
@@ -110,7 +110,7 @@ public class SurveyUtils {
   }
 
   public static String enrichStringWithHttpPattern(String stringToEnrich) {
-    final String encodedString = escapeHtml(stringToEnrich);
+    final String encodedString = escapeHtml4(stringToEnrich);
 
     final Pattern urlPattern = Pattern.compile("(https?://[\\da-z\\.-]+\\.[a-z\\.]{2,6}[/\\w\\.-;=]*/?\\??[a-z0-9=&]*)");
     final Matcher matcher = urlPattern.matcher(encodedString);

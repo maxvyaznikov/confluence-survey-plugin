@@ -68,6 +68,7 @@ public class SurveyUtilsTest {
     assertThat(SurveyUtils.enrichStringWithHttpPattern("i am a choice to http://google.de but https://www.google.com is also ok"),
             is("i am a choice to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a> but <a href=\"https://www.google.com\" target=\"_blank\">https://www.google.com</a> is also ok"));
     assertThat(SurveyUtils.enrichStringWithHttpPattern("no link here"), is("no link here"));
+    assertThat(SurveyUtils.enrichStringWithHttpPattern("<a href=\"#\">i am a tag</a> that's not valid but http://google.com is"), is("&lt;a href=&quot;#&quot;&gt;i am a tag&lt;/a&gt; that's not valid but <a href=\"http://google.com\" target=\"_blank\">http://google.com</a> is"));
   }
 
   //****** Helper Methods ******
