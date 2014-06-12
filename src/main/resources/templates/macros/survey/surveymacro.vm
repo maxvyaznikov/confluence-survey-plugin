@@ -29,11 +29,11 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
     #if ($config.canManageSurvey)
       #if ($config.canAttachFile($content))
         <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="16" width="16"
-             alt="$generalUtil.urlEncode(${survey.title})" title="$action.getText('surveyplugin.export.icon.title')"/>
+             alt="${survey.title}" title="$action.getText('surveyplugin.export.icon.title')"/>
       #end
       #if ($config.canCreatePage($content))
         <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" align="absmiddle" height="16" width="16"
-             alt="$generalUtil.urlEncode(${survey.title})" title="#if($config.locked)$action.getText('surveyplugin.unlock.icon.title')#else $action.getText('surveyplugin.lock.icon.title')#end"/>
+             alt="${survey.title}" title="#if($config.locked)$action.getText('surveyplugin.unlock.icon.title')#else $action.getText('surveyplugin.lock.icon.title')#end"/>
       #end
     #end
   </div>

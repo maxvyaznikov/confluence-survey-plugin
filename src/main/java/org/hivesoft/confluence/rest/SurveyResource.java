@@ -39,13 +39,17 @@ import org.hivesoft.confluence.rest.exceptions.MacroReconstructionException;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
 
-import javax.ws.rs.*;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -67,11 +71,11 @@ public class SurveyResource {
     this.i18nResolver = i18nResolver;
   }
 
-  @GET
-  @Path("/{surveyTitle}/export")
+  @POST
+  @Path("/export")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getCSVExportForSurvey(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
-    final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
+  public Response getCSVExportForSurvey(@PathParam("pageId") long pageId, CSVExportRepresentation exportRepresentation) throws UnsupportedEncodingException {
+    final String surveyTitle = URLDecoder.decode(exportRepresentation.getTitle(), "UTF-8");
 
     final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(pageId));
 
@@ -100,7 +104,7 @@ public class SurveyResource {
 
     Calendar currentDate = new GregorianCalendar();
     final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd'T'hhmmss");
-    final String fileName = surveyTitle + "-summary-" + simpleDateFormat.format(currentDate.getTime()) + ".csv";
+    final String fileName = URLEncoder.encode(surveyTitle + "-summary-" + simpleDateFormat.format(currentDate.getTime()) + ".csv", "UTF-8");
 
     final Survey survey = surveys.iterator().next();
     final StringWriter csvStringWriter = new StringWriter();
@@ -141,7 +145,7 @@ public class SurveyResource {
     if (addedAttachment == null) {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("There was a problem while trying to save the report as an Attachment").build();
     }
-    return Response.ok(new CSVExportRepresentation(addedAttachment.getDownloadPath())).build();
+    return Response.ok(new CSVExportRepresentation(surveyTitle, addedAttachment.getDownloadPath())).build();
 
   }
 

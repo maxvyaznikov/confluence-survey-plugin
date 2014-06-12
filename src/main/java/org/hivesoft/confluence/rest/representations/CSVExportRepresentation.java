@@ -20,10 +20,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class CSVExportRepresentation {
 
   @XmlElement
+  private String title;
+  @XmlElement
   private String uri;
 
-  public CSVExportRepresentation(String uri) {
+  public CSVExportRepresentation() {
+    //for jaxb
+  }
+
+  public CSVExportRepresentation(String title, String uri) {
+    this();
+    this.title = title;
     this.uri = uri;
+  }
+
+  public String getTitle() {
+    return title;
   }
 
   public String getUri() {

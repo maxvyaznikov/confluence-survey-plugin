@@ -37,10 +37,16 @@ AJS.toInit(function () {
     });
   }
 
-  function getCSVExport(surveyOrVote, exportLink) {
+  function createCSVExport(surveyOrVote, exportLink) {
+    var encodedTitle = encodeURIComponent(exportLink.alt);
     AJS.$.ajax({
-      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + exportLink.alt + "/export",
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/export",
+      type: "POST",
       dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        title: encodedTitle
+      }),
       success: function (csvExportRepresentation) {
         var inlineDialog = AJS.InlineDialog(AJS.$(exportLink), "exportDialog",
           function (content, trigger, showPopup) {
@@ -59,8 +65,9 @@ AJS.toInit(function () {
   }
 
   function lockSurveyOrVote(surveyOrVote, lockLink) {
+    var encodedTitle = encodeURIComponent(lockLink.alt);
     AJS.$.ajax({
-      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + lockLink.alt + "/lock",
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + encodedTitle + "/lock",
       type: "POST",
       dataType: "json",
       success: function (lockRepresentation) {
@@ -98,7 +105,7 @@ AJS.toInit(function () {
   });
   AJS.$(".exportsurvey").click(function (e) {
     e.preventDefault();
-    getCSVExport("surveys", this);
+    createCSVExport("surveys", this);
   });
   AJS.$(".resetsurvey").click(function (e) {
     e.preventDefault();

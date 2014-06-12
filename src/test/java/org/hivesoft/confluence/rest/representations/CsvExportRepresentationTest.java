@@ -8,15 +8,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class CSVExportRepresentationTest {
+public class CsvExportRepresentationTest {
   CSVExportRepresentation classUnderTest;
 
   @Test
   public void test_gettersSetters_success() {
-    classUnderTest = new CSVExportRepresentation("someUri");
+    classUnderTest = new CSVExportRepresentation("someTitle", "someUri");
+    assertThat("someTitle", is(equalTo(classUnderTest.getTitle())));
     assertThat("someUri", is(equalTo(classUnderTest.getUri())));
 
-    assertTrue(classUnderTest.equals(new CSVExportRepresentation("someUri")));
+    assertTrue(classUnderTest.equals(new CSVExportRepresentation("someTitle", "someUri")));
     assertFalse(classUnderTest.equals(null));
     assertFalse(classUnderTest.equals("someString"));
   }

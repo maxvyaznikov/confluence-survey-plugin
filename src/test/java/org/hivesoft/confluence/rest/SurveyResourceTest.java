@@ -71,7 +71,7 @@ public class SurveyResourceTest {
   public void test_getCSVExportForSurvey_expectPageNotFound_failure() throws UnsupportedEncodingException {
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(null);
 
-    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
     assertThat(Response.Status.NOT_FOUND.getStatusCode(), is(response.getStatus()));
   }
@@ -87,7 +87,7 @@ public class SurveyResourceTest {
     when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
 
-    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
   }
@@ -103,7 +103,7 @@ public class SurveyResourceTest {
     when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
 
-    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
   }
@@ -117,7 +117,7 @@ public class SurveyResourceTest {
     when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(false);
 
-    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
     assertThat(response.getStatus(), is(Response.Status.UNAUTHORIZED.getStatusCode()));
   }
@@ -147,10 +147,10 @@ public class SurveyResourceTest {
     when(mockAttachment.getContent()).thenReturn(somePage);
     when(mockAttachment.getDownloadPath()).thenReturn("/someUri");
 
-    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-    assertThat((CSVExportRepresentation) response.getEntity(), is(equalTo(new CSVExportRepresentation("/someUri"))));
+    assertThat((CSVExportRepresentation) response.getEntity(), is(equalTo(new CSVExportRepresentation(SOME_SURVEY_TITLE, "/someUri"))));
   }
 
   @Test
