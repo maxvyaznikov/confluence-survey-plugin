@@ -13,11 +13,11 @@ public class LockRepresentationTest {
 
   @Test
   public void test_gettersSetters_success() {
-    classUnderTest = new LockRepresentation(false);
+    classUnderTest = new LockRepresentation("someTitle", false);
     assertThat(false, is(equalTo(classUnderTest.isLocked())));
 
-    assertTrue(classUnderTest.equals(new LockRepresentation(false)));
-    assertFalse(classUnderTest.equals(new LockRepresentation(true)));
+    assertTrue(classUnderTest.equals(new LockRepresentation("someTitle", false)));
+    assertFalse(classUnderTest.equals(new LockRepresentation("someTitle", true)));
     assertFalse(classUnderTest.equals(null));
     assertFalse(classUnderTest.equals("someString"));
   }

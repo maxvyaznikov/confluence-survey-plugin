@@ -150,9 +150,10 @@ public class SurveyResource {
   }
 
   @POST
-  @Path("/{surveyTitle}/lock")
+  @Path("/lock")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response setLocked(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
+  public Response setLocked(@PathParam("pageId") long pageId, LockRepresentation inLockRepresentation) throws UnsupportedEncodingException {
+    final String inSurveyTitle = inLockRepresentation.getTitle();
     LOG.info("entered setLocked for pageId=" + pageId + " and surveyTitle=" + inSurveyTitle);
 
     final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
@@ -169,7 +170,7 @@ public class SurveyResource {
       return Response.status(Response.Status.BAD_REQUEST).entity("Currently we only support Pages and comments").build();
     }
 
-    final LockRepresentation lockRepresentation = new LockRepresentation(false);
+    final LockRepresentation lockRepresentation = new LockRepresentation(surveyTitle, false);
 
     String body;
     try {

@@ -67,9 +67,13 @@ AJS.toInit(function () {
   function lockSurveyOrVote(surveyOrVote, lockLink) {
     var encodedTitle = encodeURIComponent(lockLink.alt);
     AJS.$.ajax({
-      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/" + encodedTitle + "/lock",
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/lock",
       type: "POST",
       dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        title: encodedTitle
+      }),
       success: function (lockRepresentation) {
         var inlineDialog = AJS.InlineDialog(AJS.$(lockLink), "lockDialog",
           function (content, trigger, showPopup) {

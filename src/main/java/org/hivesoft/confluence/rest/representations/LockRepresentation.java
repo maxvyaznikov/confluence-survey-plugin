@@ -20,18 +20,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class LockRepresentation {
 
   @XmlElement
+  private String title;
+
+  @XmlElement
   private boolean locked;
 
-  public LockRepresentation(boolean locked) {
+  public LockRepresentation() {
+    //for jaxb
+  }
+
+  public LockRepresentation(String title, boolean locked) {
+    this();
+    this.title = title;
     this.locked = locked;
+  }
+
+  public String getTitle() {
+    return title;
   }
 
   public boolean isLocked() {
     return locked;
-  }
-
-  public void setLocked(boolean locked) {
-    this.locked = locked;
   }
 
   @Override
@@ -39,5 +48,9 @@ public class LockRepresentation {
     if (o == null || !(o instanceof LockRepresentation)) return false;
 
     return (((LockRepresentation) o).isLocked() == (locked));
+  }
+
+  public void setLocked(boolean locked) {
+    this.locked = locked;
   }
 }

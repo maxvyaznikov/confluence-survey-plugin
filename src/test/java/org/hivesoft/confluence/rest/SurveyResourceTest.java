@@ -157,7 +157,7 @@ public class SurveyResourceTest {
   public void test_setLocked_expectPageNotFound_failure() throws UnsupportedEncodingException {
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(null);
 
-    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
     assertThat(Response.Status.NOT_FOUND.getStatusCode(), is(response.getStatus()));
   }
@@ -170,7 +170,7 @@ public class SurveyResourceTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
   }
@@ -183,10 +183,10 @@ public class SurveyResourceTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(false))));
+    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(SOME_SURVEY_TITLE, false))));
   }
 
   @Test
@@ -197,10 +197,10 @@ public class SurveyResourceTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(true))));
+    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(SOME_SURVEY_TITLE, true))));
   }
 
   @Test
@@ -211,10 +211,10 @@ public class SurveyResourceTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(false))));
+    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(SOME_SURVEY_TITLE, false))));
   }
 
   @Test
