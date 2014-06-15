@@ -23,6 +23,7 @@ import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
+import org.hivesoft.confluence.rest.representations.ResetRepresentation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -221,7 +222,7 @@ public class SurveyResourceTest {
   public void test_resetVotes_expectPageNotFound_failure() throws UnsupportedEncodingException {
     when(mockPageManager.getPage(SOME_PAGE_ID)).thenReturn(null);
 
-    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
     assertThat(Response.Status.NOT_FOUND.getStatusCode(), is(response.getStatus()));
   }
@@ -234,7 +235,7 @@ public class SurveyResourceTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
   }
@@ -247,7 +248,7 @@ public class SurveyResourceTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
   }
@@ -263,7 +264,7 @@ public class SurveyResourceTest {
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
 
-    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, SOME_SURVEY_TITLE);
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
     assertThat(response.getStatus(), is(Response.Status.NO_CONTENT.getStatusCode()));
   }

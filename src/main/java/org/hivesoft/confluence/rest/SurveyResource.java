@@ -38,6 +38,7 @@ import org.hivesoft.confluence.rest.callbacks.TransactionCallbackStorePage;
 import org.hivesoft.confluence.rest.exceptions.MacroReconstructionException;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
+import org.hivesoft.confluence.rest.representations.ResetRepresentation;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -209,10 +210,10 @@ public class SurveyResource {
   }
 
   @POST
-  @Path("/{surveyTitle}/reset")
+  @Path("/reset")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response resetVotes(@PathParam("pageId") long pageId, @PathParam("surveyTitle") String inSurveyTitle) throws UnsupportedEncodingException {
-    final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
+  public Response resetVotes(@PathParam("pageId") long pageId, ResetRepresentation inResetRepresentation) throws UnsupportedEncodingException {
+    final String surveyTitle = URLDecoder.decode(inResetRepresentation.getTitle(), "UTF-8");
     final ContentEntityObject contentEntityObject = pageManager.getById(pageId);
 
     if (contentEntityObject == null) {
