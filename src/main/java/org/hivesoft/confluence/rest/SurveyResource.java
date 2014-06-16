@@ -78,17 +78,9 @@ public class SurveyResource {
   public Response getCSVExportForSurvey(@PathParam("pageId") long pageId, CSVExportRepresentation exportRepresentation) throws UnsupportedEncodingException {
     final String surveyTitle = URLDecoder.decode(exportRepresentation.getTitle(), "UTF-8");
 
-    final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(pageId));
-
-    AbstractPage page;
-    if (contentEntityObject instanceof AbstractPage) {
-      page = (AbstractPage) contentEntityObject;
-    } else if (contentEntityObject instanceof com.atlassian.confluence.pages.Comment) {
-      page = (AbstractPage) ((com.atlassian.confluence.pages.Comment) contentEntityObject).getOwner();
-    } else if (contentEntityObject == null) {
-      return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
-    } else {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Currently we only support Pages and comments").build();
+    final AbstractPage page = getPageObjectById(pageId);
+    if (page instanceof InvalidPage) {
+      return ((InvalidPage) page).toResponse();
     }
 
     if (!surveyManager.getPermissionEvaluator().canAttachFile(page)) {
@@ -150,6 +142,7 @@ public class SurveyResource {
 
   }
 
+
   @POST
   @Path("/lock")
   @Produces(MediaType.APPLICATION_JSON)
@@ -158,24 +151,17 @@ public class SurveyResource {
     LOG.info("entered setLocked for pageId=" + pageId + " and surveyTitle=" + inSurveyTitle);
 
     final String surveyTitle = URLDecoder.decode(inSurveyTitle, "UTF-8");
-    final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(pageId));
 
-    AbstractPage page;
-    if (contentEntityObject instanceof AbstractPage) {
-      page = (AbstractPage) contentEntityObject;
-    } else if (contentEntityObject instanceof com.atlassian.confluence.pages.Comment) {
-      page = (AbstractPage) ((com.atlassian.confluence.pages.Comment) contentEntityObject).getOwner();
-    } else if (contentEntityObject == null) {
-      return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
-    } else {
-      return Response.status(Response.Status.BAD_REQUEST).entity("Currently we only support Pages and comments").build();
+    final AbstractPage page = getPageObjectById(pageId);
+    if (page instanceof InvalidPage) {
+      return ((InvalidPage) page).toResponse();
     }
 
     final LockRepresentation lockRepresentation = new LockRepresentation(surveyTitle, false);
 
     String body;
     try {
-      body = xhtmlContent.updateMacroDefinitions(contentEntityObject.getBodyAsString(), new DefaultConversionContext(contentEntityObject.toPageContext()), new MacroDefinitionUpdater() {
+      body = xhtmlContent.updateMacroDefinitions(page.getBodyAsString(), new DefaultConversionContext(page.toPageContext()), new MacroDefinitionUpdater() {
         @Override
         public MacroDefinition update(MacroDefinition macroDefinition) {
           if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
@@ -214,15 +200,15 @@ public class SurveyResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Response resetVotes(@PathParam("pageId") long pageId, ResetRepresentation inResetRepresentation) throws UnsupportedEncodingException {
     final String surveyTitle = URLDecoder.decode(inResetRepresentation.getTitle(), "UTF-8");
-    final ContentEntityObject contentEntityObject = pageManager.getById(pageId);
 
-    if (contentEntityObject == null) {
-      return Response.status(Response.Status.NOT_FOUND.getStatusCode()).entity("Specified page with id: " + pageId + " was not found").build();
+    final AbstractPage page = getPageObjectById(pageId);
+    if (page instanceof InvalidPage) {
+      return ((InvalidPage) page).toResponse();
     }
 
     final List<Survey> surveys = new ArrayList<Survey>();
     try {
-      final List<Survey> surveysFound = reconstructSurveysByTitle(surveyTitle, contentEntityObject);
+      final List<Survey> surveysFound = reconstructSurveysByTitle(surveyTitle, page);
       surveys.addAll(surveysFound);
     } catch (MacroReconstructionException e) {
       return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
@@ -265,5 +251,54 @@ public class SurveyResource {
       throw new MacroReconstructionException("Could not find the specified survey macro with title " + surveyTitle + " on the specified page!");
     }
     return surveysFound;
+  }
+
+  private static class InvalidPage extends AbstractPage {
+
+    Response.Status status;
+    String message;
+
+    private InvalidPage(Response.Status status, String message) {
+      this.status = status;
+      this.message = message;
+    }
+
+    @Override
+    public String getType() {
+      return null;
+    }
+
+    @Override
+    public String getUrlPath() {
+      return null;
+    }
+
+    @Override
+    public String getNameForComparison() {
+      return null;
+    }
+
+    @Override
+    public String getLinkWikiMarkup() {
+      return null;
+    }
+
+    public Response toResponse() {
+      return Response.status(status).entity(message).build();
+    }
+  }
+
+  private AbstractPage getPageObjectById(long pageId) {
+    ContentEntityObject contentEntityObject = pageManager.getById(pageId);
+
+    if (contentEntityObject instanceof AbstractPage) {
+      return (AbstractPage) contentEntityObject;
+    } else if (contentEntityObject instanceof com.atlassian.confluence.pages.Comment) {
+      return (AbstractPage) ((com.atlassian.confluence.pages.Comment) contentEntityObject).getOwner();
+    } else if (contentEntityObject == null) {
+      return new InvalidPage(Response.Status.NOT_FOUND, "Specified page with id: " + pageId + " was not found");
+    } else {
+      return new InvalidPage(Response.Status.BAD_REQUEST, "Currently we only support Pages and comments");
+    }
   }
 }
