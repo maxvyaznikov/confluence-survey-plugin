@@ -103,7 +103,7 @@ public class PermissionEvaluator {
     return userNames;
   }
 
-  public User getUserByName(String voter) {
-    return userAccessor.getUser(voter);
+  public User getUserByName(String userName) {
+    return userAccessor.getUser(userName);
   }
 }
