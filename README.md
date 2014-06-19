@@ -22,7 +22,7 @@ History
 
 The Plugin originated in 2006 and was taken over for maintenance in 2008, that time it was quite unsupported.
 
-I maintained it until i had no personel access to a productive confluence installation anymore (2011).
+I maintained it until i had no personal access to a productive confluence installation anymore (2011).
 
 As in 2012 the JIRA Studio at Atlassian closed its doors i had to find another location. Welcome GitHub ;)
 In June 2013 i had quite some inquiries to carry on, so i am currently evaluating some things (compatibility, documentation, maybe features).
