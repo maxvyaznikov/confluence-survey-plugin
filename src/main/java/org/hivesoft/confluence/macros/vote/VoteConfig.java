@@ -80,11 +80,11 @@ public class VoteConfig {
     showCondensed = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_CONDENSED), false);
     anonymous = SurveyUtils.getBooleanFromString(parameters.get(KEY_ANONYMOUS_MODE), false);
 
-    final String remoteUsername = permissionEvaluator.getRemoteUsername();
+    final User remoteUser = permissionEvaluator.getRemoteUser();
 
-    canSeeResults = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(viewers, remoteUsername);
-    canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUsername);
-    canManageSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, remoteUsername);
+    canSeeResults = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(viewers, remoteUser);
+    canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUser);
+    canManageSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, remoteUser);
 
     visibleVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults) && canManageSurvey;
     visiblePendingVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS), canSeeResults) && !voters.isEmpty();
@@ -204,16 +204,12 @@ public class VoteConfig {
     return renderProblems;
   }
 
-  public List<String> getAllPossibleVoters() {
-    List<String> userNames = Lists.newArrayList();
+  public List<User> getAllPossibleVoters() {
+    List<User> users = Lists.newArrayList();
     for (String configuredVoter : voters) {
-      userNames.addAll(permissionEvaluator.getActiveUsersForGroupOrUser(configuredVoter));
+      users.addAll(permissionEvaluator.getActiveUsersForGroupOrUser(configuredVoter));
     }
-    return userNames;
-  }
-
-  public User getUserByName(String voter) {
-    return permissionEvaluator.getUserByName(voter);
+    return users;
   }
 
   @Override

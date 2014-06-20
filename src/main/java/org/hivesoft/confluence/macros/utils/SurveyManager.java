@@ -14,6 +14,7 @@ import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.extras.common.log.Logger;
+import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
@@ -24,7 +25,6 @@ import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 public class SurveyManager {
@@ -49,6 +49,10 @@ public class SurveyManager {
     return permissionEvaluator;
   }
 
+  public User getCurrentUser(){
+    return permissionEvaluator.getRemoteUser();
+  }
+
   /**
    * This method will take the data from the macros parameters, body, and page data to reconstruct a ballot object with all of the choices and previously cast votes populated.
    * This method will probably only work from a VoteMacro context
@@ -67,7 +71,8 @@ public class SurveyManager {
 
         if (StringUtils.isNotBlank(votes)) {
           for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
-            choice.voteFor(voteTokenizer.nextToken());
+            final User voter = permissionEvaluator.getUserByName(voteTokenizer.nextToken());
+            choice.voteFor(voter);
           }
         }
 
@@ -130,7 +135,8 @@ public class SurveyManager {
       String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + choice.getDescription());
       if (StringUtils.isNotBlank(votes)) {
         for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
-          choice.voteFor(voteTokenizer.nextToken());
+          final User voter = permissionEvaluator.getUserByName(voteTokenizer.nextToken());
+          choice.voteFor(voter);
         }
       }
       choices.add(choice);
@@ -180,7 +186,7 @@ public class SurveyManager {
     if (choice.getVoters().size() == 0) {
       contentPropertyManager.setTextProperty(contentObject, propertyKey, null);
     } else {
-      Collection<String> voters = choice.getVoters();
+      Collection<User> voters = choice.getVoters();
       String propertyValue = StringUtils.join(voters, ",");
       contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
     }
@@ -188,16 +194,16 @@ public class SurveyManager {
 
   public boolean recordVote(Ballot ballot, ContentEntityObject contentObject, String requestChoice, VoteAction voteAction) {
     LOG.debug("recordVote: found Ballot-Title=" + ballot.getTitle() + ", choice=" + requestChoice + ", action=" + voteAction);
-    final String remoteUsername = permissionEvaluator.getRemoteUsername();
+    final User remoteUser = permissionEvaluator.getRemoteUser();
     boolean voteRecorded = false;
 
     // If there is a choice, make sure this user can vote
-    if (requestChoice != null && permissionEvaluator.canVote(remoteUsername, ballot)) {
+    if (requestChoice != null && permissionEvaluator.canVote(remoteUser, ballot)) {
 
       // If this is a re-vote situation, then unvote first
-      Choice previousChoice = ballot.getChoiceForUserName(remoteUsername);
+      Choice previousChoice = ballot.getChoiceForUser(remoteUser);
       if (previousChoice != null && ballot.getConfig().isChangeableVotes()) {
-        previousChoice.removeVoteFor(remoteUsername);
+        previousChoice.removeVoteFor(remoteUser);
         storeVotersForChoice(previousChoice, ballot.getTitle(), contentObject);
         voteRecorded = true;
       }
@@ -206,7 +212,7 @@ public class SurveyManager {
 
       if (choice != null && voteAction == VoteAction.VOTE) {
         LOG.debug("recordVote: found choice in requestChoice: " + choice.getDescription());
-        choice.voteFor(remoteUsername);
+        choice.voteFor(remoteUser);
         storeVotersForChoice(choice, ballot.getTitle(), contentObject);
         voteRecorded = true;
       }

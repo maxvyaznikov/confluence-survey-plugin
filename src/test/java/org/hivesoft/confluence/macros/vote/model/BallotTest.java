@@ -2,10 +2,12 @@ package org.hivesoft.confluence.macros.vote.model;
 
 import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultUser;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
+import org.hivesoft.confluence.macros.utils.wrapper.SurveyUser;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.junit.Test;
 
@@ -21,9 +23,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class BallotTest {
-
-  private static final String SOME_EXISTING_USER_NAME = "someExistingUser";
+public class BallotTest extends ConfluenceTestBase {
 
   Ballot classUnderTest;
 
@@ -58,25 +58,25 @@ public class BallotTest {
   @Test
   public void test_getVoteForExistingUser_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
-    someChoice.voteFor(SOME_EXISTING_USER_NAME);
+    someChoice.voteFor(SOME_USER1);
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(someChoice));
 
-    Choice result = classUnderTest.getChoiceForUserName(SOME_EXISTING_USER_NAME);
+    Choice result = classUnderTest.getChoiceForUser(SOME_USER1);
 
     assertThat(result, is(someChoice));
-    assertThat(classUnderTest.getHasVoted(SOME_EXISTING_USER_NAME), is(true));
+    assertThat(classUnderTest.getHasVoted(SOME_USER1), is(true));
   }
 
   @Test
   public void test_getVoteForNotExistingUser_success() {
     classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    classUnderTest.getChoices().iterator().next().voteFor(SOME_EXISTING_USER_NAME);
+    classUnderTest.getChoices().iterator().next().voteFor(SOME_USER1);
 
-    Choice result = classUnderTest.getChoiceForUserName("someDifferentNotExistingUser");
+    Choice result = classUnderTest.getChoiceForUser(new DefaultUser("someDifferentNotExistingUser"));
 
     assertTrue(null == result);
-    assertFalse(classUnderTest.getHasVoted("someDifferentNotExistingUser"));
+    assertFalse(classUnderTest.getHasVoted(new DefaultUser("someDifferentNotExistingUser")));
   }
 
   @Test
@@ -122,9 +122,9 @@ public class BallotTest {
     final Choice someChoice = new Choice("choice1");
     final Choice someChoiceTwo = new Choice("choice2");
 
-    someChoice.voteFor("someUserOne");
-    someChoice.voteFor("someUserTwo");
-    someChoiceTwo.voteFor("someUserThree");
+    someChoice.voteFor(new DefaultUser("someUserOne"));
+    someChoice.voteFor(new DefaultUser("someUserTwo"));
+    someChoiceTwo.voteFor(new DefaultUser("someUserThree"));
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo));
 
@@ -137,7 +137,7 @@ public class BallotTest {
 
   @Test
   public void test_getComments_success() {
-    Comment someComment = new Comment(SOME_EXISTING_USER_NAME, "some crazy comment for a crazy plugin");
+    Comment someComment = new Comment(SOME_USER1.getName(), "some crazy comment for a crazy plugin");
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithComments("someBallot", Arrays.asList(someComment));
 
@@ -150,11 +150,11 @@ public class BallotTest {
   @Test
   public void test_getCommentForUser_success() {
     final String commentString = "some crazy comment for a crazy plugin";
-    Comment someComment = new Comment(SOME_EXISTING_USER_NAME, commentString);
+    Comment someComment = new Comment(SOME_USER1.getName(), commentString);
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithComments("someBallot", Arrays.asList(someComment));
 
-    final Comment result = classUnderTest.getCommentForUser(SOME_EXISTING_USER_NAME);
+    final Comment result = classUnderTest.getCommentForUser(SOME_USER1);
 
     assertThat(result, is(someComment));
     assertThat(someComment.getComment(), is(commentString));
@@ -207,7 +207,7 @@ public class BallotTest {
   @Test
   public void test_computeAverage_TwoChoiceOneVote_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
-    someChoice.voteFor(SOME_EXISTING_USER_NAME);
+    someChoice.voteFor(SOME_USER1);
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo));
@@ -221,7 +221,7 @@ public class BallotTest {
   public void test_computeAverage_ThreeChoicesOneVoteOnSecond_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
-    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    someChoiceTwo.voteFor(SOME_USER2);
     Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo, someChoiceThree));
@@ -238,7 +238,7 @@ public class BallotTest {
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
     Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
     Choice someChoiceFour = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "FOUR");
-    someChoiceFour.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    someChoiceFour.voteFor(SOME_USER2);
     Choice someChoiceFive = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "FIVE");
 
     Map<String, String> parameters = new HashMap<String, String>();
@@ -257,10 +257,10 @@ public class BallotTest {
   @Test
   public void test_computeAverage_ZeroToOne_TwoChoicesTwoOnFirstOneOnSecond_expect50percent_success() {
     Choice someChoice = new Choice("one");
-    someChoice.voteFor(SOME_EXISTING_USER_NAME + "ONE");
-    someChoice.voteFor(SOME_EXISTING_USER_NAME + "THREE");
+    someChoice.voteFor(SOME_USER1);
+    someChoice.voteFor(new SurveyUser("someUserTHREE"));
     Choice someChoiceTwo = new Choice("two");
-    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    someChoiceTwo.voteFor(SOME_USER2);
 
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
@@ -279,10 +279,10 @@ public class BallotTest {
   public void test_computeFormattedAverage_NegativeIterateStep_ThreeChoicesThreeVotes_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
-    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "ONE");
-    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    someChoiceTwo.voteFor(SOME_USER1);
+    someChoiceTwo.voteFor(SOME_USER2);
     Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
-    someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
+    someChoiceThree.voteFor(new SurveyUser("someUserTHREE"));
 
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
@@ -365,15 +365,16 @@ public class BallotTest {
   public void test_getAllVoters_success() {
     Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
-    someChoiceTwo.voteFor(SOME_EXISTING_USER_NAME + "TWO");
+    someChoiceTwo.voteFor(SOME_USER2);
     Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
-    someChoiceThree.voteFor(SOME_EXISTING_USER_NAME + "THREE");
+    final User userThree = new SurveyUser("someUserTHREE");
+    someChoiceThree.voteFor(userThree);
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices("someBallot", Arrays.asList(someChoice, someChoiceTwo, someChoiceThree));
 
-    final Collection<String> allVoters = classUnderTest.getAllVoters();
+    final Collection<User> allVoters = classUnderTest.getAllVoters();
 
-    assertThat(allVoters, containsInAnyOrder(SOME_EXISTING_USER_NAME + "TWO", SOME_EXISTING_USER_NAME + "THREE"));
+    assertThat(allVoters, containsInAnyOrder(SOME_USER2, userThree));
   }
 
   @Test
@@ -384,69 +385,67 @@ public class BallotTest {
 
     final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList("user11", "user12", "user13"));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("user2")).thenReturn(newArrayList("user2"));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList("user31", "user32"));
+    final User user11 = new SurveyUser("user11");
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList(user11, new SurveyUser("user12"), new SurveyUser("user13")));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("user2")).thenReturn(newArrayList(SOME_USER2));
+    final User user31 = new SurveyUser("user31");
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList(user31, new SurveyUser("user32")));
 
     classUnderTest = new Ballot("someBallot", "subTitle", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
 
     // When:
-    List<String> result = classUnderTest.getAllPossibleVoters();
+    List<User> result = classUnderTest.getAllPossibleVoters();
 
     // Then:
-    assertThat(result, containsInAnyOrder("user11", "user12", "user13", "user2", "user31", "user32"));
+    assertThat(result, containsInAnyOrder(user11, new SurveyUser("user12"), new SurveyUser("user13"), SOME_USER2, user31, new SurveyUser("user32")));
   }
 
   @Test
   public void test_getAllPendingVoters_success() {
     Choice someChoiceOne = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "ONE");
-    someChoiceOne.voteFor("user21");
+    someChoiceOne.voteFor(new SurveyUser("user21"));
     Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
-    someChoiceTwo.voteFor("user11");
-    someChoiceOne.voteFor("user12"); // user has voted but is now deactivated
-    someChoiceOne.voteFor("user4"); // user has voted but is now deleted
-    someChoiceTwo.voteFor("user32");
+    someChoiceTwo.voteFor(new SurveyUser("user11"));
+    someChoiceOne.voteFor(new SurveyUser("user12")); // user has voted but is now deactivated
+    someChoiceOne.voteFor(new SurveyUser("user4")); // user has voted but is now deleted
+    someChoiceTwo.voteFor(new SurveyUser("user32"));
 
 
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someBallotTitle");
-    parameters.put(VoteConfig.KEY_VOTERS, "group1, user2, group3");
+    parameters.put(VoteConfig.KEY_VOTERS, "group1, " + SOME_USER2.getName() + ", group3");
 
     final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     classUnderTest = new Ballot("someBallotTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), newArrayList(someChoiceOne, someChoiceTwo), new ArrayList<Comment>());
 
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList("user11", "user12", "user13"));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("user2")).thenReturn(newArrayList("user2"));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList("user31", "user32"));
+    final User user11 = new SurveyUser("user11");
+    final User user13 = new SurveyUser("user13");
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList(user11, new SurveyUser("user12"), user13));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER2.getName())).thenReturn(newArrayList(SOME_USER2));
+    final User user31 = new SurveyUser("user31");
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList(user31, new SurveyUser("user32")));
 
-    Collection<String> result = classUnderTest.getAllPendingVoters();
+    List<User> result = classUnderTest.getAllPendingVoters();
 
-    assertThat(result, containsInAnyOrder("user13", "user2", "user31"));
+    assertThat(result, containsInAnyOrder(user13, SOME_USER2, user31));
   }
 
   @Test
   public void test_getEmailStringFor_success() {
-
-    // Given:
-    User user1 = new DefaultUser("user1", "user one", "user1@example.com");
-    User user2 = new DefaultUser("user2", "user two", "user2@ext.example.com");
-
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someTitle");
-    parameters.put(VoteConfig.KEY_VOTERS, user1.getName() + "," + user2.getName());
+    parameters.put(VoteConfig.KEY_VOTERS, SOME_USER1.getName() + "," + SOME_USER2.getName());
 
     final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(user1.getName())).thenReturn(newArrayList(user1.getName()));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(user2.getName())).thenReturn(newArrayList(user2.getName()));
-    when(mockPermissionEvaluator.getUserByName(user1.getName())).thenReturn(user1);
-    when(mockPermissionEvaluator.getUserByName(user2.getName())).thenReturn(user2);
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER1.getName())).thenReturn(newArrayList(SOME_USER1));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER2.getName())).thenReturn(newArrayList(SOME_USER2));
     classUnderTest = new Ballot("someTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
 
     // When:
     String result = classUnderTest.getEmailStringOfPendingVoters();
 
     // Then:
-    assertThat(result, is("user1@example.com,user2@ext.example.com"));
+    assertThat(result, is(SOME_USER1.getEmail() + "," + SOME_USER2.getEmail()));
   }
 
 

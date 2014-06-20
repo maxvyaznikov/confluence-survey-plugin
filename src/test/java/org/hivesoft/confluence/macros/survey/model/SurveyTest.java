@@ -1,5 +1,7 @@
 package org.hivesoft.confluence.macros.survey.model;
 
+import com.atlassian.user.User;
+import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -13,7 +15,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -72,9 +74,9 @@ public class SurveyTest {
     Ballot mockBallot = mock(Ballot.class);
     classUnderTest.addBallot(mockBallot);
 
-    when(mockBallot.getHasVoted(anyString())).thenReturn(true);
+    when(mockBallot.getHasVoted(any(User.class))).thenReturn(true);
 
-    final boolean completed = classUnderTest.isSurveyComplete("someUsername");
+    final boolean completed = classUnderTest.isSurveyComplete(new DefaultUser("someUsername"));
 
     assertTrue(completed);
   }
@@ -84,9 +86,9 @@ public class SurveyTest {
     Ballot mockBallot = mock(Ballot.class);
     classUnderTest.addBallot(mockBallot);
 
-    when(mockBallot.getHasVoted(anyString())).thenReturn(false);
+    when(mockBallot.getHasVoted(any(User.class))).thenReturn(false);
 
-    final boolean completed = classUnderTest.isSurveyComplete("someUsername");
+    final boolean completed = classUnderTest.isSurveyComplete(new DefaultUser("someUsername"));
 
     assertFalse(completed);
   }

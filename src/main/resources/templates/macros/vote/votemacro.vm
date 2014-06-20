@@ -15,8 +15,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 <link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all"/>
 
 #set ($config = $ballot.config)
-#set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $config.changeableVotes)))
-#set ($canSeeResults = ($config.canSeeResults && ( $ballot.getHasVoted($req.remoteUser) || ($config.canTakeSurvey && $config.locked) || !($config.canTakeSurvey) )))
+#set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($currentUser)) || $config.changeableVotes)))
+#set ($canSeeResults = ($config.canSeeResults && ( $ballot.getHasVoted($currentUser) || ($config.canTakeSurvey && $config.locked) || !($config.canTakeSurvey) )))
 #set ($canSeeVoters = $canSeeResults && $config.visibleVoters)
 
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
@@ -68,14 +68,14 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       <td>$choiceDescriptionWithHtml</td>
       <td align="center">
         #if ($canVote && !($config.locked))
-          #if ($choice.getHasVotedFor($req.remoteUser))
+          #if ($choice.getHasVotedFor($currentUser))
             <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
                  alt="$ballot.title" contentid="$content.id" title="$choice.description"/>
           #else
             <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
                  alt="$ballot.title" contentid="$content.id" title="$choice.description"/>
           #end
-        #elseif ($choice.getHasVotedFor($req.remoteUser))
+        #elseif ($choice.getHasVotedFor($currentUser))
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>
         #else
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
@@ -117,8 +117,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         <td class="surveyCommentPane" rowspan="$ballot.choices.size()">
           #if (!($config.locked))
             #set ($currentComment = "")
-            #if ($ballot.getCommentForUser($req.remoteUser))
-              #set ($currentComment = $ballot.getCommentForUser($req.remoteUser).comment)
+            #if ($ballot.getCommentForUser($currentUser))
+              #set ($currentComment = $ballot.getCommentForUser($currentUser).comment)
             #end
             <div class="focusedComment commentblock surveyComment">
                 <span id="${ballotNumberID}CommentForm" style="display:none">
@@ -134,8 +134,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
                     </span>
                   </form>
                 </span>
-              #if ($ballot.getCommentForUser($req.remoteUser))
-                #set($rawWiki=$ballot.getCommentForUser($req.remoteUser).comment)
+              #if ($ballot.getCommentForUser($currentUser))
+                #set($rawWiki=$ballot.getCommentForUser($currentUser).comment)
                 <span id="${ballotNumberID}CommentDisplay">
                     <span id="${ballotNumberID}CommentValue">$rawWiki</span>
                   <div class="surveyIconBar">
@@ -163,7 +163,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 
           #if (($canSeeResults || ($canVote && $config.locked)) && $config.showComments)
             #foreach ($comment in $ballot.comments)
-              #if ( (!($req.remoteUser) && $canSeeResults) || ($comment.username != $req.remoteUser && $canSeeResults) || ($comment.username == $req.remoteUser && $config.locked))
+              #if ( (!($currentUser) && $canSeeResults) || ($comment.username != $currentUser && $canSeeResults) || ($comment.username == $currentUser && $config.locked))
                 <div class="commentBox commentblock surveyComment">
                   #set( $voteText = $action.getText("surveyplugin.survey.vote.not") )
                   #if ($ballot.getChoiceForUserName($comment.username))

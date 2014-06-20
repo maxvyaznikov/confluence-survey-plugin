@@ -1,5 +1,7 @@
 package org.hivesoft.confluence.macros.vote.model;
 
+import com.atlassian.user.User;
+import com.atlassian.user.impl.DefaultUser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,8 +11,11 @@ import static org.junit.Assert.*;
 public class ChoiceTest {
 
   private static final String SOME_CHOICE_DESCRIPTION = "someChoiceSomeoneCanVoteOn";
-  private static final String SOME_EXISTING_USER_NAME = "someExistingUserName";
+  private static final String SOME_EXISTING_USER_NAME_ONE = "someExistingUserName";
   private static final String SOME_EXISTING_USER_NAME_TWO = "someOtherExistingUserName";
+
+  private static final User SOME_USER_ONE = new DefaultUser(SOME_EXISTING_USER_NAME_ONE);
+  private static final User SOME_USER_TWO = new DefaultUser(SOME_EXISTING_USER_NAME_TWO);
 
   Choice classUnderTest;
 
@@ -21,11 +26,11 @@ public class ChoiceTest {
 
   @Test
   public void test_getHasVotedFor_success() {
-    classUnderTest.voteFor(SOME_EXISTING_USER_NAME);
-    classUnderTest.voteFor(SOME_EXISTING_USER_NAME_TWO);
+    classUnderTest.voteFor(SOME_USER_ONE);
+    classUnderTest.voteFor(SOME_USER_TWO);
 
-    final boolean hasVotedFor = classUnderTest.getHasVotedFor(SOME_EXISTING_USER_NAME);
-    final boolean hasVotedForTwo = classUnderTest.getHasVotedFor(SOME_EXISTING_USER_NAME_TWO);
+    final boolean hasVotedFor = classUnderTest.getHasVotedFor(SOME_USER_ONE);
+    final boolean hasVotedForTwo = classUnderTest.getHasVotedFor(SOME_USER_TWO);
 
     assertTrue(hasVotedFor);
     assertTrue(hasVotedForTwo);
@@ -33,18 +38,18 @@ public class ChoiceTest {
 
   @Test
   public void test_getHasVotedFor_failure() {
-    classUnderTest.voteFor(SOME_EXISTING_USER_NAME);
+    classUnderTest.voteFor(SOME_USER_ONE);
 
-    final boolean hasVotedFor = classUnderTest.getHasVotedFor(SOME_EXISTING_USER_NAME_TWO);
+    final boolean hasVotedFor = classUnderTest.getHasVotedFor(SOME_USER_TWO);
     assertFalse(hasVotedFor);
   }
 
   @Test
   public void test_voteFor_secondTimeSameUser_success() {
-    classUnderTest.voteFor(SOME_EXISTING_USER_NAME);
-    classUnderTest.voteFor(SOME_EXISTING_USER_NAME);
+    classUnderTest.voteFor(SOME_USER_ONE);
+    classUnderTest.voteFor(SOME_USER_ONE);
 
-    final boolean hasVotedFor = classUnderTest.getHasVotedFor(SOME_EXISTING_USER_NAME);
+    final boolean hasVotedFor = classUnderTest.getHasVotedFor(SOME_USER_ONE);
     assertTrue(hasVotedFor);
   }
 

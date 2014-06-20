@@ -15,8 +15,10 @@ import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
+import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
@@ -38,9 +40,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SurveyMacroTest {
-  private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
-  private final static String SOME_SURVEY_TITLE = "someSurveyTitle";
+public class SurveyMacroTest extends ConfluenceTestBase {
 
   SurveyManager mockSurveyManager = mock(SurveyManager.class);
   TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
@@ -63,8 +63,6 @@ public class SurveyMacroTest {
     final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
     final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
 
-    //when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_BALLOT)).thenReturn(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    //when(mockRequest.getParameter(VoteMacro.REQUEST_PARAMETER_CHOICE)).thenReturn(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
     AuthenticatedUserThreadLocal.setUser(SOME_USER1);
 
     classUnderTest = new SurveyMacro(mockPluginSettingsFactory, mockSurveyManager, mockTemplateRenderer, xhtmlContent, mockVelocityAbstractionHelper);

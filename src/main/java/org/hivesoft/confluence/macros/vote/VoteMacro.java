@@ -24,7 +24,6 @@ import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
@@ -33,7 +32,6 @@ import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -48,10 +46,6 @@ public class VoteMacro implements Macro {
   private static final Logger.Log LOG = Logger.getInstance(VoteMacro.class);
 
   public static final String VOTE_MACRO = "vote";
-
-  public static final String REQUEST_PARAMETER_BALLOT = "ballot.title";
-  public static final String REQUEST_PARAMETER_CHOICE = "vote.choice";
-  public static final String REQUEST_PARAMETER_VOTE_ACTION = "vote.action";
 
   // prefix vote to make a vote unique in the textproperties
   public static final String VOTE_PREFIX = "vote.";
@@ -175,6 +169,8 @@ public class VoteMacro implements Macro {
     contextMap.put("content", contentObject);
     contextMap.put("ballot", ballot);
     contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
+    contextMap.put("currentUser", surveyManager.getCurrentUser());
+
     try {
       StringWriter renderedTemplate = new StringWriter();
       if (ballot.getConfig().getRenderProblems().isEmpty()) {

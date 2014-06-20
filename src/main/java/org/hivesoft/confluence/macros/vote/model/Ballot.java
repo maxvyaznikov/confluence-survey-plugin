@@ -70,25 +70,17 @@ public class Ballot {
     return config;
   }
 
-  /**
-   * @param username the username whose vote is needed
-   * @return the {@link Choice} the user voted on or <code>null</code> if username has not voted.
-   */
-  public Choice getChoiceForUserName(String username) {
+  public Choice getChoiceForUser(User user) {
     for (Choice choice : choices) {
-      if (choice.getHasVotedFor(username)) {
+      if (choice.getHasVotedFor(user)) {
         return choice;
       }
     }
     return null;
   }
 
-  /**
-   * @param username the username of the prospective voter
-   * @return true if the user has already voted
-   */
-  public boolean getHasVoted(String username) {
-    return getChoiceForUserName(username) != null;
+  public boolean getHasVoted(User user) {
+    return getChoiceForUser(user) != null;
   }
 
   /**
@@ -114,12 +106,12 @@ public class Ballot {
   /**
    * Get the comment entered by a particular user.
    *
-   * @param username The name of the user whose comment is to be returned.
+   * @param user The name of the user whose comment is to be returned.
    * @return The requested user's comment or null if not present.
    */
-  public Comment getCommentForUser(String username) {
+  public Comment getCommentForUser(User user) {
     for (Comment comment : comments) {
-      if (username.equals(comment.getUsername())) {
+      if (user.getName().equals(comment.getUsername())) {
         return comment;
       }
     }
@@ -138,8 +130,8 @@ public class Ballot {
    *
    * @return Voters of the ballot
    */
-  public Collection<String> getAllVoters() {
-    List<String> voters = new ArrayList<String>();
+  public Collection<User> getAllVoters() {
+    List<User> voters = new ArrayList<User>();
     for (Choice choice : choices) {
       voters.addAll(choice.getVoters());
     }
@@ -152,7 +144,7 @@ public class Ballot {
    *
    * @return all possible Voters of the ballot. Empty list if no {@code voters}are configured. Never {@code null}.
    */
-  public List<String> getAllPossibleVoters() {
+  public List<User> getAllPossibleVoters() {
     return config.getAllPossibleVoters();
   }
 
@@ -161,8 +153,8 @@ public class Ballot {
    *
    * @return all pending {@code voters} of the ballot. Never {@code null}.
    */
-  public Collection<String> getAllPendingVoters() {
-    List<String> result = getAllPossibleVoters();
+  public List<User> getAllPendingVoters() {
+    List<User> result = getAllPossibleVoters();
     Iterables.removeAll(result, getAllVoters());
     return result;
   }
@@ -175,11 +167,8 @@ public class Ballot {
    */
   public String getEmailStringOfPendingVoters() {
     List<String> emails = new ArrayList<String>();
-    for (String voter : getAllPendingVoters()) {
-      User user = config.getUserByName(voter);
-      if (user != null) {
-        emails.add(user.getEmail());
-      }
+    for (User voter : getAllPendingVoters()) {
+      emails.add(voter.getEmail());
     }
     return Joiner.on(',').join(emails);
   }

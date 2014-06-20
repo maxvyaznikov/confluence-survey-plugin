@@ -118,6 +118,7 @@ public class SurveyMacro implements Macro {
     contextMap.put("content", contentObject);
     contextMap.put("survey", survey);
     contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
+    contextMap.put("currentUser", surveyManager.getCurrentUser());
 
     try {
       StringWriter renderedTemplate = new StringWriter();

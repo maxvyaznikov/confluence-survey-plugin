@@ -24,6 +24,7 @@ import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
 import org.hivesoft.confluence.macros.survey.model.Survey;
@@ -115,7 +116,7 @@ public class SurveyResource {
     for (Ballot ballot : survey.getBallots()) {
       for (Choice choice : ballot.getChoices()) {
         comments.clear();
-        for (String voter : choice.getVoters()) {
+        for (User voter : choice.getVoters()) {
           Comment comment = ballot.getCommentForUser(voter);
           if (comment != null) {
             comments.add(comment.getComment());

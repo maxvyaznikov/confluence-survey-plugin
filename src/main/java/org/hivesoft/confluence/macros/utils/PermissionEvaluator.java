@@ -19,6 +19,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.user.Group;
 import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.utils.wrapper.SurveyUser;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 
 import java.util.ArrayList;
@@ -37,11 +38,22 @@ public class PermissionEvaluator {
   }
 
   public User getRemoteUser() {
-    return userAccessor.getUser(getRemoteUsername());
+    return getUserByName(getRemoteUsername());
   }
 
-  public String getRemoteUsername() {
+  private String getRemoteUsername() {
     return userManager.getRemoteUsername();
+  }
+
+  /**
+   * Always return a useFull user object!
+   */
+  public User getUserByName(String userName) {
+    final User user = userAccessor.getUser(userName);
+    if (null == user) {
+      return new SurveyUser(userName);
+    }
+    return new SurveyUser(user);
   }
 
   public boolean canAttachFile(ContentEntityObject contentEntityObject) {
@@ -52,17 +64,17 @@ public class PermissionEvaluator {
     return permissionManager.hasPermission(getRemoteUser(), Permission.EDIT, contentEntityObject);
   }
 
-  public Boolean isPermissionListEmptyOrContainsGivenUser(List<String> listOfUsersOrGroups, String username) {
-    if (StringUtils.isBlank(username)) {
+  public Boolean isPermissionListEmptyOrContainsGivenUser(List<String> listOfUsersOrGroups, User user) {
+    if (null == user) {
       return Boolean.FALSE;
     }
 
-    if (listOfUsersOrGroups.isEmpty() || listOfUsersOrGroups.contains(username)) {
+    if (listOfUsersOrGroups.isEmpty() || listOfUsersOrGroups.contains(user.getName())) {
       return Boolean.TRUE;
     }
 
     for (String permittedElement : listOfUsersOrGroups) {
-      if (userAccessor.hasMembership(permittedElement.trim(), username)) {
+      if (userAccessor.hasMembership(permittedElement.trim(), user.getName())) {
         return Boolean.TRUE;
       }
     }
@@ -77,33 +89,32 @@ public class PermissionEvaluator {
    * Determine if a user is authorized to cast a vote, taking into account whether they are a voter (either explicitly or implicitly)
    * and whether or not they have already cast a vote. Only logged in users can vote.
    *
-   * @param username the username of the user about to see the ballot.
-   * @param ballot   the ballot that is about to be shown.
+   * @param user   the user about to see the ballot.
+   * @param ballot the ballot that is about to be shown.
    * @return <code>true</code> if the user can cast a vote, <code>false</code> if they cannot.
    */
-  public Boolean canVote(String username, Ballot ballot) {
-    return isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), username) && (!ballot.getHasVoted(username) || ballot.getConfig().isChangeableVotes());
+  public Boolean canVote(User user, Ballot ballot) {
+    return isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), user) && (!ballot.getHasVoted(user) || ballot.getConfig().isChangeableVotes());
   }
 
-  public List<String> getActiveUsersForGroupOrUser(String configuredVoter) {
-    List<String> userNames = new ArrayList<String>();
+  public List<User> getActiveUsersForGroupOrUser(String configuredVoter) {
+    List<User> users = new ArrayList<User>();
     Group group = userAccessor.getGroup(configuredVoter);
     if (group == null) {
       final User user = userAccessor.getUser(configuredVoter);
       if (user != null && !userAccessor.isDeactivated(user)) {
-        userNames.add(configuredVoter);
+        users.add(user);
       }
     } else {
       for (String userName : userAccessor.getMemberNamesAsList(group)) {
-        if (!userAccessor.isDeactivated(userName)) {
-          userNames.add(userName);
+        final User user = userAccessor.getUser(userName);
+        if (!userAccessor.isDeactivated(user)) {
+          users.add(user);
         }
       }
     }
-    return userNames;
+    return users;
   }
 
-  public User getUserByName(String userName) {
-    return userAccessor.getUser(userName);
-  }
+
 }

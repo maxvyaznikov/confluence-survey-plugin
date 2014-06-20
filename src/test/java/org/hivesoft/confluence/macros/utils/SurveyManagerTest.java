@@ -6,9 +6,12 @@ import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Comment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
+import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultUser;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.utils.wrapper.SurveyUser;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -29,9 +32,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class SurveyManagerTest {
-  private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
-
+public class SurveyManagerTest extends ConfluenceTestBase {
   ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
   PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
@@ -39,7 +40,7 @@ public class SurveyManagerTest {
 
   @Before
   public void setup() {
-    when(mockPermissionEvaluator.getRemoteUsername()).thenReturn(SurveyUtilsTest.SOME_USER_NAME);
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
 
     classUnderTest = new SurveyManager(mockContentPropertyManager, mockPermissionEvaluator);
   }
@@ -73,6 +74,7 @@ public class SurveyManagerTest {
     String someChoices = "someChoice1\r\nsomeChoice2";
 
     when(mockContentPropertyManager.getTextProperty(any(ContentEntityObject.class), anyString())).thenReturn(SOME_USER1.getName());
+    when(mockPermissionEvaluator.getUserByName(SOME_USER1.getName())).thenReturn(SOME_USER1);
 
     final Ballot reconstructedBallot = classUnderTest.reconstructBallotFromPlainTextMacroBody(parametersWithTitle(), someChoices, new Page());
 
@@ -80,7 +82,7 @@ public class SurveyManagerTest {
     assertThat(reconstructedBallot.getChoice("someChoice1").getDescription(), is("someChoice1"));
     assertThat(reconstructedBallot.getChoice("someChoice2").getDescription(), is("someChoice2"));
     assertThat(reconstructedBallot.getChoice("someChoice1").getVoters(), hasSize(1));
-    assertThat(reconstructedBallot.getChoice("someChoice1").getHasVotedFor(SOME_USER1.getName()), is(true));
+    assertThat(reconstructedBallot.getChoice("someChoice1").getHasVotedFor(SOME_USER1), is(true));
   }
 
   @Test
@@ -133,7 +135,7 @@ public class SurveyManagerTest {
     final Page somePage = new Page();
 
     final String userName1 = SOME_USER1.getName();
-    final String userName2 = "someUser2";
+    final String userName2 = SOME_USER2.getName();
     final String commentUsers = userName1 + SurveyManager.COMMENTERS_SEPARATOR + userName2;
     final String commentForUser1 = "someComment";
     final String commentForUser2 = "another Comment";
@@ -147,8 +149,8 @@ public class SurveyManagerTest {
 
     assertThat(returnedBallot1.getTitle(), is(someBallotTitle1));
     assertThat(returnedSurvey.getBallot(someBallotTitle2).getTitle(), is(someBallotTitle2));
-    assertThat(returnedBallot1.getCommentForUser(userName1).getComment(), is(commentForUser1));
-    assertThat(returnedBallot1.getCommentForUser(userName2).getComment(), is(commentForUser2));
+    assertThat(returnedBallot1.getCommentForUser(SOME_USER1).getComment(), is(commentForUser1));
+    assertThat(returnedBallot1.getCommentForUser(SOME_USER2).getComment(), is(commentForUser2));
     assertThat(returnedBallot1.getComments(), hasSize(2));
   }
 
@@ -160,18 +162,19 @@ public class SurveyManagerTest {
     final Page somePage = new Page();
 
     when(mockContentPropertyManager.getTextProperty(somePage, VoteMacro.VOTE_PREFIX + someBallotTitle1 + ".5-Outstanding")).thenReturn(SOME_USER1.getName());
+    when(mockPermissionEvaluator.getUserByName(SOME_USER1.getName())).thenReturn(SOME_USER1);
 
     final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, parametersWithTitle());
 
     assertThat(returnedSurvey.getBallot(someBallotTitle1).getTitle(), is(someBallotTitle1));
     assertThat(returnedSurvey.getBallot(someBallotTitle2).getTitle(), is(someBallotTitle2));
-    assertThat(returnedSurvey.getBallot(someBallotTitle1).getChoice("5-Outstanding").getHasVotedFor(SOME_USER1.getName()), is(true));
+    assertThat(returnedSurvey.getBallot(someBallotTitle1).getChoice("5-Outstanding").getHasVotedFor(SOME_USER1), is(true));
   }
 
   @Test
   public void test_recordVote_noUser_success() {
     Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    when(mockPermissionEvaluator.getRemoteUsername()).thenReturn("");
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(new SurveyUser("someUser"));
 
     classUnderTest.recordVote(ballot, new Page(), "someChoiceDoesn'tMatter", VoteAction.VOTE);
 
@@ -183,7 +186,7 @@ public class SurveyManagerTest {
     Choice choiceToVoteOn = SurveyUtilsTest.createdDefaultChoice();
     Ballot ballot = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(choiceToVoteOn));
 
-    when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
 
     classUnderTest.recordVote(ballot, new Page(), choiceToVoteOn.getDescription(), VoteAction.VOTE);
 
@@ -201,9 +204,9 @@ public class SurveyManagerTest {
 
     Ballot ballot = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(choiceAlreadyVotedOn, choiceToVoteOn));
 
-    choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+    choiceAlreadyVotedOn.voteFor(SOME_USER1);
 
-    when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
 
     classUnderTest.recordVote(ballot, new Page(), choiceToVoteOn.getDescription(), VoteAction.VOTE);
 
@@ -220,9 +223,9 @@ public class SurveyManagerTest {
 
     Ballot ballot = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(choiceAlreadyVotedOn));
 
-    choiceAlreadyVotedOn.voteFor(SurveyUtilsTest.SOME_USER_NAME);
+    choiceAlreadyVotedOn.voteFor(SOME_USER1);
 
-    when(mockPermissionEvaluator.canVote(anyString(), any(Ballot.class))).thenReturn(true);
+    when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
 
     classUnderTest.recordVote(ballot, new Page(), choiceAlreadyVotedOn.getDescription(), VoteAction.UNVOTE);
 
@@ -233,7 +236,7 @@ public class SurveyManagerTest {
   public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesFalse_success() {
     Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
 
-    ballot.getChoices().iterator().next().voteFor(SurveyUtilsTest.SOME_USER_NAME);
+    ballot.getChoices().iterator().next().voteFor(SOME_USER1);
 
     classUnderTest.recordVote(ballot, new Page(), "choiceDoesn'tMatter", VoteAction.VOTE);
 

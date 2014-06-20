@@ -10,6 +10,7 @@
  */
 package org.hivesoft.confluence.macros.survey.model;
 
+import com.atlassian.user.User;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
@@ -70,12 +71,12 @@ public class Survey {
   /**
    * Indicates whether the survey is complete for a particular user based on whether or not the user has registered a vote for each ballot.
    *
-   * @param username The user whose survey we need status for.
+   * @param user The user whose survey we need status for.
    * @return <code>true</code> if the user has voted on all ballots; <code>false</code> otherwise.
    */
-  public boolean isSurveyComplete(String username) {
+  public boolean isSurveyComplete(User user) {
     for (Ballot ballot : ballots) {
-      if (!ballot.getHasVoted(username)) {
+      if (!ballot.getHasVoted(user)) {
         return false;
       }
     }

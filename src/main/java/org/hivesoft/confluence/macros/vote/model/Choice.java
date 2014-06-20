@@ -10,6 +10,7 @@
  */
 package org.hivesoft.confluence.macros.vote.model;
 
+import com.atlassian.user.User;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.List;
 public class Choice {
 
   private final String description;
-  private List<String> voters = new ArrayList<String>();
+  private List<User> voters = new ArrayList<User>();
 
   /**
    * @param description the description of the <code>Choice</code>
@@ -44,7 +45,7 @@ public class Choice {
   /**
    * @param voter the username to add to this <code>Choice</code>
    */
-  public void voteFor(String voter) {
+  public void voteFor(User voter) {
     if (!getHasVotedFor(voter)) {
       voters.add(voter);
     }
@@ -53,25 +54,19 @@ public class Choice {
   /**
    * @param voter the username to remove from this <code>Choice</code>
    */
-  public void removeVoteFor(String voter) {
+  public void removeVoteFor(User voter) {
     voters.remove(voter);
   }
 
   /**
    * @return all of the userNames that have voted for this <code>Choice</code>
    */
-  public List<String> getVoters() {
+  public List<User> getVoters() {
     return voters;
   }
 
-  /**
-   * Determine is a specific username has voted for this <code>Choice</code>.
-   *
-   * @param username username of the potential voter
-   * @return <code>true</code> if the user previously voted for this <code>Choice</code>, <code>false</code> otherwise.
-   */
-  public boolean getHasVotedFor(String username) {
-    return voters.contains(username);
+  public boolean getHasVotedFor(User user) {
+    return voters.contains(user);
   }
 
   /**

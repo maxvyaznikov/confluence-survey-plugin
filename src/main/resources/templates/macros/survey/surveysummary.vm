@@ -17,7 +17,7 @@
     <h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#else <br/>#end <a
           name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a>#if ($survey.config.getRenderTitleLevelAdjustedOrZero(1) != 0)
   </h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#end
-    #if ($survey.isSurveyComplete($req.remoteUser) || !($survey.config.canTakeSurvey) || $survey.config.locked )
+    #if ($survey.isSurveyComplete($currentUser) || !($survey.config.canTakeSurvey) || $survey.config.locked )
     <table class="surveySummaryTable">
       <thead>
       <tr>

@@ -33,7 +33,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
   #foreach ($ballot in $survey.ballots)
 
     #set ($config = $ballot.config)
-    #set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($req.remoteUser)) || $config.changeableVotes)))
+    #set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($currentUser)) || $config.changeableVotes)))
     #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
     <tr>
@@ -44,14 +44,14 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       #foreach ($choice in $ballot.choices)
         <td align="center">
           #if ($canVote && !($config.locked))
-            #if ($choice.getHasVotedFor($req.remoteUser))
+            #if ($choice.getHasVotedFor($currentUser))
               <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
                    alt="$ballot.title" contentid="$content.id" title="$choice.description"/>
             #else
               <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
                    alt="$ballot.title" contentid="$content.id" title="$choice.description"/>
             #end
-          #elseif ($choice.getHasVotedFor($req.remoteUser))
+          #elseif ($choice.getHasVotedFor($currentUser))
             <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>
           #else
             <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
