@@ -111,7 +111,7 @@ public class Ballot {
    */
   public Comment getCommentForUser(User user) {
     for (Comment comment : comments) {
-      if (user.getName().equals(comment.getUsername())) {
+      if (user.equals(comment.getUser())) {
         return comment;
       }
     }

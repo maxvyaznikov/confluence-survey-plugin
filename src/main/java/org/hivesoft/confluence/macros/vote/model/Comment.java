@@ -10,26 +10,29 @@
  */
 package org.hivesoft.confluence.macros.vote.model;
 
+import com.atlassian.user.User;
+
 /**
  * This class holds comments entered by users for a ballot.
  */
 public class Comment {
-  private String username;
+  private User user;
   private String comment;
 
   /**
    * Create a new comment loaded with the given username and comment.
    */
-  public Comment(String username, String comment) {
-    this.username = username;
+  public Comment(User user, String comment) {
+    this.user = user;
     this.comment = comment;
+  }
+
+  public User getUser() {
+    return user;
   }
 
   public String getComment() {
     return comment;
   }
 
-  public String getUsername() {
-    return username;
-  }
 }

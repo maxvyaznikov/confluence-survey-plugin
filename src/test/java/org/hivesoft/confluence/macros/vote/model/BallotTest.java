@@ -137,7 +137,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getComments_success() {
-    Comment someComment = new Comment(SOME_USER1.getName(), "some crazy comment for a crazy plugin");
+    Comment someComment = new Comment(SOME_USER1, "some crazy comment for a crazy plugin");
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithComments("someBallot", Arrays.asList(someComment));
 
@@ -150,7 +150,7 @@ public class BallotTest extends ConfluenceTestBase {
   @Test
   public void test_getCommentForUser_success() {
     final String commentString = "some crazy comment for a crazy plugin";
-    Comment someComment = new Comment(SOME_USER1.getName(), commentString);
+    Comment someComment = new Comment(SOME_USER1, commentString);
 
     classUnderTest = SurveyUtilsTest.createDefaultBallotWithComments("someBallot", Arrays.asList(someComment));
 

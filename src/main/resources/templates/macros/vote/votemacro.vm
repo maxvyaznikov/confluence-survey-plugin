@@ -104,9 +104,9 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
               #foreach($voter in $voters)
                 #set($iCounter=$iCounter+1)
                 #if ($config.visibleVotersWiki)
-                  <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+                  <a href="$req.contextPath/display/~$voter.getName()" class="url fn confluence-userlink" data-username="$voter.getName()">$voter.getName()</a>#if ($iCounter!=$voters.size()),#end
                 #else
-                  $voter#if ($iCounter!=$voters.size()),#end
+                  $voter.getName()#if ($iCounter!=$voters.size()),#end
                 #end
               #end
             </i>
@@ -163,14 +163,14 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 
           #if (($canSeeResults || ($canVote && $config.locked)) && $config.showComments)
             #foreach ($comment in $ballot.comments)
-              #if ( (!($currentUser) && $canSeeResults) || ($comment.username != $currentUser && $canSeeResults) || ($comment.username == $currentUser && $config.locked))
+              #if ( (!($currentUser) && $canSeeResults) || ($comment.user != $currentUser && $canSeeResults) || ($comment.user == $currentUser && $config.locked))
                 <div class="commentBox commentblock surveyComment">
                   #set( $voteText = $action.getText("surveyplugin.survey.vote.not") )
-                  #if ($ballot.getChoiceForUserName($comment.username))
-                    #set($voteText=$ballot.getChoiceForUserName($comment.username).description)
+                  #if ($ballot.getChoiceForUser($comment.user))
+                    #set($voteText=$ballot.getChoiceForUser($comment.user).description)
                   #end
                   #if ($canSeeVoters)
-                    #set($voteText= $comment.username + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
+                    #set($voteText= $comment.user.name + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
                   #end
                   <b>$voteText:</b> $comment.comment
                 </div>
@@ -192,9 +192,9 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         #foreach($voter in $voters)
           #set($iCounter=$iCounter+1)
           #if ($config.visibleVotersWiki)
-            <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+            <a href="$req.contextPath/display/~$voter.getName()" class="url fn confluence-userlink" data-username="$voter.getName()">$voter.getName()</a>#if ($iCounter!=$voters.size()),#end
           #else
-            $voter#if ($iCounter!=$voters.size()),#end
+            $voter.getName()#if ($iCounter!=$voters.size()),#end
           #end
         #end
       </td>
@@ -210,9 +210,9 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         #foreach($pending in $pendingVoters)
           #set($iCounter = $iCounter + 1)
           #if ($config.visibleVotersWiki)
-            <a href="$req.contextPath/display/~$pending" class="url fn confluence-userlink" data-username="$pending">$pending</a>#if ($iCounter != $pendingVoters.size()),#end
+            <a href="$req.contextPath/display/~$pending.getName()" class="url fn confluence-userlink" data-username="$pending.getName()">$pending.getName()</a>#if ($iCounter != $pendingVoters.size()),#end
           #else
-            $pending#if ($iCounter != $pendingVoters.size()),#end
+            $pending.getName()#if ($iCounter != $pendingVoters.size()),#end
           #end
         #end
       </td>

@@ -142,6 +142,8 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".commenters")).thenReturn(commentUsers);
     when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".comment." + userName1)).thenReturn(commentForUser1);
     when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle1 + ".comment." + userName2)).thenReturn(commentForUser2);
+    when(mockPermissionEvaluator.getUserByName(userName1)).thenReturn(SOME_USER1);
+    when(mockPermissionEvaluator.getUserByName(userName2)).thenReturn(SOME_USER2);
 
     final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, parametersWithTitle());
 

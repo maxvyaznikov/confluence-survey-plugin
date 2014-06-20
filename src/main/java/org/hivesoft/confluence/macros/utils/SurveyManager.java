@@ -49,7 +49,7 @@ public class SurveyManager {
     return permissionEvaluator;
   }
 
-  public User getCurrentUser(){
+  public User getCurrentUser() {
     return permissionEvaluator.getRemoteUser();
   }
 
@@ -174,7 +174,7 @@ public class SurveyManager {
     if (StringUtils.isNotBlank(commenters)) {
       for (String commenter : StringUtils.split(commenters, COMMENTERS_SEPARATOR)) {
         String comment = contentPropertyManager.getTextProperty(contentObject, "survey." + ballotTitle + ".comment." + commenter);
-        comments.add(new Comment(commenter, comment));
+        comments.add(new Comment(permissionEvaluator.getUserByName(commenter), comment));
       }
     }
     return comments;
@@ -187,7 +187,11 @@ public class SurveyManager {
       contentPropertyManager.setTextProperty(contentObject, propertyKey, null);
     } else {
       Collection<User> voters = choice.getVoters();
-      String propertyValue = StringUtils.join(voters, ",");
+      List<String> voterNames = new ArrayList<String>();
+      for (User voter : voters) {
+        voterNames.add(voter.getName());
+      }
+      String propertyValue = StringUtils.join(voterNames, ",");
       contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
     }
   }

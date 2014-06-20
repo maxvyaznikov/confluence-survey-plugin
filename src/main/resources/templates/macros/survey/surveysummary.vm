@@ -59,9 +59,9 @@
                 #foreach($voter in $voters)
                   #set($iCounter=$iCounter+1)
                   #if ($survey.config.visibleVotersWiki)
-                    <a href="$req.contextPath/display/~$voter" class="url fn confluence-userlink" data-username="$voter">$voter</a>#if ($iCounter!=$voters.size()),#end
+                    <a href="$req.contextPath/display/~$voter.getName()" class="url fn confluence-userlink" data-username="$voter.getName()">$voter.getName()</a>#if ($iCounter!=$voters.size()),#end
                   #else
-                    $voter#if ($iCounter!=$voters.size()),#end
+                    $voter.getName()#if ($iCounter!=$voters.size()),#end
                   #end
                 #end
               </i>
@@ -75,9 +75,9 @@
                 #foreach($pending in $pendingVoters)
                   #set($iCounter = $iCounter + 1)
                   #if ($survey.config.visibleVotersWiki)
-                    <a href="$req.contextPath/display/~$pending" class="url fn confluence-userlink" data-username="$pending">$pending</a>#if ($iCounter != $pendingVoters.size()),#end
+                    <a href="$req.contextPath/display/~$pending.getName()" class="url fn confluence-userlink" data-username="$pending.getName()">$pending.getName()</a>#if ($iCounter != $pendingVoters.size()),#end
                   #else
-                    $pending#if ($iCounter != $pendingVoters.size()),#end
+                    $pending.getName()#if ($iCounter != $pendingVoters.size()),#end
                   #end
                 #end
               </i>
