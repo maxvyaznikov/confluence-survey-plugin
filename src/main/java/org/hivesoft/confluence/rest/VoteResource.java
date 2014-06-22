@@ -67,14 +67,14 @@ public class VoteResource {
     final String choiceName = URLDecoder.decode(voteRepresentation.getVoteChoice(), "UTF-8");
     final VoteAction voteAction = VoteAction.fromString(voteRepresentation.getVoteAction());
 
-    final ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(contentId));
+    ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(contentId));
 
     if (contentEntityObject == null) {
       return Response.status(Response.Status.NOT_FOUND).entity("The contentEntity with id: " + contentId + " was not found").build();
     }
 
     try {
-      final Ballot ballot = reconstructBallotByTitleFromSurveyOrVote(ballotTitle, contentEntityObject);
+      Ballot ballot = reconstructBallotByTitleFromSurveyOrVote(ballotTitle, contentEntityObject);
       surveyManager.recordVote(ballot, contentEntityObject, choiceName, voteAction);
     } catch (MacroReconstructionException e) {
       return Response.status(Response.Status.BAD_REQUEST).entity("There was a problem finding the specified ballot: " + e.getMessage()).build();
