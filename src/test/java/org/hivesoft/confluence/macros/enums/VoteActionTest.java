@@ -2,17 +2,23 @@ package org.hivesoft.confluence.macros.enums;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class VoteActionTest {
 
   @Test
   public void test_nullCase() {
-    assertEquals(VoteAction.NONE, VoteAction.fromString(null));
+    assertThat(VoteAction.fromString(null), is(VoteAction.NONE));
   }
 
   @Test
   public void test_emptyStringCase() {
-    assertEquals(VoteAction.NONE, VoteAction.fromString(""));
+    assertThat(VoteAction.fromString(""), is(VoteAction.NONE));
+  }
+
+  @Test
+  public void test_unknownEnumValueCase() {
+    assertThat(VoteAction.fromString("unknownAction"), is(VoteAction.NONE));
   }
 }

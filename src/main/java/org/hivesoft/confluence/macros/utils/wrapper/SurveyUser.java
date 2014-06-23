@@ -10,6 +10,7 @@
  */
 package org.hivesoft.confluence.macros.utils.wrapper;
 
+import com.atlassian.gzipfilter.org.apache.commons.lang.StringUtils;
 import com.atlassian.user.User;
 
 public class SurveyUser implements User {
@@ -19,15 +20,20 @@ public class SurveyUser implements User {
   private final String email;
 
   public SurveyUser(String name) {
+    this(name, name, "");
+  }
+
+  private SurveyUser(String name, String fullName, String email) {
+    if (StringUtils.isBlank(name)) {
+      throw new IllegalArgumentException("parameter name must not be empty!");
+    }
     this.name = name;
-    this.fullName = name;
-    this.email = "";
+    this.fullName = fullName;
+    this.email = email;
   }
 
   public SurveyUser(User user) {
-    this.name = user.getName();
-    this.fullName = user.getFullName();
-    this.email = user.getEmail();
+    this(user.getName(), user.getFullName(), user.getEmail());
   }
 
   @Override
@@ -55,14 +61,12 @@ public class SurveyUser implements User {
 
     SurveyUser that = (SurveyUser) o;
 
-    if (name != null ? !name.equals(that.name) : that.name != null) return false;
-
-    return true;
+    return name.equals(that.name);
   }
 
   @Override
   public int hashCode() {
-    return name != null ? name.hashCode() : 0;
+    return name.hashCode();
   }
 
   @Override
