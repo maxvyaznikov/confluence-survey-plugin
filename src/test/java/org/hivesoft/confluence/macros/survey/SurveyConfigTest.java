@@ -3,6 +3,7 @@ package org.hivesoft.confluence.macros.survey;
 import org.hivesoft.confluence.macros.survey.model.SurveySummary;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.macros.vote.VoterStyle;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class SurveyConfigTest {
     assertThat(classUnderTest.getVoters().size(), is(equalTo(0)));
     assertThat(classUnderTest.getViewers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
-    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
+    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(VoterStyle.PLAIN_LOGIN)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
   }

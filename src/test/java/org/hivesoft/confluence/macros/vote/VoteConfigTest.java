@@ -47,7 +47,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getManagers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
-    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
+    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(VoterStyle.PLAIN_LOGIN)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
@@ -75,7 +75,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getManagers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
-    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
+    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(VoterStyle.PLAIN_LOGIN)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
     assertThat(classUnderTest.isAnonymous(), is(false));
@@ -119,7 +119,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getManagers().size(), is(equalTo(2)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(true)));
-    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(true)));
+    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(VoterStyle.LINKED_LOGIN))); // TODO test others!
     assertThat(classUnderTest.isLocked(), is(equalTo(true)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(true)));
     assertThat(classUnderTest.isAnonymous(), is(true));

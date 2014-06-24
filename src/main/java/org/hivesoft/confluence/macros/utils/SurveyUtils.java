@@ -16,6 +16,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
+import org.hivesoft.confluence.macros.vote.VoterStyle;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.rest.AdminResource;
 
@@ -121,5 +122,10 @@ public class SurveyUtils {
     }
     matcher.appendTail(result);
     return result.toString();
+  }
+
+  public static VoterStyle getVoterStyleFromString(String propertyValue, VoterStyle defaultValue) {
+    VoterStyle result = VoterStyle.getFor(propertyValue);
+    return (result == null) ? defaultValue : result;
   }
 }

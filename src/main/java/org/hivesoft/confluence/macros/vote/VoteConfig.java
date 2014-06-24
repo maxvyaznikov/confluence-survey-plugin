@@ -52,7 +52,7 @@ public class VoteConfig {
   private final boolean locked;
   private final boolean visibleVoters;
   private final boolean visiblePendingVoters;
-  private final boolean visibleVotersWiki;
+  private final VoterStyle visibleVotersWiki;
   private final boolean showCondensed;
   private final boolean anonymous;
 
@@ -88,7 +88,8 @@ public class VoteConfig {
 
     visibleVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults) && canManageSurvey;
     visiblePendingVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS), canSeeResults) && !voters.isEmpty();
-    visibleVotersWiki = SurveyUtils.getBooleanFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
+    // TODO name of variable!
+    visibleVotersWiki = SurveyUtils.getVoterStyleFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), VoterStyle.PLAIN_LOGIN);
 
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
     this.iterateStep = SurveyUtils.getIntegerFromString(parameters.get(KEY_ITERATE_STEP), DEFAULT_ITERATE_STEP);
@@ -114,7 +115,7 @@ public class VoteConfig {
 
     visibleVoters = surveyConfig.isVisibleVoters();
     visiblePendingVoters = surveyConfig.isVisiblePendingVoters();
-    visibleVotersWiki = surveyConfig.isVisibleVotersWiki();
+    visibleVotersWiki = surveyConfig.getVisibleVotersWiki();
 
     startBound = surveyConfig.getStartBound();
     iterateStep = surveyConfig.getIterateStep();
@@ -160,7 +161,7 @@ public class VoteConfig {
     return visiblePendingVoters;
   }
 
-  public Boolean isVisibleVotersWiki() {
+  public VoterStyle getVisibleVotersWiki() {
     return visibleVotersWiki;
   }
 
