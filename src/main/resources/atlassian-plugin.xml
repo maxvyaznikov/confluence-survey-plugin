@@ -10,7 +10,6 @@
   <!-- BEGIN: backwards compatibility Wiki Syntax -->
   <macro key="vote-wikistyle" name="vote" class="org.hivesoft.confluence.macros.compatibility.VoteMacroWiki"
          icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png">
-    <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
     <category name="confluence-content"/>
     <parameters>
       <parameter name="title" type="string" required="true">
@@ -38,7 +37,6 @@
   <macro key="survey-wikistyle" name="survey" class="org.hivesoft.confluence.macros.compatibility.SurveyMacroWiki"
          icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo-survey.png">
     <category name="confluence-content"/>
-    <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
     <parameters>
       <parameter name="title" type="string"/>
       <parameter name="renderTitleLevel" type="enum" default="2">
@@ -69,7 +67,6 @@
   <xhtml-macro key="vote" name="vote" class="org.hivesoft.confluence.macros.vote.VoteMacro"
                icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo.png"
                documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
-    <resource type="velocity" name="help" location="templates/macros/vote/help.vm"/>
     <category name="confluence-content"/>
     <parameters>
       <parameter name="title" type="string" required="true">
@@ -97,7 +94,6 @@
   <xhtml-macro key="survey" name="survey" class="org.hivesoft.confluence.macros.survey.SurveyMacro"
                icon="/download/resources/${project.groupId}.${project.artifactId}:resources/logos/srvlogo-survey.png"
                documentation-url="https://github.com/drohne1673/confluence-survey-plugin/wiki/Usage">
-    <resource type="velocity" name="help" location="templates/macros/survey/help.vm"/>
     <category name="confluence-content"/>
     <parameters>
       <parameter name="title" type="string"/>
