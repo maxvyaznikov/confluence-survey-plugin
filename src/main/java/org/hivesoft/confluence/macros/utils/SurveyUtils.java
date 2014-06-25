@@ -126,6 +126,15 @@ public class SurveyUtils {
 
   public static VoterStyle getVoterStyleFromString(String propertyValue, VoterStyle defaultValue) {
     VoterStyle result = VoterStyle.getFor(propertyValue);
-    return (result == null) ? defaultValue : result;
+    if (result != null) {
+      return result;
+    }
+    if ("false".equals(propertyValue)) { // backwards compatibility for version <= 2.8.0
+      return VoterStyle.PLAIN_LOGIN;
+    }
+    if ("true".equals(propertyValue)) { // backwards compatibility for version <= 2.8.0
+      return VoterStyle.LINKED_LOGIN;
+    }
+    return defaultValue;
   }
 }
