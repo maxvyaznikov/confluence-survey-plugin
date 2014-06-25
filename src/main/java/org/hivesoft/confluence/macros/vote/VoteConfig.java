@@ -37,7 +37,7 @@ public class VoteConfig {
   protected static final String KEY_SHOW_COMMENTS = "showComments";
   protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   protected static final String KEY_VISIBLE_PENDING_VOTERS = "visiblePendingVoters";
-  protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
+  protected static final String KEY_USER_VISUALIZATION = "visibleVotersWiki";
   public static final String KEY_LOCKED = "locked";
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
@@ -53,7 +53,7 @@ public class VoteConfig {
   private final boolean locked;
   private final boolean visibleVoters;
   private final boolean visiblePendingVoters;
-  private final VoterStyle visibleVotersWiki;
+  private final UserVisualization userVisualization;
   private final boolean showCondensed;
   private final boolean anonymous;
 
@@ -90,8 +90,7 @@ public class VoteConfig {
 
     visibleVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults) && canManageSurvey;
     visiblePendingVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS), canSeeResults) && !voters.isEmpty();
-    // TODO name of variable!
-    visibleVotersWiki = SurveyUtils.getVoterStyleFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), VoterStyle.PLAIN_LOGIN);
+    userVisualization = SurveyUtils.getUserStyleFromString(parameters.get(KEY_USER_VISUALIZATION), UserVisualization.PLAIN_LOGIN);
 
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
     this.iterateStep = SurveyUtils.getIntegerFromString(parameters.get(KEY_ITERATE_STEP), DEFAULT_ITERATE_STEP);
@@ -119,7 +118,7 @@ public class VoteConfig {
 
     visibleVoters = surveyConfig.isVisibleVoters();
     visiblePendingVoters = surveyConfig.isVisiblePendingVoters();
-    visibleVotersWiki = surveyConfig.getVisibleVotersWiki();
+    userVisualization = surveyConfig.getUserVisualization();
 
     startBound = surveyConfig.getStartBound();
     iterateStep = surveyConfig.getIterateStep();
@@ -167,8 +166,8 @@ public class VoteConfig {
     return visiblePendingVoters;
   }
 
-  public VoterStyle getVisibleVotersWiki() {
-    return visibleVotersWiki;
+  public UserVisualization getUserVisualization() {
+    return userVisualization;
   }
 
   public Boolean isCanSeeResults() {
@@ -235,7 +234,7 @@ public class VoteConfig {
             ", locked=" + locked +
             ", visibleVoters=" + visibleVoters +
             ", visiblePendingVoters=" + visiblePendingVoters +
-            ", visibleVotersWiki=" + visibleVotersWiki +
+            ", userVisualization=" + userVisualization +
             ", showCondensed=" + showCondensed +
             ", anonymous=" + anonymous +
             ", canSeeResults=" + canSeeResults +

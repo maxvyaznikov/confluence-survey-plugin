@@ -2,8 +2,8 @@ package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.confluence.macro.MacroExecutionException;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.vote.UserVisualization;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
-import org.hivesoft.confluence.macros.vote.VoterStyle;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
@@ -75,46 +75,46 @@ public class SurveyUtilsTest {
   @Test
   public void test_getVoterStyleFromString_should_return_default_for_null() {
     // When:
-    VoterStyle result = SurveyUtils.getVoterStyleFromString(null, VoterStyle.PLAIN_LOGIN);
+    UserVisualization result = SurveyUtils.getUserStyleFromString(null, UserVisualization.PLAIN_LOGIN);
 
     // Then:
-    assertEquals(VoterStyle.PLAIN_LOGIN, result);
+    assertEquals(UserVisualization.PLAIN_LOGIN, result);
   }
 
   @Test
   public void test_getVoterStyleFromString_should_return_default_for_unkown_propertyValue() {
     // When:
-    VoterStyle result = SurveyUtils.getVoterStyleFromString("unkown", VoterStyle.LINKED_FULL);
+    UserVisualization result = SurveyUtils.getUserStyleFromString("unkown", UserVisualization.LINKED_FULL);
 
     // Then:
-    assertEquals(VoterStyle.LINKED_FULL, result);
+    assertEquals(UserVisualization.LINKED_FULL, result);
   }
 
   @Test
   public void test_getVoterStyleFromString_should_return_PLAIN_LOGIN_for_propertyValue_false() {
     // When:
-    VoterStyle result = SurveyUtils.getVoterStyleFromString("false", VoterStyle.LINKED_LOGIN);
+    UserVisualization result = SurveyUtils.getUserStyleFromString("false", UserVisualization.LINKED_LOGIN);
 
     // Then:
-    assertEquals(VoterStyle.PLAIN_LOGIN, result);
+    assertEquals(UserVisualization.PLAIN_LOGIN, result);
   }
 
   @Test
   public void test_getVoterStyleFromString_should_return_LINKED_LOGIN_for_propertyValue_true() {
     // When:
-    VoterStyle result = SurveyUtils.getVoterStyleFromString("true", VoterStyle.PLAIN_FULL);
+    UserVisualization result = SurveyUtils.getUserStyleFromString("true", UserVisualization.PLAIN_FULL);
 
     // Then:
-    assertEquals(VoterStyle.LINKED_LOGIN, result);
+    assertEquals(UserVisualization.LINKED_LOGIN, result);
   }
 
   @Test
   public void test_getVoterStyleFromString_should_return_LINKED_FULL_for_its_propertyValue() {
     // When:
-    VoterStyle result = SurveyUtils.getVoterStyleFromString("linked user name", VoterStyle.PLAIN_LOGIN);
+    UserVisualization result = SurveyUtils.getUserStyleFromString("linked user name", UserVisualization.PLAIN_LOGIN);
 
     // Then:
-    assertEquals(VoterStyle.LINKED_FULL, result);
+    assertEquals(UserVisualization.LINKED_FULL, result);
   }
 
   //****** Helper Methods ******

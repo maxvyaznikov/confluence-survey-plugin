@@ -2,7 +2,6 @@ package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.user.User;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
-import org.hivesoft.confluence.macros.vote.VoterStyle;
 
 public class UserRenderer {
 
@@ -16,7 +15,7 @@ public class UserRenderer {
 
   // TODO for csv export
   public String render(String contextPath, User voter) {
-    switch (config.getVisibleVotersWiki()) {
+    switch (config.getUserVisualization()) {
       case LINKED_LOGIN:
         return String.format(TEMPLATE_VOTER_LINK, contextPath, voter.getName(), voter.getName(), voter.getName());
       case LINKED_FULL:

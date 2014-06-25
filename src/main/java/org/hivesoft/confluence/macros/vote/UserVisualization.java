@@ -1,9 +1,6 @@
 package org.hivesoft.confluence.macros.vote;
 
-import java.util.Arrays;
-import java.util.List;
-
-public enum VoterStyle {
+public enum UserVisualization {
   PLAIN_LOGIN("plain login name"),
   PLAIN_FULL("plain user name"),
   LINKED_LOGIN("linked login name"),
@@ -12,14 +9,14 @@ public enum VoterStyle {
   /** Visible for testing */
   final String propertyValue;
 
-  private VoterStyle(String propertyValue) {
+  private UserVisualization(String propertyValue) {
 
     this.propertyValue = propertyValue;
   }
 
-  /** @return the found {@link VoterStyle} with the given {@code propertyValue} or {@code null} if not found*/
-  public static VoterStyle getFor(String propertyValue) {
-    for (VoterStyle style : VoterStyle.values()) {
+  /** @return the found {@link UserVisualization} with the given {@code propertyValue} or {@code null} if not found*/
+  public static UserVisualization getFor(String propertyValue) {
+    for (UserVisualization style : UserVisualization.values()) {
       if (style.propertyValue.equals(propertyValue)) {
         return style;
       }

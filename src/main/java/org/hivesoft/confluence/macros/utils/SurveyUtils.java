@@ -14,9 +14,9 @@ import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.vote.UserVisualization;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
-import org.hivesoft.confluence.macros.vote.VoterStyle;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.rest.AdminResource;
 
@@ -124,16 +124,16 @@ public class SurveyUtils {
     return result.toString();
   }
 
-  public static VoterStyle getVoterStyleFromString(String propertyValue, VoterStyle defaultValue) {
-    VoterStyle result = VoterStyle.getFor(propertyValue);
+  public static UserVisualization getUserStyleFromString(String propertyValue, UserVisualization defaultValue) {
+    UserVisualization result = UserVisualization.getFor(propertyValue);
     if (result != null) {
       return result;
     }
     if ("false".equals(propertyValue)) { // backwards compatibility for version <= 2.8.0
-      return VoterStyle.PLAIN_LOGIN;
+      return UserVisualization.PLAIN_LOGIN;
     }
     if ("true".equals(propertyValue)) { // backwards compatibility for version <= 2.8.0
-      return VoterStyle.LINKED_LOGIN;
+      return UserVisualization.LINKED_LOGIN;
     }
     return defaultValue;
   }
