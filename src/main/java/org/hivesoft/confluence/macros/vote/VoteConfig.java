@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
+import org.hivesoft.confluence.macros.utils.UserRenderer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,6 +67,7 @@ public class VoteConfig {
   protected final List<String> renderProblems = new ArrayList<String>();
 
   protected final PermissionEvaluator permissionEvaluator;
+  protected final UserRenderer userRenderer;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     this.permissionEvaluator = permissionEvaluator;
@@ -93,6 +95,8 @@ public class VoteConfig {
 
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
     this.iterateStep = SurveyUtils.getIntegerFromString(parameters.get(KEY_ITERATE_STEP), DEFAULT_ITERATE_STEP);
+
+    this.userRenderer = new UserRenderer(this);
   }
 
   public VoteConfig(SurveyConfig surveyConfig) {
@@ -119,6 +123,8 @@ public class VoteConfig {
 
     startBound = surveyConfig.getStartBound();
     iterateStep = surveyConfig.getIterateStep();
+
+    userRenderer = new UserRenderer(this);
   }
 
   public void addRenderProblems(String... problem) {
@@ -191,6 +197,10 @@ public class VoteConfig {
 
   public int getIterateStep() {
     return iterateStep;
+  }
+
+  public UserRenderer getUserRenderer() {
+    return userRenderer;
   }
 
   public Boolean canAttachFile(AbstractPage page) {

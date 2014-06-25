@@ -4,12 +4,18 @@ import com.atlassian.user.User;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoterStyle;
 
-public class VoterRenderer {
+public class UserRenderer {
 
   private static final String TEMPLATE_VOTER_LINK = "<a href=\"%s/display/%s\" class=\"url fn confluence-userlink\" data-username=\"%s\">%s</a>";
 
+  private final VoteConfig config;
+
+  public UserRenderer(VoteConfig config) {
+    this.config = config;
+  }
+
   // TODO for csv export
-  public String render(String contextPath, User voter, VoteConfig config) {
+  public String render(String contextPath, User voter) {
     switch (config.getVisibleVotersWiki()) {
       case LINKED_LOGIN:
         return String.format(TEMPLATE_VOTER_LINK, contextPath, voter.getName(), voter.getName(), voter.getName());

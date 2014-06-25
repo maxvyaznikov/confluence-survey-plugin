@@ -13,6 +13,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -53,6 +54,8 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(true));
     assertThat(classUnderTest.isCanManageSurvey(), is(true));
+
+    assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
   }
 
   @Test
@@ -83,6 +86,8 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(true));
     assertThat(classUnderTest.isCanManageSurvey(), is(true));
+
+    assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
   }
 
   @Test
@@ -127,6 +132,8 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(false));
     assertThat(classUnderTest.isCanManageSurvey(), is(false));
+
+    assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
   }
 
   @Test

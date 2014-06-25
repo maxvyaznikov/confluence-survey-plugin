@@ -103,7 +103,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
               #set($iCounter = 0)
               #foreach($voter in $voters)
                 #set($iCounter=$iCounter+1)
-                $voterRenderer.render($req.contextPath, $voter, $config)#if($iCounter != $voters.size()),#end
+                $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
               #end
             </i>
           #end
@@ -187,7 +187,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         #set($iCounter = 0)
         #foreach($voter in $voters)
           #set($iCounter=$iCounter+1)
-          $voterRenderer.render($req.contextPath, $voter, $config)#if($iCounter != $voters.size()),#end
+          $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
         #end
       </td>
     </tr>
@@ -201,7 +201,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         #set($iCounter = 0)
         #foreach($pending in $pendingVoters)
           #set($iCounter = $iCounter + 1)
-          $voterRenderer.render($req.contextPath, $pending, $config)#if($iCounter != $pendingVoters.size()),#end
+          $config.userRenderer.render($req.contextPath, $pending)#if($iCounter != $pendingVoters.size()),#end
         #end
       </td>
     </tr>

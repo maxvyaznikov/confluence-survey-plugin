@@ -29,7 +29,6 @@ import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
-import org.hivesoft.confluence.macros.utils.VoterRenderer;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 
 import java.io.StringWriter;
@@ -116,7 +115,6 @@ public class SurveyMacro implements Macro {
 
     // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
-    contextMap.put("voterRenderer", new VoterRenderer());
     contextMap.put("content", contentObject);
     contextMap.put("survey", survey);
     contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));

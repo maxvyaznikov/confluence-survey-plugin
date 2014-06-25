@@ -9,10 +9,10 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Mockito.mock;
 
 public class SurveyConfigTest {
@@ -38,6 +38,7 @@ public class SurveyConfigTest {
     assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(VoterStyle.PLAIN_LOGIN)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
+    assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
   }
 
   @Test
