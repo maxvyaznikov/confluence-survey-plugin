@@ -3,6 +3,7 @@ package org.hivesoft.confluence.admin;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.junit.Test;
 
 import javax.servlet.ServletException;
@@ -16,13 +17,11 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AdminServletTest {
+public class AdminServletTest extends ConfluenceTestBase {
 
   private final UserManager mockUserManager = mock(UserManager.class);
   private final LoginUriProvider mockLoginUriProvider = mock(LoginUriProvider.class);
   private final TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
-
-  private static final String TEST_USERNAME = "someUserName";
 
   AdminServlet classUnderTest = new AdminServlet(mockUserManager, mockLoginUriProvider, mockTemplateRenderer);
 
@@ -31,8 +30,8 @@ public class AdminServletTest {
     HttpServletRequest mockRequest = mock(HttpServletRequest.class);
     HttpServletResponse mockResponse = mock(HttpServletResponse.class);
 
-    when(mockUserManager.getRemoteUsername()).thenReturn(TEST_USERNAME);
-    when(mockUserManager.isSystemAdmin(TEST_USERNAME)).thenReturn(true);
+    when(mockUserManager.getRemoteUsername()).thenReturn(SOME_USER1.getName());
+    when(mockUserManager.isSystemAdmin(SOME_USER1.getName())).thenReturn(true);
 
     classUnderTest.doGet(mockRequest, mockResponse);
   }
