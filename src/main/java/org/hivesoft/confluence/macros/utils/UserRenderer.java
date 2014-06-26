@@ -5,7 +5,7 @@ import org.hivesoft.confluence.macros.vote.VoteConfig;
 
 public class UserRenderer {
 
-  private static final String TEMPLATE_VOTER_LINK = "<a href=\"%s/display/%s\" class=\"url fn confluence-userlink\" data-username=\"%s\">%s</a>";
+  private static final String TEMPLATE_USER_LINK = "<a href=\"%s/display/~%s\" class=\"url fn confluence-userlink\" data-username=\"%s\">%s</a>";
 
   private final VoteConfig config;
 
@@ -17,9 +17,9 @@ public class UserRenderer {
   public String render(String contextPath, User voter) {
     switch (config.getUserVisualization()) {
       case LINKED_LOGIN:
-        return String.format(TEMPLATE_VOTER_LINK, contextPath, voter.getName(), voter.getName(), voter.getName());
+        return String.format(TEMPLATE_USER_LINK, contextPath, voter.getName(), voter.getName(), voter.getName());
       case LINKED_FULL:
-        return String.format(TEMPLATE_VOTER_LINK, contextPath, voter.getName(), voter.getName(), voter.getFullName());
+        return String.format(TEMPLATE_USER_LINK, contextPath, voter.getName(), voter.getName(), voter.getFullName());
       case PLAIN_FULL:
         return voter.getFullName();
       case PLAIN_LOGIN:

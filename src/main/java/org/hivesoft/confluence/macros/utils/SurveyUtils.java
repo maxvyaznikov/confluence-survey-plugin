@@ -124,7 +124,7 @@ public class SurveyUtils {
     return result.toString();
   }
 
-  public static UserVisualization getUserStyleFromString(String propertyValue, UserVisualization defaultValue) {
+  public static UserVisualization getUserVisualizationFromString(String propertyValue, UserVisualization defaultValue) {
     UserVisualization result = UserVisualization.getFor(propertyValue);
     if (result != null) {
       return result;

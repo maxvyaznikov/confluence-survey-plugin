@@ -90,7 +90,7 @@ public class VoteConfig {
 
     visibleVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults) && canManageSurvey;
     visiblePendingVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS), canSeeResults) && !voters.isEmpty();
-    userVisualization = SurveyUtils.getUserStyleFromString(parameters.get(KEY_USER_VISUALIZATION), UserVisualization.PLAIN_LOGIN);
+    userVisualization = SurveyUtils.getUserVisualizationFromString(parameters.get(KEY_USER_VISUALIZATION), UserVisualization.PLAIN_LOGIN);
 
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
     this.iterateStep = SurveyUtils.getIntegerFromString(parameters.get(KEY_ITERATE_STEP), DEFAULT_ITERATE_STEP);
