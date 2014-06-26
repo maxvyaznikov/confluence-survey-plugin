@@ -82,30 +82,12 @@ public class SurveyUtilsTest {
   }
 
   @Test
-  public void test_getUserVisualizationFromString_should_return_default_for_unkown_propertyValue() {
+  public void test_getUserVisualizationFromString_should_return_default_for_unknown_propertyValue() {
     // When:
-    UserVisualization result = SurveyUtils.getUserVisualizationFromString("unkown", UserVisualization.LINKED_FULL);
+    UserVisualization result = SurveyUtils.getUserVisualizationFromString("unknown", UserVisualization.LINKED_FULL);
 
     // Then:
     assertEquals(UserVisualization.LINKED_FULL, result);
-  }
-
-  @Test
-  public void test_getUserVisualizationFromString_should_return_PLAIN_LOGIN_for_propertyValue_false() {
-    // When:
-    UserVisualization result = SurveyUtils.getUserVisualizationFromString("false", UserVisualization.LINKED_LOGIN);
-
-    // Then:
-    assertEquals(UserVisualization.PLAIN_LOGIN, result);
-  }
-
-  @Test
-  public void test_getUserVisualizationFromString_should_return_LINKED_LOGIN_for_propertyValue_true() {
-    // When:
-    UserVisualization result = SurveyUtils.getUserVisualizationFromString("true", UserVisualization.PLAIN_FULL);
-
-    // Then:
-    assertEquals(UserVisualization.LINKED_LOGIN, result);
   }
 
   @Test

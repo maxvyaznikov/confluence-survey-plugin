@@ -37,7 +37,8 @@ public class VoteConfig {
   protected static final String KEY_SHOW_COMMENTS = "showComments";
   protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   protected static final String KEY_VISIBLE_PENDING_VOTERS = "visiblePendingVoters";
-  protected static final String KEY_USER_VISUALIZATION = "visibleVotersWiki";
+  protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki"; // old key for userVisualization
+  protected static final String KEY_USER_VISUALIZATION = "userVisualization";
   public static final String KEY_LOCKED = "locked";
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
@@ -93,7 +94,16 @@ public class VoteConfig {
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
     this.iterateStep = SurveyUtils.getIntegerFromString(parameters.get(KEY_ITERATE_STEP), DEFAULT_ITERATE_STEP);
 
-    UserVisualization userVisualization = SurveyUtils.getUserVisualizationFromString(parameters.get(KEY_USER_VISUALIZATION), UserVisualization.PLAIN_LOGIN);
+    UserVisualization userVisualization = SurveyUtils.getUserVisualizationFromString(parameters.get(KEY_USER_VISUALIZATION), null);
+    if (userVisualization == null) {
+      // default and backwards compatibility for version <= 2.8.0
+      boolean visibleVotersWiki = SurveyUtils.getBooleanFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
+      if (visibleVotersWiki) {
+        userVisualization = UserVisualization.LINKED_LOGIN;
+      } else {
+        userVisualization = UserVisualization.PLAIN_LOGIN;
+      }
+    }
     this.userRenderer = new UserRenderer(userVisualization);
   }
 

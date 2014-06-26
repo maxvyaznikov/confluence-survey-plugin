@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -149,6 +150,53 @@ public class VoteConfigTest {
 
     assertThat(classUnderTest.getVoters().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
+  }
+
+
+  @Test
+  public void test_userVisualization_backwards_compatibility_with_visibleVotersWiki_for_false() {
+    // Given:
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "false");
+
+    // When:
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.PLAIN_LOGIN);
+  }
+
+  @Test
+  public void test_userVisualization_backwards_compatibility_with_visibleVotersWiki_for_true() {
+    // Given:
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "true");
+
+    // When:
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.LINKED_LOGIN);
+  }
+
+  @Test
+  public void test_userVisualization_should_handle_new_parameter_before_old() {
+    // Given:
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "false");
+    parameters.put(VoteConfig.KEY_USER_VISUALIZATION, "linked user name");
+
+    // When:
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.LINKED_FULL);
   }
 
   @Test

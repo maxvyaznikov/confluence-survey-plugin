@@ -126,15 +126,9 @@ public class SurveyUtils {
 
   public static UserVisualization getUserVisualizationFromString(String propertyValue, UserVisualization defaultValue) {
     UserVisualization result = UserVisualization.getFor(propertyValue);
-    if (result != null) {
-      return result;
+    if (result == null) {
+      return defaultValue;
     }
-    if ("false".equals(propertyValue)) { // backwards compatibility for version <= 2.8.0
-      return UserVisualization.PLAIN_LOGIN;
-    }
-    if ("true".equals(propertyValue)) { // backwards compatibility for version <= 2.8.0
-      return UserVisualization.LINKED_LOGIN;
-    }
-    return defaultValue;
+    return result;
   }
 }
