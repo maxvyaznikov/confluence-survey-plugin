@@ -53,7 +53,6 @@ public class VoteConfig {
   private final boolean locked;
   private final boolean visibleVoters;
   private final boolean visiblePendingVoters;
-  private final UserVisualization userVisualization;
   private final boolean showCondensed;
   private final boolean anonymous;
 
@@ -90,12 +89,12 @@ public class VoteConfig {
 
     visibleVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults) && canManageSurvey;
     visiblePendingVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS), canSeeResults) && !voters.isEmpty();
-    userVisualization = SurveyUtils.getUserVisualizationFromString(parameters.get(KEY_USER_VISUALIZATION), UserVisualization.PLAIN_LOGIN);
 
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
     this.iterateStep = SurveyUtils.getIntegerFromString(parameters.get(KEY_ITERATE_STEP), DEFAULT_ITERATE_STEP);
 
-    this.userRenderer = new UserRenderer(this);
+    UserVisualization userVisualization = SurveyUtils.getUserVisualizationFromString(parameters.get(KEY_USER_VISUALIZATION), UserVisualization.PLAIN_LOGIN);
+    this.userRenderer = new UserRenderer(userVisualization);
   }
 
   public VoteConfig(SurveyConfig surveyConfig) {
@@ -118,12 +117,11 @@ public class VoteConfig {
 
     visibleVoters = surveyConfig.isVisibleVoters();
     visiblePendingVoters = surveyConfig.isVisiblePendingVoters();
-    userVisualization = surveyConfig.getUserVisualization();
 
     startBound = surveyConfig.getStartBound();
     iterateStep = surveyConfig.getIterateStep();
 
-    userRenderer = new UserRenderer(this);
+    userRenderer = surveyConfig.getUserRenderer();
   }
 
   public void addRenderProblems(String... problem) {
@@ -164,10 +162,6 @@ public class VoteConfig {
 
   public boolean isVisiblePendingVoters() {
     return visiblePendingVoters;
-  }
-
-  public UserVisualization getUserVisualization() {
-    return userVisualization;
   }
 
   public Boolean isCanSeeResults() {
@@ -234,7 +228,6 @@ public class VoteConfig {
             ", locked=" + locked +
             ", visibleVoters=" + visibleVoters +
             ", visiblePendingVoters=" + visiblePendingVoters +
-            ", userVisualization=" + userVisualization +
             ", showCondensed=" + showCondensed +
             ", anonymous=" + anonymous +
             ", canSeeResults=" + canSeeResults +
@@ -243,6 +236,7 @@ public class VoteConfig {
             ", startBound=" + startBound +
             ", iterateStep=" + iterateStep +
             ", renderProblems=" + renderProblems +
+            ", userRenderer=" + userRenderer +
             '}';
   }
 }

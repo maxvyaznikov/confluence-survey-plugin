@@ -35,10 +35,10 @@ public class SurveyConfigTest {
     assertThat(classUnderTest.getVoters().size(), is(equalTo(0)));
     assertThat(classUnderTest.getViewers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
-    assertThat(classUnderTest.getUserVisualization(), is(equalTo(UserVisualization.PLAIN_LOGIN)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
     assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
+    assertThat(classUnderTest.getUserRenderer().getUserVisualization(), is(equalTo(UserVisualization.PLAIN_LOGIN)));
   }
 
   @Test

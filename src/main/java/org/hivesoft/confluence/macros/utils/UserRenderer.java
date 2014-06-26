@@ -1,21 +1,25 @@
 package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.user.User;
-import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.macros.vote.UserVisualization;
 
 public class UserRenderer {
 
   private static final String TEMPLATE_USER_LINK = "<a href=\"%s/display/~%s\" class=\"url fn confluence-userlink\" data-username=\"%s\">%s</a>";
 
-  private final VoteConfig config;
+  private final UserVisualization userVisualization;
 
-  public UserRenderer(VoteConfig config) {
-    this.config = config;
+  public UserRenderer(UserVisualization userVisualization) {
+    this.userVisualization = userVisualization;
+  }
+
+  public UserVisualization getUserVisualization() {
+    return userVisualization;
   }
 
   // TODO for csv export
   public String render(String contextPath, User voter) {
-    switch (config.getUserVisualization()) {
+    switch (userVisualization) {
       case LINKED_LOGIN:
         return String.format(TEMPLATE_USER_LINK, contextPath, voter.getName(), voter.getName(), voter.getName());
       case LINKED_FULL:
@@ -26,5 +30,10 @@ public class UserRenderer {
       default:
         return voter.getName();
     }
+  }
+
+  @Override
+  public String toString() {
+    return "UserRenderer{userVisualization=" + userVisualization + '}';
   }
 }
