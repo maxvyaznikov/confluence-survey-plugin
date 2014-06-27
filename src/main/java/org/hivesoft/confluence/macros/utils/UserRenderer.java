@@ -17,7 +17,6 @@ public class UserRenderer {
     return userVisualization;
   }
 
-  // TODO for csv export
   public String render(String contextPath, User voter) {
     switch (userVisualization) {
       case LINKED_LOGIN:
@@ -26,6 +25,18 @@ public class UserRenderer {
         return String.format(TEMPLATE_USER_LINK, contextPath, voter.getName(), voter.getName(), voter.getFullName());
       case PLAIN_FULL:
         return voter.getFullName();
+      case PLAIN_LOGIN:
+      default:
+        return voter.getName();
+    }
+  }
+
+  public String renderForCsv(User voter) {
+    switch (userVisualization) {
+      case LINKED_FULL:
+      case PLAIN_FULL:
+        return voter.getFullName();
+      case LINKED_LOGIN:
       case PLAIN_LOGIN:
       default:
         return voter.getName();
