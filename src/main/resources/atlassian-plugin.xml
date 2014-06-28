@@ -29,7 +29,14 @@
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visiblePendingVoters" type="boolean"/>
-      <parameter name="visibleVotersWiki" type="boolean"/>
+      <parameter name="userVisualization" type="enum" default="plain login name">
+        <alias name="visibleVotersWiki"/>
+
+        <value name="plain login name"/><!-- =: visibleVotersWiki=false -->
+        <value name="linked login name"/><!-- =: visibleVotersWiki=true -->
+        <value name="plain user name"/>
+        <value name="linked user name"/>
+      </parameter>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </macro>
@@ -58,7 +65,14 @@
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visiblePendingVoters" type="boolean"/>
-      <parameter name="visibleVotersWiki" type="boolean"/>
+        <parameter name="userVisualization" type="enum" default="plain login name">
+            <alias name="visibleVotersWiki"/>
+
+            <value name="plain login name"/><!-- =: visibleVotersWiki=false -->
+            <value name="linked login name"/><!-- =: visibleVotersWiki=true -->
+            <value name="plain user name"/>
+            <value name="linked user name"/>
+        </parameter>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </macro>
@@ -86,7 +100,14 @@
       <parameter name="viewers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visiblePendingVoters" type="boolean"/>
-      <parameter name="visibleVotersWiki" type="boolean"/>
+        <parameter name="userVisualization" type="enum" default="plain login name">
+            <alias name="visibleVotersWiki"/>
+
+            <value name="plain login name"/><!-- =: visibleVotersWiki=false -->
+            <value name="linked login name"/><!-- =: visibleVotersWiki=true -->
+            <value name="plain user name"/>
+            <value name="linked user name"/>
+        </parameter>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </xhtml-macro>
@@ -117,7 +138,14 @@
       <parameter name="managers" type="string" multiple="true"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visiblePendingVoters" type="boolean"/>
-      <parameter name="visibleVotersWiki" type="boolean"/>
+        <parameter name="userVisualization" type="enum" default="plain login name">
+            <alias name="visibleVotersWiki"/>
+
+            <value name="plain login name"/><!-- =: visibleVotersWiki=false -->
+            <value name="linked login name"/><!-- =: visibleVotersWiki=true -->
+            <value name="plain user name"/>
+            <value name="linked user name"/>
+        </parameter>
       <parameter name="showCondensed" type="boolean"/>
       <parameter name="locked" type="boolean"/>
     </parameters>

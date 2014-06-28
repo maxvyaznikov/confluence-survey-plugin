@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
+import org.hivesoft.confluence.macros.utils.UserRenderer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,8 @@ public class VoteConfig {
   protected static final String KEY_SHOW_COMMENTS = "showComments";
   protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   protected static final String KEY_VISIBLE_PENDING_VOTERS = "visiblePendingVoters";
-  protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki";
+  protected static final String KEY_VISIBLE_VOTERS_WIKI = "visibleVotersWiki"; // old key for userVisualization
+  protected static final String KEY_USER_VISUALIZATION = "userVisualization";
   public static final String KEY_LOCKED = "locked";
   public static final String KEY_START_BOUND = "startBound";
   public static final String KEY_ITERATE_STEP = "iterateStep";
@@ -52,7 +54,6 @@ public class VoteConfig {
   private final boolean locked;
   private final boolean visibleVoters;
   private final boolean visiblePendingVoters;
-  private final boolean visibleVotersWiki;
   private final boolean showCondensed;
   private final boolean anonymous;
 
@@ -66,6 +67,7 @@ public class VoteConfig {
   protected final List<String> renderProblems = new ArrayList<String>();
 
   protected final PermissionEvaluator permissionEvaluator;
+  protected final UserRenderer userRenderer;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     this.permissionEvaluator = permissionEvaluator;
@@ -88,10 +90,21 @@ public class VoteConfig {
 
     visibleVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults) && canManageSurvey;
     visiblePendingVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS), canSeeResults) && !voters.isEmpty();
-    visibleVotersWiki = SurveyUtils.getBooleanFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
 
     this.startBound = SurveyUtils.getIntegerFromString(parameters.get(KEY_START_BOUND), DEFAULT_START_BOUND);
     this.iterateStep = SurveyUtils.getIntegerFromString(parameters.get(KEY_ITERATE_STEP), DEFAULT_ITERATE_STEP);
+
+    UserVisualization userVisualization = SurveyUtils.getUserVisualizationFromString(parameters.get(KEY_USER_VISUALIZATION), null);
+    if (userVisualization == null) {
+      // default and backwards compatibility for version <= 2.8.0
+      boolean visibleVotersWiki = SurveyUtils.getBooleanFromString(parameters.get(KEY_VISIBLE_VOTERS_WIKI), false);
+      if (visibleVotersWiki) {
+        userVisualization = UserVisualization.LINKED_LOGIN;
+      } else {
+        userVisualization = UserVisualization.PLAIN_LOGIN;
+      }
+    }
+    this.userRenderer = new UserRenderer(userVisualization);
   }
 
   public VoteConfig(SurveyConfig surveyConfig) {
@@ -114,10 +127,11 @@ public class VoteConfig {
 
     visibleVoters = surveyConfig.isVisibleVoters();
     visiblePendingVoters = surveyConfig.isVisiblePendingVoters();
-    visibleVotersWiki = surveyConfig.isVisibleVotersWiki();
 
     startBound = surveyConfig.getStartBound();
     iterateStep = surveyConfig.getIterateStep();
+
+    userRenderer = surveyConfig.getUserRenderer();
   }
 
   public void addRenderProblems(String... problem) {
@@ -160,10 +174,6 @@ public class VoteConfig {
     return visiblePendingVoters;
   }
 
-  public Boolean isVisibleVotersWiki() {
-    return visibleVotersWiki;
-  }
-
   public Boolean isCanSeeResults() {
     return canSeeResults;
   }
@@ -190,6 +200,10 @@ public class VoteConfig {
 
   public int getIterateStep() {
     return iterateStep;
+  }
+
+  public UserRenderer getUserRenderer() {
+    return userRenderer;
   }
 
   public Boolean canAttachFile(AbstractPage page) {
@@ -224,7 +238,6 @@ public class VoteConfig {
             ", locked=" + locked +
             ", visibleVoters=" + visibleVoters +
             ", visiblePendingVoters=" + visiblePendingVoters +
-            ", visibleVotersWiki=" + visibleVotersWiki +
             ", showCondensed=" + showCondensed +
             ", anonymous=" + anonymous +
             ", canSeeResults=" + canSeeResults +
@@ -233,6 +246,7 @@ public class VoteConfig {
             ", startBound=" + startBound +
             ", iterateStep=" + iterateStep +
             ", renderProblems=" + renderProblems +
+            ", userRenderer=" + userRenderer +
             '}';
   }
 }

@@ -2,6 +2,7 @@ package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.confluence.macro.MacroExecutionException;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.vote.UserVisualization;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
@@ -69,6 +70,33 @@ public class SurveyUtilsTest {
             is("i am a choice to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a> but <a href=\"https://www.google.com\" target=\"_blank\">https://www.google.com</a> is also ok"));
     assertThat(SurveyUtils.enrichStringWithHttpPattern("no link here"), is("no link here"));
     assertThat(SurveyUtils.enrichStringWithHttpPattern("<a href=\"#\">i am a tag</a> that's not valid but http://google.com is"), is("&lt;a href=&quot;#&quot;&gt;i am a tag&lt;/a&gt; that's not valid but <a href=\"http://google.com\" target=\"_blank\">http://google.com</a> is"));
+  }
+
+  @Test
+  public void test_getUserVisualizationFromString_should_return_default_for_null() {
+    // When:
+    UserVisualization result = SurveyUtils.getUserVisualizationFromString(null, UserVisualization.PLAIN_LOGIN);
+
+    // Then:
+    assertEquals(UserVisualization.PLAIN_LOGIN, result);
+  }
+
+  @Test
+  public void test_getUserVisualizationFromString_should_return_default_for_unknown_propertyValue() {
+    // When:
+    UserVisualization result = SurveyUtils.getUserVisualizationFromString("unknown", UserVisualization.LINKED_FULL);
+
+    // Then:
+    assertEquals(UserVisualization.LINKED_FULL, result);
+  }
+
+  @Test
+  public void test_getUserVisualizationFromString_should_return_LINKED_FULL_for_its_propertyValue() {
+    // When:
+    UserVisualization result = SurveyUtils.getUserVisualizationFromString("linked user name", UserVisualization.PLAIN_LOGIN);
+
+    // Then:
+    assertEquals(UserVisualization.LINKED_FULL, result);
   }
 
   //****** Helper Methods ******

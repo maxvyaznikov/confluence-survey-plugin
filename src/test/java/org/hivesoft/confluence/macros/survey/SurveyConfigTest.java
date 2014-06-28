@@ -2,16 +2,17 @@ package org.hivesoft.confluence.macros.survey;
 
 import org.hivesoft.confluence.macros.survey.model.SurveySummary;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
+import org.hivesoft.confluence.macros.vote.UserVisualization;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Mockito.mock;
 
 public class SurveyConfigTest {
@@ -34,9 +35,10 @@ public class SurveyConfigTest {
     assertThat(classUnderTest.getVoters().size(), is(equalTo(0)));
     assertThat(classUnderTest.getViewers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
-    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
+    assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
+    assertThat(classUnderTest.getUserRenderer().getUserVisualization(), is(equalTo(UserVisualization.PLAIN_LOGIN)));
   }
 
   @Test

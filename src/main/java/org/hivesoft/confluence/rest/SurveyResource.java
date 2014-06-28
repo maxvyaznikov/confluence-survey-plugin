@@ -122,7 +122,16 @@ public class SurveyResource {
             comments.add(comment.getComment());
           }
         }
-        String[] line = new String[]{ballot.getTitle(), choice.getDescription(), choice.getVoters().size() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + ", " + ballot.getPercentageOfVoteForChoice(choice) + "%", StringUtils.join(choice.getVoters().toArray(), ","), StringUtils.join(comments.toArray(), ",")};
+
+        // @formatter:off
+        String[] line = new String[]{
+              ballot.getTitle(),
+              choice.getDescription(),
+              choice.getVoters().size() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + ", " + ballot.getPercentageOfVoteForChoice(choice) + "%",
+              getVotersForCsv(ballot, choice),
+              StringUtils.join(comments, ","),
+          };
+        // @formatter:on
         writer.writeNext(line);
       }
     }
@@ -142,7 +151,6 @@ public class SurveyResource {
     return Response.ok(new CSVExportRepresentation(surveyTitle, addedAttachment.getDownloadPath())).build();
 
   }
-
 
   @POST
   @Path("/lock")
@@ -252,6 +260,14 @@ public class SurveyResource {
       throw new MacroReconstructionException("Could not find the specified survey macro with title " + surveyTitle + " on the specified page!");
     }
     return surveysFound;
+  }
+
+  private String getVotersForCsv(Ballot ballot, Choice choice) {
+    List<String> formattedVoters = new ArrayList<String>();
+    for (User voter : choice.getVoters()) {
+      formattedVoters.add(ballot.getConfig().getUserRenderer().renderForCsv(voter));
+    }
+    return StringUtils.join(formattedVoters, ",");
   }
 
   private static class InvalidPage extends AbstractPage {

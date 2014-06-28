@@ -58,11 +58,7 @@
                 #set($iCounter = 0)
                 #foreach($voter in $voters)
                   #set($iCounter=$iCounter+1)
-                  #if ($survey.config.visibleVotersWiki)
-                    <a href="$req.contextPath/display/~$voter.getName()" class="url fn confluence-userlink" data-username="$voter.getName()">$voter.getName()</a>#if ($iCounter!=$voters.size()),#end
-                  #else
-                    $voter.getName()#if ($iCounter!=$voters.size()),#end
-                  #end
+                  $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
                 #end
               </i>
             </td>
@@ -74,11 +70,7 @@
                 #set($iCounter = 0)
                 #foreach($pending in $pendingVoters)
                   #set($iCounter = $iCounter + 1)
-                  #if ($survey.config.visibleVotersWiki)
-                    <a href="$req.contextPath/display/~$pending.getName()" class="url fn confluence-userlink" data-username="$pending.getName()">$pending.getName()</a>#if ($iCounter != $pendingVoters.size()),#end
-                  #else
-                    $pending.getName()#if ($iCounter != $pendingVoters.size()),#end
-                  #end
+                  $config.userRenderer.render($req.contextPath, $pending)#if($iCounter != $pendingVoters.size()),#end
                 #end
               </i>
               (<a href="mailto:$ballot.getEmailStringOfPendingVoters()">$action.getText("surveyplugin.vote.voters.pending.email")</a>)

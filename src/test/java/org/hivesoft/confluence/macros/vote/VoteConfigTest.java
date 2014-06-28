@@ -13,7 +13,9 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,12 +49,14 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getManagers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
-    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(true));
     assertThat(classUnderTest.isCanManageSurvey(), is(true));
+
+    assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
+    assertThat(classUnderTest.getUserRenderer().getUserVisualization(), is(equalTo(UserVisualization.PLAIN_LOGIN)));
   }
 
   @Test
@@ -75,7 +79,6 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getManagers().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
-    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
     assertThat(classUnderTest.isAnonymous(), is(false));
@@ -83,6 +86,9 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(true));
     assertThat(classUnderTest.isCanManageSurvey(), is(true));
+
+    assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
+    assertThat(classUnderTest.getUserRenderer().getUserVisualization(), is(equalTo(UserVisualization.PLAIN_LOGIN)));
   }
 
   @Test
@@ -102,7 +108,7 @@ public class VoteConfigTest {
     parameters.put(VoteConfig.KEY_MANAGERS, "vader, yoda");
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS, "true");
     parameters.put(VoteConfig.KEY_VISIBLE_PENDING_VOTERS, "true");
-    parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "true");
+    parameters.put(VoteConfig.KEY_USER_VISUALIZATION, "plain user name");
     parameters.put(VoteConfig.KEY_LOCKED, "true");
     parameters.put(VoteConfig.KEY_SHOW_CONDENSED, "true");
     parameters.put(VoteConfig.KEY_ANONYMOUS_MODE, "true");
@@ -119,7 +125,6 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getManagers().size(), is(equalTo(2)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(true)));
-    assertThat(classUnderTest.isVisibleVotersWiki(), is(equalTo(true)));
     assertThat(classUnderTest.isLocked(), is(equalTo(true)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(true)));
     assertThat(classUnderTest.isAnonymous(), is(true));
@@ -127,6 +132,9 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(false));
     assertThat(classUnderTest.isCanManageSurvey(), is(false));
+
+    assertThat(classUnderTest.getUserRenderer(), is(notNullValue()));
+    assertThat(classUnderTest.getUserRenderer().getUserVisualization(), is(equalTo(UserVisualization.PLAIN_FULL)));
   }
 
   @Test
@@ -142,6 +150,53 @@ public class VoteConfigTest {
 
     assertThat(classUnderTest.getVoters().size(), is(equalTo(0)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
+  }
+
+
+  @Test
+  public void test_userVisualization_backwards_compatibility_with_visibleVotersWiki_for_false() {
+    // Given:
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "false");
+
+    // When:
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.PLAIN_LOGIN);
+  }
+
+  @Test
+  public void test_userVisualization_backwards_compatibility_with_visibleVotersWiki_for_true() {
+    // Given:
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "true");
+
+    // When:
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.LINKED_LOGIN);
+  }
+
+  @Test
+  public void test_userVisualization_should_handle_new_parameter_before_old() {
+    // Given:
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "false");
+    parameters.put(VoteConfig.KEY_USER_VISUALIZATION, "linked user name");
+
+    // When:
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.LINKED_FULL);
   }
 
   @Test
