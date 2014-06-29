@@ -1,75 +1,71 @@
 package org.hivesoft.confluence.macros.utils;
 
-import com.atlassian.user.User;
-import junit.framework.TestCase;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.vote.UserVisualization;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserRendererTest {
+public class UserRendererTest extends ConfluenceTestBase {
 
-  @Mock
-  private User user;
+  UserRenderer classUnderTest;
 
   @Test
-  public void test_render_should_correctly_render_plain_login_name() throws Exception {
-    // Given:
-    UserRenderer underTest = new UserRenderer(UserVisualization.PLAIN_LOGIN);
-    doReturn("doej").when(user).getName();
+  public void test_render_plainLoginName() throws Exception {
+    classUnderTest = new UserRenderer(UserVisualization.PLAIN_LOGIN);
 
-    // When:
-    String result = underTest.render("http://example.com", user);
+    String result = classUnderTest.render("http://example.com", SOME_USER1);
 
-    // Then:
-    assertEquals("doej", result);
+    assertThat(result, is("someUser1"));
   }
 
   @Test
-  public void test_render_should_correctly_render_linked_full_user_name() throws Exception {
-    // Given:
-    UserRenderer underTest = new UserRenderer(UserVisualization.LINKED_FULL);
+  public void test_render_plainFullUserName() throws Exception {
+    classUnderTest = new UserRenderer(UserVisualization.PLAIN_FULL);
 
-    doReturn("jdoe").when(user).getName();
-    doReturn("John Doe").when(user).getFullName();
+    String result = classUnderTest.render("http://example.com", SOME_USER1);
 
-    // When:
-    String result = underTest.render("http://example.com", user);
-
-    // Then:
-    assertEquals("<a href=\"http://example.com/display/~jdoe\" class=\"url fn confluence-userlink\" data-username=\"jdoe\">John Doe</a>", result);
+    assertThat(result, is("someUser1 FullName"));
   }
 
   @Test
-  public void test_renderForCsv_should_correctly_render_plain_login_name() throws Exception {
-    // Given:
-    UserRenderer underTest = new UserRenderer(UserVisualization.PLAIN_LOGIN);
-    doReturn("doej").when(user).getName();
+  public void test_render_linkedPlainLoginName() throws Exception {
+    classUnderTest = new UserRenderer(UserVisualization.LINKED_LOGIN);
 
-    // When:
-    String result = underTest.renderForCsv(user);
+    String result = classUnderTest.render("http://example.com", SOME_USER1);
 
-    // Then:
-    assertEquals("doej", result);
+    assertThat(result, is("<a href=\"http://example.com/display/~someUser1\" class=\"url fn confluence-userlink\" data-username=\"someUser1\">someUser1</a>"));
   }
 
   @Test
-  public void test_renderForCsv_should_correctly_render_linked_full_user_name() throws Exception {
-    // Given:
-    UserRenderer underTest = new UserRenderer(UserVisualization.LINKED_FULL);
+  public void test_render_linkedFullUserName() throws Exception {
+    classUnderTest = new UserRenderer(UserVisualization.LINKED_FULL);
 
-    doReturn("John Doe").when(user).getFullName();
+    String result = classUnderTest.render("http://example.com", SOME_USER1);
 
-    // When:
-    String result = underTest.renderForCsv(user);
+    assertThat(result, is("<a href=\"http://example.com/display/~someUser1\" class=\"url fn confluence-userlink\" data-username=\"someUser1\">someUser1 FullName</a>"));
+  }
 
-    // Then:
-    assertEquals("John Doe", result);
+
+  @Test
+  public void test_renderForCsv_plainLoginName() throws Exception {
+    classUnderTest = new UserRenderer(UserVisualization.PLAIN_LOGIN);
+
+    String result = classUnderTest.renderForCsv(SOME_USER1);
+
+    assertThat(result, is("someUser1"));
+  }
+
+  @Test
+  public void test_renderForCsv_linkedFullUserName_noLinkGenerated() throws Exception {
+    classUnderTest = new UserRenderer(UserVisualization.LINKED_FULL);
+
+    String result = classUnderTest.renderForCsv(SOME_USER1);
+
+    assertThat(result, is("someUser1 FullName"));
   }
 }
