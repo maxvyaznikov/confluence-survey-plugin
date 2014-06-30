@@ -75,12 +75,11 @@ public class VoteResource {
 
     try {
       Ballot ballot = reconstructBallotByTitleFromSurveyOrVote(ballotTitle, contentEntityObject);
-      surveyManager.recordVote(ballot, contentEntityObject, choiceName, voteAction);
+      VoteAction resultVoteAction = surveyManager.recordVote(ballot, contentEntityObject, choiceName, voteAction);
+      return Response.ok(new VoteRepresentation(ballotTitle, choiceName, resultVoteAction.name())).build();
     } catch (MacroReconstructionException e) {
       return Response.status(Response.Status.BAD_REQUEST).entity("There was a problem finding the specified ballot: " + e.getMessage()).build();
     }
-
-    return Response.ok().build();
   }
 
   private Ballot reconstructBallotByTitleFromSurveyOrVote(final String ballotTitle, final ContentEntityObject contentEntityObject) throws MacroReconstructionException {

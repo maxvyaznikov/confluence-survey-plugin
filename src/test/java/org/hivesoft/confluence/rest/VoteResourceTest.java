@@ -106,12 +106,15 @@ public class VoteResourceTest {
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
+    final String choiceName = SurveyUtils.getDefaultChoices().get(0).getDescription();
+    when(mockSurveyManager.recordVote(someBallot, somePage, choiceName, VoteAction.VOTE)).thenReturn(VoteAction.CHANGEVOTE);
 
-    VoteRepresentation voteRepresentation = new VoteRepresentation("How do you like the modern iconSet?", "someChoiceName", VoteAction.VOTE.name());
+    VoteRepresentation voteRepresentation = new VoteRepresentation("Should this be exported?", choiceName, VoteAction.VOTE.name());
 
     final Response response = classUnderTest.castVote(SOME_PAGE_ID, voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+    assertThat(((VoteRepresentation) response.getEntity()).getVoteAction(), is(VoteAction.CHANGEVOTE.name()));
   }
 
   @Test
@@ -124,12 +127,13 @@ public class VoteResourceTest {
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructBallotFromPlainTextMacroBody(any(Map.class), anyString(), eq(somePage))).thenReturn(someBallot);
-    when(mockSurveyManager.recordVote(someBallot, somePage, "Choice2", VoteAction.VOTE)).thenReturn(true);
+    when(mockSurveyManager.recordVote(someBallot, somePage, "Choice2", VoteAction.VOTE)).thenReturn(VoteAction.VOTE);
 
     VoteRepresentation voteRepresentation = new VoteRepresentation(SOME_BALLOT_TITLE, "Choice2", VoteAction.VOTE.name());
 
     final Response response = classUnderTest.castVote(SOME_PAGE_ID, voteRepresentation);
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+    assertThat(((VoteRepresentation) response.getEntity()).getVoteAction(), is(VoteAction.VOTE.name()));
   }
 }
