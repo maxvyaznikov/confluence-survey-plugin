@@ -55,9 +55,11 @@
       </parameter>
       <parameter name="choices" type="string"/>
       <parameter name="changeableVotes" type="boolean"/>
-      <parameter name="showSummary" type="boolean" default="true"/>
-      <parameter name="showTopSummary" type="boolean" default="true"/>
-      <parameter name="showLast" type="boolean"/>
+      <parameter name="showSummary" type="enum" default="top">
+        <value name="none"/>
+        <value name="top"/><!-- =: showTopSummary=true -->
+        <value name="bottom"/><!-- =: showLast=true -->
+      </parameter>
       <parameter name="showComments" type="boolean" default="true"/>
       <parameter name="startBound" type="string" default="1"/>
       <parameter name="iterateStep" type="string" default="1"/>
@@ -127,9 +129,11 @@
       </parameter>
       <parameter name="choices" type="string"/>
       <parameter name="changeableVotes" type="boolean"/>
-      <parameter name="showSummary" type="boolean" default="true"/>
-      <parameter name="showTopSummary" type="boolean" default="true"/>
-      <parameter name="showLast" type="boolean"/>
+      <parameter name="showSummary" type="enum" default="top">
+        <value name="none"/>
+        <value name="top"/><!-- =: showTopSummary=true -->
+        <value name="bottom"/><!-- =: showLast=true -->
+      </parameter>
       <parameter name="showComments" type="boolean" default="true"/>
       <parameter name="startBound" type="string" default="1"/>
       <parameter name="iterateStep" type="string" default="1"/>

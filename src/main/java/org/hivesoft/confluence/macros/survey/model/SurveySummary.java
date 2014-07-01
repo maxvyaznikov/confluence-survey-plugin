@@ -14,7 +14,24 @@ package org.hivesoft.confluence.macros.survey.model;
  * Enumeration Strings in velocity are referenced by its toString value (or here as hardcoded Strings), please keep in mind in case of refactoring
  */
 public enum SurveySummary {
-  None,
-  Top,
-  Bottom
+  None("none"),
+  Top("top"),
+  Bottom("bottom");
+
+  /** Visible for testing */
+  final String propertyValue;
+
+  private SurveySummary(String propertyValue) {
+    this.propertyValue = propertyValue;
+  }
+
+  /** @return the found {@link SurveySummary} with the given {@code propertyValue} or {@code null} if not found */
+  public static SurveySummary getFor(String propertyValue) {
+    for (SurveySummary summary : SurveySummary.values()) {
+      if (summary.propertyValue.equals(propertyValue)) {
+        return summary;
+      }
+    }
+    return null;
+  }
 }
