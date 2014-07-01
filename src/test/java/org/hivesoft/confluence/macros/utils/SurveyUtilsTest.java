@@ -1,6 +1,7 @@
 package org.hivesoft.confluence.macros.utils;
 
 import com.atlassian.confluence.macro.MacroExecutionException;
+import org.hivesoft.confluence.macros.survey.model.SurveySummary;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.vote.UserVisualization;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
@@ -97,6 +98,33 @@ public class SurveyUtilsTest {
 
     // Then:
     assertEquals(UserVisualization.LINKED_FULL, result);
+  }
+
+  @Test
+  public void test_getSurveySummaryFromString_should_return_default_for_null() {
+    // When:
+    SurveySummary result = SurveyUtils.getSurveySummaryFromString(null, SurveySummary.Top);
+
+    // Then:
+    assertEquals(SurveySummary.Top, result);
+  }
+
+  @Test
+  public void test_getSurveySummaryFromString_should_return_default_for_unknown_propertyValue() {
+    // When:
+    SurveySummary result = SurveyUtils.getSurveySummaryFromString("unknown", SurveySummary.None);
+
+    // Then:
+    assertEquals(SurveySummary.None, result);
+  }
+
+  @Test
+  public void test_getSurveySummaryFromString_should_return_NONE_for_its_propertyValue() {
+    // When:
+    SurveySummary result = SurveyUtils.getSurveySummaryFromString("none", SurveySummary.Bottom);
+
+    // Then:
+    assertEquals(SurveySummary.None, result);
   }
 
   //****** Helper Methods ******

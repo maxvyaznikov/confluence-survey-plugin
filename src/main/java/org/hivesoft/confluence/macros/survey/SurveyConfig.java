@@ -12,20 +12,26 @@ import java.util.Map;
 public class SurveyConfig extends VoteConfig {
   public static final String KEY_CHOICES = "choices";
   public static final String KEY_SHOW_SUMMARY = "showSummary";
-  public static final String KEY_SHOW_LAST = "showLast";
+  public static final String KEY_SHOW_LAST = "showLast";  // old key as showSummary was a boolean field
 
-  private SurveySummary surveySummary = SurveySummary.Top;
+  private SurveySummary surveySummary;
   private List<String> choices;
 
   public SurveyConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     super(permissionEvaluator, getModifiedSurveyParameters(parameters));
     choices = SurveyUtils.getListFromStringCommaSeparated(parameters.get(KEY_CHOICES));
 
-    if (!SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_SUMMARY), true)) {
-      surveySummary = SurveySummary.None;
-    } else {
-      if (SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_LAST), false)) {
-        surveySummary = SurveySummary.Bottom;
+    surveySummary = SurveyUtils.getSurveySummaryFromString(parameters.get(KEY_SHOW_SUMMARY), null);
+    if (surveySummary == null) {
+      // default and backwards compatibility for version <= 2.8.0
+      if (!SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_SUMMARY), true)) {
+        surveySummary = SurveySummary.None;
+      } else {
+        if (SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_LAST), false)) {
+          surveySummary = SurveySummary.Bottom;
+        } else {
+          surveySummary = SurveySummary.Top;
+        }
       }
     }
   }

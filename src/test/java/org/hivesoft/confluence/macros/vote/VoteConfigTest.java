@@ -165,7 +165,7 @@ public class VoteConfigTest {
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
     // Then:
-    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.PLAIN_LOGIN);
+    assertEquals(UserVisualization.PLAIN_LOGIN, classUnderTest.getUserRenderer().getUserVisualization());
   }
 
   @Test
@@ -180,7 +180,7 @@ public class VoteConfigTest {
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
     // Then:
-    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.LINKED_LOGIN);
+    assertEquals(UserVisualization.LINKED_LOGIN, classUnderTest.getUserRenderer().getUserVisualization());
   }
 
   @Test
@@ -196,7 +196,7 @@ public class VoteConfigTest {
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
     // Then:
-    assertEquals(classUnderTest.getUserRenderer().getUserVisualization(), UserVisualization.LINKED_FULL);
+    assertEquals(UserVisualization.LINKED_FULL, classUnderTest.getUserRenderer().getUserVisualization());
   }
 
   @Test

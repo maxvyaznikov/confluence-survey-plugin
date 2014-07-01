@@ -14,6 +14,7 @@ import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.survey.model.SurveySummary;
 import org.hivesoft.confluence.macros.vote.UserVisualization;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
@@ -126,6 +127,14 @@ public class SurveyUtils {
 
   public static UserVisualization getUserVisualizationFromString(String propertyValue, UserVisualization defaultValue) {
     UserVisualization result = UserVisualization.getFor(propertyValue);
+    if (result == null) {
+      return defaultValue;
+    }
+    return result;
+  }
+
+  public static SurveySummary getSurveySummaryFromString(String propertyValue, SurveySummary defaultValue) {
+    SurveySummary result = SurveySummary.getFor(propertyValue);
     if (result == null) {
       return defaultValue;
     }

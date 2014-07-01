@@ -12,16 +12,16 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Mockito.mock;
 
 public class SurveyConfigTest {
+
+  PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
   SurveyConfig classUnderTest;
 
   @Test
   public void test_createWithDefaultParameters_success() {
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     Map<String, String> parameters = new HashMap<String, String>();
     classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
 
@@ -70,6 +70,73 @@ public class SurveyConfigTest {
     classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.None);
     assertEquals(SurveySummary.None, classUnderTest.getSurveySummary());
     classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.Bottom);
+    assertEquals(SurveySummary.Bottom, classUnderTest.getSurveySummary());
+  }
+
+  @Test
+  public void test_surveySummary_is_parsed_correctly() {
+    // Given:
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "bottom");
+
+    // When:
+    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(SurveySummary.Bottom, classUnderTest.getSurveySummary());
+  }
+
+  @Test
+  public void test_surveySummary_backwards_compatibility_with_false_and_without_showLast() {
+    // Given:
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "false");
+
+    // When:
+    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(SurveySummary.None, classUnderTest.getSurveySummary());
+  }
+
+  @Test
+  public void test_surveySummary_backwards_compatibility_with_true_and_without_showLast() {
+    // Given:
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "true");
+
+    // When:
+    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(SurveySummary.Top, classUnderTest.getSurveySummary());
+  }
+
+  @Test
+  public void test_surveySummary_backwards_compatibility_with_true_and_showLast_false() {
+    // Given:
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "true");
+    parameters.put(SurveyConfig.KEY_SHOW_LAST, "false");
+
+    // When:
+    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
+
+    // Then:
+    assertEquals(SurveySummary.Top, classUnderTest.getSurveySummary());
+  }
+
+  @Test
+  public void test_surveySummary_backwards_compatibility_with_true_and_showLast_true() {
+    // Given:
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "true");
+    parameters.put(SurveyConfig.KEY_SHOW_LAST, "true");
+
+    // When:
+    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
+
+    // Then:
     assertEquals(SurveySummary.Bottom, classUnderTest.getSurveySummary());
   }
 
