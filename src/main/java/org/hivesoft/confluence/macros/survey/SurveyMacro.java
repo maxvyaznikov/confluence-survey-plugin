@@ -18,10 +18,12 @@ import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.Comment;
+import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
-import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
+import com.atlassian.confluence.xhtml.api.MacroDefinitionUpdater;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,6 +32,7 @@ import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
+import org.hivesoft.confluence.rest.callbacks.TransactionCallbackStorePage;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -49,13 +52,17 @@ public class SurveyMacro implements Macro {
   private final TemplateRenderer renderer;
   private final XhtmlContent xhtmlContent;
   private final VelocityAbstractionHelper velocityAbstractionHelper;
+  private final PageManager pageManager;
+  private final TransactionTemplate transactionTemplate;
 
-  public SurveyMacro(PluginSettingsFactory pluginSettingsFactory, SurveyManager surveyManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, VelocityAbstractionHelper velocityAbstractionHelper) {
+  public SurveyMacro(PluginSettingsFactory pluginSettingsFactory, SurveyManager surveyManager, TemplateRenderer renderer, XhtmlContent xhtmlContent, VelocityAbstractionHelper velocityAbstractionHelper, PageManager pageManager, TransactionTemplate transactionTemplate) {
     this.pluginSettingsFactory = pluginSettingsFactory;
     this.surveyManager = surveyManager;
     this.renderer = renderer;
     this.xhtmlContent = xhtmlContent;
     this.velocityAbstractionHelper = velocityAbstractionHelper;
+    this.pageManager = pageManager;
+    this.transactionTemplate = transactionTemplate;
   }
 
   /**
@@ -65,6 +72,8 @@ public class SurveyMacro implements Macro {
   @RequiresFormat(value = Format.View)
   public String execute(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
     final List<String> macros = new ArrayList<String>();
+    final List<Integer> upgraded = new ArrayList<Integer>();
+    String completePageBody;
     try {
       final String surveyMacroTitle = StringUtils.defaultString(parameters.get(SurveyConfig.KEY_TITLE)).trim();
       if (LOG.isInfoEnabled()) {
@@ -73,12 +82,12 @@ public class SurveyMacro implements Macro {
       if (conversionContext.getEntity() == null) {
         throw new MacroExecutionException("The survey could not be rendered. Probably this is not a persistable ContentObject");
       }
-      xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
+      completePageBody = xhtmlContent.updateMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionUpdater() {
         @Override
-        public void handle(MacroDefinition macroDefinition) {
+        public MacroDefinition update(MacroDefinition macroDefinition) {
           if (SURVEY_MACRO.equals(macroDefinition.getName())) {
             final Map<String, String> parameters = macroDefinition.getParameters();
-            String currentTitle = StringUtils.defaultString(parameters.get(SurveyConfig.KEY_TITLE)).trim();
+            String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
             if (!StringUtils.isBlank(currentTitle)) {
               if (macros.contains(currentTitle)) {
                 LOG.warn("A " + SURVEY_MACRO + "-macro should not have the same title " + currentTitle + " on the same page! In newer version it may become mandatory / unique.");
@@ -86,11 +95,30 @@ public class SurveyMacro implements Macro {
                 macros.add(currentTitle);
               }
             }
+            if (StringUtils.isNotBlank(currentTitle) && StringUtils.isNotBlank(surveyMacroTitle) && !currentTitle.equals(surveyMacroTitle)) {
+              LOG.debug("Survey with title " + currentTitle + " is not this survey. Skip potential upgrading!");
+              return macroDefinition;
+            }
+            LOG.debug("Shall survey parameters be upgraded?, currentTitle to check is=" + currentTitle);
+            Map<String, String> modifiedParameters = SurveyConfig.migrateParameters(parameters);
+            if (!modifiedParameters.equals(parameters)) {
+              LOG.debug("parameters " + parameters + " differ from " + modifiedParameters + ". Upgrading.");
+              upgraded.add(1);
+              macroDefinition.setParameters(modifiedParameters);
+              return new MacroDefinition(macroDefinition.getName(), macroDefinition.getBody(), macroDefinition.getDefaultParameterValue(), macroDefinition.getParameters());
+            }
+            LOG.debug("No upgrade required..");
+            return macroDefinition;
           }
+          return macroDefinition;
         }
       });
     } catch (XhtmlException e) {
       throw new MacroExecutionException(e);
+    }
+    if (!upgraded.isEmpty()) {
+      LOG.debug("page will be updated!");
+      final Boolean pageUpdated = (Boolean) transactionTemplate.execute(new TransactionCallbackStorePage(pageManager, conversionContext.getEntity(), completePageBody));
     }
 
     ContentEntityObject contentObject = conversionContext.getEntity(); // surveyManager.getPageEntityFromConversionContext(conversionContext);

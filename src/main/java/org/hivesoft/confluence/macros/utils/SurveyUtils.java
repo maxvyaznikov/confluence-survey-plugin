@@ -132,12 +132,4 @@ public class SurveyUtils {
     }
     return result;
   }
-
-  public static SurveySummary getSurveySummaryFromString(String propertyValue, SurveySummary defaultValue) {
-    SurveySummary result = SurveySummary.getFor(propertyValue);
-    if (result == null) {
-      return defaultValue;
-    }
-    return result;
-  }
 }

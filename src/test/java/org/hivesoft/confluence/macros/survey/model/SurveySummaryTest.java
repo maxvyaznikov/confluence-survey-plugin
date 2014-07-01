@@ -2,37 +2,31 @@ package org.hivesoft.confluence.macros.survey.model;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class SurveySummaryTest {
 
   @Test
-  public void test_getFor_should_return_null_for_propertyValue_null() {
-    // When:
+  public void test_getForNull_expectNone() {
     SurveySummary result = SurveySummary.getFor(null);
 
-    // Then:
-    assertEquals(null, result);
+    assertThat(result, is(SurveySummary.Top));
   }
 
   @Test
-  public void test_getFor_should_return_null_for_unknown_propertyValue() {
-    // When:
-    SurveySummary result = SurveySummary.getFor("unknown");
+  public void test_getForSomething_expectNone() {
+    SurveySummary result = SurveySummary.getFor("something");
 
-    // Then:
-    assertEquals(null, result);
+    assertThat(result, is(SurveySummary.Top));
   }
 
   @Test
-  public void test_getFor_should_return_BOTTOM_SurveySummary_for_its_propertyValue() {
-    // Given:
+  public void test_getForBottom_expectBottom() {
     SurveySummary surveySummary = SurveySummary.Bottom;
 
-    // When:
-    SurveySummary result = SurveySummary.getFor(surveySummary.propertyValue);
+    SurveySummary result = SurveySummary.getFor(surveySummary.name());
 
-    // Then:
-    assertEquals(surveySummary, result);
+    assertThat(result, is(SurveySummary.Bottom));
   }
 }

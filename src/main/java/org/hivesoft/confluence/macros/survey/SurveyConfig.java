@@ -21,19 +21,7 @@ public class SurveyConfig extends VoteConfig {
     super(permissionEvaluator, getModifiedSurveyParameters(parameters));
     choices = SurveyUtils.getListFromStringCommaSeparated(parameters.get(KEY_CHOICES));
 
-    surveySummary = SurveyUtils.getSurveySummaryFromString(parameters.get(KEY_SHOW_SUMMARY), null);
-    if (surveySummary == null) {
-      // default and backwards compatibility for version <= 2.8.0
-      if (!SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_SUMMARY), true)) {
-        surveySummary = SurveySummary.None;
-      } else {
-        if (SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_LAST), false)) {
-          surveySummary = SurveySummary.Bottom;
-        } else {
-          surveySummary = SurveySummary.Top;
-        }
-      }
-    }
+    surveySummary = SurveySummary.getFor(parameters.get(KEY_SHOW_SUMMARY));
   }
 
   private static Map<String, String> getModifiedSurveyParameters(Map<String, String> parameters) {
@@ -58,6 +46,26 @@ public class SurveyConfig extends VoteConfig {
     if (getRenderTitleLevel() == 0)
       return getRenderTitleLevel();
     return getRenderTitleLevel() + addSubLevel;
+  }
+
+  public static Map<String, String> migrateParameters(Map<String, String> parameters) {
+    //migrate v.2.8.0 to v.2.8.1
+    Map<String, String> newParameters = new HashMap<String, String>(parameters);
+    if (newParameters.containsKey(KEY_SHOW_LAST) || "false".equals(newParameters.get(KEY_SHOW_SUMMARY))) {
+      SurveySummary surveySummary;
+      if (!SurveyUtils.getBooleanFromString(newParameters.get(KEY_SHOW_SUMMARY), true)) {
+        surveySummary = SurveySummary.None;
+      } else {
+        if (SurveyUtils.getBooleanFromString(newParameters.get(KEY_SHOW_LAST), false)) {
+          surveySummary = SurveySummary.Bottom;
+        } else {
+          surveySummary = SurveySummary.Top;
+        }
+      }
+      newParameters.remove(KEY_SHOW_LAST);
+      newParameters.put(KEY_SHOW_SUMMARY, surveySummary.name());
+    }
+    return newParameters;
   }
 
   @Override

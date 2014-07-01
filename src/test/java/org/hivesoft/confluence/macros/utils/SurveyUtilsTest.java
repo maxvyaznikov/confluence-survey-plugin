@@ -100,33 +100,6 @@ public class SurveyUtilsTest {
     assertEquals(UserVisualization.LINKED_FULL, result);
   }
 
-  @Test
-  public void test_getSurveySummaryFromString_should_return_default_for_null() {
-    // When:
-    SurveySummary result = SurveyUtils.getSurveySummaryFromString(null, SurveySummary.Top);
-
-    // Then:
-    assertEquals(SurveySummary.Top, result);
-  }
-
-  @Test
-  public void test_getSurveySummaryFromString_should_return_default_for_unknown_propertyValue() {
-    // When:
-    SurveySummary result = SurveyUtils.getSurveySummaryFromString("unknown", SurveySummary.None);
-
-    // Then:
-    assertEquals(SurveySummary.None, result);
-  }
-
-  @Test
-  public void test_getSurveySummaryFromString_should_return_NONE_for_its_propertyValue() {
-    // When:
-    SurveySummary result = SurveyUtils.getSurveySummaryFromString("none", SurveySummary.Bottom);
-
-    // Then:
-    assertEquals(SurveySummary.None, result);
-  }
-
   //****** Helper Methods ******
 
   private List<String> listOfBallotsWithValidKeyLength(int count) {

@@ -7,6 +7,7 @@ import com.atlassian.confluence.content.render.xhtml.storage.macro.StorageMacroM
 import com.atlassian.confluence.content.render.xhtml.storage.macro.StorageMacroUnmarshaller;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.pages.Page;
+import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.renderer.PageContext;
 import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
@@ -14,9 +15,8 @@ import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.atlassian.user.User;
-import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.survey.model.Survey;
@@ -47,6 +47,8 @@ public class SurveyMacroTest extends ConfluenceTestBase {
   PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
   VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
   EventPublisher mockEventPublisher = mock(EventPublisher.class);
+  TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
+  PageManager pageManager = mock(PageManager.class);
 
   ConversionContext mockConversionContext = mock(ConversionContext.class);
 
@@ -65,7 +67,7 @@ public class SurveyMacroTest extends ConfluenceTestBase {
 
     AuthenticatedUserThreadLocal.setUser(SOME_USER1);
 
-    classUnderTest = new SurveyMacro(mockPluginSettingsFactory, mockSurveyManager, mockTemplateRenderer, xhtmlContent, mockVelocityAbstractionHelper);
+    classUnderTest = new SurveyMacro(mockPluginSettingsFactory, mockSurveyManager, mockTemplateRenderer, xhtmlContent, mockVelocityAbstractionHelper, pageManager, transactionTemplate);
   }
 
   @After

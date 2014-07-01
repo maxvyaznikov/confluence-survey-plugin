@@ -16,12 +16,11 @@ import static org.mockito.Mockito.mock;
 
 public class SurveyConfigTest {
 
-  PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-
   SurveyConfig classUnderTest;
 
   @Test
   public void test_createWithDefaultParameters_success() {
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     Map<String, String> parameters = new HashMap<String, String>();
     classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
 
@@ -66,78 +65,22 @@ public class SurveyConfigTest {
   @Test
   public void test_TitleAndSummary_success() {
     classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.Top);
-    assertEquals(SurveySummary.Top, classUnderTest.getSurveySummary());
+    assertThat(classUnderTest.getSurveySummary(), is(SurveySummary.Top));
     classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.None);
-    assertEquals(SurveySummary.None, classUnderTest.getSurveySummary());
+    assertThat(classUnderTest.getSurveySummary(), is(SurveySummary.None));
     classUnderTest = createSurveyConfigWithSurveySummary(SurveySummary.Bottom);
-    assertEquals(SurveySummary.Bottom, classUnderTest.getSurveySummary());
+    assertThat(classUnderTest.getSurveySummary(), is(SurveySummary.Bottom));
   }
 
   @Test
-  public void test_surveySummary_is_parsed_correctly() {
-    // Given:
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "bottom");
-
-    // When:
-    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
-
-    // Then:
-    assertEquals(SurveySummary.Bottom, classUnderTest.getSurveySummary());
-  }
-
-  @Test
-  public void test_surveySummary_backwards_compatibility_with_false_and_without_showLast() {
-    // Given:
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "false");
-
-    // When:
-    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
-
-    // Then:
-    assertEquals(SurveySummary.None, classUnderTest.getSurveySummary());
-  }
-
-  @Test
-  public void test_surveySummary_backwards_compatibility_with_true_and_without_showLast() {
-    // Given:
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "true");
-
-    // When:
-    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
-
-    // Then:
-    assertEquals(SurveySummary.Top, classUnderTest.getSurveySummary());
-  }
-
-  @Test
-  public void test_surveySummary_backwards_compatibility_with_true_and_showLast_false() {
-    // Given:
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "true");
-    parameters.put(SurveyConfig.KEY_SHOW_LAST, "false");
-
-    // When:
-    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
-
-    // Then:
-    assertEquals(SurveySummary.Top, classUnderTest.getSurveySummary());
-  }
-
-  @Test
-  public void test_surveySummary_backwards_compatibility_with_true_and_showLast_true() {
-    // Given:
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, "true");
-    parameters.put(SurveyConfig.KEY_SHOW_LAST, "true");
-
-    // When:
-    classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
-
-    // Then:
-    assertEquals(SurveySummary.Bottom, classUnderTest.getSurveySummary());
+  public void test_migrateParameters() {
+    Map<String, String> migratedParameters = SurveyConfig.migrateParameters(createOldSurveySummaryParameters(SurveySummary.Top));
+    Map<String, String> emptyMap = new HashMap<String, String>();
+    assertThat(migratedParameters, is(emptyMap));
+    migratedParameters = SurveyConfig.migrateParameters(createOldSurveySummaryParameters(SurveySummary.Bottom));
+    assertThat(migratedParameters, is(createSurveySummaryParameters(SurveySummary.Bottom)));
+    migratedParameters = SurveyConfig.migrateParameters(createOldSurveySummaryParameters(SurveySummary.None));
+    assertThat(migratedParameters, is(createSurveySummaryParameters(SurveySummary.None)));
   }
 
   private static SurveyConfig createSurveyConfigWithRenderTitleLevel(int level) {
@@ -148,18 +91,25 @@ public class SurveyConfigTest {
     return new SurveyConfig(mockPermissionEvaluator, parameters);
   }
 
-  private static SurveyConfig createSurveyConfigWithSurveySummary(SurveySummary summary) {
+  private static SurveyConfig createSurveyConfigWithSurveySummary(SurveySummary surveySummary) {
     PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
+    return new SurveyConfig(mockPermissionEvaluator, createSurveySummaryParameters(surveySummary));
+  }
+
+  private static Map<String, String> createSurveySummaryParameters(SurveySummary surveySummary) {
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, surveySummary.name());
+    return parameters;
+  }
+
+  private static Map<String, String> createOldSurveySummaryParameters(SurveySummary summary) {
     Map<String, String> parameters = new HashMap<String, String>();
     if (summary == SurveySummary.None) {
       parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, String.valueOf(false));
     } else if (summary == SurveySummary.Bottom) {
-      parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, String.valueOf(true));
       parameters.put(SurveyConfig.KEY_SHOW_LAST, String.valueOf(true));
-    } else {
-      parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, String.valueOf(true));
     }
-    return new SurveyConfig(mockPermissionEvaluator, parameters);
+    return parameters;
   }
 }

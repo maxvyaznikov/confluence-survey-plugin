@@ -32,8 +32,8 @@
       <parameter name="userVisualization" type="enum" default="plain login name">
         <alias name="visibleVotersWiki"/>
 
-        <value name="plain login name"/><!-- =: visibleVotersWiki=false -->
-        <value name="linked login name"/><!-- =: visibleVotersWiki=true -->
+        <value name="plain login name"/>
+        <value name="linked login name"/>
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
@@ -55,10 +55,10 @@
       </parameter>
       <parameter name="choices" type="string"/>
       <parameter name="changeableVotes" type="boolean"/>
-      <parameter name="showSummary" type="enum" default="top">
-        <value name="none"/>
-        <value name="top"/><!-- =: showTopSummary=true -->
-        <value name="bottom"/><!-- =: showLast=true -->
+      <parameter name="showSummary" type="enum" default="Top">
+        <value name="Top"/>
+        <value name="Bottom"/>
+        <value name="None"/>
       </parameter>
       <parameter name="showComments" type="boolean" default="true"/>
       <parameter name="startBound" type="string" default="1"/>
@@ -70,8 +70,8 @@
       <parameter name="userVisualization" type="enum" default="plain login name">
         <alias name="visibleVotersWiki"/>
 
-        <value name="plain login name"/><!-- =: visibleVotersWiki=false -->
-        <value name="linked login name"/><!-- =: visibleVotersWiki=true -->
+        <value name="plain login name"/>
+        <value name="linked login name"/>
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
@@ -105,8 +105,8 @@
       <parameter name="userVisualization" type="enum" default="plain login name">
         <alias name="visibleVotersWiki"/>
 
-        <value name="plain login name"/><!-- =: visibleVotersWiki=false -->
-        <value name="linked login name"/><!-- =: visibleVotersWiki=true -->
+        <value name="plain login name"/>
+        <value name="linked login name"/>
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
@@ -129,10 +129,10 @@
       </parameter>
       <parameter name="choices" type="string"/>
       <parameter name="changeableVotes" type="boolean"/>
-      <parameter name="showSummary" type="enum" default="top">
-        <value name="none"/>
-        <value name="top"/><!-- =: showTopSummary=true -->
-        <value name="bottom"/><!-- =: showLast=true -->
+      <parameter name="showSummary" type="enum" default="Top">
+        <value name="Top"/>
+        <value name="Bottom"/>
+        <value name="None"/>
       </parameter>
       <parameter name="showComments" type="boolean" default="true"/>
       <parameter name="startBound" type="string" default="1"/>
@@ -145,8 +145,8 @@
       <parameter name="userVisualization" type="enum" default="plain login name">
         <alias name="visibleVotersWiki"/>
 
-        <value name="plain login name"/><!-- =: visibleVotersWiki=false -->
-        <value name="linked login name"/><!-- =: visibleVotersWiki=true -->
+        <value name="plain login name"/>
+        <value name="linked login name"/>
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
