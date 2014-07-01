@@ -25,7 +25,7 @@ public class UserVisualizationTest {
   }
 
   @Test
-  public void test_getFor_should_return_LINKED_FULL_VoterStyle_for_its_propertyValue() {
+  public void test_getFor_should_return_LINKED_FULL_UserVisualization_for_its_propertyValue() {
     // Given:
     UserVisualization userVisualization = UserVisualization.LINKED_FULL;
 
