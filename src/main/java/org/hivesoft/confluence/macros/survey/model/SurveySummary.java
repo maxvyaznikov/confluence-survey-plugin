@@ -18,9 +18,6 @@ public enum SurveySummary {
   Bottom,
   None;
 
-  /**
-   * @return the found {@link SurveySummary}
-   */
   public static SurveySummary getFor(String propertyValue) {
     for (SurveySummary summary : SurveySummary.values()) {
       if (summary.name().equalsIgnoreCase(propertyValue)) {
