@@ -17,7 +17,6 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 #set ($config = $ballot.config)
 #set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($currentUser)) || $config.changeableVotes)))
 #set ($canSeeResults = ($config.canSeeResults && ( $ballot.getHasVoted($currentUser) || ($config.canTakeSurvey && $config.locked) || !($config.canTakeSurvey) )))
-#set ($canSeeVoters = $canSeeResults && $config.visibleVoters)
 
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
@@ -165,7 +164,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
                   #if ($ballot.getChoiceForUser($comment.user))
                     #set($voteText=$ballot.getChoiceForUser($comment.user).description)
                   #end
-                  #if ($canSeeVoters)
+                  #if ($canSeeResults && $config.visibleVoters)
                     #set($voteText= $comment.user.name + $action.getText("surveyplugin.survey.comment.on")+" " + $voteText)
                   #end
                   <b>$voteText:</b> $comment.comment
@@ -179,8 +178,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
     #set ($choiceNumber = $choiceNumber + 1)
   #end
   <tfoot>
-    #if ($canSeeVoters)
-      #if ($config.visibleVoters)
+      #if ($canSeeResults && $config.visibleVoters)
       <tr>
         <td colspan="$columnCount">
           $action.getText("surveyplugin.vote.voters.all"):
@@ -193,7 +191,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         </td>
       </tr>
       #end
-      #if ($config.visiblePendingVoters)
+      #if ($canSeeResults && $config.visiblePendingVoters)
       <tr>
         <td colspan="$columnCount">
           #set($pendingVoters = $ballot.getAllPendingVoters())
@@ -207,7 +205,6 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         </td>
       </tr>
       #end
-    #end
   </tfoot>
 </table>
 #end
