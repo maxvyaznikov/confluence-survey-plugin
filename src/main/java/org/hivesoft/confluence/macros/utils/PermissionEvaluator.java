@@ -97,19 +97,19 @@ public class PermissionEvaluator {
     return isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), user) && (!ballot.getHasVoted(user) || ballot.getConfig().isChangeableVotes());
   }
 
-  public List<User> getActiveUsersForGroupOrUser(String configuredVoter) {
+  public List<User> getActiveUsersForGroupOrUser(String userOrGroupName) {
     List<User> users = new ArrayList<User>();
-    Group group = userAccessor.getGroup(configuredVoter);
+    Group group = userAccessor.getGroup(userOrGroupName);
     if (group == null) {
-      final User user = userAccessor.getUser(configuredVoter);
+      final User user = userAccessor.getUser(userOrGroupName);
       if (user != null && !userAccessor.isDeactivated(user)) {
-        users.add(user);
+        users.add(new SurveyUser(user));
       }
     } else {
       for (String userName : userAccessor.getMemberNamesAsList(group)) {
         final User user = userAccessor.getUser(userName);
         if (!userAccessor.isDeactivated(user)) {
-          users.add(user);
+          users.add(new SurveyUser(user));
         }
       }
     }

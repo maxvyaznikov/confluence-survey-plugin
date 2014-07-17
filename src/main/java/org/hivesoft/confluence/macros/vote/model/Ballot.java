@@ -13,12 +13,14 @@ package org.hivesoft.confluence.macros.vote.model;
 import com.atlassian.user.User;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A model object representing a voting ballot. Ballots can have several {@link Choice}s that can be voted on.
@@ -131,7 +133,7 @@ public class Ballot {
    * @return Voters of the ballot
    */
   public Collection<User> getAllVoters() {
-    List<User> voters = new ArrayList<User>();
+    Set<User> voters = Sets.newHashSet();
     for (Choice choice : choices) {
       voters.addAll(choice.getVoters());
     }

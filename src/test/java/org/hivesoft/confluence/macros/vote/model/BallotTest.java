@@ -402,32 +402,42 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getAllPendingVoters_success() {
-    Choice someChoiceOne = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "ONE");
-    someChoiceOne.voteFor(new SurveyUser("user21"));
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
-    someChoiceTwo.voteFor(new SurveyUser("user11"));
-    someChoiceOne.voteFor(new SurveyUser("user12")); // user has voted but is now deactivated
-    someChoiceOne.voteFor(new SurveyUser("user4")); // user has voted but is now deleted
-    someChoiceTwo.voteFor(new SurveyUser("user32"));
+    final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
+    final User user11 = new SurveyUser("user11");
+    final User user12 = new SurveyUser("user12");
+    final User user13 = new SurveyUser("user13");
+
+    final User user21 = new SurveyUser("user21");
+    final User user22 = new SurveyUser("user22");
+
+    final User user31 = new SurveyUser("user31");
+    final User user32 = new SurveyUser("user32");
+
+    final User user4 = new SurveyUser("user4");
+
+    Choice someChoiceOne = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "ONE");
+    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    someChoiceOne.voteFor(user21);
+    someChoiceOne.voteFor(user12); // user has voted but is now deactivated
+    someChoiceOne.voteFor(user4); // user has voted but is now deleted
+    someChoiceTwo.voteFor(user11);
+    someChoiceTwo.voteFor(user32);
 
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someBallotTitle");
-    parameters.put(VoteConfig.KEY_VOTERS, "group1, " + SOME_USER2.getName() + ", group3");
+    parameters.put(VoteConfig.KEY_VOTERS, "group1, " + user22.getName() + ", group2, group3");
 
-    final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     classUnderTest = new Ballot("someBallotTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), newArrayList(someChoiceOne, someChoiceTwo), new ArrayList<Comment>());
 
-    final User user11 = new SurveyUser("user11");
-    final User user13 = new SurveyUser("user13");
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList(user11, new SurveyUser("user12"), user13));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER2.getName())).thenReturn(newArrayList(SOME_USER2));
-    final User user31 = new SurveyUser("user31");
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList(user31, new SurveyUser("user32")));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList(user11, user12, user13));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(user22.getName())).thenReturn(newArrayList(user22));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group2")).thenReturn(newArrayList(user21, user22));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList(user31, user32));
 
     List<User> result = classUnderTest.getAllPendingVoters();
 
-    assertThat(result, containsInAnyOrder(user13, SOME_USER2, user31));
+    assertThat(result, containsInAnyOrder(user13, user22, user31));
   }
 
   @Test

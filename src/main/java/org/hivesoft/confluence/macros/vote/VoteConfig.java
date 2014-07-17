@@ -13,16 +13,14 @@ package org.hivesoft.confluence.macros.vote;
 import com.atlassian.confluence.pages.AbstractPage;
 import com.atlassian.user.User;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.UserRenderer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VoteConfig {
   public static final int DEFAULT_START_BOUND = 1;
@@ -219,11 +217,11 @@ public class VoteConfig {
   }
 
   public List<User> getAllPossibleVoters() {
-    List<User> users = Lists.newArrayList();
+    Set<User> users = Sets.newHashSet();
     for (String configuredVoter : voters) {
       users.addAll(permissionEvaluator.getActiveUsersForGroupOrUser(configuredVoter));
     }
-    return users;
+    return Lists.newArrayList(users);
   }
 
   @Override
