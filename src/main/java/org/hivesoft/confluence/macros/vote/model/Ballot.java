@@ -161,6 +161,14 @@ public class Ballot {
     return result;
   }
 
+  public String getEmailStringOfAllVoters() {
+    List<String> emails = new ArrayList<String>();
+    for (User voter : getAllVoters()) {
+      emails.add(voter.getEmail());
+    }
+    return Joiner.on(',').join(emails);
+  }
+
   /**
    * Return comma separated list of email addresses for supplied {@code voters} determined by
    * {@link #getAllPendingVoters()}. {@code Voters} who cannot be found as users, will be skipped.

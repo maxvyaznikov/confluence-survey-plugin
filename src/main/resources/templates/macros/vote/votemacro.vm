@@ -181,8 +181,9 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       #if ($canSeeResults && $config.visibleVoters)
       <tr>
         <td colspan="$columnCount">
-          $action.getText("surveyplugin.vote.voters.all"):
           #set($voters = $ballot.getAllVoters())
+          $action.getText("surveyplugin.vote.voters.all")
+          (<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for $ballot.title">$action.getText("surveyplugin.vote.voters.pending.email")</a>):
           #set($iCounter = 0)
           #foreach($voter in $voters)
             #set($iCounter=$iCounter+1)
@@ -196,7 +197,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         <td colspan="$columnCount">
           #set($pendingVoters = $ballot.getAllPendingVoters())
           $action.getText("surveyplugin.vote.voters.pending")
-          (<a href="mailto:$ballot.getEmailStringOfPendingVoters()">$action.getText("surveyplugin.vote.voters.pending.email")</a>):
+          (<a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on $ballot.title">$action.getText("surveyplugin.vote.voters.pending.email")</a>):
           #set($iCounter = 0)
           #foreach($pending in $pendingVoters)
             #set($iCounter = $iCounter + 1)
