@@ -61,6 +61,7 @@
                   $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
                 #end
               </i>
+              (<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title">$action.getText("surveyplugin.vote.voters.email")</a>)
             </td>
           #end
           #if ($survey.config.visiblePendingVoters)
@@ -73,7 +74,7 @@
                   $config.userRenderer.render($req.contextPath, $pending)#if($iCounter != $pendingVoters.size()),#end
                 #end
               </i>
-              (<a href="mailto:$ballot.getEmailStringOfPendingVoters()">$action.getText("surveyplugin.vote.voters.pending.email")</a>)
+              (<a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title">$action.getText("surveyplugin.vote.voters.pending.email")</a>)
             </td>
           #end
         </tr>

@@ -34,13 +34,17 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 #else
   #set ($ballotNumberID = "0-${ballot.titleNoSpace}" )
 
+<!-- Column: Default choice + your vote -->
   #set ($columnCount = 2)
+<!-- Column: result (green bar)-->
   #if ($canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
+<!-- Column: voters -->
   #if ($config.visibleVoters && $canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
+<!-- Column: comments -->
   #if ($config.showComments && ($config.canTakeSurvey || $canSeeResults) )
     #set ($columnCount = $columnCount + 1)
   #end
@@ -80,7 +84,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
         #end
       </td>
-
+      <!-- Column: result (green bar)-->
       #if ($canSeeResults)
         #set ($percentVotedFor = $ballot.getPercentageOfVoteForChoice($choice))
         <td>
@@ -94,10 +98,14 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         </td>
       #end
 
+      <!-- Column: voters -->
       #if ($config.visibleVoters && $canSeeResults)
         <td>
           #set($voters = $choice.voters)
           #if ($voters.size()>0)
+            (<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+                                                                                                            align="absmiddle" height="16" width="16"
+                                                                                                            class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>)
             <i>
               #set($iCounter = 0)
               #foreach($voter in $voters)
@@ -108,6 +116,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
           #end
         </td>
       #end
+
       #if ($config.showComments && ($config.canTakeSurvey || $canSeeResults) && $choiceNumber==0)
         <td class="surveyCommentPane" rowspan="$ballot.choices.size()">
           #if (!($config.locked))
@@ -178,34 +187,38 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
     #set ($choiceNumber = $choiceNumber + 1)
   #end
   <tfoot>
-      #if ($canSeeResults && $config.visibleVoters)
-      <tr>
-        <td colspan="$columnCount">
-          #set($voters = $ballot.getAllVoters())
-          $action.getText("surveyplugin.vote.voters.all")
-          (<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for $ballot.title">$action.getText("surveyplugin.vote.voters.pending.email")</a>):
-          #set($iCounter = 0)
-          #foreach($voter in $voters)
-            #set($iCounter=$iCounter+1)
-            $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
-          #end
-        </td>
-      </tr>
-      #end
-      #if ($canSeeResults && $config.visiblePendingVoters)
-      <tr>
-        <td colspan="$columnCount">
-          #set($pendingVoters = $ballot.getAllPendingVoters())
-          $action.getText("surveyplugin.vote.voters.pending")
-          (<a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on $ballot.title">$action.getText("surveyplugin.vote.voters.pending.email")</a>):
-          #set($iCounter = 0)
-          #foreach($pending in $pendingVoters)
-            #set($iCounter = $iCounter + 1)
-            $config.userRenderer.render($req.contextPath, $pending)#if($iCounter != $pendingVoters.size()),#end
-          #end
-        </td>
-      </tr>
-      #end
+    #if ($config.visibleVoters && $canSeeResults)
+    <tr>
+      <td colspan="$columnCount">
+        #set($voters = $ballot.getAllVoters())
+        $action.getText("surveyplugin.vote.voters.all")
+        (<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0" align="absmiddle"
+                                                                                                        height="16" width="16"
+                                                                                                        class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>):
+        #set($iCounter = 0)
+        #foreach($voter in $voters)
+          #set($iCounter=$iCounter+1)
+          $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
+        #end
+      </td>
+    </tr>
+    #end
+    #if ($config.visiblePendingVoters && $canSeeResults)
+    <tr>
+      <td colspan="$columnCount">
+        #set($pendingVoters = $ballot.getAllPendingVoters())
+        $action.getText("surveyplugin.vote.voters.pending")
+        (<a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+                                                                                                             align="absmiddle" height="16" width="16"
+                                                                                                             class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.pending.email")"/></a>):
+        #set($iCounter = 0)
+        #foreach($pending in $pendingVoters)
+          #set($iCounter = $iCounter + 1)
+          $config.userRenderer.render($req.contextPath, $pending)#if($iCounter != $pendingVoters.size()),#end
+        #end
+      </td>
+    </tr>
+    #end
   </tfoot>
 </table>
 #end
