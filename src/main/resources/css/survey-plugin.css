@@ -40,7 +40,7 @@
 }
 
 .surveySummaryTable tbody tr:hover td {
-    background: #d0dafd;
+    /*background: #d0dafd;*/
 }
 
 .voteTable {
@@ -77,6 +77,7 @@
 .voteTable tfoot td {
     font-style: italic;
     border-style: none;
+    padding: 3px 8px;
 }
 
 table.surveyTable {
