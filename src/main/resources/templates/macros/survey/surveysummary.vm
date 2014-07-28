@@ -61,10 +61,12 @@
                   $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
                 #end
               </i>
-              (<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
-                                                                                                              align="absmiddle"
-                                                                                                              height="16" width="16"
-                                                                                                              class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>)
+              #if ($voters.size()>0)
+                <a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+                                                                                                               align="absmiddle"
+                                                                                                               height="16" width="16"
+                                                                                                               class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>
+              #end
             </td>
           #end
           #if ($survey.config.visiblePendingVoters)
@@ -77,11 +79,13 @@
                   $config.userRenderer.render($req.contextPath, $pending)#if($iCounter != $pendingVoters.size()),#end
                 #end
               </i>
-              (<a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
-                                                                                                                   align="absmiddle"
-                                                                                                                   height="16" width="16"
-                                                                                                                   class="surveyIcon"
-                                                                                                                   title="$action.getText("surveyplugin.vote.voters.pending.email")"/></a>)
+              #if ($pendingVoters.size()>0)
+                <a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+                                                                                                                    align="absmiddle"
+                                                                                                                    height="16" width="16"
+                                                                                                                    class="surveyIcon"
+                                                                                                                    title="$action.getText("surveyplugin.vote.voters.pending.email")"/></a>
+              #end
             </td>
           #end
         </tr>

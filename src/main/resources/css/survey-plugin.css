@@ -75,9 +75,10 @@
 }
 
 .voteTable tfoot td {
-    font-style: italic;
+    font-style: normal;
     border-style: none;
-    padding: 3px 8px;
+    padding: 3px 8px 0px 8px;
+    font-size: smaller;
 }
 
 table.surveyTable {

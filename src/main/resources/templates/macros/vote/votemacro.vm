@@ -103,9 +103,6 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         <td>
           #set($voters = $choice.voters)
           #if ($voters.size()>0)
-            (<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
-                                                                                                            align="absmiddle" height="16" width="16"
-                                                                                                            class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>)
             <i>
               #set($iCounter = 0)
               #foreach($voter in $voters)
@@ -113,6 +110,9 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
                 $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
               #end
             </i>
+            <a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+                                                                                                           align="absmiddle" height="16" width="16"
+                                                                                                           class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>
           #end
         </td>
       #end
@@ -192,9 +192,11 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       <td colspan="$columnCount">
         #set($voters = $ballot.getAllVoters())
         $action.getText("surveyplugin.vote.voters.all")
-        (<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0" align="absmiddle"
-                                                                                                        height="16" width="16"
-                                                                                                        class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>):
+        #if ($voters.size()>0)<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+                                                                                                                             align="absmiddle"
+                                                                                                                             height="16" width="16"
+                                                                                                                             class="surveyIcon"
+                                                                                                                             title="$action.getText("surveyplugin.vote.voters.email")"/></a>#end:
         #set($iCounter = 0)
         #foreach($voter in $voters)
           #set($iCounter=$iCounter+1)
@@ -208,9 +210,10 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       <td colspan="$columnCount">
         #set($pendingVoters = $ballot.getAllPendingVoters())
         $action.getText("surveyplugin.vote.voters.pending")
-        (<a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
-                                                                                                             align="absmiddle" height="16" width="16"
-                                                                                                             class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.pending.email")"/></a>):
+        #if ($pendingVoters.size()>0)<a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img
+                src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+                align="absmiddle" height="16" width="16"
+                class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.pending.email")"/></a>#end:
         #set($iCounter = 0)
         #foreach($pending in $pendingVoters)
           #set($iCounter = $iCounter + 1)
