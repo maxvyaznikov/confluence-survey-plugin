@@ -110,7 +110,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
                 $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
               #end
             </i>
-            <a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+            <a href="mailto:$choice.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
                                                                                                            align="absmiddle" height="16" width="16"
                                                                                                            class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>
           #end

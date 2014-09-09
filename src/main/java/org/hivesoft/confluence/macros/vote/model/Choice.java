@@ -11,6 +11,7 @@
 package org.hivesoft.confluence.macros.vote.model;
 
 import com.atlassian.user.User;
+import com.google.common.base.Joiner;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 
 import java.util.ArrayList;
@@ -67,6 +68,14 @@ public class Choice {
 
   public boolean getHasVotedFor(User user) {
     return voters.contains(user);
+  }
+
+  public String getEmailStringOfAllVoters() {
+    List<String> emails = new ArrayList<String>();
+    for (User voter : voters) {
+      emails.add(voter.getEmail());
+    }
+    return Joiner.on(',').join(emails);
   }
 
   /**
