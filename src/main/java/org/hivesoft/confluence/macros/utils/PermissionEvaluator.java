@@ -19,6 +19,7 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.user.Group;
 import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.macros.utils.wrapper.AnonymousUser;
 import org.hivesoft.confluence.macros.utils.wrapper.SurveyUser;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 
@@ -41,6 +42,9 @@ public class PermissionEvaluator {
     return getUserByName(getRemoteUsername());
   }
 
+  /**
+   * BE AWARE: userManager.getRemoteUserName() may return null if the user is anonymous. Mitigate in macro loading
+   */
   private String getRemoteUsername() {
     return userManager.getRemoteUsername();
   }
@@ -51,6 +55,9 @@ public class PermissionEvaluator {
   public User getUserByName(String userName) {
     final User user = userAccessor.getUser(userName);
     if (null == user) {
+      if (userName == null) {
+        return new AnonymousUser();
+      }
       return new SurveyUser(userName);
     }
     return new SurveyUser(user);

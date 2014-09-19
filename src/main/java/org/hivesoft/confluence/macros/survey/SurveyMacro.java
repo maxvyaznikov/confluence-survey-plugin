@@ -31,6 +31,7 @@ import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
+import org.hivesoft.confluence.macros.utils.wrapper.AnonymousUser;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackStorePage;
 
@@ -123,40 +124,44 @@ public class SurveyMacro implements Macro {
 
     ContentEntityObject contentObject = conversionContext.getEntity(); // surveyManager.getPageEntityFromConversionContext(conversionContext);
 
-    Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(body, contentObject, parameters);
-
-    if (conversionContext.getEntity() instanceof Comment) {
-      survey.getConfig().addRenderProblems("Voting within comments is currently unsupported. See https://github.com/drohne1673/confluence-survey-plugin/issues/25 for details");
-    }
-
-    final List<String> noneUniqueTitles = new ArrayList<String>();
-    for (Ballot ballot : survey.getBallots()) {
-      if (noneUniqueTitles.contains(ballot.getTitle())) {
-        survey.getConfig().addRenderProblems("The ballot-titles must be unique! The row starting with title of '" + ballot.getTitle() + "' violated that. Please rename your choices to unique answers!");
-      } else {
-        noneUniqueTitles.add(ballot.getTitle());
-      }
-    }
-
-    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(survey.getBallotTitlesWithChoiceNames());
-    survey.getConfig().addRenderProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
-
-    // now create a simple velocity context and render a template for the output
     Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
-    contextMap.put("content", contentObject);
-    contextMap.put("survey", survey);
-    contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
-    contextMap.put("currentUser", surveyManager.getCurrentUser());
+
+    String templateToRender = "templates/macros/survey/surveymacro-denied.vm";
+    if (!(surveyManager.getCurrentUser() instanceof AnonymousUser)) {
+      //Begin: survey reconstruction
+      Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(body, contentObject, parameters);
+      if (conversionContext.getEntity() instanceof Comment) {
+        survey.getConfig().addRenderProblems("Voting within comments is currently unsupported. See https://github.com/drohne1673/confluence-survey-plugin/issues/25 for details");
+      }
+
+      final List<String> noneUniqueTitles = new ArrayList<String>();
+      for (Ballot ballot : survey.getBallots()) {
+        if (noneUniqueTitles.contains(ballot.getTitle())) {
+          survey.getConfig().addRenderProblems("The ballot-titles must be unique! The row starting with title of '" + ballot.getTitle() + "' violated that. Please rename your choices to unique answers!");
+        } else {
+          noneUniqueTitles.add(ballot.getTitle());
+        }
+      }
+
+      final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(survey.getBallotTitlesWithChoiceNames());
+      survey.getConfig().addRenderProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
+
+      contextMap.put("survey", survey);
+      contextMap.put("content", contentObject);
+      contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
+      contextMap.put("currentUser", surveyManager.getCurrentUser());
+
+      if (!survey.getConfig().getRenderProblems().isEmpty()) {
+        templateToRender = "templates/macros/survey/surveymacro-renderproblems.vm";
+      } else if (survey.getConfig().isCanSeeResults() || survey.getConfig().isCanTakeSurvey()) {
+        templateToRender = "templates/macros/survey/surveymacro.vm";
+      }
+      //End: survey reconstruction
+    }
 
     try {
       StringWriter renderedTemplate = new StringWriter();
-      if (!survey.getConfig().getRenderProblems().isEmpty()) {
-        renderer.render("templates/macros/survey/surveymacro-renderproblems.vm", contextMap, renderedTemplate);
-      } else if (survey.getConfig().isCanSeeResults() || survey.getConfig().isCanTakeSurvey()) {
-        renderer.render("templates/macros/survey/surveymacro.vm", contextMap, renderedTemplate);
-      } else {
-        renderer.render("templates/macros/survey/surveymacro-denied.vm", contextMap, renderedTemplate);
-      }
+      renderer.render(templateToRender, contextMap, renderedTemplate);
       return renderedTemplate.toString();
     } catch (Exception e) {
       LOG.error("Error while trying to display Survey!", e);
