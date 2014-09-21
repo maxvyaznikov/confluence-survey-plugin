@@ -72,7 +72,7 @@ public class PermissionEvaluator {
   }
 
   public Boolean isPermissionListEmptyOrContainsGivenUser(List<String> listOfUsersOrGroups, User user) {
-    if (null == user) {
+    if (user == null) {
       return Boolean.FALSE;
     }
 

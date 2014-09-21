@@ -19,6 +19,7 @@ import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.UserRenderer;
+import org.hivesoft.confluence.macros.utils.wrapper.AnonymousUser;
 
 import java.util.*;
 
@@ -82,10 +83,15 @@ public class VoteConfig {
 
     final User remoteUser = permissionEvaluator.getRemoteUser();
 
-    canSeeResults = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(viewers, remoteUser);
-    canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUser);
-    canManageSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, remoteUser);
-
+    if (remoteUser instanceof AnonymousUser) {
+      canSeeResults = viewers.isEmpty(); // if the viewers field contains something then anonymous probably is not allowed, obviously
+      canTakeSurvey = false;
+      canManageSurvey = false;
+    } else {
+      canSeeResults = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(viewers, remoteUser);
+      canTakeSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(voters, remoteUser);
+      canManageSurvey = permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, remoteUser);
+    }
     visibleVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_VOTERS), canSeeResults) && canManageSurvey;
     visiblePendingVoters = permissionEvaluator.canSeeVoters(parameters.get(KEY_VISIBLE_PENDING_VOTERS), canSeeResults) && !voters.isEmpty();
 
