@@ -21,20 +21,6 @@ AJS.toInit(function () {
         voteAction: voteActionValue
       }),
       success: function (voteRepresentation) {
-        var voteText = AJS.I18n.getText("surveyplugin.vote.add.success");
-        if (voteRepresentation.voteAction == "UNVOTE") {
-          voteText = AJS.I18n.getText("surveyplugin.vote.remove.success");
-        } else if (voteRepresentation.voteAction == "CHANGEVOTE") {
-          voteText = AJS.I18n.getText("surveyplugin.vote.change.success");
-        }
-        var inlineDialog = AJS.InlineDialog(AJS.$(castVoteLink), "voteDialog",
-          function (content, trigger, showPopup) {
-            content.css({"padding": "20px"}).html('<p>' + voteText + '.</p>');
-            showPopup();
-            return false;
-          }
-        );
-        inlineDialog.show();
         location.reload(true); //reload the wiki page
       },
       error: function (xhr, status, error) {
