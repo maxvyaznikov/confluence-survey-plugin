@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.*;
 
 public class ChoiceTest {
@@ -14,8 +15,8 @@ public class ChoiceTest {
   private static final String SOME_EXISTING_USER_NAME_ONE = "someExistingUserName";
   private static final String SOME_EXISTING_USER_NAME_TWO = "someOtherExistingUserName";
 
-  private static final User SOME_USER_ONE = new DefaultUser(SOME_EXISTING_USER_NAME_ONE);
-  private static final User SOME_USER_TWO = new DefaultUser(SOME_EXISTING_USER_NAME_TWO);
+  private static final User SOME_USER_ONE = new DefaultUser(SOME_EXISTING_USER_NAME_ONE, "someExistingFullName1", "someMail@one.com");
+  private static final User SOME_USER_TWO = new DefaultUser(SOME_EXISTING_USER_NAME_TWO, "someExistingFullName2", "someMail@two.com");
 
   Choice classUnderTest;
 
@@ -45,12 +46,37 @@ public class ChoiceTest {
   }
 
   @Test
+  public void test_getEmailStringOfAllVoters_noVotes_success() {
+    final String emails = classUnderTest.getEmailStringOfAllVoters();
+
+    assertThat(emails, is(""));
+  }
+
+  @Test
+  public void test_getEmailStringOfAllVoters_oneEmail_success() {
+    classUnderTest.voteFor(SOME_USER_ONE);
+
+    final String emails = classUnderTest.getEmailStringOfAllVoters();
+
+    assertThat(emails, containsString(SOME_USER_ONE.getEmail()));
+  }
+
+  @Test
+  public void test_getEmailStringOfAllVoters_emailNull_success() {
+    classUnderTest.voteFor(new DefaultUser("sampleUserWithoutEmail"));
+
+    final String emails = classUnderTest.getEmailStringOfAllVoters();
+
+    assertThat(emails, is(""));
+  }
+
+  @Test
   public void test_voteFor_secondTimeSameUser_success() {
     classUnderTest.voteFor(SOME_USER_ONE);
     classUnderTest.voteFor(SOME_USER_ONE);
 
     final boolean hasVotedFor = classUnderTest.getHasVotedFor(SOME_USER_ONE);
-    assertTrue(hasVotedFor);
+    assertThat(hasVotedFor, is(true));
   }
 
   @Test

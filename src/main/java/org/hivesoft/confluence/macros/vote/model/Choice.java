@@ -11,7 +11,7 @@
 package org.hivesoft.confluence.macros.vote.model;
 
 import com.atlassian.user.User;
-import com.google.common.base.Joiner;
+import org.apache.commons.lang.StringUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 
 import java.util.ArrayList;
@@ -52,16 +52,10 @@ public class Choice {
     }
   }
 
-  /**
-   * @param voter the username to remove from this <code>Choice</code>
-   */
   public void removeVoteFor(User voter) {
     voters.remove(voter);
   }
 
-  /**
-   * @return all of the userNames that have voted for this <code>Choice</code>
-   */
   public List<User> getVoters() {
     return voters;
   }
@@ -75,7 +69,7 @@ public class Choice {
     for (User voter : voters) {
       emails.add(voter.getEmail());
     }
-    return Joiner.on(',').join(emails);
+    return StringUtils.join(emails, ',');
   }
 
   /**
