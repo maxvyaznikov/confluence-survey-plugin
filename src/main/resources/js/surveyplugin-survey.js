@@ -56,6 +56,33 @@ AJS.toInit(function () {
     });
   }
 
+  function resetSurveyOrVote(surveyOrVote, resetLink) {
+    var encodedTitle = encodeURIComponent(resetLink.alt);
+    AJS.$.ajax({
+      url: baseUrl + "/rest/surveyplugin/1.0/pages/" + pageId + "/" + surveyOrVote + "/reset",
+      type: "POST",
+      dataType: "json",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        title: encodedTitle
+      }),
+      success: function (resetRepresentation) {
+        var inlineDialog = AJS.InlineDialog(AJS.$(resetLink), "resetDialog",
+          function (content, trigger, showPopup) {
+            content.css({"padding": "20px"}).html('<p>' + AJS.I18n.getText("surveyplugin.reset.confirmation") + '.</p>');
+            showPopup();
+            return false;
+          }
+        );
+        inlineDialog.show();
+        location.reload(true); //reload the wiki page
+      },
+      error: function (xhr, status, error) {
+        alert("There was a problem reseting the survey. Returned status: " + status + ", error: " + error);
+      }
+    });
+  }
+
   function lockSurveyOrVote(surveyOrVote, lockLink) {
     var encodedTitle = encodeURIComponent(lockLink.alt);
     AJS.$.ajax({
@@ -105,7 +132,27 @@ AJS.toInit(function () {
   });
   AJS.$(".resetsurvey").click(function (e) {
     e.preventDefault();
-    //TBD
+    resetlink = this;
+    var dialog = new AJS.Dialog({
+      width: 320,
+      height: 170,
+      id: "reset-dialog",
+      closeOnOutsideClick: true
+    });
+
+    dialog.addHeader("Confirmation");
+    dialog.addPanel("SinglePanel", "<p>" + AJS.I18n.getText("surveyplugin.reset.confirmation.question") + "</p>", "singlePanel"
+    )
+    ;
+    dialog.addButton("Ok", function (dialog) {
+      dialog.hide();
+      resetSurveyOrVote("surveys", resetlink);
+    });
+    dialog.addLink("Cancel", function (dialog) {
+      dialog.hide();
+    }, "#");
+
+    dialog.show();
   });
   AJS.$(".locksurvey").click(function (e) {
     e.preventDefault();

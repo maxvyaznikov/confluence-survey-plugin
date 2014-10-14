@@ -180,7 +180,7 @@ public class SurveyManager {
     return comments;
   }
 
-  public void storeVotersForChoice(Choice choice, String ballotTitle, ContentEntityObject contentObject) {
+  private void storeVotersForChoice(Choice choice, String ballotTitle, ContentEntityObject contentObject) {
     String propertyKey = VoteMacro.VOTE_PREFIX + ballotTitle + "." + choice.getDescription();
 
     if (choice.getVoters().size() == 0) {
@@ -195,6 +195,7 @@ public class SurveyManager {
       contentPropertyManager.setTextProperty(contentObject, propertyKey, propertyValue);
     }
   }
+
 
   public VoteAction recordVote(Ballot ballot, ContentEntityObject contentObject, String requestChoice, VoteAction voteAction) {
     LOG.debug("recordVote: found Ballot-Title=" + ballot.getTitle() + ", choice=" + requestChoice + ", action=" + voteAction);
@@ -235,5 +236,14 @@ public class SurveyManager {
     }
 
     return contentObject;
+  }
+
+  public void resetVotes(Survey survey, ContentEntityObject contentEntityObject) {
+    for (Ballot ballot : survey.getBallots()) {
+      final Collection<Choice> choices = ballot.getChoices();
+      for (Choice choice : choices) {
+        storeVotersForChoice(Choice.emptyChoice(choice), ballot.getTitle(), contentEntityObject);
+      }
+    }
   }
 }

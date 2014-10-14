@@ -14,11 +14,13 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import com.atlassian.user.User;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtilsTest;
+import org.hivesoft.confluence.macros.utils.wrapper.SurveyUser;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
@@ -254,18 +256,25 @@ public class SurveyResourceTest {
   }
 
   @Test
-  public void test_resetVotes_success() throws UnsupportedEncodingException, XhtmlException {
+  public void test_resetVotes_managersListEmpty_success() throws UnsupportedEncodingException, XhtmlException {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
 
+    User currentUser = new SurveyUser("someUser");
+
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
+    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(currentUser);
+    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(anyList(),eq(currentUser))).thenReturn(true);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
-    assertThat(response.getStatus(), is(Response.Status.NO_CONTENT.getStatusCode()));
+    assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
   }
 }

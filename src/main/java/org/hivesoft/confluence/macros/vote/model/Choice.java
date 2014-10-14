@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,13 +24,22 @@ import java.util.List;
 public class Choice {
 
   private final String description;
-  private List<User> voters = new ArrayList<User>();
+  private final List<User> voters;
+
+  public static Choice emptyChoice(Choice choiceWithVotes) {
+    return new Choice(choiceWithVotes.getDescription(), Collections.<User>emptyList());
+  }
 
   /**
    * @param description the description of the <code>Choice</code>
    */
   public Choice(String description) {
+    this(description, new ArrayList<User>());
+  }
+
+  private Choice(String description, List<User> voters) {
     this.description = description;
+    this.voters = voters;
   }
 
   /**

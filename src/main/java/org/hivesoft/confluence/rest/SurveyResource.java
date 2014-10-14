@@ -28,6 +28,7 @@ import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
 import org.hivesoft.confluence.macros.survey.model.Survey;
+import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
@@ -125,12 +126,12 @@ public class SurveyResource {
 
         // @formatter:off
         String[] line = new String[]{
-              ballot.getTitle(),
-              choice.getDescription(),
-              choice.getVoters().size() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + ", " + ballot.getPercentageOfVoteForChoice(choice) + "%",
-              getVotersForCsv(ballot, choice),
-              StringUtils.join(comments, ","),
-          };
+                ballot.getTitle(),
+                choice.getDescription(),
+                choice.getVoters().size() + " " + i18nResolver.getText("surveyplugin.survey.summary.votes") + ", " + ballot.getPercentageOfVoteForChoice(choice) + "%",
+                getVotersForCsv(ballot, choice),
+                StringUtils.join(comments, ","),
+        };
         // @formatter:on
         writer.writeNext(line);
       }
@@ -223,14 +224,21 @@ public class SurveyResource {
       return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }
 
-    //TODO: probably should add a proper permission check, e.g. is in the survey manager list
-
-    final Survey survey = surveys.iterator().next();
-    for (Ballot ballot : survey.getBallots()) {
-      //todo: carry on
+    if (surveys.size() != 1) {
+      return Response.status(Response.Status.BAD_REQUEST).entity("Found more than one survey. Can't reset accurately the one meant. Please make sure the title is unique.").build();
     }
 
-    return Response.noContent().build();
+    final Survey survey = surveys.iterator().next();
+
+    final List<String> managers = survey.getConfig().getManagers();
+    final PermissionEvaluator permissionEvaluator = surveyManager.getPermissionEvaluator();
+    if (!permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, permissionEvaluator.getRemoteUser())) {
+      return Response.status(Response.Status.UNAUTHORIZED).entity("You are not authorized to reset the given survey.").build();
+    }
+
+    surveyManager.resetVotes(survey, page);
+
+    return Response.ok().build();
   }
 
   private List<Survey> reconstructSurveysByTitle(final String surveyTitle, final ContentEntityObject contentEntityObject) throws MacroReconstructionException {
