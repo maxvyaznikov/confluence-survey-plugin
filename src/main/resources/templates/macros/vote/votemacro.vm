@@ -119,7 +119,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 
       #if ($config.showComments && ($config.canTakeSurvey || $canSeeResults) && $choiceNumber==0)
         <td class="surveyCommentPane" rowspan="$ballot.choices.size()">
-          #if (!($config.locked))
+          #if (!($config.locked) && ${currentUser.class.simpleName} != "AnonymousUser")
             #set ($currentComment = "")
             #if ($ballot.getCommentForUser($currentUser))
               #set ($currentComment = $ballot.getCommentForUser($currentUser).comment)
