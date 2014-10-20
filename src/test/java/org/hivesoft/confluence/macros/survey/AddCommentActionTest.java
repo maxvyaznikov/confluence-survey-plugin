@@ -1,8 +1,8 @@
 package org.hivesoft.confluence.macros.survey;
 
-import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
+import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.xwork.Action;
 import com.opensymphony.xwork.ActionContext;
@@ -15,7 +15,6 @@ import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class AddCommentActionTest {
@@ -54,7 +53,7 @@ public class AddCommentActionTest {
 
     assertEquals(Action.SUCCESS, returnValue);
 
-    verify(mockSurveyManager).storeComment(eq(someBallotTitle), eq(someComment), any(Page.class));
+    verify(mockSurveyManager).storeComment(eq(someBallotTitle), eq(someComment), any(User.class), any(Page.class));
   }
 
   @Test

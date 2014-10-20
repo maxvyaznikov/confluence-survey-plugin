@@ -25,7 +25,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -275,18 +274,33 @@ public class SurveyManagerTest extends ConfluenceTestBase {
   }
 
   @Test
-  public void test_resetVotes() {
+  public void test_resetVotes_votesAndCommentsReset_success() {
     final Survey survey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
-    final Ballot someBallot = SurveyUtilsTest.createDefaultBallot("someBallot");
+    final String someBallotTitle = "someBallot";
+    final Ballot someBallot = SurveyUtilsTest.createDefaultBallot(someBallotTitle);
     someBallot.getChoices().iterator().next().voteFor(SOME_USER1);
     someBallot.getChoices().iterator().next().voteFor(SOME_USER2);
     survey.addBallot(someBallot);
 
-    assertThat(survey.getBallot("someBallot").getAllVoters().size(), is(2));
+    assertThat(survey.getBallot(someBallotTitle).getAllVoters().size(), is(2));
 
-    classUnderTest.resetVotes(survey, new Page());
+    final Page somePage = new Page();
 
-    verify(mockContentPropertyManager, times(5)).setTextProperty(any(Page.class), anyString(), isNull(String.class));
+    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle + ".commenters")).thenReturn("|" + SOME_USER1.getName() + "|" + SOME_USER2.getName() + "|");
+    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle + ".comment." + SOME_USER1.getName())).thenReturn("some comment 123");
+    when(mockContentPropertyManager.getTextProperty(somePage, "survey." + someBallotTitle + ".comment." + SOME_USER2.getName())).thenReturn("some comment 456");
+    when(mockPermissionEvaluator.getUserByName(SOME_USER1.getName())).thenReturn(SOME_USER1);
+    when(mockPermissionEvaluator.getUserByName(SOME_USER2.getName())).thenReturn(SOME_USER2);
+
+    classUnderTest.resetVotes(survey, somePage);
+
+    for (Choice choice : someBallot.getChoices()) {
+      verify(mockContentPropertyManager).setTextProperty(somePage, VoteMacro.VOTE_PREFIX + someBallotTitle + "." + choice.getDescription(), null);
+    }
+    verify(mockContentPropertyManager).setTextProperty(somePage, "survey." + someBallotTitle + ".comment." + SOME_USER1.getName(), null);
+    verify(mockContentPropertyManager).setTextProperty(somePage, "survey." + someBallotTitle + ".commenters", SOME_USER2.getName() + "|");
+    verify(mockContentPropertyManager).setTextProperty(somePage, "survey." + someBallotTitle + ".comment." + SOME_USER2.getName(), null);
+    verify(mockContentPropertyManager).setTextProperty(somePage, "survey." + someBallotTitle + ".commenters", "|" + SOME_USER1.getName());
   }
 
   @Test
@@ -296,7 +310,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
     when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("");
 
-    classUnderTest.storeComment(someBallotTitle, someComment, new Page());
+    classUnderTest.storeComment(someBallotTitle, someComment, SOME_USER1, new Page());
 
     verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
   }
@@ -308,7 +322,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
     when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER2.getName() + "|");
 
-    classUnderTest.storeComment(someBallotTitle, someComment, new Page());
+    classUnderTest.storeComment(someBallotTitle, someComment, SOME_USER1, new Page());
 
     verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
   }
@@ -322,19 +336,19 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
     when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
 
-    classUnderTest.storeComment(someBallotTitle, someComment, new Page());
+    classUnderTest.storeComment(someBallotTitle, someComment, SOME_USER1, new Page());
 
     verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
   }
 
   @Test
-  public void test_execute_stringExists_removeComment_success() {
+  public void test_storeComment_stringExists_removeComment_success() {
     final String someBallotTitle = "someBallotName";
     final String someComment = "";
 
     when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
 
-    classUnderTest.storeComment(someBallotTitle, someComment, new Page());
+    classUnderTest.storeComment(someBallotTitle, someComment, SOME_USER1, new Page());
 
     verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".commenters"), eq("|" + SOME_USER2.getName() + "|"));
     verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), isNull(String.class));

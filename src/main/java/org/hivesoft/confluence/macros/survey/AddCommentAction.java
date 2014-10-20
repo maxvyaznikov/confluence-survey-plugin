@@ -43,7 +43,7 @@ public class AddCommentAction extends AbstractPageAction {
       LOG.debug("Entered AddCommentAction with ballotTitle=" + ballotTitle + ", ballotAnchor=" + ballotAnchor + ", comment=" + comment);
     }
 
-    surveyManager.storeComment(ballotTitle, comment, getPage());
+    surveyManager.storeComment(ballotTitle, comment, getRemoteUser(), getPage());
 
     ((Map) ActionContext.getContext().get("request")).put("surveySection", ballotAnchor);
     return SUCCESS;

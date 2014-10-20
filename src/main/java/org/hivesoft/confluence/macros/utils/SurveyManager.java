@@ -245,11 +245,14 @@ public class SurveyManager {
       for (Choice choice : choices) {
         storeVotersForChoice(Choice.emptyChoice(choice), ballot.getTitle(), contentEntityObject);
       }
+      for (Comment comment : loadCommentsForBallot(contentEntityObject, ballot.getTitle())) {
+        storeComment(ballot.getTitle(), null, comment.getUser(), contentEntityObject);
+      }
     }
   }
 
-  public void storeComment(String ballotTitle, String comment, ContentEntityObject contentEntityObject) {
-    String username = getCurrentUser().getName();
+  public void storeComment(String ballotTitle, String comment, User user, ContentEntityObject contentEntityObject) {
+    String username = user.getName();
     String commentersPropertyName = "survey." + ballotTitle + ".commenters";
     String commentPropertyName = "survey." + ballotTitle + ".comment." + username;
 
