@@ -15,6 +15,7 @@ import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.user.User;
+import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
@@ -245,5 +246,40 @@ public class SurveyManager {
         storeVotersForChoice(Choice.emptyChoice(choice), ballot.getTitle(), contentEntityObject);
       }
     }
+  }
+
+  public void storeComment(String ballotTitle, String comment, ContentEntityObject contentEntityObject) {
+    String username = getCurrentUser().getName();
+    String commentersPropertyName = "survey." + ballotTitle + ".commenters";
+    String commentPropertyName = "survey." + ballotTitle + ".comment." + username;
+
+    String usernameRegex = "\\|" + username + "\\|";
+
+    String commenters = contentPropertyManager.getStringProperty(contentEntityObject, commentersPropertyName);
+    //safely store string stored items into text
+    if (StringUtils.isNotBlank(commenters)) {
+      if (StringUtils.isBlank(contentPropertyManager.getTextProperty(contentEntityObject, commentersPropertyName))) {
+        contentPropertyManager.setTextProperty(contentEntityObject, commentersPropertyName, commenters);
+        contentPropertyManager.setStringProperty(contentEntityObject, commentersPropertyName, null);
+      }
+    } else {
+      commenters = contentPropertyManager.getTextProperty(contentEntityObject, commentersPropertyName);
+    }
+
+    if (StringUtils.isNotBlank(comment)) {
+      if (StringUtils.isBlank(commenters)) {
+        commenters = "|" + username + "|";
+      } else {
+        if (!commenters.matches(".*" + usernameRegex + ".*")) {
+          commenters += "|" + username + "|";
+        }
+      }
+      contentPropertyManager.setTextProperty(contentEntityObject, commentPropertyName, comment);
+    } else if (TextUtils.stringSet(commenters) && commenters.matches(".*" + usernameRegex + ".*")) {
+      commenters = commenters.replaceAll(usernameRegex, "");
+      contentPropertyManager.setTextProperty(contentEntityObject, commentPropertyName, null);
+    }
+
+    contentPropertyManager.setTextProperty(contentEntityObject, commentersPropertyName, commenters);
   }
 }

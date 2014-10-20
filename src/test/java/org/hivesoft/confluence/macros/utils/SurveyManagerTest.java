@@ -7,7 +7,7 @@ import com.atlassian.confluence.pages.Comment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.user.User;
-import com.atlassian.user.impl.DefaultUser;
+import com.opensymphony.xwork.ActionContext;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.model.Survey;
@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -271,5 +272,71 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     final ContentEntityObject pageEntity = classUnderTest.getPageEntityFromConversionContext(mockConversionContext);
 
     assertThat(pageEntity, is(instanceOf(Page.class)));
+  }
+
+  @Test
+  public void test_resetVotes() {
+    final Survey survey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+    final Ballot someBallot = SurveyUtilsTest.createDefaultBallot("someBallot");
+    someBallot.getChoices().iterator().next().voteFor(SOME_USER1);
+    someBallot.getChoices().iterator().next().voteFor(SOME_USER2);
+    survey.addBallot(someBallot);
+
+    assertThat(survey.getBallot("someBallot").getAllVoters().size(), is(2));
+
+    classUnderTest.resetVotes(survey, new Page());
+
+    verify(mockContentPropertyManager, times(5)).setTextProperty(any(Page.class), anyString(), isNull(String.class));
+  }
+
+  @Test
+  public void test_storeComment_success() {
+    final String someBallotTitle = "someBallotName";
+    final String someComment = "someComment";
+
+    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("");
+
+    classUnderTest.storeComment(someBallotTitle, someComment, new Page());
+
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
+  }
+
+  @Test
+  public void test_storeComment_stringExists_addComment_success() {
+    final String someBallotTitle = "someBallotName";
+    final String someComment = "someComment";
+
+    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER2.getName() + "|");
+
+    classUnderTest.storeComment(someBallotTitle, someComment, new Page());
+
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
+  }
+
+  @Test
+  public void test_storeComment_stringExists_updateComment_success() {
+    final String someBallotTitle = "someBallotName";
+    final String someComment = "someComment";
+
+    ActionContext.getContext().put("request", new HashMap<String, String>());
+
+    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
+
+    classUnderTest.storeComment(someBallotTitle, someComment, new Page());
+
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
+  }
+
+  @Test
+  public void test_execute_stringExists_removeComment_success() {
+    final String someBallotTitle = "someBallotName";
+    final String someComment = "";
+
+    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
+
+    classUnderTest.storeComment(someBallotTitle, someComment, new Page());
+
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".commenters"), eq("|" + SOME_USER2.getName() + "|"));
+    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), isNull(String.class));
   }
 }

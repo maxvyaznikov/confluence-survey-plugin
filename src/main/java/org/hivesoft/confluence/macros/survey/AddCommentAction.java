@@ -10,12 +10,11 @@
  */
 package org.hivesoft.confluence.macros.survey;
 
-import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.actions.AbstractPageAction;
 import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.ActionContext;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.hivesoft.confluence.macros.utils.SurveyManager;
 
 import java.util.Map;
 
@@ -25,7 +24,7 @@ import java.util.Map;
  */
 public class AddCommentAction extends AbstractPageAction {
   private static final Logger LOG = Logger.getLogger(AddCommentAction.class);
-  private ContentPropertyManager contentPropertyManager;
+  private SurveyManager surveyManager;
   private String ballotTitle;
   private String ballotAnchor;
   private String comment;
@@ -44,42 +43,12 @@ public class AddCommentAction extends AbstractPageAction {
       LOG.debug("Entered AddCommentAction with ballotTitle=" + ballotTitle + ", ballotAnchor=" + ballotAnchor + ", comment=" + comment);
     }
 
-    String username = getRemoteUser().getName();
-    String commentersPropertyName = "survey." + ballotTitle + ".commenters";
-    String commentPropertyName = "survey." + ballotTitle + ".comment." + username;
-
-    String usernameRegex = "\\|" + username + "\\|";
-
-    String commenters = contentPropertyManager.getStringProperty(getPage(), commentersPropertyName);
-    //safely store string stored items into text
-    if (StringUtils.isNotBlank(commenters)) {
-      if (StringUtils.isBlank(contentPropertyManager.getTextProperty(getPage(), commentersPropertyName))) {
-        contentPropertyManager.setTextProperty(getPage(), commentersPropertyName, commenters);
-        contentPropertyManager.setStringProperty(getPage(), commentersPropertyName, null);
-      }
-    } else {
-      commenters = contentPropertyManager.getTextProperty(getPage(), commentersPropertyName);
-    }
-
-    if (StringUtils.isNotBlank(comment)) {
-      if (StringUtils.isBlank(commenters)) {
-        commenters = "|" + username + "|";
-      } else {
-        if (!commenters.matches(".*" + usernameRegex + ".*")) {
-          commenters += "|" + username + "|";
-        }
-      }
-      contentPropertyManager.setTextProperty(getPage(), commentPropertyName, comment);
-    } else if (TextUtils.stringSet(commenters) && commenters.matches(".*" + usernameRegex + ".*")) {
-      commenters = commenters.replaceAll(usernameRegex, "");
-      contentPropertyManager.setTextProperty(getPage(), commentPropertyName, null);
-    }
-
-    contentPropertyManager.setTextProperty(getPage(), commentersPropertyName, commenters);
+    surveyManager.storeComment(ballotTitle, comment, getPage());
 
     ((Map) ActionContext.getContext().get("request")).put("surveySection", ballotAnchor);
     return SUCCESS;
   }
+
 
   /**
    * This is a binding method for the ballot title request parameter.
@@ -108,12 +77,11 @@ public class AddCommentAction extends AbstractPageAction {
     this.comment = comment;
   }
 
+
   /**
-   * Injection method for confluence to provide this action with a ContentPropertyManager.
-   *
-   * @param contentPropertyManager The manager to access page properties.
+   * Injection method for confluence to provide this action with a SurveyManager.
    */
-  public void setContentPropertyManager(ContentPropertyManager contentPropertyManager) {
-    this.contentPropertyManager = contentPropertyManager;
+  public void setSurveyManager(SurveyManager surveyManager) {
+    this.surveyManager = surveyManager;
   }
 }

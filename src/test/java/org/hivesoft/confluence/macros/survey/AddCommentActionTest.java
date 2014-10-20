@@ -6,6 +6,7 @@ import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
 import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.xwork.Action;
 import com.opensymphony.xwork.ActionContext;
+import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,14 +22,14 @@ public class AddCommentActionTest {
   private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
   private final static DefaultUser SOME_USER2 = new DefaultUser("someUser2", "someUser2 FullName", "some2@testmail.de");
 
-  private ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
+  private SurveyManager mockSurveyManager = mock(SurveyManager.class);
 
   private AddCommentAction classUnderTest;
 
   @Before
   public void setup() {
     classUnderTest = new AddCommentAction();
-    classUnderTest.setContentPropertyManager(mockContentPropertyManager);
+    classUnderTest.setSurveyManager(mockSurveyManager);
     AuthenticatedUserThreadLocal.setUser(SOME_USER1);
   }
 
@@ -42,77 +43,18 @@ public class AddCommentActionTest {
   public void test_execute_addComment_success() {
     final String someBallotTitle = "someBallotName";
     final String someComment = "someComment";
+
     classUnderTest.setBallotTitle(someBallotTitle);
     classUnderTest.setComment(someComment);
     classUnderTest.setBallotAnchor("someBallotAnchor");
 
     ActionContext.getContext().put("request", new HashMap<String, String>());
 
-    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("");
-
     final String returnValue = classUnderTest.execute();
 
     assertEquals(Action.SUCCESS, returnValue);
 
-    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
-  }
-
-  @Test
-  public void test_execute_stringExists_addComment_success() {
-    final String someBallotTitle = "someBallotName";
-    final String someComment = "someComment";
-    classUnderTest.setBallotTitle(someBallotTitle);
-    classUnderTest.setComment(someComment);
-    classUnderTest.setBallotAnchor("someBallotAnchor");
-
-    ActionContext.getContext().put("request", new HashMap<String, String>());
-
-    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER2.getName() + "|");
-
-    final String returnValue = classUnderTest.execute();
-
-    assertEquals(Action.SUCCESS, returnValue);
-
-    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
-  }
-
-  @Test
-  public void test_execute_stringExists_updateComment_success() {
-    final String someBallotTitle = "someBallotName";
-    final String someComment = "someComment";
-    classUnderTest.setBallotTitle(someBallotTitle);
-    classUnderTest.setComment(someComment);
-    classUnderTest.setBallotAnchor("someBallotAnchor");
-
-    ActionContext.getContext().put("request", new HashMap<String, String>());
-
-    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
-
-    final String returnValue = classUnderTest.execute();
-
-    assertEquals(Action.SUCCESS, returnValue);
-
-    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), eq(someComment));
-  }
-
-  @Test
-  public void test_execute_stringExists_removeComment_success() {
-    final String someBallotTitle = "someBallotName";
-    final String someComment = "";
-    classUnderTest.setBallotTitle(someBallotTitle);
-    classUnderTest.setComment(someComment);
-    classUnderTest.setBallotAnchor("someBallotAnchor");
-
-    ActionContext.getContext().put("request", new HashMap<String, String>());
-
-    when(mockContentPropertyManager.getStringProperty(any(Page.class), anyString())).thenReturn("|" + SOME_USER1.getName() + "||" + SOME_USER2.getName() + "|");
-
-    final String returnValue = classUnderTest.execute();
-
-    assertEquals(Action.SUCCESS, returnValue);
-
-    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".commenters"), eq("|" + SOME_USER2.getName() + "|"));
-    verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), isNull(String.class));
+    verify(mockSurveyManager).storeComment(eq(someBallotTitle), eq(someComment), any(Page.class));
   }
 
   @Test
