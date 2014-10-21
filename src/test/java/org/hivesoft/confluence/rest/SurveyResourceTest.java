@@ -15,6 +15,8 @@ import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.user.User;
+import edu.emory.mathcs.backport.java.util.Arrays;
+import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
@@ -271,10 +273,65 @@ public class SurveyResourceTest {
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
     when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
     when(mockPermissionEvaluator.getRemoteUser()).thenReturn(currentUser);
-    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(anyList(),eq(currentUser))).thenReturn(true);
+    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(anyList(), eq(currentUser))).thenReturn(true);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+  }
+
+  @Test
+  public void test_resetVotes_userNotInManagersList_success() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+
+
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_MANAGERS, "notThisUser");
+    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(parameters));
+
+    User currentUser = new SurveyUser("someUser");
+
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
+    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(currentUser);
+    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(Arrays.asList(new String[]{"notThisUser"}), currentUser)).thenReturn(false);
+
+
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
+
+    assertThat(response.getStatus(), is(Response.Status.UNAUTHORIZED.getStatusCode()));
+  }
+
+  @Test
+  public void test_resetVotes_surveyLocked_success() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+
+
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_LOCKED, "true");
+    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(parameters));
+
+    User currentUser = new SurveyUser("someUser");
+
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
+    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(currentUser);
+    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(anyList(), eq(currentUser))).thenReturn(true);
+
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
+
+    assertThat(response.getStatus(), is(Response.Status.FORBIDDEN.getStatusCode()));
   }
 }

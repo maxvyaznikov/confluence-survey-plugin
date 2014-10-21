@@ -236,6 +236,10 @@ public class SurveyResource {
       return Response.status(Response.Status.UNAUTHORIZED).entity("You are not authorized to reset the given survey.").build();
     }
 
+    if (survey.getConfig().isLocked()) {
+      return Response.status(Response.Status.FORBIDDEN).entity("The given survey is locked. You are not authorized to reset the survey.").build();
+    }
+
     surveyManager.resetVotes(survey, page);
 
     return Response.ok().build();

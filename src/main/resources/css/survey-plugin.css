@@ -108,6 +108,11 @@ td.surveyCommentPane {
     padding: 1px;
 }
 
+.surveyIcon.locked {
+    cursor: auto;
+    background-color: darkgrey;
+}
+
 .surveyBox {
     background: #fAfAfA;
     margin: 10px 10px;
