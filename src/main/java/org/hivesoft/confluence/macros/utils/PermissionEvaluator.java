@@ -50,7 +50,7 @@ public class PermissionEvaluator {
   }
 
   /**
-   * Always return a useFull user object!
+   * Always return a useful user object!
    */
   public User getUserByName(String userName) {
     final User user = userAccessor.getUser(userName);

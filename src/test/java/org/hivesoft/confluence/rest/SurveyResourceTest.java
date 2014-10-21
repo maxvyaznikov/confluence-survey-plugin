@@ -265,15 +265,9 @@ public class SurveyResourceTest {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
 
-    User currentUser = new SurveyUser("someUser");
-
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
-    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
-    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(currentUser);
-    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(anyList(), eq(currentUser))).thenReturn(true);
+    when(mockSurveyManager.canResetSurvey(someSurvey)).thenReturn(true);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
@@ -292,16 +286,9 @@ public class SurveyResourceTest {
     parameters.put(SurveyConfig.KEY_MANAGERS, "notThisUser");
     Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(parameters));
 
-    User currentUser = new SurveyUser("someUser");
-
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
-    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
-    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(currentUser);
-    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(Arrays.asList(new String[]{"notThisUser"}), currentUser)).thenReturn(false);
-
+    when(mockSurveyManager.canResetSurvey(someSurvey)).thenReturn(false);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
@@ -320,15 +307,9 @@ public class SurveyResourceTest {
     parameters.put(SurveyConfig.KEY_LOCKED, "true");
     Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(parameters));
 
-    User currentUser = new SurveyUser("someUser");
-
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
-    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
-    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(currentUser);
-    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(anyList(), eq(currentUser))).thenReturn(true);
+    when(mockSurveyManager.canResetSurvey(someSurvey)).thenReturn(true);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 

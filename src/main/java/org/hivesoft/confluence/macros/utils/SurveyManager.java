@@ -285,4 +285,8 @@ public class SurveyManager {
 
     contentPropertyManager.setTextProperty(contentEntityObject, commentersPropertyName, commenters);
   }
+
+  public boolean canResetSurvey(Survey survey) {
+    return permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(survey.getConfig().getManagers(), getCurrentUser());
+  }
 }

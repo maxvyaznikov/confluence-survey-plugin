@@ -230,9 +230,7 @@ public class SurveyResource {
 
     final Survey survey = surveys.iterator().next();
 
-    final List<String> managers = survey.getConfig().getManagers();
-    final PermissionEvaluator permissionEvaluator = surveyManager.getPermissionEvaluator();
-    if (!permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(managers, permissionEvaluator.getRemoteUser())) {
+    if (!surveyManager.canResetSurvey(survey)){
       return Response.status(Response.Status.UNAUTHORIZED).entity("You are not authorized to reset the given survey.").build();
     }
 
