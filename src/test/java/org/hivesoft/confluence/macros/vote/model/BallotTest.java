@@ -393,10 +393,8 @@ public class BallotTest extends ConfluenceTestBase {
 
     classUnderTest = new Ballot("someBallot", "subTitle", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
 
-    // When:
     List<User> result = classUnderTest.getAllPossibleVoters();
 
-    // Then:
     assertThat(result, containsInAnyOrder(user11, new SurveyUser("user12"), new SurveyUser("user13"), SOME_USER2, user31, new SurveyUser("user32")));
   }
 
@@ -441,7 +439,7 @@ public class BallotTest extends ConfluenceTestBase {
   }
 
   @Test
-  public void test_getEmailStringFor_success() {
+  public void test_getEmailStringOfPendingVoters_success() {
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someTitle");
     parameters.put(VoteConfig.KEY_VOTERS, SOME_USER1.getName() + "," + SOME_USER2.getName());
@@ -451,13 +449,28 @@ public class BallotTest extends ConfluenceTestBase {
     when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER2.getName())).thenReturn(newArrayList(SOME_USER2));
     classUnderTest = new Ballot("someTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
 
-    // When:
     String result = classUnderTest.getEmailStringOfPendingVoters();
 
-    // Then:
     assertThat(result, is(SOME_USER1.getEmail() + "," + SOME_USER2.getEmail()));
   }
 
+  @Test
+  public void test_getEmailStringOfAllVoters_success() {
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, "someTitle");
+    parameters.put(VoteConfig.KEY_VOTERS, SOME_USER1.getName() + "," + SOME_USER2.getName());
+
+    final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER1.getName())).thenReturn(newArrayList(SOME_USER1));
+    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER2.getName())).thenReturn(newArrayList(SOME_USER2));
+    classUnderTest = new Ballot("someTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
+
+    classUnderTest.getChoices().iterator().next().voteFor(SOME_USER1);
+
+    String result = classUnderTest.getEmailStringOfAllVoters();
+
+    assertThat(result, is(SOME_USER1.getEmail()));
+  }
 
   @Test
   public void test_equalsAndHashCode_success() {

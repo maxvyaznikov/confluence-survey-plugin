@@ -50,6 +50,9 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
+    assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
+    assertThat(classUnderTest.isAnonymous(), is(equalTo(false)));
+    assertThat(classUnderTest.getUniqueId(), is(equalTo(-1)));
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(true));
@@ -82,6 +85,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(false)));
     assertThat(classUnderTest.isAnonymous(), is(false));
+    assertThat(classUnderTest.getUniqueId(), is(equalTo(-1)));
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(true));
@@ -112,6 +116,7 @@ public class VoteConfigTest {
     parameters.put(VoteConfig.KEY_LOCKED, "true");
     parameters.put(VoteConfig.KEY_SHOW_CONDENSED, "true");
     parameters.put(VoteConfig.KEY_ANONYMOUS_MODE, "true");
+    parameters.put(VoteConfig.KEY_UNIQUE_ID, "1");
 
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
@@ -128,6 +133,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.isLocked(), is(equalTo(true)));
     assertThat(classUnderTest.isShowCondensed(), is(equalTo(true)));
     assertThat(classUnderTest.isAnonymous(), is(true));
+    assertThat(classUnderTest.getUniqueId(), is(1));
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(false));

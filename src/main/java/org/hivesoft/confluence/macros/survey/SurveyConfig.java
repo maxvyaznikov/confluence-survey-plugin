@@ -48,8 +48,10 @@ public class SurveyConfig extends VoteConfig {
     return getRenderTitleLevel() + addSubLevel;
   }
 
+  /**
+   * migrate v.2.8.0 to v.2.8.1
+   */
   public static Map<String, String> migrateParameters(Map<String, String> parameters) {
-    //migrate v.2.8.0 to v.2.8.1
     Map<String, String> newParameters = new HashMap<String, String>(parameters);
     if (newParameters.containsKey(KEY_SHOW_LAST) || "false".equals(newParameters.get(KEY_SHOW_SUMMARY))) {
       SurveySummary surveySummary;

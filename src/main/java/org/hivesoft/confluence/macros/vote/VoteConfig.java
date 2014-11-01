@@ -43,6 +43,7 @@ public class VoteConfig {
   public static final String KEY_ITERATE_STEP = "iterateStep";
   public static final String KEY_SHOW_CONDENSED = "showCondensed";
   protected static final String KEY_ANONYMOUS_MODE = "anonymousMode";
+  protected static final String KEY_UNIQUE_ID = "uniqueId";
 
   private final int renderTitleLevel;
   private final boolean changeableVotes;
@@ -55,16 +56,17 @@ public class VoteConfig {
   private final boolean visiblePendingVoters;
   private final boolean showCondensed;
   private final boolean anonymous;
+  private final int uniqueId;
 
   private final boolean canSeeResults;
   private final boolean canTakeSurvey;
-  private final boolean canManageSurvey;
 
+  private final boolean canManageSurvey;
   private final int startBound;
+
   private final int iterateStep;
 
   protected final List<String> renderProblems = new ArrayList<String>();
-
   protected final PermissionEvaluator permissionEvaluator;
   protected final UserRenderer userRenderer;
 
@@ -80,6 +82,7 @@ public class VoteConfig {
     locked = SurveyUtils.getBooleanFromString(parameters.get(KEY_LOCKED), false);
     showCondensed = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_CONDENSED), false);
     anonymous = SurveyUtils.getBooleanFromString(parameters.get(KEY_ANONYMOUS_MODE), false);
+    uniqueId = SurveyUtils.getIntegerFromString(parameters.get(KEY_UNIQUE_ID), -1);
 
     final User remoteUser = permissionEvaluator.getRemoteUser();
 
@@ -124,6 +127,7 @@ public class VoteConfig {
     locked = surveyConfig.isLocked();
     showCondensed = surveyConfig.isShowCondensed();
     anonymous = surveyConfig.isAnonymous();
+    uniqueId = surveyConfig.getUniqueId();
 
     canSeeResults = surveyConfig.isCanSeeResults();
     canTakeSurvey = surveyConfig.isCanTakeSurvey();
@@ -198,6 +202,10 @@ public class VoteConfig {
     return anonymous;
   }
 
+  public int getUniqueId() {
+    return uniqueId;
+  }
+
   public int getStartBound() {
     return startBound;
   }
@@ -244,6 +252,7 @@ public class VoteConfig {
             ", visiblePendingVoters=" + visiblePendingVoters +
             ", showCondensed=" + showCondensed +
             ", anonymous=" + anonymous +
+            ", uniqueId=" + uniqueId +
             ", canSeeResults=" + canSeeResults +
             ", canTakeSurvey=" + canTakeSurvey +
             ", canManageSurvey=" + canManageSurvey +

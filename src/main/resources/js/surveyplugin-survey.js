@@ -78,7 +78,7 @@ AJS.toInit(function () {
         location.reload(true); //reload the wiki page
       },
       error: function (xhr, status, error) {
-        alert("There was a problem reseting the survey. Returned status: " + status + ", error: " + error);
+        alert("There was a problem resetting the survey. Returned status: " + status + ", error: " + error);
       }
     });
   }
