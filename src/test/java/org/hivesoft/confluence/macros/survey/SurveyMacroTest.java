@@ -6,6 +6,7 @@ import com.atlassian.confluence.content.render.xhtml.storage.macro.AlwaysTransfo
 import com.atlassian.confluence.content.render.xhtml.storage.macro.StorageMacroMarshaller;
 import com.atlassian.confluence.content.render.xhtml.storage.macro.StorageMacroUnmarshaller;
 import com.atlassian.confluence.core.ContentEntityObject;
+import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.renderer.PageContext;
@@ -98,8 +99,18 @@ public class SurveyMacroTest extends ConfluenceTestBase {
 
     final String macroResultAsString = classUnderTest.execute(parameters, "Should this be exported?\nHow do you like the modern iconSet?", mockConversionContext);
     System.out.println("Macro result: " + macroResultAsString);
-    //TODO: find a way to let the templateRenderer render something... as it is a currently a mock, it ultimately returns nothing
+    //TODO: find a way to let the templateRenderer render something... as it is currently a mock, it ultimately returns nothing
     //assertTrue(macroResultAsString.contains(SOME_SURVEY_TITLE));
+  }
+
+  @Test(expected = MacroExecutionException.class)
+  public void test_execute_entityNull_exception() throws Exception {
+    final Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
+
+    when(mockConversionContext.getEntity()).thenReturn(null);
+
+    classUnderTest.execute(parameters, "Should this be exported?\nHow do you like the modern iconSet?\nShould this be exported?", mockConversionContext);
   }
 
   @Test//(expected = MacroExecutionException.class)
