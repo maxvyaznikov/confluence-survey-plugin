@@ -17,12 +17,12 @@ import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
-import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
+import org.hivesoft.confluence.macros.utils.wrapper.TestTemplateRenderer;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Choice;
 import org.hivesoft.confluence.macros.vote.model.Comment;
@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
@@ -43,10 +45,11 @@ import static org.mockito.Mockito.when;
 
 public class VoteMacroTest extends ConfluenceTestBase {
   SurveyManager mockSurveyManager = mock(SurveyManager.class);
-  TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
   PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
   VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
   ConversionContext mockConversionContext = mock(ConversionContext.class);
+
+  TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();
 
   VoteMacro classUnderTest;
 
@@ -61,11 +64,10 @@ public class VoteMacroTest extends ConfluenceTestBase {
     final DefaultXmlEventReaderFactory xmlEventReaderFactory = new DefaultXmlEventReaderFactory();
     final Marshaller<MacroDefinition> macroDefinitionMarshaller = new StorageMacroMarshaller(xmlOutputFactory);
 
-
     final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
     final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
 
-    classUnderTest = new VoteMacro(mockSurveyManager, mockTemplateRenderer, xhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
+    classUnderTest = new VoteMacro(mockSurveyManager, testTemplateRenderer, xhtmlContent, mockPluginSettingsFactory, mockVelocityAbstractionHelper);
   }
 
   @After
@@ -111,6 +113,33 @@ public class VoteMacroTest extends ConfluenceTestBase {
   }
 
   @Test
+  public void test_execute_simpleMacro_withinComment_renderWarning_success() throws Exception {
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, "someTitle");
+
+    ContentEntityObject someComment = new com.atlassian.confluence.pages.Comment();
+    someComment.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someTitle</ac:parameter></ac:macro><ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someVoteTitle</ac:parameter></ac:macro>");
+    final PageContext pageContext = new PageContext(someComment);
+
+    final Choice someChoice = new Choice("someChoice");
+    List<Choice> choices = new ArrayList<Choice>();
+    choices.add(someChoice);
+    Ballot ballot = new Ballot("someTitle", "", new VoteConfig(mock(PermissionEvaluator.class), parameters), choices, new ArrayList<Comment>());
+
+    when(mockConversionContext.getEntity()).thenReturn(someComment);
+    when(mockConversionContext.getPageContext()).thenReturn(pageContext);
+    when(mockPluginSettingsFactory.createGlobalSettings()).thenReturn(new SurveyPluginSettings());
+    when(mockSurveyManager.reconstructBallotFromPlainTextMacroBody(eq(parameters), anyString(), any(ContentEntityObject.class))).thenReturn(ballot);
+    final HashMap<String, Object> contextMap = new HashMap<String, Object>();
+    contextMap.put(VelocityManager.ACTION, MacroUtils.getConfluenceActionSupport());
+    when(mockVelocityAbstractionHelper.getDefaultVelocityContext()).thenReturn(contextMap);
+
+    final String result = classUnderTest.execute(parameters, "", mockConversionContext);
+
+    assertThat(result, is("templates/macros/vote/votemacro-renderproblems.vm"));
+  }
+
+  @Test
   public void test_execute_simpleMacroWithTitle_success() throws Exception {
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someTitle");
@@ -132,9 +161,9 @@ public class VoteMacroTest extends ConfluenceTestBase {
     contextMap.put(VelocityManager.ACTION, MacroUtils.getConfluenceActionSupport());
     when(mockVelocityAbstractionHelper.getDefaultVelocityContext()).thenReturn(contextMap);
 
-    final String macroResultAsString = classUnderTest.execute(parameters, "", mockConversionContext);
-    //TODO: find a way to remove the mock in templateRenderer otherwise it is a little stupid to simply fake it
-    //assertTrue(macroResultAsString.contains("someTitle"));
+    final String result = classUnderTest.execute(parameters, "", mockConversionContext);
+
+    assertThat(result, is("templates/macros/vote/votemacro.vm"));
   }
 
   @Test
