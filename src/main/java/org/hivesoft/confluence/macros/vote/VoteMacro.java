@@ -47,7 +47,7 @@ public class VoteMacro implements Macro {
 
   public static final String VOTE_MACRO = "vote";
 
-  // prefix vote to make a vote unique in the textproperties
+  // prefix vote to make a vote unique in the text properties
   public static final String VOTE_PREFIX = "vote.";
 
   private final PluginSettingsFactory pluginSettingsFactory;
@@ -98,6 +98,9 @@ public class VoteMacro implements Macro {
     }
     try {
       LOG.info("Try executing " + VOTE_MACRO + "-macro XHtml Style with title: '" + voteMacroTitle + "' and body: '" + body + "'");
+
+      //FIXME: migrate question+answer to the uniqueId parameter or a random number if not present (and then stored as uniqueId)
+      //1. determine if it has old votes and comments stored to migrate
       xhtmlContent.handleMacroDefinitions(conversionContext.getEntity().getBodyAsString(), conversionContext, new MacroDefinitionHandler() {
         @Override
         public void handle(MacroDefinition macroDefinition) {

@@ -3,9 +3,9 @@ package org.hivesoft.confluence.macros.survey;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
 import com.atlassian.user.User;
-import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.xwork.Action;
 import com.opensymphony.xwork.ActionContext;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.junit.After;
 import org.junit.Before;
@@ -13,29 +13,27 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class AddCommentActionTest {
-  private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
-  private final static DefaultUser SOME_USER2 = new DefaultUser("someUser2", "someUser2 FullName", "some2@testmail.de");
-
+public class AddCommentActionTest extends ConfluenceTestBase {
   private SurveyManager mockSurveyManager = mock(SurveyManager.class);
 
   private AddCommentAction classUnderTest;
 
   @Before
   public void setup() {
+    AuthenticatedUserThreadLocal.setUser(SOME_USER1);
+
     classUnderTest = new AddCommentAction();
     classUnderTest.setSurveyManager(mockSurveyManager);
-    AuthenticatedUserThreadLocal.setUser(SOME_USER1);
   }
 
   @After
   public void tearDown() {
     AuthenticatedUserThreadLocal.setUser(null);
-
   }
 
   @Test
@@ -51,7 +49,7 @@ public class AddCommentActionTest {
 
     final String returnValue = classUnderTest.execute();
 
-    assertEquals(Action.SUCCESS, returnValue);
+    assertThat(returnValue, is(Action.SUCCESS));
 
     verify(mockSurveyManager).storeComment(eq(someBallotTitle), eq(someComment), any(User.class), any(Page.class));
   }
@@ -62,7 +60,7 @@ public class AddCommentActionTest {
 
     final String returnValue = classUnderTest.execute();
 
-    assertEquals(Action.ERROR, returnValue);
+    assertThat(returnValue, is(Action.ERROR));
   }
 
 }

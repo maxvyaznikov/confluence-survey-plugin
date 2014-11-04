@@ -11,8 +11,8 @@
 package org.hivesoft.confluence.macros.survey;
 
 import com.atlassian.confluence.pages.actions.AbstractPageAction;
-import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.ActionContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 
@@ -35,7 +35,7 @@ public class AddCommentAction extends AbstractPageAction {
    * @return a string constant indicating success or failure.
    */
   public String execute() {
-    if (getRemoteUser() == null || !TextUtils.stringSet(ballotTitle)) {
+    if (getRemoteUser() == null || StringUtils.isBlank(ballotTitle)) {
       return ERROR;
     }
 
@@ -52,8 +52,6 @@ public class AddCommentAction extends AbstractPageAction {
 
   /**
    * This is a binding method for the ballot title request parameter.
-   *
-   * @param ballotTitle The ballotTitle request parameter.
    */
   public void setBallotTitle(String ballotTitle) {
     this.ballotTitle = ballotTitle;
@@ -61,8 +59,6 @@ public class AddCommentAction extends AbstractPageAction {
 
   /**
    * This is a binding method for the ballot anchor request parameter.
-   *
-   * @param ballotAnchor The ballotAnchor request parameter.
    */
   public void setBallotAnchor(String ballotAnchor) {
     this.ballotAnchor = ballotAnchor;
@@ -70,8 +66,6 @@ public class AddCommentAction extends AbstractPageAction {
 
   /**
    * This is a binding method for the comment request parameter.
-   *
-   * @param comment The comment request parameter.
    */
   public void setComment(String comment) {
     this.comment = comment;

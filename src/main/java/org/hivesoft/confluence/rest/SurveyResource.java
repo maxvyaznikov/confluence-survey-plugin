@@ -183,7 +183,7 @@ public class SurveyResource {
               lockRepresentation.setLocked(!currentLockState);
               parameters.put(VoteConfig.KEY_LOCKED, String.valueOf(lockRepresentation.isLocked()));
               macroDefinition.setParameters(parameters);
-              LOG.debug("Locking state found locked=" + currentLockState + " now set to " + lockRepresentation.isLocked() + " for survey with title " + currentTitle);
+              LOG.info("Locking state found locked=" + currentLockState + " now set to " + lockRepresentation.isLocked() + " for survey with title " + currentTitle);
               LOG.debug("Parameters set to: " + parameters + ", resulting in macroDefinition: " + macroDefinition);
               return new MacroDefinition(macroDefinition.getName(), macroDefinition.getBody(), macroDefinition.getDefaultParameterValue(), macroDefinition.getParameters());
             }
