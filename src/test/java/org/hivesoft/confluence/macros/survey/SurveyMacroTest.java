@@ -19,12 +19,14 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
+import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.survey.model.Survey;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
+import org.hivesoft.confluence.macros.utils.wrapper.TestTemplateRenderer;
 import org.hivesoft.confluence.macros.vote.model.Ballot;
 import org.hivesoft.confluence.macros.vote.model.Comment;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
@@ -35,8 +37,11 @@ import org.junit.Test;
 import javax.xml.stream.XMLOutputFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,14 +49,15 @@ import static org.mockito.Mockito.when;
 public class SurveyMacroTest extends ConfluenceTestBase {
 
   SurveyManager mockSurveyManager = mock(SurveyManager.class);
-  TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
   PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
   VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
   EventPublisher mockEventPublisher = mock(EventPublisher.class);
   TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
-  PageManager pageManager = mock(PageManager.class);
-
+  PageManager mockPageManager = mock(PageManager.class);
+  PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
   ConversionContext mockConversionContext = mock(ConversionContext.class);
+
+  TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();
 
   SurveyMacro classUnderTest;
 
@@ -68,13 +74,12 @@ public class SurveyMacroTest extends ConfluenceTestBase {
 
     AuthenticatedUserThreadLocal.setUser(SOME_USER1);
 
-    classUnderTest = new SurveyMacro(mockPluginSettingsFactory, mockSurveyManager, mockTemplateRenderer, xhtmlContent, mockVelocityAbstractionHelper, pageManager, transactionTemplate);
+    classUnderTest = new SurveyMacro(mockPluginSettingsFactory, mockSurveyManager, testTemplateRenderer, xhtmlContent, mockVelocityAbstractionHelper, mockPageManager, transactionTemplate);
   }
 
   @After
   public void tearDown() {
     AuthenticatedUserThreadLocal.setUser(null);
-
   }
 
   @Test
@@ -82,12 +87,19 @@ public class SurveyMacroTest extends ConfluenceTestBase {
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
 
+    final String[] ballotTitles = {"Should this be exported?", "How do you like the modern iconSet?"};
+
     ContentEntityObject somePage = new Page();
-    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
-            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body>"
+            + "<![CDATA["
+            + StringUtils.join(ballotTitles, "\n")
+            + "]]></ac:plain-text-body></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
 
-    Survey survey = surveyWithBallots(parameters, "Should this be exported?", "How do you like the modern iconSet?");
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
+    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(any(List.class),eq(SOME_USER1))).thenReturn(true);
+
+    Survey survey = surveyWithBallots(parameters, ballotTitles);
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);
@@ -97,10 +109,9 @@ public class SurveyMacroTest extends ConfluenceTestBase {
     when(mockVelocityAbstractionHelper.getDefaultVelocityContext()).thenReturn(contextMap);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), any(ContentEntityObject.class), eq(parameters))).thenReturn(survey);
 
-    final String macroResultAsString = classUnderTest.execute(parameters, "Should this be exported?\nHow do you like the modern iconSet?", mockConversionContext);
-    System.out.println("Macro result: " + macroResultAsString);
-    //TODO: find a way to let the templateRenderer render something... as it is currently a mock, it ultimately returns nothing
-    //assertTrue(macroResultAsString.contains(SOME_SURVEY_TITLE));
+    final String result = classUnderTest.execute(parameters, StringUtils.join(ballotTitles, "\n"), mockConversionContext);
+
+    assertThat(result, is("templates/macros/survey/surveymacro.vm"));
   }
 
   @Test(expected = MacroExecutionException.class)
@@ -108,33 +119,45 @@ public class SurveyMacroTest extends ConfluenceTestBase {
     final Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
 
+    final String[] ballotTitles = {"Should this be exported?", "How do you like the modern iconSet?", "Should this be exported?"};
+
     when(mockConversionContext.getEntity()).thenReturn(null);
 
-    classUnderTest.execute(parameters, "Should this be exported?\nHow do you like the modern iconSet?\nShould this be exported?", mockConversionContext);
+    classUnderTest.execute(parameters, StringUtils.join(ballotTitles, "\n"), mockConversionContext);
   }
 
-  @Test//(expected = MacroExecutionException.class)
-  public void test_execute_simpleMacroWithTitle_sameBallotTwice_exception() throws Exception {
+  @Test
+  public void test_execute_simpleMacroWithTitle_sameBallotTwice_renderWarning_success() throws Exception {
     final Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
 
+    final String[] ballotTitles = {"Should this be exported?", "How do you like the modern iconSet?", "Should this be exported?"};
+
     ContentEntityObject somePage = new Page();
-    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
-            "How do you like the modern iconSet?\nShould this be exported?]]></ac:plain-text-body></ac:macro>");
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body>"
+            + "<![CDATA["
+            + StringUtils.join(ballotTitles, "\n")
+            + "]]></ac:plain-text-body></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
 
-    Survey survey = surveyWithBallots(parameters, "Should this be exported?", "How do you like the modern iconSet?", "Should this be exported?");
+
+    Survey survey = surveyWithBallots(parameters, ballotTitles);
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);
     when(mockPluginSettingsFactory.createGlobalSettings()).thenReturn(new SurveyPluginSettings());
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), any(ContentEntityObject.class), eq(parameters))).thenReturn(survey);
 
-    classUnderTest.execute(parameters, "Should this be exported?\nHow do you like the modern iconSet?\nShould this be exported?", mockConversionContext);
+    final String result = classUnderTest.execute(parameters, StringUtils.join(ballotTitles, "\n"), mockConversionContext);
+
+    assertThat(result, is("templates/macros/survey/surveymacro-renderproblems.vm"));
   }
 
+  /**
+   * Helper Methods
+   */
   private Survey surveyWithBallots(Map<String, String> parameters, String... ballotTitles) {
-    final SurveyConfig config = new SurveyConfig(mock(PermissionEvaluator.class), parameters);
+    final SurveyConfig config = new SurveyConfig(mockPermissionEvaluator, parameters);
     Survey survey = new Survey(config);
     for (String ballotTitle : ballotTitles) {
       survey.addBallot(new Ballot(ballotTitle, "", config, SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));

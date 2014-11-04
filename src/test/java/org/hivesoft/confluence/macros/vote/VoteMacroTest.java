@@ -19,6 +19,7 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.atlassian.user.impl.DefaultUser;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
 import org.hivesoft.confluence.macros.utils.SurveyManager;
 import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
@@ -40,15 +41,12 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class VoteMacroTest {
-  private final static DefaultUser SOME_USER1 = new DefaultUser("someUser1", "someUser1 FullName", "some1@testmail.de");
-
+public class VoteMacroTest extends ConfluenceTestBase {
   SurveyManager mockSurveyManager = mock(SurveyManager.class);
   TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
   PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
   VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
   ConversionContext mockConversionContext = mock(ConversionContext.class);
-
 
   VoteMacro classUnderTest;
 
