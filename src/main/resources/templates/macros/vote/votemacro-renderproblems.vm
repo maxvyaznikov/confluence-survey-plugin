@@ -23,8 +23,8 @@
     <strong>$action.getText("surveyplugin.vote.rendering.problems").</strong>
   </p>
   <ul>
-    #foreach($renderProblem in $ballot.config.renderProblems)
-      <li>$renderProblem</li>
+    #foreach($problem in $macroResult.problems)
+      <li>$problem</li>
     #end
   </ul>
 </div>

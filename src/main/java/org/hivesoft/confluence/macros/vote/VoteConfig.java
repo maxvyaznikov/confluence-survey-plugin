@@ -15,14 +15,16 @@ import com.atlassian.user.User;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
-import org.hivesoft.confluence.model.enums.UserVisualization;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.model.enums.UserVisualization;
+import org.hivesoft.confluence.model.wrapper.AnonymousUser;
 import org.hivesoft.confluence.utils.PermissionEvaluator;
 import org.hivesoft.confluence.utils.SurveyUtils;
 import org.hivesoft.confluence.utils.UserRenderer;
-import org.hivesoft.confluence.model.wrapper.AnonymousUser;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class VoteConfig {
   public static final int DEFAULT_START_BOUND = 1;
@@ -67,7 +69,7 @@ public class VoteConfig {
 
   private final int iterateStep;
 
-  protected final List<String> renderProblems = new ArrayList<String>();
+
   protected final PermissionEvaluator permissionEvaluator;
   protected final UserRenderer userRenderer;
 
@@ -143,9 +145,6 @@ public class VoteConfig {
     userRenderer = surveyConfig.getUserRenderer();
   }
 
-  public void addRenderProblems(String... problem) {
-    renderProblems.addAll(Arrays.asList(problem));
-  }
 
   public int getRenderTitleLevel() {
     return renderTitleLevel;
@@ -227,10 +226,6 @@ public class VoteConfig {
     return permissionEvaluator.canCreatePage(page);
   }
 
-  public List<String> getRenderProblems() {
-    return renderProblems;
-  }
-
   public List<User> getAllPossibleVoters() {
     Set<User> users = Sets.newHashSet();
     for (String configuredVoter : voters) {
@@ -259,7 +254,6 @@ public class VoteConfig {
             ", canManageSurvey=" + canManageSurvey +
             ", startBound=" + startBound +
             ", iterateStep=" + iterateStep +
-            ", renderProblems=" + renderProblems +
             ", userRenderer=" + userRenderer +
             '}';
   }

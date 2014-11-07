@@ -15,8 +15,8 @@
     <strong>$action.getText("surveyplugin.survey.rendering.problems").</strong>
   </p>
   <ul>
-    #foreach($renderProblem in $survey.config.renderProblems)
-      <li>$renderProblem</li>
+    #foreach($problem in $macroResult.problems)
+      <li>$problem</li>
     #end
   </ul>
 </div>
