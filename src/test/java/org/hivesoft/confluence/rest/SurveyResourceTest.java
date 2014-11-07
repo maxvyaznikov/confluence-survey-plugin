@@ -85,9 +85,7 @@ public class SurveyResourceTest {
     somePage.setBodyAsString("123");
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
-    when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
+    when(mockSurveyManager.canAttachFile(somePage)).thenReturn(true);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
@@ -99,11 +97,9 @@ public class SurveyResourceTest {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<thisIsNoValidTag>");
-    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
-    when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockSurveyManager.canAttachFile(somePage)).thenReturn(true);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
@@ -113,11 +109,9 @@ public class SurveyResourceTest {
   @Test
   public void test_getCSVExportForSurvey_expectUserDoesNotHaveAddAttachmentPermission_failure() throws UnsupportedEncodingException, XhtmlException {
     Page somePage = new Page();
-    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
-    when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(false);
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockSurveyManager.canAttachFile(somePage)).thenReturn(false);
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
@@ -135,12 +129,9 @@ public class SurveyResourceTest {
     someSurvey.addBallot(someBallot);
     someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));
 
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     Attachment mockAttachment = mock(Attachment.class);
 
-    when(mockSurveyManager.getPermissionEvaluator()).thenReturn(mockPermissionEvaluator);
-    when(mockPermissionEvaluator.canAttachFile(somePage)).thenReturn(true);
-
+    when(mockSurveyManager.canAttachFile(somePage)).thenReturn(true);
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockTransactionTemplate.execute(any(TransactionCallback.class))).thenReturn(mockAttachment);
 

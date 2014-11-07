@@ -13,6 +13,7 @@ package org.hivesoft.confluence.utils;
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
+import com.atlassian.confluence.pages.AbstractPage;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.user.User;
 import com.opensymphony.util.TextUtils;
@@ -288,5 +289,9 @@ public class SurveyManager {
 
   public boolean canResetSurvey(Survey survey) {
     return permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(survey.getConfig().getManagers(), getCurrentUser());
+  }
+
+  public boolean canAttachFile(AbstractPage page) {
+    return permissionEvaluator.canAttachFile(page);
   }
 }

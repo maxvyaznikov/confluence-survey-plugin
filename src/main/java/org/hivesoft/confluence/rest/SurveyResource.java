@@ -84,7 +84,7 @@ public class SurveyResource {
       return ((InvalidPage) page).toResponse();
     }
 
-    if (!surveyManager.getPermissionEvaluator().canAttachFile(page)) {
+    if (!surveyManager.canAttachFile(page)) {
       return Response.status(Response.Status.UNAUTHORIZED.getStatusCode()).entity("You are not authorized to add attachments and therefore cannot export surveys.").build();
     }
 

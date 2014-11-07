@@ -19,14 +19,14 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
-import org.hivesoft.confluence.utils.PermissionEvaluator;
-import org.hivesoft.confluence.utils.SurveyManager;
-import org.hivesoft.confluence.utils.VelocityAbstractionHelper;
-import org.hivesoft.confluence.model.wrapper.TestTemplateRenderer;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.model.vote.Comment;
+import org.hivesoft.confluence.model.wrapper.TestTemplateRenderer;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
+import org.hivesoft.confluence.utils.PermissionEvaluator;
+import org.hivesoft.confluence.utils.SurveyManager;
+import org.hivesoft.confluence.utils.VelocityAbstractionHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,6 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -168,7 +167,7 @@ public class VoteMacroTest extends ConfluenceTestBase {
 
   @Test
   public void test_MacroProperties_success() {
-    assertEquals(Macro.BodyType.PLAIN_TEXT, classUnderTest.getBodyType());
-    assertEquals(Macro.OutputType.BLOCK, classUnderTest.getOutputType());
+    assertThat(classUnderTest.getBodyType(), is(Macro.BodyType.PLAIN_TEXT));
+    assertThat(classUnderTest.getOutputType(), is(Macro.OutputType.BLOCK));
   }
 }

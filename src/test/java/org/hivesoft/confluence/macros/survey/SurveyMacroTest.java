@@ -6,6 +6,7 @@ import com.atlassian.confluence.content.render.xhtml.storage.macro.AlwaysTransfo
 import com.atlassian.confluence.content.render.xhtml.storage.macro.StorageMacroMarshaller;
 import com.atlassian.confluence.content.render.xhtml.storage.macro.StorageMacroUnmarshaller;
 import com.atlassian.confluence.core.ContentEntityObject;
+import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.pages.PageManager;
@@ -22,14 +23,14 @@ import com.opensymphony.webwork.views.velocity.VelocityManager;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.model.Survey;
+import org.hivesoft.confluence.model.vote.Ballot;
+import org.hivesoft.confluence.model.vote.Comment;
+import org.hivesoft.confluence.model.wrapper.TestTemplateRenderer;
+import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
 import org.hivesoft.confluence.utils.PermissionEvaluator;
 import org.hivesoft.confluence.utils.SurveyManager;
 import org.hivesoft.confluence.utils.SurveyUtils;
 import org.hivesoft.confluence.utils.VelocityAbstractionHelper;
-import org.hivesoft.confluence.model.wrapper.TestTemplateRenderer;
-import org.hivesoft.confluence.model.vote.Ballot;
-import org.hivesoft.confluence.model.vote.Comment;
-import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -97,7 +98,7 @@ public class SurveyMacroTest extends ConfluenceTestBase {
     final PageContext pageContext = new PageContext(somePage);
 
     when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
-    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(any(List.class),eq(SOME_USER1))).thenReturn(true);
+    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(any(List.class), eq(SOME_USER1))).thenReturn(true);
 
     Survey survey = surveyWithBallots(parameters, ballotTitles);
 
@@ -151,6 +152,12 @@ public class SurveyMacroTest extends ConfluenceTestBase {
     final String result = classUnderTest.execute(parameters, StringUtils.join(ballotTitles, "\n"), mockConversionContext);
 
     assertThat(result, is("templates/macros/survey/surveymacro-renderproblems.vm"));
+  }
+
+  @Test
+  public void test_MacroProperties_success() {
+    assertThat(classUnderTest.getBodyType(), is(Macro.BodyType.PLAIN_TEXT));
+    assertThat(classUnderTest.getOutputType(), is(Macro.OutputType.BLOCK));
   }
 
   /**
