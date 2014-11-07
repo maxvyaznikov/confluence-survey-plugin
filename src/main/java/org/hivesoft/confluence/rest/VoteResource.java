@@ -20,12 +20,12 @@ import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-import org.hivesoft.confluence.macros.enums.VoteAction;
+import org.hivesoft.confluence.model.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
-import org.hivesoft.confluence.macros.survey.model.Survey;
-import org.hivesoft.confluence.macros.utils.SurveyManager;
+import org.hivesoft.confluence.model.Survey;
+import org.hivesoft.confluence.utils.SurveyManager;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
-import org.hivesoft.confluence.macros.vote.model.Ballot;
+import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.rest.exceptions.MacroReconstructionException;
 import org.hivesoft.confluence.rest.representations.VoteRepresentation;
 

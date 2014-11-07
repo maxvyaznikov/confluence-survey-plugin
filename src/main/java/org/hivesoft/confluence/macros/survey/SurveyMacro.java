@@ -27,11 +27,11 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.hivesoft.confluence.macros.survey.model.Survey;
-import org.hivesoft.confluence.macros.utils.SurveyManager;
-import org.hivesoft.confluence.macros.utils.SurveyUtils;
-import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
-import org.hivesoft.confluence.macros.vote.model.Ballot;
+import org.hivesoft.confluence.model.Survey;
+import org.hivesoft.confluence.utils.SurveyManager;
+import org.hivesoft.confluence.utils.SurveyUtils;
+import org.hivesoft.confluence.utils.VelocityAbstractionHelper;
+import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackStorePage;
 
 import java.io.StringWriter;

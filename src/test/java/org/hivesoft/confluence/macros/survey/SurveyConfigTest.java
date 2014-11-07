@@ -1,8 +1,8 @@
 package org.hivesoft.confluence.macros.survey;
 
-import org.hivesoft.confluence.macros.survey.model.SurveySummary;
-import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
-import org.hivesoft.confluence.macros.vote.UserVisualization;
+import org.hivesoft.confluence.model.SurveySummary;
+import org.hivesoft.confluence.utils.PermissionEvaluator;
+import org.hivesoft.confluence.model.enums.UserVisualization;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.junit.Test;
 

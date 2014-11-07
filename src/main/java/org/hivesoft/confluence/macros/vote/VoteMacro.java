@@ -26,11 +26,11 @@ import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
-import org.hivesoft.confluence.macros.utils.SurveyManager;
-import org.hivesoft.confluence.macros.utils.SurveyUtils;
-import org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper;
-import org.hivesoft.confluence.macros.vote.model.Ballot;
-import org.hivesoft.confluence.macros.vote.model.Choice;
+import org.hivesoft.confluence.utils.SurveyManager;
+import org.hivesoft.confluence.utils.SurveyUtils;
+import org.hivesoft.confluence.utils.VelocityAbstractionHelper;
+import org.hivesoft.confluence.model.vote.Ballot;
+import org.hivesoft.confluence.model.vote.Choice;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -174,13 +174,14 @@ public class VoteMacro implements Macro {
     contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
     contextMap.put("currentUser", surveyManager.getCurrentUser());
 
+    String templateToRender = "templates/macros/vote/votemacro-renderproblems.vm";
+    if (ballot.getConfig().getRenderProblems().isEmpty()) {
+      templateToRender="templates/macros/vote/votemacro.vm";
+    }
+
     try {
       StringWriter renderedTemplate = new StringWriter();
-      if (ballot.getConfig().getRenderProblems().isEmpty()) {
-        renderer.render("templates/macros/vote/votemacro.vm", contextMap, renderedTemplate);
-      } else {
-        renderer.render("templates/macros/vote/votemacro-renderproblems.vm", contextMap, renderedTemplate);
-      }
+      renderer.render(templateToRender, contextMap, renderedTemplate);
       return renderedTemplate.toString();
     } catch (IOException e) {
       final String message = "Error while trying to display Ballot!";

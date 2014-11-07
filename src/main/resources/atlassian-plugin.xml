@@ -206,9 +206,9 @@
     <!--<context>survey-plugin</context>-->
   </web-resource>
 
-  <component key="velocityAbstractionHelper" class="org.hivesoft.confluence.macros.utils.VelocityAbstractionHelper"/>
-  <component key="surveyManager" class="org.hivesoft.confluence.macros.utils.SurveyManager"/>
-  <component key="permissionEvaluator" class="org.hivesoft.confluence.macros.utils.PermissionEvaluator"/>
+  <component key="velocityAbstractionHelper" class="org.hivesoft.confluence.utils.VelocityAbstractionHelper"/>
+  <component key="surveyManager" class="org.hivesoft.confluence.utils.SurveyManager"/>
+  <component key="permissionEvaluator" class="org.hivesoft.confluence.utils.PermissionEvaluator"/>
   <component key="voteMacro" class="org.hivesoft.confluence.macros.vote.VoteMacro"/>
   <component key="surveyMacro" class="org.hivesoft.confluence.macros.survey.SurveyMacro"/>
 

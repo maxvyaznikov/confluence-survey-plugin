@@ -14,7 +14,7 @@ import com.atlassian.confluence.pages.actions.AbstractPageAction;
 import com.opensymphony.xwork.ActionContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.hivesoft.confluence.macros.utils.SurveyManager;
+import org.hivesoft.confluence.utils.SurveyManager;
 
 import java.util.Map;
 

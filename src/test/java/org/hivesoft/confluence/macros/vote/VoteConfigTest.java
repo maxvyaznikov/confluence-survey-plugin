@@ -4,8 +4,9 @@ import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.security.PermissionManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
+import org.hivesoft.confluence.model.enums.UserVisualization;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
-import org.hivesoft.confluence.macros.utils.PermissionEvaluator;
+import org.hivesoft.confluence.utils.PermissionEvaluator;
 import org.junit.Test;
 
 import java.util.HashMap;

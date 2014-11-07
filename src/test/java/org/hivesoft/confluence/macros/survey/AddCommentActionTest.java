@@ -6,7 +6,7 @@ import com.atlassian.user.User;
 import com.opensymphony.xwork.Action;
 import com.opensymphony.xwork.ActionContext;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
-import org.hivesoft.confluence.macros.utils.SurveyManager;
+import org.hivesoft.confluence.utils.SurveyManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
