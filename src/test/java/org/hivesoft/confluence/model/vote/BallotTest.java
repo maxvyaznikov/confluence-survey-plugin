@@ -4,18 +4,17 @@ import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.model.wrapper.SurveyUser;
 import org.hivesoft.confluence.utils.PermissionEvaluator;
 import org.hivesoft.confluence.utils.SurveyUtils;
 import org.hivesoft.confluence.utils.SurveyUtilsTest;
-import org.hivesoft.confluence.model.wrapper.SurveyUser;
-import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.junit.Test;
 
 import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
@@ -158,6 +157,15 @@ public class BallotTest extends ConfluenceTestBase {
 
     assertThat(result, is(someComment));
     assertThat(someComment.getComment(), is(commentString));
+  }
+
+  @Test
+  public void test_getCommentForUser_noComment_success() {
+    classUnderTest = SurveyUtilsTest.createDefaultBallot("someBallot");
+
+    final Comment result = classUnderTest.getCommentForUser(SOME_USER1);
+
+    assertThat(result, is(nullValue()));
   }
 
   @Test
