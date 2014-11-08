@@ -10,7 +10,6 @@
  */
 package org.hivesoft.confluence.macros.vote;
 
-import com.atlassian.confluence.pages.AbstractPage;
 import com.atlassian.user.User;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -216,14 +215,6 @@ public class VoteConfig {
 
   public UserRenderer getUserRenderer() {
     return userRenderer;
-  }
-
-  public Boolean canAttachFile(AbstractPage page) {
-    return permissionEvaluator.canAttachFile(page);
-  }
-
-  public Boolean canCreatePage(AbstractPage page) {
-    return permissionEvaluator.canCreatePage(page);
   }
 
   public List<User> getAllPossibleVoters() {

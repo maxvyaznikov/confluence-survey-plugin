@@ -73,10 +73,10 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         #if ($canVote && !($config.locked))
           #if ($choice.getHasVotedFor($currentUser))
             <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
-                 alt="$ballot.title" contentid="$content.id" title="$choice.description"/>
+                 alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
           #else
             <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
-                 alt="$ballot.title" contentid="$content.id" title="$choice.description"/>
+                 alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
           #end
         #elseif ($choice.getHasVotedFor($currentUser))
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>
@@ -126,7 +126,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
             #end
             <div class="focusedComment commentblock surveyComment">
                 <span id="${ballotNumberID}CommentForm" style="display:none">
-                  <form method="POST" action="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id">
+                  <form method="POST" action="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$macroResult.contentId">
                     <input type="hidden" name="ballotTitle" value="$ballot.title"/>
                     <input type="hidden" name="ballotAnchor" value="${voteAnchor}"/>
                     <textarea name="comment" rows="5" cols="70" style="font:12px monospace;">$currentComment</textarea>
@@ -147,7 +147,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
                        onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">
                       <img src="${workaroundRequireResourcePath}/icons/${iconSet}/comment_edit.png" border="0" align="absmiddle" height="16" width="16"
                            class="surveyIcon" title="$action.getText("surveyplugin.survey.comment.edit")"/></a>
-                    <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$content.id&ballotTitle=$generalUtil.urlEncode($ballot.title)&ballotAnchor=$generalUtil.urlEncode("${voteAnchor}")&comment=">
+                    <a href="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$macroResult.contentId&ballotTitle=$generalUtil.urlEncode($ballot.title)&ballotAnchor=$generalUtil.urlEncode(
+                      "${voteAnchor}")&comment=">
                       <img src="${workaroundRequireResourcePath}/icons/${iconSet}/comment_remove.png" border="0" align="absmiddle" height="16" width="16"
                            class="surveyIcon" title="$action.getText("surveyplugin.survey.comment.remove")"/></a>
                   </div>

@@ -14,9 +14,9 @@ import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.hivesoft.confluence.model.enums.UserVisualization;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
+import org.hivesoft.confluence.model.enums.UserVisualization;
 import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.rest.AdminResource;
 
@@ -47,8 +47,8 @@ public class SurveyUtils {
     List<String> exceedingKeyItems = new ArrayList<String>();
     for (String ballotChoiceKey : ballotAndChoiceNames) {
       try {
-        if (ballotChoiceKey.getBytes("UTF-8").length + VoteMacro.VOTE_PREFIX.length() > MAX_STORABLE_KEY_LENGTH) {
-          exceedingKeyItems.add("Choice to long: " + ballotChoiceKey + " Length: " + (ballotChoiceKey.getBytes("UTF-8").length + VoteMacro.VOTE_PREFIX.length() + " (allowed: " + MAX_STORABLE_KEY_LENGTH + ")"));
+        if (ballotChoiceKey.getBytes("UTF-8").length + VoteMacro.VOTE_STORAGE_PREFIX.length() > MAX_STORABLE_KEY_LENGTH) {
+          exceedingKeyItems.add("Choice to long: " + ballotChoiceKey + " Length: " + (ballotChoiceKey.getBytes("UTF-8").length + VoteMacro.VOTE_STORAGE_PREFIX.length() + " (allowed: " + MAX_STORABLE_KEY_LENGTH + ")"));
         }
       } catch (java.io.UnsupportedEncodingException e) {
         throw new MacroExecutionException(e);

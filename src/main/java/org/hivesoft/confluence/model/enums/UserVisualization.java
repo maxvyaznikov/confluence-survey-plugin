@@ -6,7 +6,9 @@ public enum UserVisualization {
   LINKED_LOGIN("linked login name"),
   LINKED_FULL("linked user name");
 
-  /** Visible for testing */
+  /**
+   * Visible for testing
+   */
   final String propertyValue;
 
   private UserVisualization(String propertyValue) {
@@ -14,7 +16,9 @@ public enum UserVisualization {
     this.propertyValue = propertyValue;
   }
 
-  /** @return the found {@link UserVisualization} with the given {@code propertyValue} or {@code null} if not found*/
+  /**
+   * @return the found {@link UserVisualization} with the given {@code propertyValue} or {@code null} if not found
+   */
   public static UserVisualization getFor(String propertyValue) {
     for (UserVisualization style : UserVisualization.values()) {
       if (style.propertyValue.equals(propertyValue)) {

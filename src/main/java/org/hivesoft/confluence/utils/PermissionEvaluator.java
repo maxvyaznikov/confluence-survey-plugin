@@ -19,9 +19,9 @@ import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.user.Group;
 import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
+import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.wrapper.AnonymousUser;
 import org.hivesoft.confluence.model.wrapper.SurveyUser;
-import org.hivesoft.confluence.model.vote.Ballot;
 
 import java.util.ArrayList;
 import java.util.List;

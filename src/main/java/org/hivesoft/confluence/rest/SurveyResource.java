@@ -27,10 +27,8 @@ import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
-import org.hivesoft.confluence.model.Survey;
-import org.hivesoft.confluence.utils.SurveyManager;
-import org.hivesoft.confluence.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.model.Survey;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.model.vote.Comment;
@@ -40,6 +38,8 @@ import org.hivesoft.confluence.rest.exceptions.MacroReconstructionException;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
 import org.hivesoft.confluence.rest.representations.ResetRepresentation;
+import org.hivesoft.confluence.utils.SurveyManager;
+import org.hivesoft.confluence.utils.SurveyUtils;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -229,7 +229,7 @@ public class SurveyResource {
 
     final Survey survey = surveys.iterator().next();
 
-    if (!surveyManager.canResetSurvey(survey)){
+    if (!surveyManager.canResetSurvey(survey)) {
       return Response.status(Response.Status.UNAUTHORIZED).entity("You are not authorized to reset the given survey.").build();
     }
 

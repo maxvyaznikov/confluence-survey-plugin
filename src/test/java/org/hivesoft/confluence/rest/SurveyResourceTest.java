@@ -14,17 +14,16 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.model.Survey;
-import org.hivesoft.confluence.utils.PermissionEvaluator;
-import org.hivesoft.confluence.utils.SurveyManager;
-import org.hivesoft.confluence.utils.SurveyUtils;
-import org.hivesoft.confluence.utils.SurveyUtilsTest;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Comment;
 import org.hivesoft.confluence.rest.representations.CSVExportRepresentation;
 import org.hivesoft.confluence.rest.representations.LockRepresentation;
 import org.hivesoft.confluence.rest.representations.ResetRepresentation;
+import org.hivesoft.confluence.utils.SurveyManager;
+import org.hivesoft.confluence.utils.SurveyUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,15 +41,12 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SurveyResourceTest {
-  private final static long SOME_PAGE_ID = 123l;
-  private final static String SOME_SURVEY_TITLE = "someSurveyTitle";
+public class SurveyResourceTest extends ConfluenceTestBase {
 
   TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
   PageManager mockPageManager = mock(PageManager.class);
   SurveyManager mockSurveyManager = mock(SurveyManager.class);
   EventPublisher mockEventPublisher = mock(EventPublisher.class);
-
   I18nResolver mockI18nResolver = mock(I18nResolver.class);
 
   SurveyResource classUnderTest;
@@ -124,7 +120,7 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+    Survey someSurvey = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
     final Ballot someBallot = new Ballot("Should this be exported?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     someSurvey.addBallot(someBallot);
     someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));
@@ -251,7 +247,7 @@ public class SurveyResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+    Survey someSurvey = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
@@ -272,7 +268,7 @@ public class SurveyResourceTest {
 
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_MANAGERS, "notThisUser");
-    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(parameters));
+    Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
@@ -293,7 +289,7 @@ public class SurveyResourceTest {
 
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_LOCKED, "true");
-    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(parameters));
+    Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);

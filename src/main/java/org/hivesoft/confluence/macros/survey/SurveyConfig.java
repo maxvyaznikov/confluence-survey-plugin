@@ -1,9 +1,9 @@
 package org.hivesoft.confluence.macros.survey;
 
+import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.model.SurveySummary;
 import org.hivesoft.confluence.utils.PermissionEvaluator;
 import org.hivesoft.confluence.utils.SurveyUtils;
-import org.hivesoft.confluence.macros.vote.VoteConfig;
 
 import java.util.HashMap;
 import java.util.List;

@@ -12,9 +12,9 @@ package org.hivesoft.confluence.model;
 
 import com.atlassian.user.User;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
-import org.hivesoft.confluence.utils.SurveyUtils;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
+import org.hivesoft.confluence.utils.SurveyUtils;
 
 import java.util.ArrayList;
 import java.util.List;

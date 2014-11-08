@@ -14,8 +14,8 @@ import com.atlassian.user.User;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import org.hivesoft.confluence.utils.SurveyUtils;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.utils.SurveyUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

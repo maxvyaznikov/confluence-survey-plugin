@@ -13,16 +13,15 @@ package org.hivesoft.confluence.utils;
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.core.ContentPropertyManager;
-import com.atlassian.confluence.pages.AbstractPage;
 import com.atlassian.extras.common.log.Logger;
 import com.atlassian.user.User;
 import com.opensymphony.util.TextUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hivesoft.confluence.model.enums.VoteAction;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
-import org.hivesoft.confluence.model.Survey;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
+import org.hivesoft.confluence.model.Survey;
+import org.hivesoft.confluence.model.enums.VoteAction;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.model.vote.Comment;
@@ -61,7 +60,7 @@ public class SurveyManager {
       if (!StringUtils.isBlank(line) && ((line.length() == 1 && Character.getNumericValue(line.toCharArray()[0]) > -1) || line.length() > 1)) {
         Choice choice = new Choice(line);
 
-        String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + line);
+        String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_STORAGE_PREFIX + ballotTitle + "." + line);
 
         if (StringUtils.isNotBlank(votes)) {
           for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
@@ -126,7 +125,7 @@ public class SurveyManager {
 
       migrateOldDefaultVotesIfPresent(contentObject, ballotTitle, choiceName);
 
-      String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + choice.getDescription());
+      String votes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_STORAGE_PREFIX + ballotTitle + "." + choice.getDescription());
       if (StringUtils.isNotBlank(votes)) {
         for (StringTokenizer voteTokenizer = new StringTokenizer(votes, ","); voteTokenizer.hasMoreTokens(); ) {
           final User voter = permissionEvaluator.getUserByName(voteTokenizer.nextToken());
@@ -153,10 +152,10 @@ public class SurveyManager {
     if (SurveyUtils.DEFAULT_CHOICE_NAMES.contains(choiceName)) {
       int defaultIndex = SurveyUtils.DEFAULT_CHOICE_NAMES.indexOf(choiceName);
 
-      final String oldVotes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex));
+      final String oldVotes = contentPropertyManager.getTextProperty(contentObject, VoteMacro.VOTE_STORAGE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex));
       if (StringUtils.isNotBlank(oldVotes)) {
-        contentPropertyManager.setTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_CHOICE_NAMES.get(defaultIndex), oldVotes);
-        contentPropertyManager.setTextProperty(contentObject, VoteMacro.VOTE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex), null);
+        contentPropertyManager.setTextProperty(contentObject, VoteMacro.VOTE_STORAGE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_CHOICE_NAMES.get(defaultIndex), oldVotes);
+        contentPropertyManager.setTextProperty(contentObject, VoteMacro.VOTE_STORAGE_PREFIX + ballotTitle + "." + SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(defaultIndex), null);
       }
     }
   }
@@ -175,7 +174,7 @@ public class SurveyManager {
   }
 
   private void storeVotersForChoice(Choice choice, String ballotTitle, ContentEntityObject contentObject) {
-    String propertyKey = VoteMacro.VOTE_PREFIX + ballotTitle + "." + choice.getDescription();
+    String propertyKey = VoteMacro.VOTE_STORAGE_PREFIX + ballotTitle + "." + choice.getDescription();
 
     if (choice.getVoters().size() == 0) {
       contentPropertyManager.setTextProperty(contentObject, propertyKey, null);
@@ -289,5 +288,9 @@ public class SurveyManager {
 
   public boolean canAttachFile(ContentEntityObject contentEntityObject) {
     return permissionEvaluator.canAttachFile(contentEntityObject);
+  }
+
+  public boolean canCreatePage(ContentEntityObject contentEntityObject) {
+    return permissionEvaluator.canCreatePage(contentEntityObject);
   }
 }

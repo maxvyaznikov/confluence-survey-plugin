@@ -28,38 +28,38 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getTitle_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    assertThat(classUnderTest.getTitle(), is(equalTo(SurveyUtilsTest.SOME_BALLOT_TITLE)));
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    assertThat(classUnderTest.getTitle(), is(equalTo(SOME_BALLOT_TITLE)));
   }
 
   @Test
   public void test_getTitleNoSpace_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE + " more spaces");
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE + " more spaces");
 
-    assertThat(classUnderTest.getTitleNoSpace(), is(equalTo(SurveyUtilsTest.SOME_BALLOT_TITLE.toLowerCase() + "morespaces")));
+    assertThat(classUnderTest.getTitleNoSpace(), is(equalTo(SOME_BALLOT_TITLE.toLowerCase() + "morespaces")));
   }
 
   @Test
   public void test_getDescription_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
     assertEquals("", classUnderTest.getDescription());
 
-    classUnderTest = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "someDescription", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    classUnderTest = new Ballot(SOME_BALLOT_TITLE, "someDescription", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     assertThat(classUnderTest.getDescription(), is("someDescription"));
   }
 
   @Test
   public void test_ballotsWithDefaults_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
     assertThat(classUnderTest.getConfig(), is(notNullValue()));
   }
 
   @Test
   public void test_getVoteForExistingUser_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
     someChoice.voteFor(SOME_USER1);
 
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(someChoice));
+    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(someChoice));
 
     Choice result = classUnderTest.getChoiceForUser(SOME_USER1);
 
@@ -69,7 +69,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getVoteForNotExistingUser_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
     classUnderTest.getChoices().iterator().next().voteFor(SOME_USER1);
 
     Choice result = classUnderTest.getChoiceForUser(new DefaultUser("someDifferentNotExistingUser"));
@@ -80,7 +80,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getChoice_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
     final Choice someChoice = classUnderTest.getChoices().iterator().next();
 
     Choice result = classUnderTest.getChoice(SurveyUtils.getDefaultChoices().get(0).getDescription());
@@ -90,7 +90,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getChoice_NotExists_failure() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
 
     Choice result = classUnderTest.getChoice("NotExistingChoice");
 
@@ -99,7 +99,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getChoices_DefaultChoices_failure() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
     Collection<Choice> result = classUnderTest.getChoices();
 
     assertThat(result.size(), is(5));
@@ -107,7 +107,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getPercentageOfVoteForChoice_NoVotes_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
 
     final Choice someChoice = classUnderTest.getChoices().iterator().next();
 
@@ -125,7 +125,7 @@ public class BallotTest extends ConfluenceTestBase {
     someChoice.voteFor(new DefaultUser("someUserTwo"));
     someChoiceTwo.voteFor(new DefaultUser("someUserThree"));
 
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo));
+    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo));
 
     final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
     final int percentageResultTwo = classUnderTest.getPercentageOfVoteForChoice(someChoiceTwo);
@@ -170,7 +170,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getCurrentValueByIndex_defaultSteps_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
 
     assertThat(classUnderTest.getCurrentValueByIndex(1), is(2));
     assertThat(classUnderTest.getCurrentValueByIndex(0), is(1));
@@ -204,7 +204,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_computeAverage_TwoChoicesNoVotes_expectZero_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, createChoicesWithoutVotes(2));
+    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, createChoicesWithoutVotes(2));
 
     final float result = classUnderTest.computeAverage();
 
@@ -214,11 +214,11 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_computeAverage_TwoChoiceOneVote_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
     someChoice.voteFor(SOME_USER1);
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
 
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo));
+    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo));
 
     final float result = classUnderTest.computeAverage();
 
@@ -227,12 +227,12 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_computeAverage_ThreeChoicesOneVoteOnSecond_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
     someChoiceTwo.voteFor(SOME_USER2);
-    Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
+    Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
 
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo, someChoiceThree));
+    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo, someChoiceThree));
 
     final float result = classUnderTest.computeAverage();
 
@@ -242,15 +242,15 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_computeAverage_NegativeIterateStepFromPositiveStart_FiveChoicesOneVoteOnFourth_expect40percent_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
-    Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
-    Choice someChoiceFour = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "FOUR");
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
+    Choice someChoiceFour = new Choice(SOME_CHOICE_DESCRIPTION + "FOUR");
     someChoiceFour.voteFor(SOME_USER2);
-    Choice someChoiceFive = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "FIVE");
+    Choice someChoiceFive = new Choice(SOME_CHOICE_DESCRIPTION + "FIVE");
 
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(SurveyConfig.KEY_START_BOUND, "4");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-4");
 
@@ -271,7 +271,7 @@ public class BallotTest extends ConfluenceTestBase {
     someChoiceTwo.voteFor(SOME_USER2);
 
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(SurveyConfig.KEY_START_BOUND, "0");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "1");
 
@@ -285,15 +285,15 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_computeFormattedAverage_NegativeIterateStep_ThreeChoicesThreeVotes_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
     someChoiceTwo.voteFor(SOME_USER1);
     someChoiceTwo.voteFor(SOME_USER2);
-    Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
+    Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
     someChoiceThree.voteFor(new SurveyUser("someUserTHREE"));
 
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(SurveyConfig.KEY_START_BOUND, "-1");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
 
@@ -316,7 +316,7 @@ public class BallotTest extends ConfluenceTestBase {
   @Test
   public void test_getBounds_NotDefault_success() {
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(SurveyConfig.KEY_START_BOUND, "-1");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
 
@@ -335,11 +335,11 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBoundsIfNotDefault_notDefault_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
 
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(SurveyConfig.KEY_START_BOUND, "3");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
 
@@ -350,11 +350,11 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBoundsIfNotDefault_oneDefault_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
 
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(SurveyConfig.KEY_START_BOUND, "3");
 
     classUnderTest = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(someChoice, someChoiceTwo));
@@ -371,10 +371,10 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getAllVoters_success() {
-    Choice someChoice = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
     someChoiceTwo.voteFor(SOME_USER2);
-    Choice someChoiceThree = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "THREE");
+    Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
     final User userThree = new SurveyUser("someUserTHREE");
     someChoiceThree.voteFor(userThree);
 
@@ -422,8 +422,8 @@ public class BallotTest extends ConfluenceTestBase {
 
     final User user4 = new SurveyUser("user4");
 
-    Choice someChoiceOne = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "ONE");
-    Choice someChoiceTwo = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION + "TWO");
+    Choice someChoiceOne = new Choice(SOME_CHOICE_DESCRIPTION + "ONE");
+    Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
     someChoiceOne.voteFor(user21);
     someChoiceOne.voteFor(user12); // user has voted but is now deactivated
     someChoiceOne.voteFor(user4); // user has voted but is now deleted
@@ -482,20 +482,20 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_equalsAndHashCode_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
-    Ballot classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot classUnderTest2 = new Ballot(SOME_BALLOT_TITLE, "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
 
     assertFalse(classUnderTest.equals("someString"));
     assertTrue(classUnderTest.equals(classUnderTest2));
     assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
     assertTrue(classUnderTest.toString().equals(classUnderTest2.toString()));
 
-    classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE, "someDesc", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    classUnderTest2 = new Ballot(SOME_BALLOT_TITLE, "someDesc", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     assertThat(classUnderTest, is(equalTo(classUnderTest2)));
     assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
     assertFalse(classUnderTest.toString().equals(classUnderTest2.toString()));
 
-    classUnderTest2 = new Ballot(SurveyUtilsTest.SOME_BALLOT_TITLE + "2", "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    classUnderTest2 = new Ballot(SOME_BALLOT_TITLE + "2", "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     assertFalse(classUnderTest.equals(classUnderTest2));
     assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
   }

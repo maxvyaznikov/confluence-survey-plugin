@@ -2,9 +2,9 @@ package org.hivesoft.confluence.model;
 
 import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultUser;
-import org.hivesoft.confluence.utils.SurveyUtils;
-import org.hivesoft.confluence.utils.SurveyUtilsTest;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.model.vote.Ballot;
+import org.hivesoft.confluence.utils.SurveyUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,27 +19,25 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SurveyTest {
-
-  private static final String SOME_BALLOT_TITLE = "someBallotTitle";
+public class SurveyTest extends ConfluenceTestBase {
 
   Survey classUnderTest;
 
   @Before
   public void setup() {
-    classUnderTest = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+    classUnderTest = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
   }
 
   @Test
   public void test_equalsHashCode() {
-    Survey classUnderTest2 = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+    Survey classUnderTest2 = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
 
     assertThat(classUnderTest.toString(), is(classUnderTest2.toString()));
   }
 
   @Test
   public void test_getBallot_success() {
-    Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot someBallot = createDefaultBallot(SOME_BALLOT_TITLE);
     classUnderTest.addBallot(someBallot);
 
     final Ballot result = classUnderTest.getBallot(SOME_BALLOT_TITLE);
@@ -49,7 +47,7 @@ public class SurveyTest {
 
   @Test
   public void test_getBallotNotFound_failure() {
-    Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot someBallot = createDefaultBallot(SOME_BALLOT_TITLE);
     classUnderTest.addBallot(someBallot);
 
     final Ballot result = classUnderTest.getBallot("BallotNotFound");
@@ -59,8 +57,8 @@ public class SurveyTest {
 
   @Test
   public void test_getBallots_success() {
-    Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
-    Ballot someBallot2 = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE + "2");
+    Ballot someBallot = createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot someBallot2 = createDefaultBallot(SOME_BALLOT_TITLE + "2");
     final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
     classUnderTest.setBallots(ballots);
 
@@ -95,8 +93,8 @@ public class SurveyTest {
 
   @Test
   public void test_getBallotTitlesWithChoiceNames_success() {
-    Ballot someBallot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
-    Ballot someBallot2 = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE + "2");
+    Ballot someBallot = createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot someBallot2 = createDefaultBallot(SOME_BALLOT_TITLE + "2");
 
     final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
     classUnderTest.setBallots(ballots);

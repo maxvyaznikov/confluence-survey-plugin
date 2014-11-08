@@ -164,7 +164,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
     final Page somePage = new Page();
 
-    when(mockContentPropertyManager.getTextProperty(somePage, VoteMacro.VOTE_PREFIX + someBallotTitle1 + ".5-Outstanding")).thenReturn(SOME_USER1.getName());
+    when(mockContentPropertyManager.getTextProperty(somePage, VoteMacro.VOTE_STORAGE_PREFIX + someBallotTitle1 + ".5-Outstanding")).thenReturn(SOME_USER1.getName());
     when(mockPermissionEvaluator.getUserByName(SOME_USER1.getName())).thenReturn(SOME_USER1);
 
     final Survey returnedSurvey = classUnderTest.reconstructSurveyFromPlainTextMacroBody(someBallotTitle1 + "\r\n" + someBallotTitle2, somePage, parametersWithTitle());
@@ -176,7 +176,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
   @Test
   public void test_recordVote_noUser_success() {
-    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
     when(mockPermissionEvaluator.getRemoteUser()).thenReturn(new SurveyUser("someUser"));
 
     classUnderTest.recordVote(ballot, new Page(), "someChoiceDoesn'tMatter", VoteAction.VOTE);
@@ -187,7 +187,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
   @Test
   public void test_recordVote_freshVote_success() {
     Choice choiceToVoteOn = SurveyUtilsTest.createdDefaultChoice();
-    Ballot ballot = SurveyUtilsTest.createDefaultBallotWithChoices(SurveyUtilsTest.SOME_BALLOT_TITLE, Arrays.asList(choiceToVoteOn));
+    Ballot ballot = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(choiceToVoteOn));
 
     when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
 
@@ -199,10 +199,10 @@ public class SurveyManagerTest extends ConfluenceTestBase {
   @Test
   public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesTrue_success() {
     Choice choiceAlreadyVotedOn = new Choice("already Voted on");
-    Choice choiceToVoteOn = new Choice(SurveyUtilsTest.SOME_CHOICE_DESCRIPTION);
+    Choice choiceToVoteOn = new Choice(SOME_CHOICE_DESCRIPTION);
 
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
     Ballot ballot = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(choiceAlreadyVotedOn, choiceToVoteOn));
@@ -221,7 +221,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     Choice choiceAlreadyVotedOn = new Choice("already Voted on");
 
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SurveyUtilsTest.SOME_BALLOT_TITLE);
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
     Ballot ballot = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(choiceAlreadyVotedOn));
@@ -237,7 +237,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
   @Test
   public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesFalse_success() {
-    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SurveyUtilsTest.SOME_BALLOT_TITLE);
+    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
 
     ballot.getChoices().iterator().next().voteFor(SOME_USER1);
 
@@ -296,7 +296,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     classUnderTest.resetVotes(survey, somePage);
 
     for (Choice choice : someBallot.getChoices()) {
-      verify(mockContentPropertyManager).setTextProperty(somePage, VoteMacro.VOTE_PREFIX + someBallotTitle + "." + choice.getDescription(), null);
+      verify(mockContentPropertyManager).setTextProperty(somePage, VoteMacro.VOTE_STORAGE_PREFIX + someBallotTitle + "." + choice.getDescription(), null);
     }
     verify(mockContentPropertyManager).setTextProperty(somePage, "survey." + someBallotTitle + ".comment." + SOME_USER1.getName(), null);
     verify(mockContentPropertyManager).setTextProperty(somePage, "survey." + someBallotTitle + ".commenters", SOME_USER2.getName() + "|");

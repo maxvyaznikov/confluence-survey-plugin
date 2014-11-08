@@ -12,14 +12,14 @@ import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
-import org.hivesoft.confluence.model.enums.VoteAction;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.model.Survey;
-import org.hivesoft.confluence.utils.SurveyManager;
-import org.hivesoft.confluence.utils.SurveyUtils;
-import org.hivesoft.confluence.utils.SurveyUtilsTest;
+import org.hivesoft.confluence.model.enums.VoteAction;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Comment;
 import org.hivesoft.confluence.rest.representations.VoteRepresentation;
+import org.hivesoft.confluence.utils.SurveyManager;
+import org.hivesoft.confluence.utils.SurveyUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,16 +37,11 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class VoteResourceTest {
-
-  public static final long SOME_PAGE_ID = 123L;
-  public static final String SOME_SURVEY_TITLE = "someSurveyTitle";
-  public static final String SOME_BALLOT_TITLE = "someBallotTitle";
+public class VoteResourceTest extends ConfluenceTestBase {
 
   VoteResource classUnderTest;
 
   private final TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
-  //private final PageManager mockPageManager = mock(PageManager.class);
   private final PageManager mockPageManager = mock(PageManager.class);
   private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
   private final I18nResolver mockI18nResolver = mock(I18nResolver.class);
@@ -99,7 +94,7 @@ public class VoteResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    Survey someSurvey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+    Survey someSurvey = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
     final Ballot someBallot = new Ballot("Should this be exported?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     someSurvey.addBallot(someBallot);
     someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));
@@ -123,7 +118,7 @@ public class VoteResourceTest {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">" + SOME_BALLOT_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Choice1\n" +
             "Choice2]]></ac:plain-text-body></ac:macro>");
-    final Ballot someBallot = new Ballot(SOME_BALLOT_TITLE, "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    final Ballot someBallot = new Ballot(SOME_BALLOT_TITLE, "", createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructBallotFromPlainTextMacroBody(any(Map.class), anyString(), eq(somePage))).thenReturn(someBallot);

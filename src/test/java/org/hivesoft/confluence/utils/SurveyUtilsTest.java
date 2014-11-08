@@ -1,29 +1,18 @@
 package org.hivesoft.confluence.utils;
 
 import com.atlassian.confluence.macro.MacroExecutionException;
-import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.model.enums.UserVisualization;
-import org.hivesoft.confluence.macros.vote.VoteConfig;
-import org.hivesoft.confluence.model.vote.Ballot;
-import org.hivesoft.confluence.model.vote.Choice;
-import org.hivesoft.confluence.model.vote.Comment;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertThat;
 
-public class SurveyUtilsTest {
-  public static final String SOME_BALLOT_TITLE = "someBallotTitle";
-  public static final String SOME_CHOICE_DESCRIPTION = "someChoiceDescription";
-  public static final String SOME_USER_NAME = "john doe";
-
+public class SurveyUtilsTest extends ConfluenceTestBase {
 
   @Test
   public void test_validateMaxStorableKeyLength_success() throws MacroExecutionException {
@@ -47,16 +36,16 @@ public class SurveyUtilsTest {
 
   @Test
   public void test_getBooleanFromString_success() {
-    assertTrue(SurveyUtils.getBooleanFromString("true", false));
-    assertFalse(SurveyUtils.getBooleanFromString("false", true));
-    assertTrue(SurveyUtils.getBooleanFromString("", true));
-    assertFalse(SurveyUtils.getBooleanFromString(null, false));
+    assertThat(SurveyUtils.getBooleanFromString("true", false), is(true));
+    assertThat(SurveyUtils.getBooleanFromString("false", true), is(false));
+    assertThat(SurveyUtils.getBooleanFromString("", true), is(true));
+    assertThat(SurveyUtils.getBooleanFromString(null, false), is(false));
   }
 
   @Test
   public void test_getListFromStringCommaSeparated_success() {
     final List<String> emptyList = SurveyUtils.getListFromStringCommaSeparated("");
-    assertTrue(emptyList.isEmpty());
+    assertThat(emptyList.isEmpty(), is(true));
     final List<String> oneElement = SurveyUtils.getListFromStringCommaSeparated("User1 User2");
     assertThat(oneElement, hasItem("User1 User2"));
     final List<String> twoElements = SurveyUtils.getListFromStringCommaSeparated("User1, User2");
@@ -74,29 +63,23 @@ public class SurveyUtilsTest {
 
   @Test
   public void test_getUserVisualizationFromString_should_return_default_for_null() {
-    // When:
     UserVisualization result = SurveyUtils.getUserVisualizationFromString(null, UserVisualization.PLAIN_LOGIN);
 
-    // Then:
-    assertEquals(UserVisualization.PLAIN_LOGIN, result);
+    assertThat(result, is(UserVisualization.PLAIN_LOGIN));
   }
 
   @Test
   public void test_getUserVisualizationFromString_should_return_default_for_unknown_propertyValue() {
-    // When:
     UserVisualization result = SurveyUtils.getUserVisualizationFromString("unknown", UserVisualization.LINKED_FULL);
 
-    // Then:
-    assertEquals(UserVisualization.LINKED_FULL, result);
+    assertThat(result, is(UserVisualization.LINKED_FULL));
   }
 
   @Test
   public void test_getUserVisualizationFromString_should_return_LINKED_FULL_for_its_propertyValue() {
-    // When:
     UserVisualization result = SurveyUtils.getUserVisualizationFromString("linked user name", UserVisualization.PLAIN_LOGIN);
 
-    // Then:
-    assertEquals(UserVisualization.LINKED_FULL, result);
+    assertThat(result, is(UserVisualization.LINKED_FULL));
   }
 
   //****** Helper Methods ******
@@ -116,52 +99,5 @@ public class SurveyUtilsTest {
       sb.append((char) ((int) (Math.random() * 26) + 97));
     }
     return sb.toString();
-  }
-
-  public static Ballot createDefaultBallot(String title) {
-    final HashMap<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, title);
-    return createBallotWithParameters(parameters);
-  }
-
-  public static Ballot createDefaultBallotWithChoices(String title, List<Choice> choices) {
-    final HashMap<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, title);
-    return createBallotWithParametersAndChoices(parameters, choices);
-  }
-
-  public static Ballot createDefaultBallotWithComments(String title, List<Comment> comments) {
-    final HashMap<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, title);
-    return new Ballot(title, "", createDefaultVoteConfig(parameters), SurveyUtils.getDefaultChoices(), comments);
-  }
-
-  public static Ballot createBallotWithParameters(Map<String, String> parameters) {
-    return createBallotWithParametersAndChoices(parameters, SurveyUtils.getDefaultChoices());
-  }
-
-  public static Ballot createBallotWithParametersAndChoices(Map<String, String> parameters, List<Choice> choices) {
-    String titleInMacroParameters = SurveyUtils.getTitleInMacroParameters(parameters);
-    return new Ballot(titleInMacroParameters, "", createDefaultVoteConfig(parameters), choices, new ArrayList<Comment>());
-  }
-
-  public static Choice createdDefaultChoice() {
-    return new Choice(SOME_CHOICE_DESCRIPTION);
-  }
-
-  public static VoteConfig createDefaultVoteConfig(Map<String, String> parameters) {
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    return new VoteConfig(mockPermissionEvaluator, parameters);
-  }
-
-  public static SurveyConfig createDefaultSurveyConfig(Map<String, String> parameters) {
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    return new SurveyConfig(mockPermissionEvaluator, parameters);
-  }
-
-  public static Map<String, String> createDefaultParametersWithTitle(String title) {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, title);
-    return parameters;
   }
 }

@@ -1,23 +1,19 @@
 package org.hivesoft.confluence.macros.vote;
 
-import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.security.PermissionManager;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
-import org.hivesoft.confluence.model.enums.UserVisualization;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.model.enums.UserVisualization;
 import org.hivesoft.confluence.utils.PermissionEvaluator;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,11 +28,14 @@ public class VoteConfigTest {
 
   VoteConfig classUnderTest;
 
+  @Before
+  public void setUp() {
+    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
+  }
+
   @Test
   public void test_createWithDefaultParameters_success() {
     Map<String, String> parameters = new HashMap<String, String>();
-
-    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
 
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
@@ -66,9 +65,6 @@ public class VoteConfigTest {
   @Test
   public void test_createFromSurveyConfigWithDefaultParameters_success() {
     Map<String, String> parameters = new HashMap<String, String>();
-
-    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
-
     SurveyConfig surveyConfig = new SurveyConfig(permissionEvaluator, parameters);
 
     classUnderTest = new VoteConfig(surveyConfig);
@@ -98,9 +94,6 @@ public class VoteConfigTest {
 
   @Test
   public void test_createWithAllCustomParameters_success() {
-
-    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
-
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someRandomTitle");
     parameters.put(VoteConfig.KEY_RENDER_TITLE_LEVEL, "5");
@@ -146,9 +139,6 @@ public class VoteConfigTest {
 
   @Test
   public void test_visiblePendingVotersAlsoDependsOnVotersNotEmpty_success() {
-
-    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
-
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_VOTERS, " ");
     parameters.put(VoteConfig.KEY_VISIBLE_PENDING_VOTERS, "true");
@@ -162,69 +152,32 @@ public class VoteConfigTest {
 
   @Test
   public void test_userVisualization_backwards_compatibility_with_visibleVotersWiki_for_false() {
-    // Given:
-    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
-
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "false");
 
-    // When:
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
-    // Then:
-    assertEquals(UserVisualization.PLAIN_LOGIN, classUnderTest.getUserRenderer().getUserVisualization());
+    assertThat(classUnderTest.getUserRenderer().getUserVisualization(), is(UserVisualization.PLAIN_LOGIN));
   }
 
   @Test
   public void test_userVisualization_backwards_compatibility_with_visibleVotersWiki_for_true() {
-    // Given:
-    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
-
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "true");
 
-    // When:
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
-    // Then:
-    assertEquals(UserVisualization.LINKED_LOGIN, classUnderTest.getUserRenderer().getUserVisualization());
+    assertThat(classUnderTest.getUserRenderer().getUserVisualization(), is(UserVisualization.LINKED_LOGIN));
   }
 
   @Test
   public void test_userVisualization_should_handle_new_parameter_before_old() {
-    // Given:
-    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
-
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS_WIKI, "false");
     parameters.put(VoteConfig.KEY_USER_VISUALIZATION, "linked user name");
 
-    // When:
     classUnderTest = new VoteConfig(permissionEvaluator, parameters);
 
-    // Then:
-    assertEquals(UserVisualization.LINKED_FULL, classUnderTest.getUserRenderer().getUserVisualization());
-  }
-
-  @Test
-  public void test_canAttachFile_success() {
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    classUnderTest = new VoteConfig(mockPermissionEvaluator, new HashMap<String, String>());
-
-    when(mockPermissionEvaluator.canAttachFile(any(Page.class))).thenReturn(true);
-
-    final Boolean canAttachFile = classUnderTest.canAttachFile(new Page());
-    assertThat(canAttachFile, is(true));
-  }
-
-  @Test
-  public void test_canCreatePage_success() {
-    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-    classUnderTest = new VoteConfig(mockPermissionEvaluator, new HashMap<String, String>());
-
-    when(mockPermissionEvaluator.canCreatePage(any(Page.class))).thenReturn(true);
-
-    final Boolean canCreatePage = classUnderTest.canCreatePage(new Page());
-    assertThat(canCreatePage, is(true));
+    assertThat(classUnderTest.getUserRenderer().getUserVisualization(), is(UserVisualization.LINKED_FULL));
   }
 }

@@ -40,16 +40,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This macro defines a simple voting mechanism against a particular topic. Users may only vote once (unless changeable votes is true), can only vote for one choice, and cannot see the overall results
+ * This macro defines a simple voting mechanism against a particular topic. By default: Users may only vote once (unless changeable votes is true), can only vote for one choice, and cannot see the overall results
  * until after they have voted.
  */
 public class VoteMacro implements Macro {
   private static final Logger.Log LOG = Logger.getInstance(VoteMacro.class);
 
   public static final String VOTE_MACRO = "vote";
-
-  // prefix vote to make a vote unique in the text properties
-  public static final String VOTE_PREFIX = "vote.";
+  public static final String VOTE_STORAGE_PREFIX = "vote.";
 
   private final PluginSettingsFactory pluginSettingsFactory;
   private final SurveyManager surveyManager;
@@ -66,27 +64,60 @@ public class VoteMacro implements Macro {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  public BodyType getBodyType() {
-    return BodyType.PLAIN_TEXT;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public OutputType getOutputType() {
-    return OutputType.BLOCK;
-  }
-
-  /**
    * New Confluence 4 xhtml stuff {@inheritDoc}
    */
   @Override
   @RequiresFormat(value = Format.View)
   public String execute(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
+    validateInput(parameters, body, conversionContext);
+
+    final ContentEntityObject contentObject = conversionContext.getEntity(); // surveyManager.getPageEntityFromConversionContext(conversionContext);
+
+    Ballot ballot = surveyManager.reconstructBallotFromPlainTextMacroBody(parameters, body, contentObject);
+
+    MacroConstructionResult macroConstructionResult = new MacroConstructionResult(surveyManager, contentObject);
+    if (contentObject instanceof Comment) {
+      macroConstructionResult.addProblems("Voting within comments is currently unsupported. See https://github.com/drohne1673/confluence-survey-plugin/issues/25 for details");
+    }
+
+    final List<String> noneUniqueTitles = new ArrayList<String>();
+    if (ballot.getChoices().size() != 0) {
+      for (Choice choice : ballot.getChoices()) {
+        if (noneUniqueTitles.contains(choice.getDescription())) {
+          macroConstructionResult.addProblems("The choice-descriptions must be unique! The row starting with title of '" + choice.getDescription() + "' violated that. Please rename your choices to unique answers!");
+        } else {
+          noneUniqueTitles.add(choice.getDescription());
+        }
+      }
+    }   //don't render a error (that's not nice), render a warning element within velocity
+
+    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballot.getBallotTitlesWithChoiceNames());
+    macroConstructionResult.addProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
+
+    // now create a simple velocity context and render a template for the output
+    Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
+    contextMap.put("ballot", ballot);
+    contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
+    contextMap.put("currentUser", surveyManager.getCurrentUser());
+    contextMap.put("macroResult", macroConstructionResult);
+
+    String templateToRender = "templates/macros/vote/votemacro-renderproblems.vm";
+    if (!macroConstructionResult.hasProblems()) {
+      templateToRender = "templates/macros/vote/votemacro.vm";
+    }
+
+    try {
+      StringWriter renderedTemplate = new StringWriter();
+      renderer.render(templateToRender, contextMap, renderedTemplate);
+      return renderedTemplate.toString();
+    } catch (IOException e) {
+      final String message = "Error while trying to display Ballot!";
+      LOG.error(message, e);
+      throw new MacroExecutionException(message, e);
+    }
+  }
+
+  private void validateInput(Map<String, String> parameters, String body, ConversionContext conversionContext) throws MacroExecutionException {
     final List<String> voteMacroTitles = new ArrayList<String>();
     final String voteMacroTitle = SurveyUtils.getTitleInMacroParameters(parameters);
     if (StringUtils.isBlank(voteMacroTitle)) {
@@ -145,51 +176,21 @@ public class VoteMacro implements Macro {
     } catch (XhtmlException e) {
       throw new MacroExecutionException(e);
     }
+  }
 
-    final ContentEntityObject contentObject = conversionContext.getEntity(); // surveyManager.getPageEntityFromConversionContext(conversionContext);
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public BodyType getBodyType() {
+    return BodyType.PLAIN_TEXT;
+  }
 
-    Ballot ballot = surveyManager.reconstructBallotFromPlainTextMacroBody(parameters, body, contentObject);
-
-    MacroConstructionResult macroConstructionResult = new MacroConstructionResult();
-    if (conversionContext.getEntity() instanceof Comment) {
-      macroConstructionResult.addProblems("Voting within comments is currently unsupported. See https://github.com/drohne1673/confluence-survey-plugin/issues/25 for details");
-    }
-
-    final List<String> noneUniqueTitles = new ArrayList<String>();
-    if (ballot.getChoices().size() != 0) {
-      for (Choice choice : ballot.getChoices()) {
-        if (noneUniqueTitles.contains(choice.getDescription())) {
-          macroConstructionResult.addProblems("The choice-descriptions must be unique! The row starting with title of '" + choice.getDescription() + "' violated that. Please rename your choices to unique answers!");
-        } else {
-          noneUniqueTitles.add(choice.getDescription());
-        }
-      }
-    }   //don't render a error (that's not nice), render a warning element within velocity
-
-    final List<String> violatingMaxStorableKeyLengthItems = SurveyUtils.getViolatingMaxStorableKeyLengthItems(ballot.getBallotTitlesWithChoiceNames());
-    macroConstructionResult.addProblems(violatingMaxStorableKeyLengthItems.toArray(new String[violatingMaxStorableKeyLengthItems.size()]));
-
-    // now create a simple velocity context and render a template for the output
-    Map<String, Object> contextMap = velocityAbstractionHelper.getDefaultVelocityContext(); // MacroUtils.defaultVelocityContext();
-    contextMap.put("content", contentObject);
-    contextMap.put("ballot", ballot);
-    contextMap.put("iconSet", SurveyUtils.getIconSetFromPluginSettings(pluginSettingsFactory));
-    contextMap.put("currentUser", surveyManager.getCurrentUser());
-    contextMap.put("macroResult", macroConstructionResult);
-
-    String templateToRender = "templates/macros/vote/votemacro-renderproblems.vm";
-    if (!macroConstructionResult.hasProblems()) {
-      templateToRender = "templates/macros/vote/votemacro.vm";
-    }
-
-    try {
-      StringWriter renderedTemplate = new StringWriter();
-      renderer.render(templateToRender, contextMap, renderedTemplate);
-      return renderedTemplate.toString();
-    } catch (IOException e) {
-      final String message = "Error while trying to display Ballot!";
-      LOG.error(message, e);
-      throw new MacroExecutionException(message, e);
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public OutputType getOutputType() {
+    return OutputType.BLOCK;
   }
 }

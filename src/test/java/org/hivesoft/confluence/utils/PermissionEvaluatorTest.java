@@ -1,5 +1,7 @@
 package org.hivesoft.confluence.utils;
 
+import com.atlassian.confluence.core.ContentEntityObject;
+import com.atlassian.confluence.pages.Attachment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.confluence.security.Permission;
 import com.atlassian.confluence.security.PermissionManager;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
@@ -42,33 +45,50 @@ public class PermissionEvaluatorTest extends ConfluenceTestBase {
   }
 
   @Test
-  public void test_canCreatePage_success() {
+  public void test_canAttachFile_success() {
+    ContentEntityObject contentEntityObject = new Page();
+
     when(mockUserManager.getRemoteUsername()).thenReturn(SOME_USER1.getName());
+    when(mockUserAccessor.getUser(SOME_USER1.getName())).thenReturn(SOME_USER1);
+    when(mockPermissionManager.hasCreatePermission(SOME_USER1, contentEntityObject, Attachment.class)).thenReturn(true);
+
+    boolean result = classUnderTest.canAttachFile(contentEntityObject);
+
+    assertThat(result, is(true));
+  }
+
+  @Test
+  public void test_canCreatePage_success() {
     final Page contentEntityObject = new Page();
+
+    when(mockUserManager.getRemoteUsername()).thenReturn(SOME_USER1.getName());
     when(mockUserAccessor.getUser(SOME_USER1.getName())).thenReturn(SOME_USER1);
     when(mockPermissionManager.hasPermission(SOME_USER1, Permission.EDIT, contentEntityObject)).thenReturn(true);
-    final boolean canCreatePage = classUnderTest.canCreatePage(contentEntityObject);
-    assertThat(canCreatePage, is(true));
+
+    final boolean result = classUnderTest.canCreatePage(contentEntityObject);
+    assertThat(result, is(true));
   }
 
   @Test
   public void test_getRemoteUser_success() {
     when(mockUserManager.getRemoteUsername()).thenReturn("someUser");
     when(mockUserAccessor.getUser("someUser")).thenReturn(new DefaultUser("someUser"));
+
     final User remoteUser = classUnderTest.getRemoteUser();
+
     assertThat(remoteUser.getName(), is("someUser"));
   }
 
   @Test
   public void test_isPermissionListEmptyOrContainsGivenUser_Anonymous_failure() {
     final Boolean canPerformAction = classUnderTest.isPermissionListEmptyOrContainsGivenUser(new ArrayList<String>(), null);
-    assertEquals(Boolean.FALSE, canPerformAction);
+    assertThat(canPerformAction, is(equalTo(false)));
   }
 
   @Test
   public void test_isPermissionListEmptyOrContainsGivenUser_KnownNotRestricted_success() {
     final Boolean canPerformAction = classUnderTest.isPermissionListEmptyOrContainsGivenUser(new ArrayList<String>(), new DefaultUser("KnownUser"));
-    assertEquals(Boolean.TRUE, canPerformAction);
+    assertThat(canPerformAction, is(equalTo(true)));
   }
 
   @Test
