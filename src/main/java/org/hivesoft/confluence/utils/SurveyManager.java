@@ -146,7 +146,7 @@ public class SurveyManager {
   /**
    * if this ballot is a default one, check whether there are old (v. 1.1.*) default items and convert see CSRVY-21 for details
    */
-  private void migrateOldDefaultVotesIfPresent(ContentEntityObject contentObject, String ballotTitle, String choiceName) {
+  protected void migrateOldDefaultVotesIfPresent(ContentEntityObject contentObject, String ballotTitle, String choiceName) {
     if (SurveyUtils.DEFAULT_CHOICE_NAMES.contains(choiceName)) {
       int defaultIndex = SurveyUtils.DEFAULT_CHOICE_NAMES.indexOf(choiceName);
 

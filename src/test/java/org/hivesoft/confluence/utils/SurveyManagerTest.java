@@ -387,4 +387,23 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     boolean result = classUnderTest.canAttachFile(contentEntityObject);
     assertThat(result, is(true));
   }
+
+  @Test
+  public void test_migrateOldDefaultVotesIfPresent_success() {
+    Page contentObject = new Page();
+
+    String oldChoiceName = SurveyUtils.DEFAULT_OLD_CHOICE_NAMES.get(0);
+    String newChoiceName = SurveyUtils.DEFAULT_CHOICE_NAMES.get(0);
+    String someBallotTitle = SOME_BALLOT_TITLE;
+
+    String oldKey = VoteMacro.VOTE_STORAGE_PREFIX + someBallotTitle + "." + oldChoiceName;
+    String newKey = VoteMacro.VOTE_STORAGE_PREFIX + someBallotTitle + "." + newChoiceName;
+
+    when(mockContentPropertyManager.getTextProperty(contentObject, oldKey)).thenReturn("user1,user2");
+
+    classUnderTest.migrateOldDefaultVotesIfPresent(contentObject, someBallotTitle, newChoiceName);
+
+    verify(mockContentPropertyManager).setTextProperty(contentObject, newKey, "user1,user2");
+    verify(mockContentPropertyManager).setTextProperty(contentObject, oldKey, null);
+  }
 }

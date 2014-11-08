@@ -12,6 +12,7 @@ import com.atlassian.user.impl.DefaultGroup;
 import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.model.wrapper.AnonymousUser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -42,6 +43,15 @@ public class PermissionEvaluatorTest extends ConfluenceTestBase {
   @Before
   public void setup() {
     classUnderTest = new PermissionEvaluator(mockUserAccessor, mockUserManager, mockPermissionManager);
+  }
+
+  @Test
+  public void test_getUserByName_nullNotFound_anonymous() {
+    when(mockUserAccessor.getUser(null)).thenReturn(null);
+
+    User result = classUnderTest.getUserByName(null);
+
+    assertThat(result.getFullName(), is(new AnonymousUser().getFullName()));
   }
 
   @Test
