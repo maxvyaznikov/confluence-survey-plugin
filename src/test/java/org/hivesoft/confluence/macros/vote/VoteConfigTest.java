@@ -63,6 +63,19 @@ public class VoteConfigTest {
   }
 
   @Test
+  public void test_createWithDefaultParameters_userIsAnonymous_success() {
+    Map<String, String> parameters = new HashMap<String, String>();
+
+    when(mockUserManager.getRemoteUsername()).thenReturn(null);
+
+    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+
+    assertThat(classUnderTest.isCanSeeResults(), is(true));
+    assertThat(classUnderTest.isCanTakeSurvey(), is(false));
+    assertThat(classUnderTest.isCanManageSurvey(), is(false));
+  }
+
+  @Test
   public void test_createFromSurveyConfigWithDefaultParameters_success() {
     Map<String, String> parameters = new HashMap<String, String>();
     SurveyConfig surveyConfig = new SurveyConfig(permissionEvaluator, parameters);

@@ -32,6 +32,7 @@ import org.hivesoft.confluence.model.Survey;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.model.vote.Comment;
+import org.hivesoft.confluence.model.wrapper.InvalidPage;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackAddAttachment;
 import org.hivesoft.confluence.rest.callbacks.TransactionCallbackStorePage;
 import org.hivesoft.confluence.rest.exceptions.MacroReconstructionException;
@@ -275,41 +276,6 @@ public class SurveyResource {
       formattedVoters.add(ballot.getConfig().getUserRenderer().renderForCsv(voter));
     }
     return StringUtils.join(formattedVoters, ",");
-  }
-
-  private static class InvalidPage extends AbstractPage {
-
-    Response.Status status;
-    String message;
-
-    private InvalidPage(Response.Status status, String message) {
-      this.status = status;
-      this.message = message;
-    }
-
-    @Override
-    public String getType() {
-      return null;
-    }
-
-    @Override
-    public String getUrlPath() {
-      return null;
-    }
-
-    @Override
-    public String getNameForComparison() {
-      return null;
-    }
-
-    @Override
-    public String getLinkWikiMarkup() {
-      return null;
-    }
-
-    public Response toResponse() {
-      return Response.status(status).entity(message).build();
-    }
   }
 
   private AbstractPage getPageObjectById(long pageId) {
