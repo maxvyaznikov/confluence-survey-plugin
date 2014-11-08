@@ -356,6 +356,17 @@ public class SurveyManagerTest extends ConfluenceTestBase {
   }
 
   @Test
+  public void test_canCreatePage_success() {
+    ContentEntityObject contentEntityObject = new Page();
+
+    when(mockPermissionEvaluator.canCreatePage(contentEntityObject)).thenReturn(true);
+
+    boolean result = classUnderTest.canCreatePage(contentEntityObject);
+
+    assertThat(result, is(true));
+  }
+
+  @Test
   public void test_canResetSurvey_success() {
     Survey survey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
 
