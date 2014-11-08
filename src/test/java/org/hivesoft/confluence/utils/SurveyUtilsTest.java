@@ -1,8 +1,11 @@
 package org.hivesoft.confluence.utils;
 
 import com.atlassian.confluence.macro.MacroExecutionException;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.model.enums.UserVisualization;
+import org.hivesoft.confluence.rest.AdminResource;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,6 +14,9 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SurveyUtilsTest extends ConfluenceTestBase {
 
@@ -80,6 +86,58 @@ public class SurveyUtilsTest extends ConfluenceTestBase {
     UserVisualization result = SurveyUtils.getUserVisualizationFromString("linked user name", UserVisualization.PLAIN_LOGIN);
 
     assertThat(result, is(UserVisualization.LINKED_FULL));
+  }
+
+  @Test
+  public void test_getIconSetFromPluginSettings_noSettingsFound_success(){
+    PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
+
+    when(mockPluginSettingsFactory.createGlobalSettings()).thenReturn(new PluginSettings() {
+      @Override
+      public Object get(String key) {
+        return null;
+      }
+
+      @Override
+      public Object put(String key, Object value) {
+        return null;
+      }
+
+      @Override
+      public Object remove(String key) {
+        return null;
+      }
+    });
+
+    String result = SurveyUtils.getIconSetFromPluginSettings(mockPluginSettingsFactory);
+
+    assertThat(result, is(AdminResource.SURVEY_PLUGIN_ICON_SET_DEFAULT));
+  }
+
+  @Test
+  public void test_getIconSetFromPluginSettings_settingsFound_success(){
+    PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
+
+    when(mockPluginSettingsFactory.createGlobalSettings()).thenReturn(new PluginSettings() {
+      @Override
+      public Object get(String key) {
+        return "aDifferentIconSet";
+      }
+
+      @Override
+      public Object put(String key, Object value) {
+        return null;
+      }
+
+      @Override
+      public Object remove(String key) {
+        return null;
+      }
+    });
+
+    String result = SurveyUtils.getIconSetFromPluginSettings(mockPluginSettingsFactory);
+
+    assertThat(result, is("aDifferentIconSet"));
   }
 
   //****** Helper Methods ******
