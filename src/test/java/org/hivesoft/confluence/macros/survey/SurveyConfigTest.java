@@ -75,8 +75,7 @@ public class SurveyConfigTest {
   @Test
   public void test_migrateParameters() {
     Map<String, String> migratedParameters = SurveyConfig.migrateParameters(createOldSurveySummaryParameters(SurveySummary.Top));
-    Map<String, String> emptyMap = new HashMap<String, String>();
-    assertThat(migratedParameters, is(emptyMap));
+    assertThat(migratedParameters, is(createSurveySummaryParameters(SurveySummary.Top)));
     migratedParameters = SurveyConfig.migrateParameters(createOldSurveySummaryParameters(SurveySummary.Bottom));
     assertThat(migratedParameters, is(createSurveySummaryParameters(SurveySummary.Bottom)));
     migratedParameters = SurveyConfig.migrateParameters(createOldSurveySummaryParameters(SurveySummary.None));
@@ -109,6 +108,9 @@ public class SurveyConfigTest {
       parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, String.valueOf(false));
     } else if (summary == SurveySummary.Bottom) {
       parameters.put(SurveyConfig.KEY_SHOW_LAST, String.valueOf(true));
+    } else {
+      parameters.put(SurveyConfig.KEY_SHOW_SUMMARY, String.valueOf(true));
+      parameters.put(SurveyConfig.KEY_SHOW_LAST, String.valueOf(false));
     }
     return parameters;
   }

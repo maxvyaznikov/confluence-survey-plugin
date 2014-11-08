@@ -187,6 +187,21 @@ public class PermissionEvaluatorTest extends ConfluenceTestBase {
   }
 
   @Test
+  public void test_getUsersForGroupOrUser_oneGroupReturnsTwoUsersButOneIsDeactivated_success() {
+    final DefaultGroup group1 = new DefaultGroup("group1");
+
+    when(mockUserAccessor.getGroup(group1.getName())).thenReturn(group1);
+    when(mockUserAccessor.getMemberNamesAsList(group1)).thenReturn(newArrayList(SOME_USER1.getName(), SOME_USER2.getName()));
+    when(mockUserAccessor.getUser(SOME_USER1.getName())).thenReturn(SOME_USER1);
+    when(mockUserAccessor.getUser(SOME_USER2.getName())).thenReturn(SOME_USER2);
+    when(mockUserAccessor.isDeactivated(SOME_USER1)).thenReturn(true);
+
+    final List<User> result = classUnderTest.getActiveUsersForGroupOrUser(group1.getName());
+
+    assertThat(result, containsInAnyOrder(SOME_USER2));
+  }
+
+  @Test
   public void test_getUsersForGroupOrUser_oneUserExistsAndIsNotDeactivated_success() {
     when(mockUserAccessor.getGroup(SOME_USER1.getName())).thenReturn(null);
     when(mockUserAccessor.getUser(SOME_USER1.getName())).thenReturn(SOME_USER1);

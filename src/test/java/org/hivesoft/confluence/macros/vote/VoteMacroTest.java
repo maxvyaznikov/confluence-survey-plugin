@@ -82,6 +82,16 @@ public class VoteMacroTest extends ConfluenceTestBase {
   }
 
   @Test(expected = MacroExecutionException.class)
+  public void test_execute_entityNull_exception() throws Exception {
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, "someVoteTitle");
+
+    when(mockConversionContext.getEntity()).thenReturn(null);
+
+    classUnderTest.execute(parameters, "", mockConversionContext);
+  }
+
+  @Test(expected = MacroExecutionException.class)
   public void test_execute_voteTitleDuplicateDetected_exception() throws Exception {
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someVoteTitle");
