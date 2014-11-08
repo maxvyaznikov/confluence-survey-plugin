@@ -9,18 +9,19 @@ import com.atlassian.renderer.v2.macro.MacroException;
 import com.atlassian.user.User;
 import com.opensymphony.xwork.ActionContext;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
-import org.hivesoft.confluence.model.enums.VoteAction;
-import org.hivesoft.confluence.model.Survey;
-import org.hivesoft.confluence.model.wrapper.SurveyUser;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
+import org.hivesoft.confluence.model.Survey;
+import org.hivesoft.confluence.model.enums.VoteAction;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
+import org.hivesoft.confluence.model.wrapper.SurveyUser;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -352,5 +353,27 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
     verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".commenters"), eq("|" + SOME_USER2.getName() + "|"));
     verify(mockContentPropertyManager).setTextProperty(any(Page.class), eq("survey." + someBallotTitle + ".comment." + SOME_USER1.getName()), isNull(String.class));
+  }
+
+  @Test
+  public void test_canResetSurvey_success() {
+    Survey survey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+
+    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
+    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(any(List.class), eq(SOME_USER1))).thenReturn(true);
+
+    boolean result = classUnderTest.canResetSurvey(survey);
+
+    assertThat(result, is(true));
+  }
+
+  @Test
+  public void test_canAttachFile_success() {
+    ContentEntityObject contentEntityObject = new Page();
+
+    when(mockPermissionEvaluator.canAttachFile(contentEntityObject)).thenReturn(true);
+
+    boolean result = classUnderTest.canAttachFile(contentEntityObject);
+    assertThat(result, is(true));
   }
 }

@@ -47,14 +47,6 @@ public class SurveyManager {
     this.permissionEvaluator = permissionEvaluator;
   }
 
-  public PermissionEvaluator getPermissionEvaluator() {
-    return permissionEvaluator;
-  }
-
-  public User getCurrentUser() {
-    return permissionEvaluator.getRemoteUser();
-  }
-
   /**
    * This method will take the data from the macros parameters, body, and page data to reconstruct a ballot object with all of the choices and previously cast votes populated.
    * This method will probably only work from a VoteMacro context
@@ -155,7 +147,7 @@ public class SurveyManager {
   }
 
   /**
-   * if this ballot is a default one, check whether there are old default items and convert see CSRVY-21 for details
+   * if this ballot is a default one, check whether there are old (v. 1.1.*) default items and convert see CSRVY-21 for details
    */
   private void migrateOldDefaultVotesIfPresent(ContentEntityObject contentObject, String ballotTitle, String choiceName) {
     if (SurveyUtils.DEFAULT_CHOICE_NAMES.contains(choiceName)) {
@@ -198,7 +190,6 @@ public class SurveyManager {
     }
   }
 
-
   public VoteAction recordVote(Ballot ballot, ContentEntityObject contentObject, String requestChoice, VoteAction voteAction) {
     LOG.debug("recordVote: found Ballot-Title=" + ballot.getTitle() + ", choice=" + requestChoice + ", action=" + voteAction);
     final User remoteUser = permissionEvaluator.getRemoteUser();
@@ -226,6 +217,7 @@ public class SurveyManager {
     }
     return VoteAction.fromChange(voteRecorded);
   }
+
 
   /**
    * Make sure the contentEntityObject is of type Page, as we need a actual Page to store/retrieve data
@@ -287,11 +279,15 @@ public class SurveyManager {
     contentPropertyManager.setTextProperty(contentEntityObject, commentersPropertyName, commenters);
   }
 
+  public User getCurrentUser() {
+    return permissionEvaluator.getRemoteUser();
+  }
+
   public boolean canResetSurvey(Survey survey) {
     return permissionEvaluator.isPermissionListEmptyOrContainsGivenUser(survey.getConfig().getManagers(), getCurrentUser());
   }
 
-  public boolean canAttachFile(AbstractPage page) {
-    return permissionEvaluator.canAttachFile(page);
+  public boolean canAttachFile(ContentEntityObject contentEntityObject) {
+    return permissionEvaluator.canAttachFile(contentEntityObject);
   }
 }
