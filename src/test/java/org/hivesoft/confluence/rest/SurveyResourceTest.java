@@ -16,6 +16,7 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
+import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.model.Survey;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Comment;
@@ -120,7 +121,9 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
+    HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SOME_SURVEY_TITLE);
+    Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
     final Ballot someBallot = new Ballot("Should this be exported?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     someSurvey.addBallot(someBallot);
     someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));
@@ -234,6 +237,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<badContent><brokenTag2><ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">notThisSurvey</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
@@ -247,7 +251,10 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:parameter ac:name=\"locked\">true</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
+
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
+    Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
@@ -267,6 +274,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
 
 
     final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
     parameters.put(SurveyConfig.KEY_MANAGERS, "notThisUser");
     Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
 
@@ -288,6 +296,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
 
 
     final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
     parameters.put(SurveyConfig.KEY_LOCKED, "true");
     Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
 

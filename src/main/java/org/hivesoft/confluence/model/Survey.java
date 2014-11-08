@@ -25,18 +25,16 @@ import java.util.List;
  */
 public class Survey {
 
-  private String title;
+  private final String title;
   private List<Ballot> ballots = new ArrayList<Ballot>();
 
   private SurveyConfig config;
 
   public Survey(SurveyConfig config) {
     this.config = config;
+    this.title = config.getTitle();
   }
 
-  /**
-   * @param ballot to add to the survey.
-   */
   public void addBallot(Ballot ballot) {
     ballots.add(ballot);
   }
@@ -82,10 +80,6 @@ public class Survey {
     }
 
     return true;
-  }
-
-  public void setTitle(String inTitle) {
-    title = inTitle;
   }
 
   public String getTitle() {

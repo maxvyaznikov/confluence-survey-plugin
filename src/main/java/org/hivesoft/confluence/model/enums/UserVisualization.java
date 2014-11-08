@@ -12,7 +12,6 @@ public enum UserVisualization {
   final String propertyValue;
 
   private UserVisualization(String propertyValue) {
-
     this.propertyValue = propertyValue;
   }
 

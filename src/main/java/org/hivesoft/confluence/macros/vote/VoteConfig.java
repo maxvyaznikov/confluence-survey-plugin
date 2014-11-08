@@ -47,6 +47,7 @@ public class VoteConfig {
   protected static final String KEY_ANONYMOUS_MODE = "anonymousMode";
   protected static final String KEY_UNIQUE_ID = "uniqueId";
 
+  private final String title;
   private final int renderTitleLevel;
   private final boolean changeableVotes;
   private final List<String> voters;
@@ -68,13 +69,18 @@ public class VoteConfig {
 
   private final int iterateStep;
 
-
   protected final PermissionEvaluator permissionEvaluator;
   protected final UserRenderer userRenderer;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     this.permissionEvaluator = permissionEvaluator;
 
+    String tmpTitle = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE)).trim();
+    if (StringUtils.isBlank(tmpTitle)) {
+      //in case of the vote macro there was the possibility to pass the title anonymously
+      tmpTitle = StringUtils.defaultString(parameters.get("0")).trim();
+    }
+    title = tmpTitle;
     renderTitleLevel = SurveyUtils.getIntegerFromString(parameters.get(KEY_RENDER_TITLE_LEVEL), 3);
     changeableVotes = Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES));
     voters = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_VOTERS)));
@@ -119,6 +125,8 @@ public class VoteConfig {
   public VoteConfig(SurveyConfig surveyConfig) {
     this.permissionEvaluator = surveyConfig.permissionEvaluator;
 
+    title = surveyConfig.getTitle();
+
     renderTitleLevel = surveyConfig.getRenderTitleLevel() > 0 ? surveyConfig.getRenderTitleLevel() + 1 : 0;
 
     changeableVotes = surveyConfig.isChangeableVotes();
@@ -144,6 +152,9 @@ public class VoteConfig {
     userRenderer = surveyConfig.getUserRenderer();
   }
 
+  public String getTitle() {
+    return title;
+  }
 
   public int getRenderTitleLevel() {
     return renderTitleLevel;

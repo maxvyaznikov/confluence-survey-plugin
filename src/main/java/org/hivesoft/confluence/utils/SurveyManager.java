@@ -83,8 +83,6 @@ public class SurveyManager {
   public Survey reconstructSurveyFromPlainTextMacroBody(String plainTextMacroBody, ContentEntityObject contentObject, Map<String, String> parameters) {
     Survey survey = new Survey(new SurveyConfig(permissionEvaluator, parameters));
 
-    survey.setTitle(SurveyUtils.getTitleInMacroParameters(parameters));
-
     if (StringUtils.isBlank(plainTextMacroBody)) {
       return survey;
     }

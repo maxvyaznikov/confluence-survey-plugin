@@ -217,8 +217,7 @@ public class SurveyResource {
 
     final List<Survey> surveys = new ArrayList<Survey>();
     try {
-      final List<Survey> surveysFound = reconstructSurveysByTitle(surveyTitle, page);
-      surveys.addAll(surveysFound);
+      surveys.addAll(reconstructSurveysByTitle(surveyTitle, page));
     } catch (MacroReconstructionException e) {
       return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
     }
@@ -250,10 +249,9 @@ public class SurveyResource {
         public void handle(MacroDefinition macroDefinition) {
           if (SurveyMacro.SURVEY_MACRO.equals(macroDefinition.getName())) {
             final Map<String, String> parameters = macroDefinition.getParameters();
-            String currentTitle = SurveyUtils.getTitleInMacroParameters(parameters);
+            Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), contentEntityObject, parameters);
+            String currentTitle = survey.getTitle();
             if (surveyTitle.equalsIgnoreCase(currentTitle)) {
-              final Survey survey = surveyManager.reconstructSurveyFromPlainTextMacroBody(macroDefinition.getBodyText(), contentEntityObject, macroDefinition.getParameters());
-              survey.setTitle(surveyTitle);
               surveysFound.add(survey);
             }
           }

@@ -2,6 +2,7 @@ package org.hivesoft.confluence.macros;
 
 import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultUser;
+import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.model.vote.Ballot;
@@ -51,7 +52,7 @@ public abstract class ConfluenceTestBase {
   }
 
   protected static Ballot createBallotWithParametersAndChoices(Map<String, String> parameters, List<Choice> choices) {
-    String titleInMacroParameters = SurveyUtils.getTitleInMacroParameters(parameters);
+    String titleInMacroParameters = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE));
     return new Ballot(titleInMacroParameters, "", createDefaultVoteConfig(parameters), choices, new ArrayList<Comment>());
   }
 

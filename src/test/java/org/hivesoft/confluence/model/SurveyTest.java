@@ -2,12 +2,17 @@ package org.hivesoft.confluence.model;
 
 import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultUser;
+import org.hamcrest.core.Is;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
+import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.model.vote.Ballot;
+import org.hivesoft.confluence.model.vote.Comment;
 import org.hivesoft.confluence.utils.SurveyUtils;
+import org.hivesoft.confluence.utils.SurveyUtilsTest;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -102,5 +107,16 @@ public class SurveyTest extends ConfluenceTestBase {
     final List<String> result = classUnderTest.getBallotTitlesWithChoiceNames();
 
     assertThat(result.get(0), is(equalTo(SOME_BALLOT_TITLE + "." + SurveyUtils.getDefaultChoices().get(0).getDescription())));
+  }
+
+  @Test
+  public void test_getTitleWithRenderedLinks_success(){
+    HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_TITLE, "i am a survey to http://google.de but https://www.google.com is also ok");
+
+    classUnderTest = new Survey(createDefaultSurveyConfig(parameters));
+
+    assertThat(classUnderTest.getTitleWithRenderedLinks(),
+            is("i am a survey to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a> but <a href=\"https://www.google.com\" target=\"_blank\">https://www.google.com</a> is also ok"));
   }
 }

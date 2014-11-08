@@ -18,6 +18,8 @@ import com.atlassian.event.api.EventPublisher;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.templaterenderer.TemplateRenderer;
 import com.opensymphony.webwork.views.velocity.VelocityManager;
+import edu.emory.mathcs.backport.java.util.Arrays;
+import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
@@ -99,10 +101,12 @@ public class VoteMacroTest extends ConfluenceTestBase {
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someVoteTitle");
 
+    List<String> ballots = Arrays.asList(new String[]{"notTheFirst", "someVoteTitle-subtitle", "someOther \"§$\"§$", "ballotTitle"});
+
     ContentEntityObject somePage = new Page();
     somePage.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">someVoteTitle</ac:parameter></ac:macro>" +
             "<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">someSurveyTitle</ac:parameter>" +
-            "<ac:plain-text-body><![CDATA[notTheFirst\nsomeVoteTitle-subtitle\nsomeOther \"§$\"§$ ballotTitle]]></ac:plain-text-body></ac:macro>");
+            "<ac:plain-text-body><![CDATA[" + StringUtils.join(ballots, "\n") + "]]></ac:plain-text-body></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
