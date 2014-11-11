@@ -47,6 +47,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getVoters().size(), is(equalTo(0)));
     assertThat(classUnderTest.getViewers().size(), is(equalTo(0)));
     assertThat(classUnderTest.getManagers().size(), is(equalTo(0)));
+    assertThat(classUnderTest.isAlwaysShowResults(), is(equalTo(false)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
@@ -90,6 +91,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getVoters().size(), is(equalTo(0)));
     assertThat(classUnderTest.getViewers().size(), is(equalTo(0)));
     assertThat(classUnderTest.getManagers().size(), is(equalTo(0)));
+    assertThat(classUnderTest.isAlwaysShowResults(), is(equalTo(false)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isLocked(), is(equalTo(false)));
@@ -117,6 +119,7 @@ public class VoteConfigTest {
     parameters.put(VoteConfig.KEY_VOTERS, "me, myself, irene");
     parameters.put(VoteConfig.KEY_VIEWERS, CURRENT_USER_NAME + ", kirk");
     parameters.put(VoteConfig.KEY_MANAGERS, "vader, yoda");
+    parameters.put(VoteConfig.KEY_ALWAYS_SHOW_RESULTS, "true");
     parameters.put(VoteConfig.KEY_VISIBLE_VOTERS, "true");
     parameters.put(VoteConfig.KEY_VISIBLE_PENDING_VOTERS, "true");
     parameters.put(VoteConfig.KEY_USER_VISUALIZATION, "plain user name");
@@ -135,6 +138,7 @@ public class VoteConfigTest {
     assertThat(classUnderTest.getVoters().size(), is(equalTo(3)));
     assertThat(classUnderTest.getViewers().size(), is(equalTo(2)));
     assertThat(classUnderTest.getManagers().size(), is(equalTo(2)));
+    assertThat(classUnderTest.isAlwaysShowResults(), is(equalTo(true)));
     assertThat(classUnderTest.isVisibleVoters(), is(equalTo(false)));
     assertThat(classUnderTest.isVisiblePendingVoters(), is(equalTo(true)));
     assertThat(classUnderTest.isLocked(), is(equalTo(true)));

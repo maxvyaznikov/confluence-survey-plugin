@@ -10,14 +10,14 @@
  *#
 
 ## If the user can see results, only show them if they are not a voter or have completed the entire survey
-#if ($survey.config.surveySummary!="None" && $survey.config.canSeeResults)
+#if ($survey.config.surveySummary!="None" && ($survey.config.canSeeResults || $survey.config.alwaysShowResults))
 
   #if ( $survey.ballots.size()>0 ) ##if the survey has no ballots dont show anything
     #if ($survey.config.getRenderTitleLevelAdjustedOrZero(1) != 0)
     <h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#else <br/>#end <a
           name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a>#if ($survey.config.getRenderTitleLevelAdjustedOrZero(1) != 0)
   </h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#end
-    #if ($survey.isSurveyComplete($currentUser) || !($survey.config.canTakeSurvey) || $survey.config.locked )
+    #if ($survey.isSurveyComplete($currentUser) || $survey.config.alwaysShowResults || !($survey.config.canTakeSurvey) || $survey.config.locked )
     <table class="surveySummaryTable">
       <thead>
       <tr>

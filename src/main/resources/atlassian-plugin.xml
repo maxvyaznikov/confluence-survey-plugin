@@ -38,6 +38,7 @@
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
+      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </macro>
@@ -76,6 +77,7 @@
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
+      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </macro>
@@ -111,6 +113,7 @@
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
+      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </xhtml-macro>
@@ -152,6 +155,7 @@
         <value name="linked user name"/>
       </parameter>
       <parameter name="showCondensed" type="boolean"/>
+      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </xhtml-macro>

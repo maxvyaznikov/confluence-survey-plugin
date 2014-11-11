@@ -16,7 +16,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 
 #set ($config = $ballot.config)
 #set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($currentUser)) || $config.changeableVotes)))
-#set ($canSeeResults = ($config.canSeeResults && ( $ballot.getHasVoted($currentUser) || ($config.canTakeSurvey && $config.locked) || !($config.canTakeSurvey) )))
+#set ($canSeeResults = $config.alwaysShowResults || ($config.canSeeResults && ( $ballot.getHasVoted($currentUser) || ($config.canTakeSurvey && $config.locked) || !($config.canTakeSurvey) )))
 
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 

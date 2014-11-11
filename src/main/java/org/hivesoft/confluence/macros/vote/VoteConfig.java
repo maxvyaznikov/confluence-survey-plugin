@@ -35,6 +35,7 @@ public class VoteConfig {
   public static final String KEY_VOTERS = "voters";
   protected static final String KEY_VIEWERS = "viewers";
   public static final String KEY_MANAGERS = "managers";
+  protected static final String KEY_ALWAYS_SHOW_RESULTS = "alwaysShowResults";
   protected static final String KEY_SHOW_COMMENTS = "showComments";
   protected static final String KEY_VISIBLE_VOTERS = "visibleVoters";
   protected static final String KEY_VISIBLE_PENDING_VOTERS = "visiblePendingVoters";
@@ -53,22 +54,23 @@ public class VoteConfig {
   private final List<String> voters;
   private final List<String> viewers;
   private final List<String> managers;
+  private final boolean alwaysShowResults;
   private final boolean showComments;
   private final boolean locked;
   private final boolean visibleVoters;
   private final boolean visiblePendingVoters;
   private final boolean showCondensed;
   private final boolean anonymous;
+
   private final int uniqueId;
-
   private final boolean canSeeResults;
-  private final boolean canTakeSurvey;
 
+  private final boolean canTakeSurvey;
   private final boolean canManageSurvey;
+
   private final int startBound;
 
   private final int iterateStep;
-
   protected final PermissionEvaluator permissionEvaluator;
   protected final UserRenderer userRenderer;
 
@@ -86,6 +88,7 @@ public class VoteConfig {
     voters = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_VOTERS)));
     viewers = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_VIEWERS)));
     managers = SurveyUtils.getListFromStringCommaSeparated(StringUtils.defaultString(parameters.get(KEY_MANAGERS)));
+    alwaysShowResults = Boolean.parseBoolean(parameters.get(KEY_ALWAYS_SHOW_RESULTS));
     showComments = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_COMMENTS), false);
     locked = SurveyUtils.getBooleanFromString(parameters.get(KEY_LOCKED), false);
     showCondensed = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_CONDENSED), false);
@@ -133,6 +136,7 @@ public class VoteConfig {
     voters = surveyConfig.getVoters();
     viewers = surveyConfig.getViewers();
     managers = surveyConfig.getManagers();
+    alwaysShowResults = surveyConfig.isAlwaysShowResults();
     showComments = surveyConfig.isShowComments();
     locked = surveyConfig.isLocked();
     showCondensed = surveyConfig.isShowCondensed();
@@ -174,6 +178,10 @@ public class VoteConfig {
 
   public List<String> getManagers() {
     return managers;
+  }
+
+  public boolean isAlwaysShowResults() {
+    return alwaysShowResults;
   }
 
   public Boolean isShowComments() {
