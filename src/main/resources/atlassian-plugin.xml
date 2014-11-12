@@ -28,6 +28,7 @@
       <parameter name="showComments" type="boolean" default="false"/>
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
+      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visiblePendingVoters" type="boolean"/>
       <parameter name="userVisualization" type="enum" default="plain login name">
@@ -38,7 +39,6 @@
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
-      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </macro>
@@ -67,6 +67,7 @@
       <parameter name="iterateStep" type="string" default="1"/>
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
+      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visiblePendingVoters" type="boolean"/>
       <parameter name="userVisualization" type="enum" default="plain login name">
@@ -77,7 +78,6 @@
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
-      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </macro>
@@ -103,6 +103,7 @@
       <parameter name="showComments" type="boolean" default="false"/>
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
+      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visiblePendingVoters" type="boolean"/>
       <parameter name="userVisualization" type="enum" default="plain login name">
@@ -113,7 +114,6 @@
         <value name="plain user name"/>
         <value name="linked user name"/>
       </parameter>
-      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </xhtml-macro>
@@ -141,9 +141,10 @@
       <parameter name="showComments" type="boolean" default="true"/>
       <parameter name="startBound" type="string" default="1"/>
       <parameter name="iterateStep" type="string" default="1"/>
+      <parameter name="managers" type="string" multiple="true"/>
       <parameter name="voters" type="string" multiple="true"/>
       <parameter name="viewers" type="string" multiple="true"/>
-      <parameter name="managers" type="string" multiple="true"/>
+      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="visibleVoters" type="boolean"/>
       <parameter name="visiblePendingVoters" type="boolean"/>
       <parameter name="userVisualization" type="enum" default="plain login name">
@@ -155,7 +156,6 @@
         <value name="linked user name"/>
       </parameter>
       <parameter name="showCondensed" type="boolean"/>
-      <parameter name="alwaysShowResults" type="boolean" default="false"/>
       <parameter name="locked" type="boolean"/>
     </parameters>
   </xhtml-macro>
