@@ -17,6 +17,7 @@
     <h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#else <br/>#end <a
           name="$surveyTitleSummary">$action.getText("surveyplugin.survey.summary")</a>#if ($survey.config.getRenderTitleLevelAdjustedOrZero(1) != 0)
   </h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#end
+
     #if ($survey.isSurveyComplete($currentUser) || $survey.config.alwaysShowResults || !($survey.config.canTakeSurvey) || $survey.config.locked )
     <table class="surveySummaryTable">
       <thead>
@@ -32,8 +33,9 @@
         #end
       </tr>
       </thead>
-      #foreach ($ballot in $survey.ballots)
-        #set($ballotTitleWithHtml = $ballot.titleWithRenderedLinks)
+      <tbody>
+        #foreach ($ballot in $survey.ballots)
+          #set($ballotTitleWithHtml = $ballot.titleWithRenderedLinks)
         <tr>
           <td>
             $ballotTitleWithHtml
@@ -89,7 +91,8 @@
             </td>
           #end
         </tr>
-      #end
+        #end
+      </tbody>
     </table>
     #else
     <div class="aui-message info" style="margin-left:10px">
@@ -100,7 +103,6 @@
 
       <p>$action.getText("surveyplugin.survey.summary.viewable.mustvoteall").</p>
     </div>
-    <br/>
     #end
   #end
 #end

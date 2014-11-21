@@ -46,8 +46,6 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
   #parse ("templates/macros/survey/surveysummary.vm")
 #end
 
-
-##set ($ballotNumber = 0)
 #if ( $survey.ballots.size()==0 )
   <div class="aui-message info" style="margin-left:10px">
     <p class="title">

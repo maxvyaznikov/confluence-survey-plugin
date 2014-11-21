@@ -34,17 +34,17 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 #else
   #set ($ballotNumberID = "0-${ballot.titleNoSpace}" )
 
-<!-- Column: Default choice + your vote -->
+## Column: Default choice + your vote
   #set ($columnCount = 2)
-<!-- Column: result (green bar)-->
+## Column: result (green bar)
   #if ($canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
-<!-- Column: voters -->
+## Column: voters
   #if ($config.visibleVoters && $canSeeResults)
     #set ($columnCount = $columnCount + 1)
   #end
-<!-- Column: comments -->
+## Column: comments
   #if ($config.showComments && ($config.canTakeSurvey || $canSeeResults) )
     #set ($columnCount = $columnCount + 1)
   #end
@@ -65,7 +65,8 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
     #end
   </tr>
   </thead>
-  #foreach ($choice in $ballot.choices)
+  <tbody>
+    #foreach ($choice in $ballot.choices)
     <tr>
       #set($choiceDescriptionWithHtml = $choice.descriptionWithRenderedLinks)
       <td>$choiceDescriptionWithHtml</td>
@@ -84,7 +85,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
           <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
         #end
       </td>
-      <!-- Column: result (green bar)-->
+    ##Column: result (green bar)
       #if ($canSeeResults)
         #set ($percentVotedFor = $ballot.getPercentageOfVoteForChoice($choice))
         <td>
@@ -98,7 +99,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         </td>
       #end
 
-      <!-- Column: voters -->
+    ##Column: voters
       #if ($config.visibleVoters && $canSeeResults)
         <td>
           #set($voters = $choice.voters)
@@ -185,8 +186,9 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
         </td>
       #end
     </tr>
-    #set ($choiceNumber = $choiceNumber + 1)
-  #end
+      #set ($choiceNumber = $choiceNumber + 1)
+    #end
+  </tbody>
   <tfoot>
     #if ($config.visibleVoters && $canSeeResults)
     <tr>
