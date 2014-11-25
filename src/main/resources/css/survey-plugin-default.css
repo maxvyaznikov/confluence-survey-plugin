@@ -1,0 +1,18 @@
+.surveyIcon.castvote {
+    background: url('icons/default/blue-yes.png') 0 0;
+}
+
+.surveyIcon.castvote:hover {
+    background: url('icons/default/green-yes.png') 0 0;
+}
+
+.surveyIcon.castunvote {
+    background: url('icons/default/green-yes.png') 0 0;
+}
+
+.surveyIcon.castunvote:hover {
+    background: url('icons/default/blue-yes.png') 0 0;
+}
+
+
+

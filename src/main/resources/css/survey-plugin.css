@@ -106,7 +106,10 @@ td.surveyCommentPane {
     width: 16px;
 }
 
-
+.surveyIcon:hover {
+    cursor: pointer;
+    background-color: lightgray;
+}
 
 .surveyIcon.locked {
     cursor: auto;
