@@ -98,15 +98,15 @@ td.surveyCommentPane {
 }
 
 .surveyIcon {
-    padding: 1px;
+    padding: 0px;
     margin: 2px 1px;
+    border: 0;
+    vertical-align: middle;
+    height: 16px;
+    width: 16px;
 }
 
-.surveyIcon:hover {
-    cursor: pointer;
-    background-color: lightgray;
-    padding: 1px;
-}
+
 
 .surveyIcon.locked {
     cursor: auto;

@@ -15,7 +15,7 @@
 <h$config.renderTitleLevel> #end
 #if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
                           title="$action.getText("surveyplugin.vote.locked")."/> #end <a
-        name="${voteAnchor}">$ballotTitleWithHtml</a>
+        id="${voteAnchor}">$ballotTitleWithHtml</a>
 #if ($config.renderTitleLevel != 0) </h$config.renderTitleLevel> #end
 
 $ballotDescriptionWithHtml

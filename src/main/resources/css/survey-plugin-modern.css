@@ -1,0 +1,21 @@
+.surveyIcon.castvote {
+    background: url('icons/modern/blue-yes.png') 0 0;
+}
+
+.surveyIcon.castvote:hover {
+    background: url('icons/modern/green-yes.png') 0 0;
+}
+
+.surveyIcon.castunvote {
+    background: url('icons/modern/green-yes.png') 0 0;
+}
+
+.surveyIcon.castunvote:hover {
+    background: url('icons/modern/blue-yes.png') 0 0;
+}
+
+.surveyIcon:hover {
+    cursor: pointer;
+    background-color: lightgray;
+}
+

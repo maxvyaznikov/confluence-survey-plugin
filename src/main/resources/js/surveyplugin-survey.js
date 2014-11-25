@@ -22,6 +22,9 @@ AJS.toInit(function () {
       }),
       success: function (voteRepresentation) {
         location.reload(true); //reload the wiki page
+        //scrolling after a reload doesnt work really well
+        //var top = document.getElementById(castVoteLink.getAttribute("voteanchor")).getBoundingClientRect().top;
+        //window.scrollTo(0, top);
       },
       error: function (xhr, status, error) {
         alert("There was a problem casting a vote. Returned status: " + status + ", error: " + error);

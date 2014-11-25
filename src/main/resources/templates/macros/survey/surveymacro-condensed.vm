@@ -34,16 +34,16 @@
     <tr>
       #set($ballotTitleWithHtml = $ballot.titleWithRenderedLinks)
       #set($ballotDescriptionWithHtml = $ballot.descriptionWithRenderedLinks)
-      <td>$ballotTitleWithHtml #if($ballotDescriptionWithHtml.length()>0)<br/><sub>$ballotDescriptionWithHtml</sub>#end <a name="$voteAnchor"/></td>
+      <td>$ballotTitleWithHtml #if($ballotDescriptionWithHtml.length()>0)<br/><sub>$ballotDescriptionWithHtml</sub>#end <a id="$voteAnchor"/></td>
       #foreach ($choice in $ballot.choices)
         <td align="center">
           #if ($canVote && !($config.locked))
             #if ($choice.getHasVotedFor($currentUser))
               <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
-                   alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
+                   alt="$ballot.title" voteanchor="$voteAnchor" contentid="$macroResult.contentId" title="$choice.description"/>
             #else
               <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
-                   alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
+                   alt="$ballot.title" voteanchor="$voteAnchor" contentid="$macroResult.contentId" title="$choice.description"/>
             #end
           #elseif ($choice.getHasVotedFor($currentUser))
             <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>

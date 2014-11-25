@@ -13,6 +13,7 @@
 $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:resources")
 
 <link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all"/>
+<link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin-${iconSet}.css" media="all"/>
 
 #set ($config = $ballot.config)
 #set ($canVote = ($config.canTakeSurvey && (!($ballot.getHasVoted($currentUser)) || $config.changeableVotes)))
@@ -73,16 +74,16 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       <td align="center">
         #if ($canVote && !($config.locked))
           #if ($choice.getHasVotedFor($currentUser))
-            <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
-                 alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
+            <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/img_trans.gif"
+                 alt="$ballot.title" voteanchor="$voteAnchor" contentid="$macroResult.contentId" title="$choice.description"/>
           #else
-            <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
-                 alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
+            <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/img_trans.gif"
+                 alt="$ballot.title" voteanchor="$voteAnchor" contentid="$macroResult.contentId" title="$choice.description"/>
           #end
         #elseif ($choice.getHasVotedFor($currentUser))
-          <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>
+          <img class="surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png"/>
         #else
-          <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
+          <img class="surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png"/>
         #end
       </td>
     ##Column: result (green bar)

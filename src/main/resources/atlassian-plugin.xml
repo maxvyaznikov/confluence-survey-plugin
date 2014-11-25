@@ -203,6 +203,10 @@
       <property key="content-type" value="text/css"/>
     </resource>
 
+    <resource type="download" name="survey-plugin-modern.css" location="/css/survey-plugin-modern.css">
+      <property key="content-type" value="text/css"/>
+    </resource>
+
     <resource type="download" name="logos/" location="/images/logos"/>
     <resource type="download" name="icons/" location="/images/icons"/>
 
