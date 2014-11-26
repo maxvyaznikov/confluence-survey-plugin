@@ -91,10 +91,16 @@ td.surveyCommentPane {
     padding-left: 10px;
 }
 
+.commentEdit {
+    font-size: 12px;
+    font-family: monospace;
+}
+
 /*the iconBar is thought for 4* 16px icons, don't know of a more relative way*/
 .surveyIconBar {
     background-color: #eeeeee;
     width: 80px;
+    alignment: left;
 }
 
 .surveyIcon {
@@ -102,6 +108,7 @@ td.surveyCommentPane {
     margin: 2px 1px;
     border: 0;
     vertical-align: middle;
+    alignment: center;
     height: 16px;
     width: 16px;
 }

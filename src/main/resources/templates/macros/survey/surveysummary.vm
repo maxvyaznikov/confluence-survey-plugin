@@ -64,9 +64,7 @@
                 #end
               </i>
               #if ($voters.size()>0)
-                <a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
-                                                                                                               align="absmiddle"
-                                                                                                               height="16" width="16"
+                <a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
                                                                                                                class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>
               #end
             </td>
@@ -82,9 +80,7 @@
                 #end
               </i>
               #if ($pendingVoters.size()>0)
-                <a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
-                                                                                                                    align="absmiddle"
-                                                                                                                    height="16" width="16"
+                <a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
                                                                                                                     class="surveyIcon"
                                                                                                                     title="$action.getText("surveyplugin.vote.voters.pending.email")"/></a>
               #end

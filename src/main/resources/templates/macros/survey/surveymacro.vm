@@ -13,6 +13,8 @@
 $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:resources")
 
 <link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin.css" media="all"/>
+<link type="text/css" rel="stylesheet" href="${workaroundRequireResourcePath}/survey-plugin-${iconSet}.css" media="all"/>
+
 
 #set ($config = $survey.config)
 
@@ -21,21 +23,21 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
 #if ( $survey.title.length() > 0 )
 <div id="$generalUtil.urlEncode(${survey.title})" class="surveyBox">
   #if( $config.renderTitleLevel !=0 )
-  <h$config.renderTitleLevel>#end #if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
+  <h$config.renderTitleLevel>#end #if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" class="surveyIcon"
                                                             title="$action.getText("surveyplugin.survey.locked")."/> #end <a
         name="${surveyTitleSummary}-a">$surveyTitleWithHtml</a>#if ($config.renderTitleLevel !=0)</h$config.renderTitleLevel>#end
 
   <div class="surveyIconBar">
     #if ($config.canManageSurvey)
       #if ($macroResult.canAttachFile)
-        <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png" border="0" align="absmiddle" height="16" width="16"
+        <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png"
              alt="${survey.title}" title="$action.getText('surveyplugin.export.icon.title')"/>
       #end
       #if ($$macroResult.canCreatePage)
-        <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" align="absmiddle" height="16" width="16"
+        <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png"
              alt="${survey.title}" title="#if($config.locked)$action.getText('surveyplugin.unlock.icon.title')#else $action.getText('surveyplugin.lock.icon.title')#end"/>
       #end
-      <img class="#if($config.locked)locked#else resetsurvey#end surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png" border="0" align="absmiddle" height="16" width="16"
+      <img class="#if($config.locked)locked#else resetsurvey#end surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/reset.png"
            alt="${survey.title}" title="$action.getText('surveyplugin.reset.icon.title')"/>
     #end
   </div>

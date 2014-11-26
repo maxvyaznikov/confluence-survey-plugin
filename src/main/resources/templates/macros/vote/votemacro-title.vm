@@ -13,7 +13,7 @@
 #set($ballotDescriptionWithHtml = $ballot.descriptionWithRenderedLinks)
 #if ($config.renderTitleLevel != 0)
 <h$config.renderTitleLevel> #end
-#if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
+#if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png"
                           title="$action.getText("surveyplugin.vote.locked")."/> #end <a
         id="${voteAnchor}">$ballotTitleWithHtml</a>
 #if ($config.renderTitleLevel != 0) </h$config.renderTitleLevel> #end

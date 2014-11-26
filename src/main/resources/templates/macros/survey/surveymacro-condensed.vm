@@ -9,7 +9,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *#
 
-#if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" border="0" height="16" width="16"
+#if ($config.locked) <img src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png" class="surveyIcon"
                           title="$action.getText("surveyplugin.survey.locked")."/> #end
 <table class="voteTable condensed">
   <thead>
@@ -38,17 +38,16 @@
       #foreach ($choice in $ballot.choices)
         <td align="center">
           #if ($canVote && !($config.locked))
+            #set ($voteActionClass = "castvote")
             #if ($choice.getHasVotedFor($currentUser))
-              <img class="castunvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"
-                   alt="$ballot.title" voteanchor="$voteAnchor" contentid="$macroResult.contentId" title="$choice.description"/>
-            #else
-              <img class="castvote surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/blue-yes.png" border="0" align="absmiddle" height="16" width="16"
-                   alt="$ballot.title" voteanchor="$voteAnchor" contentid="$macroResult.contentId" title="$choice.description"/>
+              #set ($voteActionClass = "castunvote")
             #end
+            <img class="$voteActionClass surveyIcon vote" src="${workaroundRequireResourcePath}/icons/img_trans.gif"
+                 alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
           #elseif ($choice.getHasVotedFor($currentUser))
-            <img src="${workaroundRequireResourcePath}/icons/${iconSet}/green-yes.png" border="0" align="absmiddle" height="16" width="16"/>
+            <img class="surveyIcon vote" src="${workaroundRequireResourcePath}/icons/img_trans.gif"/>
           #else
-            <img src="${workaroundRequireResourcePath}/icons/${iconSet}/gray-yes.png" border="0" align="absmiddle" height="16" width="16"/>
+            <img class="surveyIcon vote locked" src="${workaroundRequireResourcePath}/icons/img_trans.gif"/>
           #end
         </td>
       #end

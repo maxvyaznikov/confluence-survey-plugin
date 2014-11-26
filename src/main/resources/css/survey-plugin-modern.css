@@ -1,18 +1,23 @@
-.surveyIcon.castvote {
+.surveyIcon.vote.castvote {
     background: url('icons/modern/blue-yes.png') 0 0;
 }
 
-.surveyIcon.castvote:hover {
+.surveyIcon.vote.castvote:hover {
     background: url('icons/modern/green-yes.png') 0 0;
 }
 
-.surveyIcon.castunvote {
+.surveyIcon.vote.castunvote {
     background: url('icons/modern/green-yes.png') 0 0;
 }
 
-.surveyIcon.castunvote:hover {
+.surveyIcon.vote.castunvote:hover {
     background: url('icons/modern/blue-yes.png') 0 0;
 }
 
+.surveyIcon.vote.locked {
+    background: url('icons/modern/gray-yes.png') 0 0;
+}
 
-
+.surveyIcon.vote {
+    background: url('icons/modern/green-yes.png') 0 0;
+}
