@@ -34,21 +34,28 @@
     <tr>
       #set($ballotTitleWithHtml = $ballot.titleWithRenderedLinks)
       #set($ballotDescriptionWithHtml = $ballot.descriptionWithRenderedLinks)
-      <td>$ballotTitleWithHtml #if($ballotDescriptionWithHtml.length()>0)<br/><sub>$ballotDescriptionWithHtml</sub>#end <a id="$voteAnchor"/></td>
+      <td>$ballotTitleWithHtml
+        #if($ballotDescriptionWithHtml.length()>0)<br/><sub>$ballotDescriptionWithHtml</sub>#end
+        <a id="$voteAnchor"/>
+      </td>
       #foreach ($choice in $ballot.choices)
-        <td align="center">
-          #if ($canVote && !($config.locked))
-            #set ($voteActionClass = "castvote")
+        <td class="voteColumn">
+          #set ($voteActionClass = "")
+          #if ($config.locked)
+            #if (!$choice.getHasVotedFor($currentUser))
+              #set ($voteActionClass = "locked")
+            #end
+          #elseif ($canVote)
             #if ($choice.getHasVotedFor($currentUser))
               #set ($voteActionClass = "castunvote")
+            #else
+              #set ($voteActionClass = "castvote")
             #end
-            <img class="$voteActionClass surveyIcon vote" src="${workaroundRequireResourcePath}/icons/img_trans.gif"
-                 alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
-          #elseif ($choice.getHasVotedFor($currentUser))
-            <img class="surveyIcon vote" src="${workaroundRequireResourcePath}/icons/img_trans.gif"/>
-          #else
-            <img class="surveyIcon vote locked" src="${workaroundRequireResourcePath}/icons/img_trans.gif"/>
+          #elseif (!$choice.getHasVotedFor($currentUser))
+            #set ($voteActionClass = "locked")
           #end
+          <img class="$voteActionClass surveyIcon vote" src="${workaroundRequireResourcePath}/icons/img_trans.gif"
+               alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
         </td>
       #end
     </tr>

@@ -72,24 +72,28 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       #set($choiceDescriptionWithHtml = $choice.descriptionWithRenderedLinks)
       <td>$choiceDescriptionWithHtml</td>
     ##Column: vote
-      <td align="center">
-        #if ($canVote && !($config.locked))
-          #set ($voteActionClass = "castvote")
+      <td class="voteColumn">
+        #set ($voteActionClass = "")
+        #if ($config.locked)
+          #if (!$choice.getHasVotedFor($currentUser))
+            #set ($voteActionClass = "locked")
+          #end
+        #elseif ($canVote)
           #if ($choice.getHasVotedFor($currentUser))
             #set ($voteActionClass = "castunvote")
+          #else
+            #set ($voteActionClass = "castvote")
           #end
-          <img class="$voteActionClass surveyIcon vote" src="${workaroundRequireResourcePath}/icons/img_trans.gif"
-               alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
-        #elseif ($choice.getHasVotedFor($currentUser))
-          <img class="surveyIcon vote" src="${workaroundRequireResourcePath}/icons/img_trans.gif"/>
-        #else
-          <img class="surveyIcon vote locked" src="${workaroundRequireResourcePath}/icons/img_trans.gif"/>
+        #elseif (!$choice.getHasVotedFor($currentUser))
+          #set ($voteActionClass = "locked")
         #end
+        <img class="$voteActionClass surveyIcon vote" src="${workaroundRequireResourcePath}/icons/img_trans.gif"
+             alt="$ballot.title" contentid="$macroResult.contentId" title="$choice.description"/>
       </td>
     ##Column: result (green bar)
       #if ($canSeeResults)
         #set ($percentVotedFor = $ballot.getPercentageOfVoteForChoice($choice))
-        <td>
+        <td class="resultColumn">
           <div class="greenbar-wrap">
             <div class="greenbar-value" style="width:$percentVotedFor%;">
               <div class="greenbar-text">
@@ -112,9 +116,11 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
                 $config.userRenderer.render($req.contextPath, $voter)#if($iCounter != $voters.size()),#end
               #end
             </i>
-            <a href="mailto:$choice.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
-                                                                                                           align="absmiddle" height="16" width="16"
-                                                                                                           class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>
+            <a href="mailto:$choice.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title">
+              <img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png" border="0"
+                   align="absmiddle" height="16" width="16"
+                   class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/>
+            </a>
           #end
         </td>
       #end
@@ -196,9 +202,13 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       <td colspan="$columnCount">
         #set($voters = $ballot.getAllVoters())
         $action.getText("surveyplugin.vote.voters.all")
-        #if ($voters.size()>0)<a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
-                                                                                                                             class="surveyIcon"
-                                                                                                                             title="$action.getText("surveyplugin.vote.voters.email")"/></a>#end:
+        #if ($voters.size()>0)
+          <a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title">
+            <img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
+                 class="surveyIcon"
+                 title="$action.getText("surveyplugin.vote.voters.email")"/>
+          </a>
+        #end:
         #set($iCounter = 0)
         #foreach($voter in $voters)
           #set($iCounter=$iCounter+1)
@@ -212,9 +222,12 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
       <td colspan="$columnCount">
         #set($pendingVoters = $ballot.getAllPendingVoters())
         $action.getText("surveyplugin.vote.voters.pending")
-        #if ($pendingVoters.size()>0)<a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img
-                src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
-                class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.pending.email")"/></a>#end:
+        #if ($pendingVoters.size()>0)
+          <a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title">
+            <img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
+                 class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.pending.email")"/>
+          </a>
+        #end:
         #set($iCounter = 0)
         #foreach($pending in $pendingVoters)
           #set($iCounter = $iCounter + 1)

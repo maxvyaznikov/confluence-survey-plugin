@@ -23,9 +23,6 @@
 }
 
 .surveySummaryTable {
-    margin: 15px;
-    text-align: left;
-    border-collapse: collapse;
     border: 1px solid #69c;
 }
 
@@ -45,8 +42,8 @@
 
 .voteTable {
     margin: 15px;
-    border-collapse: collapse;
     text-align: left;
+    border-collapse: collapse;
 }
 
 .voteTable th {
@@ -59,6 +56,16 @@
 .voteTable td {
     border-bottom: 1px solid #ccc;
     padding: 6px 8px;
+}
+
+.voteTable td.voteColumn {
+    text-align: center;
+    alignment: center;
+}
+
+.voteTable td.resultColumn {
+    text-align: center;
+    alignment: center;
 }
 
 .voteTable.condensed th {

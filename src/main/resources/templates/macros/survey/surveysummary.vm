@@ -19,7 +19,7 @@
   </h$survey.config.getRenderTitleLevelAdjustedOrZero(1)>#end
 
     #if ($survey.isSurveyComplete($currentUser) || $survey.config.alwaysShowResults || !($survey.config.canTakeSurvey) || $survey.config.locked )
-    <table class="surveySummaryTable">
+    <table class="surveySummaryTable voteTable">
       <thead>
       <tr>
         <th>$action.getText("surveyplugin.survey.summary.header.question")</th>
@@ -40,11 +40,11 @@
           <td>
             $ballotTitleWithHtml
           </td>
-          <td align="center">
+          <td class="voteColumn">
             $ballot.totalVoteCount
           </td>
           #set ($percentFill = $ballot.getAveragePercentage())
-          <td>
+          <td class="resultColumn">
             <div class="greenbar-wrap">
               <div class="greenbar-value" style="width:$percentFill%;">
                 <div class="greenbar-text">
@@ -64,8 +64,10 @@
                 #end
               </i>
               #if ($voters.size()>0)
-                <a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
-                                                                                                               class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/></a>
+                <a href="mailto:$ballot.getEmailStringOfAllVoters()?subject=You voted for: $ballot.title">
+                  <img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
+                       class="surveyIcon" title="$action.getText("surveyplugin.vote.voters.email")"/>
+                </a>
               #end
             </td>
           #end
@@ -80,9 +82,11 @@
                 #end
               </i>
               #if ($pendingVoters.size()>0)
-                <a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title"><img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
-                                                                                                                    class="surveyIcon"
-                                                                                                                    title="$action.getText("surveyplugin.vote.voters.pending.email")"/></a>
+                <a href="mailto:$ballot.getEmailStringOfPendingVoters()?subject=Please vote on: $ballot.title">
+                  <img src="${workaroundRequireResourcePath}/icons/${iconSet}/mail.png"
+                       class="surveyIcon"
+                       title="$action.getText("surveyplugin.vote.voters.pending.email")"/>
+                </a>
               #end
             </td>
           #end
