@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class SurveyPluginSettings implements PluginSettings {
 
-  Map<String, Object> settings = new HashMap<String, Object>();
+  private final Map<String, Object> settings = new HashMap<String, Object>();
 
   @Override
   public Object get(String s) {

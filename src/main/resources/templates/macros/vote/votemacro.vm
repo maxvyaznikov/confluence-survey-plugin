@@ -21,7 +21,7 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
 
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
-#parse ("templates/macros/vote/votemacro-title.vm")
+#parse ("/templates/macros/vote/votemacro-title.vm")
 
 #if ( $ballot.choices.size()==0 )
 <div class="aui-message info" style="margin-left:10px">

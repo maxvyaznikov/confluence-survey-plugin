@@ -23,7 +23,7 @@ public class AdminServletTest extends ConfluenceTestBase {
   private final LoginUriProvider mockLoginUriProvider = mock(LoginUriProvider.class);
   private final TemplateRenderer mockTemplateRenderer = mock(TemplateRenderer.class);
 
-  AdminServlet classUnderTest = new AdminServlet(mockUserManager, mockLoginUriProvider, mockTemplateRenderer);
+  private AdminServlet classUnderTest = new AdminServlet(mockUserManager, mockLoginUriProvider, mockTemplateRenderer);
 
   @Test
   public void test_doGet_success() throws IOException, ServletException {

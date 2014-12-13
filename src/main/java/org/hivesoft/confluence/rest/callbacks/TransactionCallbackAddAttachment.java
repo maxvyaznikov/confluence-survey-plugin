@@ -22,10 +22,10 @@ import java.io.IOException;
 public class TransactionCallbackAddAttachment implements TransactionCallback<Attachment> {
   private static final Logger.Log LOG = Logger.getInstance(TransactionCallbackAddAttachment.class);
 
-  private PageManager pageManager;
-  private AbstractPage abstractPage;
-  private String fileName;
-  private byte[] attachmentData;
+  private final PageManager pageManager;
+  private final AbstractPage abstractPage;
+  private final String fileName;
+  private final byte[] attachmentData;
 
   public TransactionCallbackAddAttachment(PageManager pageManager, AbstractPage abstractPage, String fileName, byte[] attachmentData) {
     this.pageManager = pageManager;

@@ -18,6 +18,7 @@ public class SurveyUserTest {
       classUnderTest = new SurveyUser("");
       fail("Parameter must not be empty");
     } catch (IllegalArgumentException e) {
+      assertThat(classUnderTest, is(nullValue()));
     }
 
     classUnderTest = new SurveyUser("someUser");

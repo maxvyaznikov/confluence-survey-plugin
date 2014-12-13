@@ -24,7 +24,9 @@ import java.util.Map;
  */
 public class AddCommentAction extends AbstractPageAction {
   private static final Logger LOG = Logger.getLogger(AddCommentAction.class);
+
   private SurveyManager surveyManager;
+
   private String ballotTitle;
   private String ballotAnchor;
   private String comment;
@@ -48,7 +50,6 @@ public class AddCommentAction extends AbstractPageAction {
     ((Map) ActionContext.getContext().get("request")).put("surveySection", ballotAnchor);
     return SUCCESS;
   }
-
 
   /**
    * This is a binding method for the ballot title request parameter.

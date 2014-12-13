@@ -7,11 +7,9 @@ import static org.junit.Assert.assertThat;
 
 public class AnonymousUserTest {
 
-  AnonymousUser classUnderTest;
-
   @Test
   public void test_staticValues() {
-    classUnderTest = new AnonymousUser();
+    AnonymousUser classUnderTest = new AnonymousUser();
 
     assertThat(classUnderTest.getEmail(), is("NoOne@hivesoft.org"));
     assertThat(classUnderTest.getFullName(), is("I am not the User you are looking for"));

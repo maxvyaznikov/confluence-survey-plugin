@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class VoteMacroWiki extends BaseMacro {
 
-  VoteMacro voteMacro;
+  private final VoteMacro voteMacro;
 
   public VoteMacroWiki(VoteMacro voteMacro) {
     this.voteMacro = voteMacro;

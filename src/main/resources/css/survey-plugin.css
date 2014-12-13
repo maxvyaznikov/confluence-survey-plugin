@@ -84,7 +84,7 @@
 .voteTable tfoot td {
     font-style: normal;
     border-style: none;
-    padding: 3px 8px 0px 8px;
+    padding: 3px 8px 0 8px;
     font-size: smaller;
 }
 
@@ -111,7 +111,7 @@ td.surveyCommentPane {
 }
 
 .surveyIcon {
-    padding: 0px;
+    padding: 0;
     margin: 2px 1px;
     border: 0;
     vertical-align: middle;

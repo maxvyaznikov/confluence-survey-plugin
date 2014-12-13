@@ -18,7 +18,7 @@ public class InvalidPageTest {
     assertThat(classUnderTest.getLinkWikiMarkup(), is(nullValue()));
     assertThat(classUnderTest.getNameForComparison(), is(nullValue()));
     assertThat(classUnderTest.getType(), is(nullValue()));
-    assertThat(classUnderTest.getUrlPath(), is(nullValue()));
+    assertThat(classUnderTest.getUrlPath(), is("InvalidPageUrl"));
   }
 
   @Test

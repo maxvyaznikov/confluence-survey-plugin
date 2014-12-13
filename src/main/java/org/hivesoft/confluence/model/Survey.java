@@ -26,9 +26,9 @@ import java.util.List;
 public class Survey {
 
   private final String title;
-  private List<Ballot> ballots = new ArrayList<Ballot>();
+  private final List<Ballot> ballots = new ArrayList<Ballot>();
 
-  private SurveyConfig config;
+  private final SurveyConfig config;
 
   public Survey(SurveyConfig config) {
     this.config = config;
@@ -57,13 +57,6 @@ public class Survey {
    */
   public List<Ballot> getBallots() {
     return ballots;
-  }
-
-  /**
-   * @param ballots to set
-   */
-  public void setBallots(List<Ballot> ballots) {
-    this.ballots = ballots;
   }
 
   /**

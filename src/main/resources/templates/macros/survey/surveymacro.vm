@@ -33,7 +33,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
         <img class="exportsurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/export.png"
              alt="${survey.title}" title="$action.getText('surveyplugin.export.icon.title')"/>
       #end
-      #if ($$macroResult.canCreatePage)
+      #if ($macroResult.canCreatePage)
         <img class="locksurvey surveyIcon" src="${workaroundRequireResourcePath}/icons/${iconSet}/locked.png"
              alt="${survey.title}" title="#if($config.locked)$action.getText('surveyplugin.unlock.icon.title')#else $action.getText('surveyplugin.lock.icon.title')#end"/>
       #end
@@ -45,7 +45,7 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
   #set( $surveyTitleSummary = "summary" )
 #end
 #if ($config.surveySummary=="Top")
-  #parse ("templates/macros/survey/surveysummary.vm")
+  #parse ("/templates/macros/survey/surveysummary.vm")
 #end
 
 #if ( $survey.ballots.size()==0 )
@@ -59,15 +59,15 @@ $webResourceManager.requireResource("${project.groupId}.${project.artifactId}:re
   </div>
 #else
   #if ($config.showCondensed)
-    #parse("templates/macros/survey/surveymacro-condensed.vm")
+    #parse("/templates/macros/survey/surveymacro-condensed.vm")
   #else
     #foreach ($ballot in $survey.ballots)
-      #parse ("templates/macros/vote/votemacro.vm")
+      #parse ("/templates/macros/vote/votemacro.vm")
     #end
   #end
 
   #if ($survey.config.surveySummary=="Bottom")
-    #parse ("templates/macros/survey/surveysummary.vm")
+    #parse ("/templates/macros/survey/surveysummary.vm")
   #end
 #end
 

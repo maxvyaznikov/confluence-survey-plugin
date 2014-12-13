@@ -16,8 +16,8 @@ import com.atlassian.user.User;
  * This class holds comments entered by users for a ballot.
  */
 public class Comment {
-  private User user;
-  private String comment;
+  private final User user;
+  private final String comment;
 
   /**
    * Create a new comment loaded with the given username and comment.

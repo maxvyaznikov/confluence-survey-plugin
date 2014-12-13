@@ -67,7 +67,7 @@ public class VoteResource {
     final String choiceName = URLDecoder.decode(voteRepresentation.getVoteChoice(), "UTF-8");
     final VoteAction voteAction = VoteAction.fromString(voteRepresentation.getVoteAction());
 
-    ContentEntityObject contentEntityObject = pageManager.getById(Long.valueOf(contentId));
+    ContentEntityObject contentEntityObject = pageManager.getById(contentId);
 
     if (contentEntityObject == null) {
       return Response.status(Response.Status.NOT_FOUND).entity("The contentEntity with id: " + contentId + " was not found").build();

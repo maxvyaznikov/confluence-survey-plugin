@@ -8,11 +8,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 public class SurveyConfigRepresentationTest {
-  private SurveyConfigRepresentation classUnderTest;
 
   @Test
   public void test_equals_success() {
-    classUnderTest = new SurveyConfigRepresentation();
+    SurveyConfigRepresentation classUnderTest = new SurveyConfigRepresentation();
 
     assertFalse(classUnderTest.equals(null));
     assertFalse(classUnderTest.equals("someString"));

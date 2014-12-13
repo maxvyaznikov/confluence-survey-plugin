@@ -20,12 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 public class SurveyConfig extends VoteConfig {
-  public static final String KEY_CHOICES = "choices";
+  private static final String KEY_CHOICES = "choices";
   public static final String KEY_SHOW_SUMMARY = "showSummary";
   public static final String KEY_SHOW_LAST = "showLast";  // old key as showSummary was a boolean field
 
-  private SurveySummary surveySummary;
-  private List<String> choices;
+  private final SurveySummary surveySummary;
+  private final List<String> choices;
 
   public SurveyConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
     super(permissionEvaluator, getModifiedSurveyParameters(parameters));

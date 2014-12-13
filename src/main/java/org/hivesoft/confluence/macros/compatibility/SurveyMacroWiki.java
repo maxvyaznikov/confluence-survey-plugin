@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class SurveyMacroWiki extends BaseMacro {
 
-  SurveyMacro surveyMacro;
+  private final SurveyMacro surveyMacro;
 
   public SurveyMacroWiki(SurveyMacro surveyMacro) {
     this.surveyMacro = surveyMacro;

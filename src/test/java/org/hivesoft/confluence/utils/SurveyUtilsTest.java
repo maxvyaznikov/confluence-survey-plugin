@@ -14,7 +14,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -89,7 +88,7 @@ public class SurveyUtilsTest extends ConfluenceTestBase {
   }
 
   @Test
-  public void test_getIconSetFromPluginSettings_noSettingsFound_success(){
+  public void test_getIconSetFromPluginSettings_noSettingsFound_success() {
     PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
 
     when(mockPluginSettingsFactory.createGlobalSettings()).thenReturn(new PluginSettings() {
@@ -115,7 +114,7 @@ public class SurveyUtilsTest extends ConfluenceTestBase {
   }
 
   @Test
-  public void test_getIconSetFromPluginSettings_settingsFound_success(){
+  public void test_getIconSetFromPluginSettings_settingsFound_success() {
     PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
 
     when(mockPluginSettingsFactory.createGlobalSettings()).thenReturn(new PluginSettings() {
@@ -152,7 +151,7 @@ public class SurveyUtilsTest extends ConfluenceTestBase {
   }
 
   private static String getRandomString(int length) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int i = 0; i < length; i++) {
       sb.append((char) ((int) (Math.random() * 26) + 97));
     }

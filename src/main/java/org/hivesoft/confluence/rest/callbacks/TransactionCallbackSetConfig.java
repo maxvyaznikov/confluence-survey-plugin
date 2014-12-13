@@ -19,8 +19,8 @@ import org.hivesoft.confluence.rest.representations.SurveyConfigRepresentation;
 
 public class TransactionCallbackSetConfig implements TransactionCallback {
 
-  private PluginSettingsFactory pluginSettingsFactory;
-  private SurveyConfigRepresentation surveyConfigRepresentation;
+  private final PluginSettingsFactory pluginSettingsFactory;
+  private final SurveyConfigRepresentation surveyConfigRepresentation;
 
   public TransactionCallbackSetConfig(PluginSettingsFactory pluginSettingsFactory, SurveyConfigRepresentation surveyConfigRepresentation) {
     this.pluginSettingsFactory = pluginSettingsFactory;

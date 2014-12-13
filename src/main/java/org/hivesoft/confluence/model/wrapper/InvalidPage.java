@@ -16,8 +16,8 @@ import javax.ws.rs.core.Response;
 
 public class InvalidPage extends AbstractPage {
 
-  Response.Status status;
-  String message;
+  private final Response.Status status;
+  private final String message;
 
   public InvalidPage(Response.Status status, String message) {
     this.status = status;
@@ -31,7 +31,7 @@ public class InvalidPage extends AbstractPage {
 
   @Override
   public String getUrlPath() {
-    return null;
+    return "InvalidPageUrl";
   }
 
   @Override

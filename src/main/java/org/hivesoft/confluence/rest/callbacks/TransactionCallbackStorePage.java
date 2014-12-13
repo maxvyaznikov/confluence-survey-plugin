@@ -19,9 +19,9 @@ import com.atlassian.extras.common.log.Logger;
 public class TransactionCallbackStorePage implements com.atlassian.sal.api.transaction.TransactionCallback {
   private static final Logger.Log LOG = Logger.getInstance(TransactionCallbackStorePage.class);
 
-  PageManager pageManager;
-  ContentEntityObject contentEntityObject;
-  String body;
+  private final PageManager pageManager;
+  private final ContentEntityObject contentEntityObject;
+  private final String body;
 
   public TransactionCallbackStorePage(PageManager pageManager, ContentEntityObject contentEntityObject, String body) {
     this.pageManager = pageManager;

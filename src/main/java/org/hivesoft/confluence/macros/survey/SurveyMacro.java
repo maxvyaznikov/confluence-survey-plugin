@@ -165,7 +165,7 @@ public class SurveyMacro implements Macro {
     }
     if (!upgraded.isEmpty()) {
       LOG.debug("page will be updated!");
-      final Boolean pageUpdated = (Boolean) transactionTemplate.execute(new TransactionCallbackStorePage(pageManager, conversionContext.getEntity(), completePageBody));
+      transactionTemplate.execute(new TransactionCallbackStorePage(pageManager, conversionContext.getEntity(), completePageBody));
     }
   }
 

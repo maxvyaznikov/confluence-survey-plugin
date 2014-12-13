@@ -19,7 +19,7 @@ public class AdminResourceTest {
 
   private static final String TEST_USERNAME = "someUserName";
 
-  AdminResource classUnderTest = new AdminResource(mockUserManager, mockPluginSettingsFactory, mockTransactionTemplate);
+  private AdminResource classUnderTest = new AdminResource(mockUserManager, mockPluginSettingsFactory, mockTransactionTemplate);
 
   @Test
   public void test_getConfig_default_success() {

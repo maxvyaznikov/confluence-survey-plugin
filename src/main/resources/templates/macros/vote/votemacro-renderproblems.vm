@@ -15,7 +15,7 @@
 
 #set ($voteAnchor = $generalUtil.urlEncode("survey-ballot-${ballot.titleNoSpace}"))
 
-#parse ("templates/macros/vote/votemacro-title.vm")
+#parse ("/templates/macros/vote/votemacro-title.vm")
 
 <div class="aui-message warning">
   <p class="title">

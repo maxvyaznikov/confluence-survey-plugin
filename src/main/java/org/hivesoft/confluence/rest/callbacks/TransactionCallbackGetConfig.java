@@ -18,7 +18,7 @@ import org.hivesoft.confluence.rest.representations.SurveyConfigRepresentation;
 
 public class TransactionCallbackGetConfig implements com.atlassian.sal.api.transaction.TransactionCallback {
 
-  PluginSettingsFactory pluginSettingsFactory;
+  private final PluginSettingsFactory pluginSettingsFactory;
 
   public TransactionCallbackGetConfig(PluginSettingsFactory pluginSettingsFactory) {
     this.pluginSettingsFactory = pluginSettingsFactory;
