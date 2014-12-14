@@ -135,7 +135,7 @@ AJS.toInit(function () {
   });
   AJS.$(".resetsurvey").click(function (e) {
     e.preventDefault();
-    resetlink = this;
+    var resetlink = this;
     var dialog = new AJS.Dialog({
       width: 320,
       height: 170,
@@ -159,7 +159,7 @@ AJS.toInit(function () {
   });
   AJS.$(".locksurvey").click(function (e) {
     e.preventDefault();
-    locklink = this;
+    var locklink = this;
     var dialog = new AJS.Dialog({
       width: 320,
       height: 140,

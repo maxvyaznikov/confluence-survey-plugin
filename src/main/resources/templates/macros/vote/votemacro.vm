@@ -133,23 +133,23 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
               #set ($currentComment = $ballot.getCommentForUser($currentUser).comment)
             #end
             <div>
-                <span id="${ballotNumberID}CommentForm" style="display:none">
-                  <form method="POST" action="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$macroResult.contentId">
-                    <input type="hidden" name="ballotTitle" value="$ballot.title"/>
-                    <input type="hidden" name="ballotAnchor" value="${voteAnchor}"/>
-                    <textarea class="commentEdit" name="comment" rows="5" cols="70">$currentComment</textarea>
-                    <br/>
+              <div id="${ballotNumberID}CommentForm" style="display:none">
+                <form method="POST" action="$bootstrap.webAppContextPath/plugins/survey/doaddcomment.action?pageId=$macroResult.contentId">
+                  <input type="hidden" name="ballotTitle" value="$ballot.title"/>
+                  <input type="hidden" name="ballotAnchor" value="${voteAnchor}"/>
+                  <textarea class="commentEdit" name="comment" rows="5" cols="70">$currentComment</textarea>
+                  <br/>
                     <span class="surveyIconBar">
                       <input type="submit" value="$action.getText('surveyplugin.survey.save')"/>
                       <input type="button" value="$action.getText('surveyplugin.survey.cancel')"
                              onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='inline';document.getElementById('${ballotNumberID}CommentForm').style.display='none';"/>
                     </span>
-                  </form>
-                </span>
+                </form>
+              </div>
               #if ($ballot.getCommentForUser($currentUser))
                 #set($rawWiki=$ballot.getCommentForUser($currentUser).comment)
-                <span id="${ballotNumberID}CommentDisplay">
-                    <span id="${ballotNumberID}CommentValue">$rawWiki</span>
+                <div id="${ballotNumberID}CommentDisplay">
+                  <div id="${ballotNumberID}CommentValue">$rawWiki</div>
                   <div class="surveyIconBar">
                     <a href="#"
                        onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">
@@ -160,16 +160,16 @@ $webResourceManager.requireResource("com.nearinfinity.confluence.survey-plugin:r
                       <img src="${workaroundRequireResourcePath}/icons/${iconSet}/comment_remove.png"
                            class="surveyIcon" title="$action.getText("surveyplugin.survey.comment.remove")"/></a>
                   </div>
-                  </span>
+                </div>
               #else
-                <span id="${ballotNumberID}CommentDisplay">
+                <div id="${ballotNumberID}CommentDisplay">
                   <div class="surveyIconBar">
                     <a href="#"
                        onclick="document.getElementById('${ballotNumberID}CommentDisplay').style.display='none';document.getElementById('${ballotNumberID}CommentForm').style.display='inline';return false;">
                       <img src="${workaroundRequireResourcePath}/icons/${iconSet}/comment_add.png"
                            class="surveyIcon" title="$action.getText("surveyplugin.survey.comment.add")"/></a>
                   </div>
-                </span>
+                </div>
               #end
             </div>
           #end

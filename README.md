@@ -1,7 +1,7 @@
 Introduction
 ============
 
-The confluence-survey-plugin is as the name implies a plugin for Atlassian Confluence. Started quite a long time  back for compatibility to 2.1.4 to the very latest 5.5++. The latest compatibility can be accessed within the Marketplace @ https://marketplace.atlassian.com/195.
+The confluence-survey-plugin is as the name implies a plugin for Atlassian Confluence. Started quite a long time  back for compatibility to 2.1.4 to the very latest 5.7++. The latest compatibility can be accessed within the Marketplace @ https://marketplace.atlassian.com/195.
 
 Usage
 =====
@@ -13,7 +13,7 @@ This file is merely a placeholder for the wiki documentation.
 Plugin development
 ==================
 
-The plugin is a maven artifact and therefore can be built with  Apache Maven 3.0+ and JDK 7. (Limited by the availablity of newer Atlassian Plugins, they still build with Maven 2 and jdk 1.6)
+The plugin is a maven artifact and therefore can be built with  Apache Maven 3.0+ and JDK 7. (Limited by the availability of newer Atlassian Plugins, they still build with Maven 2 and jdk 1.6)
 
 I am a back end developer, yes i am also annoyed with page reloads, but currently that is the best which can be done as there are quite some features to be implemented and changing the frontend behaviour is quite a overhaul.
 

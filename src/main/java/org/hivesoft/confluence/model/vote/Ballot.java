@@ -303,8 +303,7 @@ public class Ballot {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Ballot)) return false;
-    return title.equals(((Ballot) o).title);
+    return o instanceof Ballot && title.equals(((Ballot) o).title);
   }
 
   @Override

@@ -42,7 +42,7 @@
     <confluence.data.version>4.3.7</confluence.data.version>
     <amps.version>5.0.5</amps.version>
     <plugin.testrunner.version>1.1.1</plugin.testrunner.version>
-    <!--workaround as #requireresource isnt working without templaterenderer as it seems-->
+    <!--workaround as #requireresource isn't working without template renderer as it seems-->
     <workaroundRequireResourcePathRelative>/download/resources/${project.groupId}.${project.artifactId}:resources</workaroundRequireResourcePathRelative>
     <workaroundRequireResourcePath>$req.contextPath/download/resources/${project.groupId}.${project.artifactId}:resources</workaroundRequireResourcePath>
   </properties>
