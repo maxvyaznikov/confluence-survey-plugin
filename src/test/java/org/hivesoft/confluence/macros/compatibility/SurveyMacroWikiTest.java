@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 public class SurveyMacroWikiTest {
 
-  private final  SurveyMacro mockSurveyMacro = mock(SurveyMacro.class);
+  private final SurveyMacro mockSurveyMacro = mock(SurveyMacro.class);
 
   private SurveyMacroWiki classUnderTest;
 

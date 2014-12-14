@@ -49,16 +49,16 @@ import static org.mockito.Mockito.when;
 
 public class SurveyMacroTest extends ConfluenceTestBase {
 
-  private final  SurveyManager mockSurveyManager = mock(SurveyManager.class);
-  private final  PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
-  private final  VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
-  private final  EventPublisher mockEventPublisher = mock(EventPublisher.class);
-  private final  TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
-  private final  PageManager mockPageManager = mock(PageManager.class);
-  private final  PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
-  private final  ConversionContext mockConversionContext = mock(ConversionContext.class);
+  private final SurveyManager mockSurveyManager = mock(SurveyManager.class);
+  private final PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
+  private final VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
+  private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
+  private final TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
+  private final PageManager mockPageManager = mock(PageManager.class);
+  private final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+  private final ConversionContext mockConversionContext = mock(ConversionContext.class);
 
-  private final  TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();
+  private final TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();
 
   private SurveyMacro classUnderTest;
 
