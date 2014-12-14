@@ -28,9 +28,9 @@ import java.util.List;
 
 public class PermissionEvaluator {
 
-  final UserAccessor userAccessor;
-  final UserManager userManager;
-  final PermissionManager permissionManager;
+  private final UserAccessor userAccessor;
+  private final UserManager userManager;
+  private final PermissionManager permissionManager;
 
   public PermissionEvaluator(UserAccessor userAccessor, UserManager userManager, PermissionManager permissionManager) {
     this.userAccessor = userAccessor;

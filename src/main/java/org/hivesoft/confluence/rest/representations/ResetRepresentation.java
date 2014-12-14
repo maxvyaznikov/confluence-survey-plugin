@@ -11,10 +11,10 @@
 package org.hivesoft.confluence.rest.representations;
 
 public class ResetRepresentation {
-  String title;
-  boolean reset;
+  private String title;
+  private boolean reset;
 
-  public ResetRepresentation() {
+  private ResetRepresentation() {
     //for jaxb
   }
 

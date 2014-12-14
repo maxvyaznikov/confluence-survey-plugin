@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 public class SurveyTest extends ConfluenceTestBase {
 
-  Survey classUnderTest;
+  private Survey classUnderTest;
 
   @Before
   public void setup() {

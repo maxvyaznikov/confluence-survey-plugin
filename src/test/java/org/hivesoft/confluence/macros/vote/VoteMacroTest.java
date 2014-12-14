@@ -45,14 +45,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class VoteMacroTest extends ConfluenceTestBase {
-  SurveyManager mockSurveyManager = mock(SurveyManager.class);
-  PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
-  VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
-  ConversionContext mockConversionContext = mock(ConversionContext.class);
+  private final SurveyManager mockSurveyManager = mock(SurveyManager.class);
+  private final PluginSettingsFactory mockPluginSettingsFactory = mock(PluginSettingsFactory.class);
+  private final VelocityAbstractionHelper mockVelocityAbstractionHelper = mock(VelocityAbstractionHelper.class);
+  private final ConversionContext mockConversionContext = mock(ConversionContext.class);
 
-  TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();
+  private final TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();
 
-  VoteMacro classUnderTest;
+  private VoteMacro classUnderTest;
 
   @Before
   public void setup() throws Exception {

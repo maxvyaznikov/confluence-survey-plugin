@@ -26,7 +26,7 @@ public class VoteRepresentation {
   @XmlElement
   private String voteAction;
 
-  public VoteRepresentation() {
+  private VoteRepresentation() {
     //for jaxb
   }
 

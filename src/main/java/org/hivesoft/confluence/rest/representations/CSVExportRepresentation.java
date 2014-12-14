@@ -24,7 +24,7 @@ public class CSVExportRepresentation {
   @XmlElement
   private String uri;
 
-  public CSVExportRepresentation() {
+  private CSVExportRepresentation() {
     //for jaxb
   }
 

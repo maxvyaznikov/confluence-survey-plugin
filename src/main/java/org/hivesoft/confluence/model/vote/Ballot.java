@@ -186,7 +186,7 @@ public class Ballot {
   /**
    * @return The calculated EndBound Value (out of StartBound + iteration-steps)
    */
-  public int getEndBound() {
+  private int getEndBound() {
     return config.getStartBound() + (choices.size() - 1) * config.getIterateStep();
   }
 

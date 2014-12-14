@@ -34,10 +34,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class SurveyManagerTest extends ConfluenceTestBase {
-  ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
-  PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+  private final ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
+  private final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
-  SurveyManager classUnderTest;
+  private SurveyManager classUnderTest;
 
   @Before
   public void setup() {

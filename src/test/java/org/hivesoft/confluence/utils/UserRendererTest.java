@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public class UserRendererTest extends ConfluenceTestBase {
 
-  UserRenderer classUnderTest;
+  private UserRenderer classUnderTest;
 
   @Test
   public void test_render_plainLoginName() throws Exception {

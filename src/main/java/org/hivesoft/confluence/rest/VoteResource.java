@@ -42,11 +42,11 @@ import java.util.Map;
 public class VoteResource {
   private static final Logger.Log LOG = Logger.getInstance(VoteResource.class);
 
-  protected final TransactionTemplate transactionTemplate;
-  protected final PageManager pageManager;
-  protected final XhtmlContent xhtmlContent;
-  protected final I18nResolver i18nResolver;
-  protected final SurveyManager surveyManager;
+  private final TransactionTemplate transactionTemplate;
+  private final PageManager pageManager;
+  private final XhtmlContent xhtmlContent;
+  private final I18nResolver i18nResolver;
+  private final SurveyManager surveyManager;
 
   public VoteResource(TransactionTemplate transactionTemplate, PageManager pageManager, XhtmlContent xhtmlContent, I18nResolver i18nResolver, SurveyManager surveyManager) {
     this.transactionTemplate = transactionTemplate;

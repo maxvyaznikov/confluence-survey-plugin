@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 
 public class SurveyConfigTest {
 
-  SurveyConfig classUnderTest;
+  private SurveyConfig classUnderTest;
 
   @Test
   public void test_createWithDefaultParameters_success() {

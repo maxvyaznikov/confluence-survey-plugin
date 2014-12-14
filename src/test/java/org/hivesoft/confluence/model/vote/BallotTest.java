@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 public class BallotTest extends ConfluenceTestBase {
 
-  Ballot classUnderTest;
+  private Ballot classUnderTest;
 
   @Test
   public void test_getTitle_success() {

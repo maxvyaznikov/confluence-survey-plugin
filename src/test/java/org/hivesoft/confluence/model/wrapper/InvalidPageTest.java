@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThat;
 
 public class InvalidPageTest {
 
-  InvalidPage classUnderTest;
+  private InvalidPage classUnderTest;
 
   @Test
   public void test_unimplementedMethods_success() throws Exception {

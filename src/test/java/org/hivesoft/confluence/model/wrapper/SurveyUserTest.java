@@ -10,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 
 public class SurveyUserTest {
 
-  SurveyUser classUnderTest;
+  private SurveyUser classUnderTest;
 
   @Test
   public void test_equals_hashCode_toString() throws Exception {

@@ -18,7 +18,7 @@ public class ChoiceTest {
   private static final User SOME_USER_ONE = new DefaultUser(SOME_EXISTING_USER_NAME_ONE, "someExistingFullName1", "someMail@one.com");
   private static final User SOME_USER_TWO = new DefaultUser(SOME_EXISTING_USER_NAME_TWO, "someExistingFullName2", "someMail@two.com");
 
-  Choice classUnderTest;
+  private Choice classUnderTest;
 
   @Before
   public void setup() {

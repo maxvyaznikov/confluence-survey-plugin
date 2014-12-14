@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class VoteRepresentationTest {
-  VoteRepresentation classUnderTest;
+  private VoteRepresentation classUnderTest;
 
   @Test
   public void test_gettersSetters_success() {

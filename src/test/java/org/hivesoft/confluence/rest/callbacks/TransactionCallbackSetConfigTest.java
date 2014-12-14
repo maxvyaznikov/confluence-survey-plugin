@@ -12,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TransactionCallbackSetConfigTest {
-  PluginSettingsFactory mockPluginsSettingsFactory = mock(PluginSettingsFactory.class);
+  private final PluginSettingsFactory mockPluginsSettingsFactory = mock(PluginSettingsFactory.class);
 
   private TransactionCallbackSetConfig classUnderTest;
 

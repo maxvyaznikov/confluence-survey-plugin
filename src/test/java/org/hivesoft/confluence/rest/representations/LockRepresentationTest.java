@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class LockRepresentationTest {
-  LockRepresentation classUnderTest;
+  private LockRepresentation classUnderTest;
 
   @Test
   public void test_gettersSetters_success() {

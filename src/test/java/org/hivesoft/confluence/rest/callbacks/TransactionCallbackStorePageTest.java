@@ -15,10 +15,10 @@ import static org.mockito.Mockito.verify;
 
 
 public class TransactionCallbackStorePageTest {
-  PageManager mockPageManager = mock(PageManager.class);
-  ContentEntityObject mockContentEntityObject = mock(ContentEntityObject.class);
+  private final PageManager mockPageManager = mock(PageManager.class);
+  private final ContentEntityObject mockContentEntityObject = mock(ContentEntityObject.class);
 
-  TransactionCallbackStorePage classUnderTest;
+  private TransactionCallbackStorePage classUnderTest;
 
   @Test
   public void test_doInTransaction_modified_success() {

@@ -18,10 +18,10 @@ import static org.mockito.Mockito.*;
 
 public class TransactionCallbackAddAttachmentTest {
 
-  PageManager mockPageManager = mock(PageManager.class);
-  AttachmentManager mockAttachmentManager = mock(AttachmentManager.class);
+  private final PageManager mockPageManager = mock(PageManager.class);
+  private final AttachmentManager mockAttachmentManager = mock(AttachmentManager.class);
 
-  TransactionCallbackAddAttachment classUnderTest;
+  private TransactionCallbackAddAttachment classUnderTest;
 
   @Test
   public void test_doInTransaction_success() {

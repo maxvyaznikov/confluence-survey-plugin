@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class VelocityAbstractionHelperTest {
 
-  VelocityAbstractionHelper classUnderTest;
+  private VelocityAbstractionHelper classUnderTest;
 
   /**
    * The method getDefaultVelocityContext can only be tested if confluence is initialized

@@ -18,15 +18,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class VoteConfigTest {
-  final static String CURRENT_USER_NAME = "spock";
+  private final static String CURRENT_USER_NAME = "spock";
 
-  PermissionManager mockPermissionManager = mock(PermissionManager.class);
-  UserManager mockUserManager = mock(UserManager.class);
-  UserAccessor mockUserAccessor = mock(UserAccessor.class);
+  private final PermissionManager mockPermissionManager = mock(PermissionManager.class);
+  private final UserManager mockUserManager = mock(UserManager.class);
+  private final UserAccessor mockUserAccessor = mock(UserAccessor.class);
 
-  PermissionEvaluator permissionEvaluator = new PermissionEvaluator(mockUserAccessor, mockUserManager, mockPermissionManager);
+  private final PermissionEvaluator permissionEvaluator = new PermissionEvaluator(mockUserAccessor, mockUserManager, mockPermissionManager);
 
-  VoteConfig classUnderTest;
+  private VoteConfig classUnderTest;
 
   @Before
   public void setUp() {

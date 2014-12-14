@@ -20,9 +20,9 @@ import static org.mockito.Mockito.when;
 
 public class VoteMacroWikiTest {
 
-  VoteMacro mockVoteMacro = mock(VoteMacro.class);
+  private final VoteMacro mockVoteMacro = mock(VoteMacro.class);
 
-  VoteMacroWiki classUnderTest;
+  private VoteMacroWiki classUnderTest;
 
   @Test
   public void test_properties_success() {

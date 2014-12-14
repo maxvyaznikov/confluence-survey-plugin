@@ -34,11 +34,11 @@ public class PermissionEvaluatorTest extends ConfluenceTestBase {
 
   public static final String SOME_BALLOT_TITLE = "someBallotTitle";
 
-  UserAccessor mockUserAccessor = mock(UserAccessor.class);
-  UserManager mockUserManager = mock(UserManager.class);
-  PermissionManager mockPermissionManager = mock(PermissionManager.class);
+  private final UserAccessor mockUserAccessor = mock(UserAccessor.class);
+  private final UserManager mockUserManager = mock(UserManager.class);
+  private final PermissionManager mockPermissionManager = mock(PermissionManager.class);
 
-  PermissionEvaluator classUnderTest;
+  private PermissionEvaluator classUnderTest;
 
   @Before
   public void setup() {

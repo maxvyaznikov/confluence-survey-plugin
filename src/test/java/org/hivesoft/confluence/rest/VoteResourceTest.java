@@ -42,13 +42,13 @@ import static org.mockito.Mockito.when;
 
 public class VoteResourceTest extends ConfluenceTestBase {
 
-  VoteResource classUnderTest;
-
   private final TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
   private final PageManager mockPageManager = mock(PageManager.class);
   private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
   private final I18nResolver mockI18nResolver = mock(I18nResolver.class);
   private final SurveyManager mockSurveyManager = mock(SurveyManager.class);
+
+  private VoteResource classUnderTest;
 
   @Before
   public void setup() throws Exception {

@@ -9,11 +9,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CsvExportRepresentationTest {
-  CSVExportRepresentation classUnderTest;
+  private CSVExportRepresentation classUnderTest;
 
   @Test
   public void test_gettersSetters_success() {
     classUnderTest = new CSVExportRepresentation("someTitle", "someUri");
+
     assertThat("someTitle", is(equalTo(classUnderTest.getTitle())));
     assertThat("someUri", is(equalTo(classUnderTest.getUri())));
 

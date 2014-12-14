@@ -19,7 +19,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class AddCommentActionTest extends ConfluenceTestBase {
-  private SurveyManager mockSurveyManager = mock(SurveyManager.class);
+  private final SurveyManager mockSurveyManager = mock(SurveyManager.class);
 
   private AddCommentAction classUnderTest;
 

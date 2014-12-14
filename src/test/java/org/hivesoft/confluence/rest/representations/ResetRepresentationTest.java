@@ -7,7 +7,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ResetRepresentationTest {
-  ResetRepresentation classUnderTest;
+  private ResetRepresentation classUnderTest;
 
   @Test
   public void test_gettersSetters_success() {

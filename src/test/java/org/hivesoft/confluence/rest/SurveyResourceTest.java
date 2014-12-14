@@ -44,13 +44,13 @@ import static org.mockito.Mockito.when;
 
 public class SurveyResourceTest extends ConfluenceTestBase {
 
-  TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
-  PageManager mockPageManager = mock(PageManager.class);
-  SurveyManager mockSurveyManager = mock(SurveyManager.class);
-  EventPublisher mockEventPublisher = mock(EventPublisher.class);
-  I18nResolver mockI18nResolver = mock(I18nResolver.class);
+  private final TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
+  private final PageManager mockPageManager = mock(PageManager.class);
+  private final SurveyManager mockSurveyManager = mock(SurveyManager.class);
+  private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
+  private final I18nResolver mockI18nResolver = mock(I18nResolver.class);
 
-  SurveyResource classUnderTest;
+  private SurveyResource classUnderTest;
 
   @Before
   public void setup() throws Exception {

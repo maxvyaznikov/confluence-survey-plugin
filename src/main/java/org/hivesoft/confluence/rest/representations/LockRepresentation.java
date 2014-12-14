@@ -25,7 +25,7 @@ public class LockRepresentation {
   @XmlElement
   private boolean locked;
 
-  public LockRepresentation() {
+  private LockRepresentation() {
     //for jaxb
   }
 

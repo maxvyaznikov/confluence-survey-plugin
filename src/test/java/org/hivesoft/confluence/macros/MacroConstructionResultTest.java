@@ -15,9 +15,9 @@ import static org.mockito.Mockito.when;
 
 public class MacroConstructionResultTest {
 
-  SurveyManager mockSurveyManager = mock(SurveyManager.class);
+  private final SurveyManager mockSurveyManager = mock(SurveyManager.class);
 
-  MacroConstructionResult classUnderTest;
+  private MacroConstructionResult classUnderTest;
 
   @Before
   public void setUp() {
