@@ -18,13 +18,11 @@ public class TransactionCallbackStorePageTest {
   private final PageManager mockPageManager = mock(PageManager.class);
   private final ContentEntityObject mockContentEntityObject = mock(ContentEntityObject.class);
 
-  private TransactionCallbackStorePage classUnderTest;
-
   @Test
   public void test_doInTransaction_modified_success() {
     String someBody = "someContentToStore";
 
-    classUnderTest = new TransactionCallbackStorePage(mockPageManager, mockContentEntityObject, someBody);
+    TransactionCallbackStorePage classUnderTest = new TransactionCallbackStorePage(mockPageManager, mockContentEntityObject, someBody);
 
     final Boolean result = classUnderTest.doInTransaction();
 

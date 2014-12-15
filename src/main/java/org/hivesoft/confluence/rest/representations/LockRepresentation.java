@@ -43,13 +43,6 @@ public class LockRepresentation {
     return locked;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (o == null || !(o instanceof LockRepresentation)) return false;
-
-    return (((LockRepresentation) o).isLocked() == (locked));
-  }
-
   public void setLocked(boolean locked) {
     this.locked = locked;
   }

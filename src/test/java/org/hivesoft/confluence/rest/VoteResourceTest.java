@@ -10,8 +10,6 @@ import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.event.api.EventPublisher;
-import com.atlassian.sal.api.message.I18nResolver;
-import com.atlassian.sal.api.transaction.TransactionTemplate;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
@@ -42,10 +40,8 @@ import static org.mockito.Mockito.when;
 
 public class VoteResourceTest extends ConfluenceTestBase {
 
-  private final TransactionTemplate mockTransactionTemplate = mock(TransactionTemplate.class);
   private final PageManager mockPageManager = mock(PageManager.class);
   private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
-  private final I18nResolver mockI18nResolver = mock(I18nResolver.class);
   private final SurveyManager mockSurveyManager = mock(SurveyManager.class);
 
   private VoteResource classUnderTest;
@@ -61,7 +57,7 @@ public class VoteResourceTest extends ConfluenceTestBase {
     final DefaultContentTransformerFactory contentTransformerFactory = new DefaultContentTransformerFactory(macroDefinitionUnmarshaller, macroDefinitionMarshaller, xmlEventReaderFactory, xmlOutputFactory, mockEventPublisher);
     final XhtmlContent xhtmlContent = new DefaultXhtmlContent(null, null, null, null, null, null, null, null, null, null, contentTransformerFactory, null);
 
-    classUnderTest = new VoteResource(mockTransactionTemplate, mockPageManager, xhtmlContent, mockI18nResolver, mockSurveyManager);
+    classUnderTest = new VoteResource(mockPageManager, xhtmlContent, mockSurveyManager);
   }
 
   @Test

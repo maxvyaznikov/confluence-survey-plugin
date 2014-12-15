@@ -2,24 +2,25 @@ package org.hivesoft.confluence.rest.representations;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class CsvExportRepresentationTest {
-  private CSVExportRepresentation classUnderTest;
 
   @Test
   public void test_gettersSetters_success() {
-    classUnderTest = new CSVExportRepresentation("someTitle", "someUri");
+    CSVExportRepresentation classUnderTest = new CSVExportRepresentation("someTitle", "someUri");
 
-    assertThat("someTitle", is(equalTo(classUnderTest.getTitle())));
-    assertThat("someUri", is(equalTo(classUnderTest.getUri())));
+    assertThat(classUnderTest.getTitle(), is("someTitle"));
+    assertThat(classUnderTest.getUri(), is("someUri"));
 
-    assertTrue(classUnderTest.equals(new CSVExportRepresentation("someTitle", "someUri")));
+    CSVExportRepresentation anotherInstance = new CSVExportRepresentation("someTitle", "someUri");
+    assertTrue(classUnderTest.equals(anotherInstance));
     assertFalse(classUnderTest.equals(null));
     assertFalse(classUnderTest.equals("someString"));
+
+    assertThat(classUnderTest.hashCode(), is(anotherInstance.hashCode()));
   }
 }

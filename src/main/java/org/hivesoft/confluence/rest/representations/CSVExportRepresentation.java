@@ -43,6 +43,11 @@ public class CSVExportRepresentation {
   }
 
   @Override
+  public int hashCode() {
+    return uri != null ? uri.hashCode() : 0;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (o == null || !(o instanceof CSVExportRepresentation)) return false;
 

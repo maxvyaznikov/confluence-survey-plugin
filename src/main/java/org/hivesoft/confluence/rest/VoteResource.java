@@ -18,8 +18,6 @@ import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.MacroDefinitionHandler;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.extras.common.log.Logger;
-import com.atlassian.sal.api.message.I18nResolver;
-import com.atlassian.sal.api.transaction.TransactionTemplate;
 import org.hivesoft.confluence.macros.survey.SurveyMacro;
 import org.hivesoft.confluence.macros.vote.VoteMacro;
 import org.hivesoft.confluence.model.Survey;
@@ -42,18 +40,14 @@ import java.util.Map;
 public class VoteResource {
   private static final Logger.Log LOG = Logger.getInstance(VoteResource.class);
 
-  private final TransactionTemplate transactionTemplate;
   private final PageManager pageManager;
   private final XhtmlContent xhtmlContent;
-  private final I18nResolver i18nResolver;
   private final SurveyManager surveyManager;
 
-  public VoteResource(TransactionTemplate transactionTemplate, PageManager pageManager, XhtmlContent xhtmlContent, I18nResolver i18nResolver, SurveyManager surveyManager) {
-    this.transactionTemplate = transactionTemplate;
+  public VoteResource(PageManager pageManager, XhtmlContent xhtmlContent, SurveyManager surveyManager) {
     this.pageManager = pageManager;
     this.surveyManager = surveyManager;
     this.xhtmlContent = xhtmlContent;
-    this.i18nResolver = i18nResolver;
   }
 
   @POST

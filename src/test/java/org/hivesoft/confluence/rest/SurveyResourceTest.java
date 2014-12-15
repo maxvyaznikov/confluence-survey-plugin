@@ -178,7 +178,8 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(SOME_SURVEY_TITLE, false))));
+    assertThat(((LockRepresentation) response.getEntity()).isLocked(), is(false));
+    assertThat(((LockRepresentation) response.getEntity()).getTitle(), is(SOME_SURVEY_TITLE));
   }
 
   @Test
@@ -192,7 +193,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(SOME_SURVEY_TITLE, true))));
+    assertThat(((LockRepresentation) response.getEntity()).isLocked(), is(true));
   }
 
   @Test
@@ -206,7 +207,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
     assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-    assertThat((LockRepresentation) response.getEntity(), is(equalTo(new LockRepresentation(SOME_SURVEY_TITLE, false))));
+    assertThat(((LockRepresentation) response.getEntity()).isLocked(), is(false));
   }
 
   @Test

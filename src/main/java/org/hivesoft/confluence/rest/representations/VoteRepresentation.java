@@ -57,4 +57,12 @@ public class VoteRepresentation {
 
     return that.getBallotTitle().equalsIgnoreCase(ballotTitle) && that.getVoteChoice().equalsIgnoreCase(voteChoice) && that.getVoteAction().equalsIgnoreCase(voteAction);
   }
+
+  @Override
+  public int hashCode() {
+    int result = ballotTitle != null ? ballotTitle.hashCode() : 0;
+    result = 31 * result + (voteChoice != null ? voteChoice.hashCode() : 0);
+    result = 31 * result + (voteAction != null ? voteAction.hashCode() : 0);
+    return result;
+  }
 }
