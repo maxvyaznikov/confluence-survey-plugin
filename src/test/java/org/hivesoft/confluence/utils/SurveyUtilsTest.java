@@ -55,6 +55,8 @@ public class SurveyUtilsTest extends ConfluenceTestBase {
     assertThat(oneElement, hasItem("User1 User2"));
     final List<String> twoElements = SurveyUtils.getListFromStringCommaSeparated("User1, User2");
     assertThat(twoElements, hasItems("User1", "User2"));
+    final List<String> twoElementsWithSpaces = SurveyUtils.getListFromStringCommaSeparated("  User1  , User2 ");
+    assertThat(twoElementsWithSpaces, hasItems("User1", "User2"));
   }
 
   @Test

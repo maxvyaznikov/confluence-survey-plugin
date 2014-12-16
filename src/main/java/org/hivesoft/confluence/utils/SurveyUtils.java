@@ -20,10 +20,7 @@ import org.hivesoft.confluence.model.enums.UserVisualization;
 import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.rest.AdminResource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,9 +76,9 @@ public class SurveyUtils {
 
   public static List<String> getListFromStringCommaSeparated(String stringToParse) {
     if (StringUtils.isBlank(stringToParse)) {
-      return new ArrayList<String>();
+      return Collections.emptyList();
     }
-    return Arrays.asList(stringToParse.split(REGEX_COMMA_SEPARATED_STRINGS));
+    return Arrays.asList(StringUtils.stripAll(stringToParse.split(REGEX_COMMA_SEPARATED_STRINGS)));
   }
 
   public static String getTitleInMacroParameters(Map<String, String> parameters) {
