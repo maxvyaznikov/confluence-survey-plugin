@@ -44,7 +44,7 @@ public class CSVExportRepresentation {
 
   @Override
   public int hashCode() {
-    return uri != null ? uri.hashCode() : 0;
+    return uri.hashCode();
   }
 
   @Override

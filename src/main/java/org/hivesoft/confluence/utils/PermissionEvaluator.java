@@ -101,7 +101,8 @@ public class PermissionEvaluator {
    * @return <code>true</code> if the user can cast a vote, <code>false</code> if they cannot.
    */
   public Boolean canVote(User user, Ballot ballot) {
-    return isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), user) && (!ballot.getHasVoted(user) || ballot.getConfig().isChangeableVotes());
+    return isPermissionListEmptyOrContainsGivenUser(ballot.getConfig().getVoters(), user)
+            && (!ballot.getHasVoted(user) || ballot.getConfig().isChangeableVotes());
   }
 
   public List<User> getActiveUsersForGroupOrUser(String userOrGroupName) {

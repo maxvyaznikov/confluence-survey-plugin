@@ -144,21 +144,25 @@ public class PermissionEvaluatorTest extends ConfluenceTestBase {
   @Test
   public void test_getCanVote_emptyUser_success() {
     final Boolean canVote = classUnderTest.canVote(null, SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
-    assertFalse(canVote);
+
+    assertThat(canVote, is(false));
   }
 
   @Test
   public void test_getCanVote_success() {
     final Boolean canVote = classUnderTest.canVote(SOME_USER1, SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
-    assertTrue(canVote);
+
+    assertThat(canVote, is(true));
   }
 
   @Test
   public void test_getCanVote_notInVotersList_success() {
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_VOTERS, "notThisUser, notThisUserEither");
+
     final Boolean canVote = classUnderTest.canVote(SOME_USER1, SurveyUtilsTest.createBallotWithParameters(parameters));
-    assertFalse(canVote);
+
+    assertThat(canVote, is(false));
   }
 
   @Test
@@ -168,8 +172,10 @@ public class PermissionEvaluatorTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_VOTERS, "notThisUser, notThisUserEither, someGroup");
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
+
     final Boolean canVote = classUnderTest.canVote(SOME_USER1, SurveyUtilsTest.createBallotWithParameters(parameters));
-    assertTrue(canVote);
+
+    assertThat(canVote, is(true));
   }
 
   @Test

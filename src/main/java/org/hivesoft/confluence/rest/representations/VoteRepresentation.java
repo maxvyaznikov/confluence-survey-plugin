@@ -60,9 +60,9 @@ public class VoteRepresentation {
 
   @Override
   public int hashCode() {
-    int result = ballotTitle != null ? ballotTitle.hashCode() : 0;
-    result = 31 * result + (voteChoice != null ? voteChoice.hashCode() : 0);
-    result = 31 * result + (voteAction != null ? voteAction.hashCode() : 0);
+    int result = ballotTitle.hashCode();
+    result = 31 * result + (voteChoice.hashCode());
+    result = 31 * result + (voteAction.hashCode());
     return result;
   }
 }
