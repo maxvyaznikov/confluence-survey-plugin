@@ -1,9 +1,9 @@
 /**
  * Copyright (c) 2006-2014, Confluence Community
  * All rights reserved.
- *
+ * <p/>
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- *
+ * <p/>
  * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -29,6 +29,7 @@ public class VoteConfig {
   public static final int DEFAULT_START_BOUND = 1;
   public static final int DEFAULT_ITERATE_STEP = 1;
 
+  protected static final String KEY_UNIQUE_ID = "uniqueId";
   public static final String KEY_TITLE = "title";
   public static final String KEY_RENDER_TITLE_LEVEL = "renderTitleLevel";
   public static final String KEY_CHANGEABLE_VOTES = "changeableVotes";
@@ -46,8 +47,8 @@ public class VoteConfig {
   public static final String KEY_ITERATE_STEP = "iterateStep";
   public static final String KEY_SHOW_CONDENSED = "showCondensed";
   protected static final String KEY_ANONYMOUS_MODE = "anonymousMode";
-  protected static final String KEY_UNIQUE_ID = "uniqueId";
 
+  private final int uniqueId;
   private final String title;
   private final int renderTitleLevel;
   private final boolean changeableVotes;
@@ -62,26 +63,23 @@ public class VoteConfig {
   private final boolean showCondensed;
   private final boolean anonymous;
 
-  private final int uniqueId;
   private final boolean canSeeResults;
-
   private final boolean canTakeSurvey;
   private final boolean canManageSurvey;
 
   private final int startBound;
-
   private final int iterateStep;
-  protected final PermissionEvaluator permissionEvaluator;
-  protected final UserRenderer userRenderer;
+
+  private final UserRenderer userRenderer;
+  private final List<User> allPossibleVoters;
 
   public VoteConfig(PermissionEvaluator permissionEvaluator, Map<String, String> parameters) {
-    this.permissionEvaluator = permissionEvaluator;
-
     String tmpTitle = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE)).trim();
     if (StringUtils.isBlank(tmpTitle)) {
       //in case of the vote macro there was the possibility to pass the title anonymously
       tmpTitle = StringUtils.defaultString(parameters.get("0")).trim();
     }
+    uniqueId = SurveyUtils.getIntegerFromString(parameters.get(KEY_UNIQUE_ID), -1);
     title = tmpTitle;
     renderTitleLevel = SurveyUtils.getIntegerFromString(parameters.get(KEY_RENDER_TITLE_LEVEL), 3);
     changeableVotes = Boolean.parseBoolean(parameters.get(KEY_CHANGEABLE_VOTES));
@@ -93,7 +91,6 @@ public class VoteConfig {
     locked = SurveyUtils.getBooleanFromString(parameters.get(KEY_LOCKED), false);
     showCondensed = SurveyUtils.getBooleanFromString(parameters.get(KEY_SHOW_CONDENSED), false);
     anonymous = SurveyUtils.getBooleanFromString(parameters.get(KEY_ANONYMOUS_MODE), false);
-    uniqueId = SurveyUtils.getIntegerFromString(parameters.get(KEY_UNIQUE_ID), -1);
 
     final User remoteUser = permissionEvaluator.getRemoteUser();
 
@@ -123,11 +120,15 @@ public class VoteConfig {
       }
     }
     this.userRenderer = new UserRenderer(userVisualization);
+
+    Set<User> users = Sets.newHashSet();
+    for (String configuredVoter : voters) {
+      users.addAll(permissionEvaluator.getActiveUsersForGroupOrUser(configuredVoter));
+    }
+    this.allPossibleVoters = Lists.newArrayList(users);
   }
 
   public VoteConfig(SurveyConfig surveyConfig) {
-    this.permissionEvaluator = surveyConfig.permissionEvaluator;
-
     title = surveyConfig.getTitle();
 
     renderTitleLevel = surveyConfig.getRenderTitleLevel() > 0 ? surveyConfig.getRenderTitleLevel() + 1 : 0;
@@ -154,6 +155,7 @@ public class VoteConfig {
     iterateStep = surveyConfig.getIterateStep();
 
     userRenderer = surveyConfig.getUserRenderer();
+    allPossibleVoters = surveyConfig.getAllPossibleVoters();
   }
 
   public String getTitle() {
@@ -237,11 +239,7 @@ public class VoteConfig {
   }
 
   public List<User> getAllPossibleVoters() {
-    Set<User> users = Sets.newHashSet();
-    for (String configuredVoter : voters) {
-      users.addAll(permissionEvaluator.getActiveUsersForGroupOrUser(configuredVoter));
-    }
-    return Lists.newArrayList(users);
+    return allPossibleVoters;
   }
 
   @Override

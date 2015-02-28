@@ -5,7 +5,7 @@ import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.user.UserManager;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.model.enums.UserVisualization;
-import org.hivesoft.confluence.utils.PermissionEvaluator;
+import org.hivesoft.confluence.utils.PermissionEvaluatorImpl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ public class VoteConfigTest {
   private final UserManager mockUserManager = mock(UserManager.class);
   private final UserAccessor mockUserAccessor = mock(UserAccessor.class);
 
-  private final PermissionEvaluator permissionEvaluator = new PermissionEvaluator(mockUserAccessor, mockUserManager, mockPermissionManager);
+  private final PermissionEvaluatorImpl permissionEvaluator = new PermissionEvaluatorImpl(mockUserAccessor, mockUserManager, mockPermissionManager);
 
   private VoteConfig classUnderTest;
 

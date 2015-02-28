@@ -11,15 +11,12 @@ import com.atlassian.user.User;
 import com.atlassian.user.impl.DefaultGroup;
 import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
-import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.model.wrapper.AnonymousUser;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -38,11 +35,11 @@ public class PermissionEvaluatorTest extends ConfluenceTestBase {
   private final UserManager mockUserManager = mock(UserManager.class);
   private final PermissionManager mockPermissionManager = mock(PermissionManager.class);
 
-  private PermissionEvaluator classUnderTest;
+  private PermissionEvaluatorImpl classUnderTest;
 
   @Before
   public void setup() {
-    classUnderTest = new PermissionEvaluator(mockUserAccessor, mockUserManager, mockPermissionManager);
+    classUnderTest = new PermissionEvaluatorImpl(mockUserAccessor, mockUserManager, mockPermissionManager);
   }
 
   @Test
@@ -139,43 +136,6 @@ public class PermissionEvaluatorTest extends ConfluenceTestBase {
     assertFalse(classUnderTest.canSeeVoters("something", true));
     //visibleVoters Parameter "true"
     assertTrue(classUnderTest.canSeeVoters("true", true));
-  }
-
-  @Test
-  public void test_getCanVote_emptyUser_success() {
-    final Boolean canVote = classUnderTest.canVote(null, SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
-
-    assertThat(canVote, is(false));
-  }
-
-  @Test
-  public void test_getCanVote_success() {
-    final Boolean canVote = classUnderTest.canVote(SOME_USER1, SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE));
-
-    assertThat(canVote, is(true));
-  }
-
-  @Test
-  public void test_getCanVote_notInVotersList_success() {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_VOTERS, "notThisUser, notThisUserEither");
-
-    final Boolean canVote = classUnderTest.canVote(SOME_USER1, SurveyUtilsTest.createBallotWithParameters(parameters));
-
-    assertThat(canVote, is(false));
-  }
-
-  @Test
-  public void test_getCanVote_inListViaGroup_success() {
-    when(mockUserAccessor.hasMembership("someGroup", SOME_USER1.getName())).thenReturn(true);
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
-    parameters.put(VoteConfig.KEY_VOTERS, "notThisUser, notThisUserEither, someGroup");
-    parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
-
-    final Boolean canVote = classUnderTest.canVote(SOME_USER1, SurveyUtilsTest.createBallotWithParameters(parameters));
-
-    assertThat(canVote, is(true));
   }
 
   @Test

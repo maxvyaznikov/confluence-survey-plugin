@@ -6,7 +6,6 @@ import com.atlassian.confluence.core.ContentPropertyManager;
 import com.atlassian.confluence.pages.Comment;
 import com.atlassian.confluence.pages.Page;
 import com.atlassian.renderer.v2.macro.MacroException;
-import com.atlassian.user.User;
 import com.opensymphony.xwork.ActionContext;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.*;
 
 public class SurveyManagerTest extends ConfluenceTestBase {
   private final ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
-  private final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+  private final PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
 
   private SurveyManager classUnderTest;
 
@@ -186,10 +185,13 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
   @Test
   public void test_recordVote_freshVote_success() {
-    Choice choiceToVoteOn = SurveyUtilsTest.createdDefaultChoice();
-    Ballot ballot = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(choiceToVoteOn));
+    List<Choice> choicesWithoutVotes = createChoicesWithoutVotes(2);
+    Choice choiceToVoteOn = choicesWithoutVotes.get(0);
 
-    when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
+
+    Ballot ballot = new BallotBuilder(parameters).choices(choicesWithoutVotes).build();
 
     classUnderTest.recordVote(ballot, new Page(), choiceToVoteOn.getDescription(), VoteAction.VOTE);
 
@@ -209,7 +211,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
     choiceAlreadyVotedOn.voteFor(SOME_USER1);
 
-    when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
+    //when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
 
     classUnderTest.recordVote(ballot, new Page(), choiceToVoteOn.getDescription(), VoteAction.VOTE);
 
@@ -228,7 +230,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
     choiceAlreadyVotedOn.voteFor(SOME_USER1);
 
-    when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
+    //when(mockPermissionEvaluator.canVote(any(User.class), any(Ballot.class))).thenReturn(true);
 
     classUnderTest.recordVote(ballot, new Page(), choiceAlreadyVotedOn.getDescription(), VoteAction.UNVOTE);
 

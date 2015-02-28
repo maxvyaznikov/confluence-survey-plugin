@@ -27,10 +27,7 @@ import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Comment;
 import org.hivesoft.confluence.model.wrapper.TestTemplateRenderer;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
-import org.hivesoft.confluence.utils.PermissionEvaluator;
-import org.hivesoft.confluence.utils.SurveyManager;
-import org.hivesoft.confluence.utils.SurveyUtils;
-import org.hivesoft.confluence.utils.VelocityAbstractionHelper;
+import org.hivesoft.confluence.utils.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +52,7 @@ public class SurveyMacroTest extends ConfluenceTestBase {
   private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
   private final TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
   private final PageManager mockPageManager = mock(PageManager.class);
-  private final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
+  private final PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
   private final ConversionContext mockConversionContext = mock(ConversionContext.class);
 
   private final TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();

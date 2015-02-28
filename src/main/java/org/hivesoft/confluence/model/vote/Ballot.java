@@ -297,6 +297,18 @@ public class Ballot {
     return ballotChoiceNames;
   }
 
+
+  /**
+   * Determine if a user is authorized to cast a vote, taking into account whether they are a voter (either explicitly or implicitly)
+   * and whether or not they have already cast a vote. Only logged in users can vote.
+   *
+   * @param user   the user about to see the ballot.
+   * @return <code>true</code> if the user can cast a vote, <code>false</code> if they cannot.
+   */
+  public Boolean canVote(User user) {
+    return config.isCanTakeSurvey() && (!getHasVoted(user) || config.isChangeableVotes());
+  }
+
   /**
    * Ballots are considered equal if their title is the same for both ballots.
    */

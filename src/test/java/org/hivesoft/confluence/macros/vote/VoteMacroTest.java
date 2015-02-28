@@ -26,7 +26,7 @@ import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.model.vote.Comment;
 import org.hivesoft.confluence.model.wrapper.TestTemplateRenderer;
 import org.hivesoft.confluence.rest.callbacks.delegation.SurveyPluginSettings;
-import org.hivesoft.confluence.utils.PermissionEvaluator;
+import org.hivesoft.confluence.utils.PermissionEvaluatorImpl;
 import org.hivesoft.confluence.utils.SurveyManager;
 import org.hivesoft.confluence.utils.VelocityAbstractionHelper;
 import org.junit.After;
@@ -137,7 +137,7 @@ public class VoteMacroTest extends ConfluenceTestBase {
     final Choice someChoice = new Choice("someChoice");
     List<Choice> choices = new ArrayList<Choice>();
     choices.add(someChoice);
-    Ballot ballot = new Ballot("someTitle", "", new VoteConfig(mock(PermissionEvaluator.class), parameters), choices, new ArrayList<Comment>());
+    Ballot ballot = new Ballot("someTitle", "", new VoteConfig(mock(PermissionEvaluatorImpl.class), parameters), choices, new ArrayList<Comment>());
 
     when(mockConversionContext.getEntity()).thenReturn(someComment);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);
@@ -164,7 +164,7 @@ public class VoteMacroTest extends ConfluenceTestBase {
     final Choice someChoice = new Choice("someChoice");
     List<Choice> choices = new ArrayList<Choice>();
     choices.add(someChoice);
-    Ballot ballot = new Ballot("someTitle", "", new VoteConfig(mock(PermissionEvaluator.class), parameters), choices, new ArrayList<Comment>());
+    Ballot ballot = new Ballot("someTitle", "", new VoteConfig(mock(PermissionEvaluatorImpl.class), parameters), choices, new ArrayList<Comment>());
 
     when(mockConversionContext.getEntity()).thenReturn(somePage);
     when(mockConversionContext.getPageContext()).thenReturn(pageContext);

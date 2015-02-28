@@ -39,9 +39,9 @@ public class SurveyManager {
   protected static final char COMMENTERS_SEPARATOR = '|';
 
   private final ContentPropertyManager contentPropertyManager;
-  private final PermissionEvaluator permissionEvaluator;
+  private final PermissionEvaluatorImpl permissionEvaluator;
 
-  public SurveyManager(ContentPropertyManager contentPropertyManager, PermissionEvaluator permissionEvaluator) {
+  public SurveyManager(ContentPropertyManager contentPropertyManager, PermissionEvaluatorImpl permissionEvaluator) {
     this.contentPropertyManager = contentPropertyManager;
     this.permissionEvaluator = permissionEvaluator;
   }
@@ -193,7 +193,7 @@ public class SurveyManager {
     int voteRecorded = 0;
 
     // If there is a choice, make sure this user can vote
-    if (requestChoice != null && permissionEvaluator.canVote(remoteUser, ballot)) {
+    if (requestChoice != null && ballot.canVote(remoteUser)) {
 
       // If this is a re-vote situation, then unvote first
       Choice previousChoice = ballot.getChoiceForUser(remoteUser);
