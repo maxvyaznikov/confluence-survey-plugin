@@ -27,9 +27,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PermissionEvaluatorTest extends ConfluenceTestBase {
-
-  public static final String SOME_BALLOT_TITLE = "someBallotTitle";
+public class PermissionEvaluatorImplTest extends ConfluenceTestBase {
 
   private final UserAccessor mockUserAccessor = mock(UserAccessor.class);
   private final UserManager mockUserManager = mock(UserManager.class);

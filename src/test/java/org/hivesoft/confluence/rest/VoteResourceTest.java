@@ -10,7 +10,6 @@ import com.atlassian.confluence.pages.PageManager;
 import com.atlassian.confluence.xhtml.api.MacroDefinition;
 import com.atlassian.confluence.xhtml.api.XhtmlContent;
 import com.atlassian.event.api.EventPublisher;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.model.Survey;
@@ -26,10 +25,7 @@ import org.junit.Test;
 import javax.ws.rs.core.Response;
 import javax.xml.stream.XMLOutputFactory;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -115,7 +111,7 @@ public class VoteResourceTest extends ConfluenceTestBase {
     Page somePage = new Page();
     somePage.setId(SOME_PAGE_ID);
 
-    List<String> ballots = Arrays.asList(new String[]{"Should this be exported?", "How do you like the modern iconSet?", "How do you like the modern iconSet?"});
+    List<String> ballots = Arrays.asList("Should this be exported?", "How do you like the modern iconSet?", "How do you like the modern iconSet?");
 
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE +
             "</ac:parameter><ac:plain-text-body><![CDATA[" + StringUtils.join(ballots, '\n') + "]]>" +

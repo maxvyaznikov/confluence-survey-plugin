@@ -60,7 +60,7 @@ public class BallotTest extends ConfluenceTestBase {
     Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
     someChoice.voteFor(SOME_USER1);
 
-    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).choices(Arrays.asList(someChoice)).build();
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).choices(Collections.singletonList(someChoice)).build();
 
     Choice result = classUnderTest.getChoiceForUser(SOME_USER1);
 
@@ -139,7 +139,7 @@ public class BallotTest extends ConfluenceTestBase {
   public void test_getComments_success() {
     Comment someComment = new Comment(SOME_USER1, "some crazy comment for a crazy plugin");
 
-    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).comments(Arrays.asList(someComment)).build();
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).comments(Collections.singletonList(someComment)).build();
 
     final List<Comment> result = classUnderTest.getComments();
 
@@ -152,7 +152,7 @@ public class BallotTest extends ConfluenceTestBase {
     final String commentString = "some crazy comment for a crazy plugin";
     Comment someComment = new Comment(SOME_USER1, commentString);
 
-    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).comments(Arrays.asList(someComment)).build();
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).comments(Collections.singletonList(someComment)).build();
 
     final Comment result = classUnderTest.getCommentForUser(SOME_USER1);
 
@@ -397,7 +397,7 @@ public class BallotTest extends ConfluenceTestBase {
 
     HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
     groupsWithUsers.put("group1", Arrays.asList(user11, new SurveyUser("user12"), new SurveyUser("user13")));
-    groupsWithUsers.put("user2", Arrays.asList(SOME_USER2));
+    groupsWithUsers.put("user2", Collections.singletonList(SOME_USER2));
     groupsWithUsers.put("group3", Arrays.asList(user31, new SurveyUser("user32")));
 
     PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1)
@@ -440,7 +440,7 @@ public class BallotTest extends ConfluenceTestBase {
 
     HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
     groupsWithUsers.put("group1", Arrays.asList(user11, user12, user13));
-    groupsWithUsers.put(user22.getName(), Arrays.asList(user22));
+    groupsWithUsers.put(user22.getName(), Collections.singletonList(user22));
     groupsWithUsers.put("group2", Arrays.asList(user21, user22));
     groupsWithUsers.put("group3", Arrays.asList(user31, user32));
 
@@ -462,8 +462,8 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_VOTERS, SOME_USER1.getName() + "," + SOME_USER2.getName());
 
     HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
-    groupsWithUsers.put(SOME_USER1.getName(), Arrays.asList(SOME_USER1));
-    groupsWithUsers.put(SOME_USER2.getName(), Arrays.asList(SOME_USER2));
+    groupsWithUsers.put(SOME_USER1.getName(), Collections.singletonList(SOME_USER1));
+    groupsWithUsers.put(SOME_USER2.getName(), Collections.singletonList(SOME_USER2));
     PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).groupsWithUsers(groupsWithUsers).build();
 
     classUnderTest = new BallotBuilder().parameters(parameters).permissionEvaluator(permissionEvaluator).choices(createChoicesWithoutVotes(2)).build();
@@ -476,8 +476,8 @@ public class BallotTest extends ConfluenceTestBase {
   @Test
   public void test_getEmailStringOfAllVoters_success() {
     HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
-    groupsWithUsers.put(SOME_USER1.getName(), Arrays.asList(SOME_USER1));
-    groupsWithUsers.put(SOME_USER2.getName(), Arrays.asList(SOME_USER2));
+    groupsWithUsers.put(SOME_USER1.getName(), Collections.singletonList(SOME_USER1));
+    groupsWithUsers.put(SOME_USER2.getName(), Collections.singletonList(SOME_USER2));
     PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).groupsWithUsers(groupsWithUsers).build();
 
     classUnderTest = new BallotBuilder().permissionEvaluator(permissionEvaluator).choices(createChoicesWithoutVotes(2)).build();
@@ -562,7 +562,7 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
     HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
-    groupsWithUsers.put("userIsInThisGroup", Arrays.asList(SOME_USER1));
+    groupsWithUsers.put("userIsInThisGroup", Collections.singletonList(SOME_USER1));
     PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).groupsWithUsers(groupsWithUsers).build();
     classUnderTest = new BallotBuilder().parameters(parameters)
             .permissionEvaluator(permissionEvaluator).choices(createChoicesWithoutVotes(2)).build();

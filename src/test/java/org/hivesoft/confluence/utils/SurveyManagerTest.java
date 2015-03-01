@@ -18,23 +18,18 @@ import org.hivesoft.confluence.model.wrapper.SurveyUser;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class SurveyManagerTest extends ConfluenceTestBase {
   private final ContentPropertyManager mockContentPropertyManager = mock(ContentPropertyManager.class);
-  private final PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
+  private final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
   private SurveyManager classUnderTest;
 
@@ -225,7 +220,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
-    Ballot ballot = new BallotBuilder().parameters(parameters).choices(Arrays.asList(choiceAlreadyVotedOn)).build();
+    Ballot ballot = new BallotBuilder().parameters(parameters).choices(Collections.singletonList(choiceAlreadyVotedOn)).build();
 
     choiceAlreadyVotedOn.voteFor(SOME_USER1);
 
