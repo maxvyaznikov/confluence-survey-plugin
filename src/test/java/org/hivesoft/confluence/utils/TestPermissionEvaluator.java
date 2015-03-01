@@ -3,7 +3,6 @@ package org.hivesoft.confluence.utils;
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.user.User;
 import org.apache.commons.lang3.StringUtils;
-import org.hivesoft.confluence.model.wrapper.SurveyUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,9 +14,9 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
   private final User currentUser;
   private final boolean canAttachFile;
   private final boolean canCreatePage;
-  private final Map<String, List<String>> groupsWithUsers;
+  private final Map<String, List<User>> groupsWithUsers;
 
-  private TestPermissionEvaluator(User currentUser, boolean canAttachFile, boolean canCreatePage, Map<String, List<String>> groupsWithUsers) {
+  private TestPermissionEvaluator(User currentUser, boolean canAttachFile, boolean canCreatePage, Map<String, List<User>> groupsWithUsers) {
     this.currentUser = currentUser;
     this.canAttachFile = canAttachFile;
     this.canCreatePage = canCreatePage;
@@ -61,7 +60,7 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
 
     for (String userOrGroup : listOfUsersOrGroups) {
       if (groupsWithUsers.containsKey(userOrGroup)) {
-        if (groupsWithUsers.get(userOrGroup).contains(user.getName())) {
+        if (groupsWithUsers.get(userOrGroup).contains(user)) {
           return true;
         }
       }
@@ -79,8 +78,8 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
   public List<User> getActiveUsersForGroupOrUser(String userOrGroupName) {
     List<User> users = new ArrayList<User>();
     if (groupsWithUsers.get(userOrGroupName) != null) {
-      for (String user : groupsWithUsers.get(userOrGroupName)) {
-        users.add(new SurveyUser(user));
+      for (User user : groupsWithUsers.get(userOrGroupName)) {
+        users.add(user);
       }
     }
     return users;
@@ -91,8 +90,7 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
     private final User currentUser;
     private boolean canAttachFile = false;
     private boolean canCreatePage = false;
-    private List<User> activeUsers = new ArrayList<User>();
-    private Map<String, List<String>> groupsWithUsers = new HashMap<String, List<String>>();
+    private Map<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
 
     public Builder(User currentUser) {
       this.currentUser = currentUser;
@@ -108,7 +106,7 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
       return this;
     }
 
-    public Builder groupsWithUsers(Map<String, List<String>> groupsWithUsers) {
+    public Builder groupsWithUsers(Map<String, List<User>> groupsWithUsers) {
       this.groupsWithUsers = groupsWithUsers;
       return this;
     }

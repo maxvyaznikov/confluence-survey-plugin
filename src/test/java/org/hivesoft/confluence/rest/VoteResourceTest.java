@@ -172,7 +172,8 @@ public class VoteResourceTest extends ConfluenceTestBase {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">" + SOME_BALLOT_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Choice1\n" +
             "Choice2]]></ac:plain-text-body></ac:macro>");
-    final Ballot someBallot = new Ballot(SOME_BALLOT_TITLE, "", createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+
+    Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructBallotFromPlainTextMacroBody(any(Map.class), anyString(), eq(somePage))).thenReturn(someBallot);

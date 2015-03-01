@@ -83,49 +83,12 @@ public abstract class ConfluenceTestBase {
     }
   }
 
-  protected static Ballot createDefaultBallot(String title) {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, title);
-    return createBallotWithParameters(parameters);
-  }
-
-  protected static Ballot createDefaultBallotWithChoices(String title, List<Choice> choices) {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, title);
-    return createBallotWithParametersAndChoices(parameters, choices);
-  }
-
-  protected static Ballot createDefaultBallotWithComments(String title, List<Comment> comments) {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, title);
-    return new Ballot(title, "", createDefaultVoteConfig(parameters), SurveyUtils.getDefaultChoices(), comments);
-  }
-
-  protected static Ballot createBallotWithParameters(Map<String, String> parameters) {
-    return createBallotWithParametersAndChoices(parameters, SurveyUtils.getDefaultChoices());
-  }
-
-  protected static Ballot createBallotWithParametersAndChoices(Map<String, String> parameters, List<Choice> choices) {
-    return new BallotBuilder().parameters(parameters).choices(choices).build();
-  }
-
-  protected static VoteConfig createDefaultVoteConfig(Map<String, String> parameters) {
-    PermissionEvaluator dummyPermissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).build();
-    return new VoteConfig(dummyPermissionEvaluator, parameters);
-  }
-
   protected static SurveyConfig createDefaultSurveyConfig(Map<String, String> parameters) {
-    PermissionEvaluator dummyPermissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).build();
-    return new SurveyConfig(dummyPermissionEvaluator, parameters);
+    PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).build();
+    return new SurveyConfig(permissionEvaluator, parameters);
   }
 
-  protected static Map<String, String> createDefaultParametersWithTitle(String title) {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, title);
-    return parameters;
-  }
-
-  protected List<Choice> createChoicesWithoutVotes(int count) {
+  protected static List<Choice> createChoicesWithoutVotes(int count) {
     List<Choice> choices = new ArrayList<Choice>();
     for (int i = 0; i < count; i++) {
       choices.add(new Choice("someChoice" + i));

@@ -8,20 +8,20 @@ import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.model.wrapper.AnonymousUser;
 import org.hivesoft.confluence.model.wrapper.SurveyUser;
-import org.hivesoft.confluence.utils.*;
+import org.hivesoft.confluence.utils.PermissionEvaluator;
+import org.hivesoft.confluence.utils.SurveyUtils;
+import org.hivesoft.confluence.utils.TestPermissionEvaluator;
 import org.junit.Test;
 
 import java.util.*;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class BallotTest extends ConfluenceTestBase {
 
@@ -43,7 +43,7 @@ public class BallotTest extends ConfluenceTestBase {
   @Test
   public void test_getDescription_success() {
     classUnderTest = new BallotBuilder().build();
-    assertEquals("", classUnderTest.getDescription());
+    assertThat(classUnderTest.getDescription(), is(""));
 
     classUnderTest = new BallotBuilder().description("someDescription").build();
     assertThat(classUnderTest.getDescription(), is("someDescription"));
@@ -75,8 +75,8 @@ public class BallotTest extends ConfluenceTestBase {
 
     Choice result = classUnderTest.getChoiceForUser(new DefaultUser("someDifferentNotExistingUser"));
 
-    assertTrue(null == result);
-    assertFalse(classUnderTest.getHasVoted(new DefaultUser("someDifferentNotExistingUser")));
+    assertThat(result, is(nullValue()));
+    assertThat(classUnderTest.getHasVoted(new DefaultUser("someDifferentNotExistingUser")), is(false));
   }
 
   @Test
@@ -86,7 +86,7 @@ public class BallotTest extends ConfluenceTestBase {
 
     Choice result = classUnderTest.getChoice(SurveyUtils.getDefaultChoices().get(0).getDescription());
 
-    assertEquals(someChoice, result);
+    assertThat(result, is(equalTo(someChoice)));
   }
 
   @Test
@@ -126,7 +126,7 @@ public class BallotTest extends ConfluenceTestBase {
     someChoice.voteFor(new DefaultUser("someUserTwo"));
     someChoiceTwo.voteFor(new DefaultUser("someUserThree"));
 
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo));
+    classUnderTest = new BallotBuilder().choices(Arrays.asList(someChoice, someChoiceTwo)).build();
 
     final int percentageResult = classUnderTest.getPercentageOfVoteForChoice(someChoice);
     final int percentageResultTwo = classUnderTest.getPercentageOfVoteForChoice(someChoiceTwo);
@@ -388,19 +388,23 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getAllPossibleVoters_success() {
+    final User user11 = new SurveyUser("user11");
+    final User user31 = new SurveyUser("user31");
+
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, "someBallot");
     parameters.put(VoteConfig.KEY_VOTERS, "group1,user2,group3");
 
-    final PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
+    HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
+    groupsWithUsers.put("group1", Arrays.asList(user11, new SurveyUser("user12"), new SurveyUser("user13")));
+    groupsWithUsers.put("user2", Arrays.asList(SOME_USER2));
+    groupsWithUsers.put("group3", Arrays.asList(user31, new SurveyUser("user32")));
 
-    final User user11 = new SurveyUser("user11");
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList(user11, new SurveyUser("user12"), new SurveyUser("user13")));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("user2")).thenReturn(newArrayList(SOME_USER2));
-    final User user31 = new SurveyUser("user31");
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList(user31, new SurveyUser("user32")));
+    PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1)
+            .groupsWithUsers(groupsWithUsers)
+            .build();
 
-    classUnderTest = new Ballot("someBallot", "subTitle", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(createChoicesWithoutVotes(2)).permissionEvaluator(permissionEvaluator).build();
 
     List<User> result = classUnderTest.getAllPossibleVoters();
 
@@ -434,11 +438,11 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_TITLE, "someBallotTitle");
     parameters.put(VoteConfig.KEY_VOTERS, "group1, " + user22.getName() + ", group2, group3");
 
-    HashMap<String, List<String>> groupsWithUsers = new HashMap<String, List<String>>();
-    groupsWithUsers.put("group1",Arrays.asList(user11.getName(),user12.getName(),user13.getName()));
-    groupsWithUsers.put(user22.getName(),Arrays.asList(user22.getName()));
-    groupsWithUsers.put("group2",Arrays.asList(user21.getName(),user22.getName()));
-    groupsWithUsers.put("group3",Arrays.asList(user31.getName(), user32.getName()));
+    HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
+    groupsWithUsers.put("group1", Arrays.asList(user11, user12, user13));
+    groupsWithUsers.put(user22.getName(), Arrays.asList(user22));
+    groupsWithUsers.put("group2", Arrays.asList(user21, user22));
+    groupsWithUsers.put("group3", Arrays.asList(user31, user32));
 
     PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1)
             .groupsWithUsers(groupsWithUsers)
@@ -457,10 +461,12 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_TITLE, "someTitle");
     parameters.put(VoteConfig.KEY_VOTERS, SOME_USER1.getName() + "," + SOME_USER2.getName());
 
-    final PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER1.getName())).thenReturn(newArrayList(SOME_USER1));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER2.getName())).thenReturn(newArrayList(SOME_USER2));
-    classUnderTest = new Ballot("someTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
+    HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
+    groupsWithUsers.put(SOME_USER1.getName(), Arrays.asList(SOME_USER1));
+    groupsWithUsers.put(SOME_USER2.getName(), Arrays.asList(SOME_USER2));
+    PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).groupsWithUsers(groupsWithUsers).build();
+
+    classUnderTest = new BallotBuilder().parameters(parameters).permissionEvaluator(permissionEvaluator).choices(createChoicesWithoutVotes(2)).build();
 
     String result = classUnderTest.getEmailStringOfPendingVoters();
 
@@ -469,14 +475,12 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getEmailStringOfAllVoters_success() {
-    final HashMap<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, "someTitle");
-    parameters.put(VoteConfig.KEY_VOTERS, SOME_USER1.getName() + "," + SOME_USER2.getName());
+    HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
+    groupsWithUsers.put(SOME_USER1.getName(), Arrays.asList(SOME_USER1));
+    groupsWithUsers.put(SOME_USER2.getName(), Arrays.asList(SOME_USER2));
+    PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).groupsWithUsers(groupsWithUsers).build();
 
-    final PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER1.getName())).thenReturn(newArrayList(SOME_USER1));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(SOME_USER2.getName())).thenReturn(newArrayList(SOME_USER2));
-    classUnderTest = new Ballot("someTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), createChoicesWithoutVotes(2), new ArrayList<Comment>());
+    classUnderTest = new BallotBuilder().permissionEvaluator(permissionEvaluator).choices(createChoicesWithoutVotes(2)).build();
 
     classUnderTest.getChoices().iterator().next().voteFor(SOME_USER1);
 
@@ -490,24 +494,26 @@ public class BallotTest extends ConfluenceTestBase {
     classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
     Ballot classUnderTest2 = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
 
-    assertFalse(classUnderTest.equals("someString"));
-    assertTrue(classUnderTest.equals(classUnderTest2));
-    assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
-    assertTrue(classUnderTest.toString().equals(classUnderTest2.toString()));
+    assertThat(classUnderTest.equals("someString"), is(false));
+    assertThat(classUnderTest.equals(classUnderTest2), is(true));
+    assertThat(classUnderTest.hashCode() == classUnderTest2.hashCode(), is(true));
+    assertThat(classUnderTest.toString().equals(classUnderTest2.toString()), is(true));
 
-    classUnderTest2 = new Ballot(SOME_BALLOT_TITLE, "someDesc", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    classUnderTest2 = new BallotBuilder().title(SOME_BALLOT_TITLE).description("someDesc").build();
     assertThat(classUnderTest, is(equalTo(classUnderTest2)));
-    assertTrue(classUnderTest.hashCode() == classUnderTest2.hashCode());
-    assertFalse(classUnderTest.toString().equals(classUnderTest2.toString()));
+    assertThat(classUnderTest.hashCode() == classUnderTest2.hashCode(), is(true));
+    assertThat(classUnderTest.toString().equals(classUnderTest2.toString()), is(false));
 
-    classUnderTest2 = new Ballot(SOME_BALLOT_TITLE + "2", "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
-    assertFalse(classUnderTest.equals(classUnderTest2));
-    assertFalse(classUnderTest.hashCode() == classUnderTest2.hashCode());
+    classUnderTest2 = new BallotBuilder().title(SOME_BALLOT_TITLE + "2").build();
+    assertThat(classUnderTest.equals(classUnderTest2), is(false));
+    assertThat(classUnderTest.hashCode() == classUnderTest2.hashCode(), is(false));
   }
 
   @Test
   public void test_getTitleAndDescriptionWithRenderedLinks() {
-    classUnderTest = new Ballot("i am a choice to http://google.de but https://www.google.com is also ok", "someLinkDescription: http://www.heise.de", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    classUnderTest = new BallotBuilder()
+            .title("i am a choice to http://google.de but https://www.google.com is also ok")
+            .description("someLinkDescription: http://www.heise.de").build();
     assertThat(classUnderTest.getTitleWithRenderedLinks(),
             is("i am a choice to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a> but <a href=\"https://www.google.com\" target=\"_blank\">https://www.google.com</a> is also ok"));
     assertThat(classUnderTest.getDescriptionWithRenderedLinks(),
@@ -548,19 +554,18 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getCanVote_inListViaGroup_success() {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
-
     List<String> voters = Arrays.asList("notThisUser", "notThisUserEither", "userIsInThisGroup");
 
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_VOTERS, StringUtils.join(voters, ','));
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
-    HashMap<String, List<String>> groupsWithUsers = new HashMap<String, List<String>>();
-    groupsWithUsers.put("userIsInThisGroup", Arrays.asList(SOME_USER1.getName()));
+    HashMap<String, List<User>> groupsWithUsers = new HashMap<String, List<User>>();
+    groupsWithUsers.put("userIsInThisGroup", Arrays.asList(SOME_USER1));
+    PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).groupsWithUsers(groupsWithUsers).build();
     classUnderTest = new BallotBuilder().parameters(parameters)
-            .permissionEvaluator(new TestPermissionEvaluator.Builder(SOME_USER1)
-                    .groupsWithUsers(groupsWithUsers).build()).choices(createChoicesWithoutVotes(2)).build();
+            .permissionEvaluator(permissionEvaluator).choices(createChoicesWithoutVotes(2)).build();
 
     final Boolean canVote = classUnderTest.canVote(SOME_USER1);
 

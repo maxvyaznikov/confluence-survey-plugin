@@ -54,7 +54,9 @@ public class SurveyManagerTest extends ConfluenceTestBase {
   }
 
   private static Map<String, String> parametersWithTitle() {
-    return SurveyUtilsTest.createDefaultParametersWithTitle("someTitle");
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put(VoteConfig.KEY_TITLE, "someTitle");
+    return parameters;
   }
 
   @Test
@@ -175,7 +177,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
   @Test
   public void test_recordVote_noUser_success() {
-    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot ballot = new BallotBuilder().build();
     when(mockPermissionEvaluator.getRemoteUser()).thenReturn(new SurveyUser("someUser"));
 
     classUnderTest.recordVote(ballot, new Page(), "someChoiceDoesn'tMatter", VoteAction.VOTE);
@@ -204,7 +206,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
-    Ballot ballot = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(choiceAlreadyVotedOn, choiceToVoteOn));
+    Ballot ballot = new BallotBuilder().parameters(parameters).choices(Arrays.asList(choiceAlreadyVotedOn, choiceToVoteOn)).build();
 
     choiceAlreadyVotedOn.voteFor(SOME_USER1);
 
@@ -223,7 +225,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(VoteConfig.KEY_CHANGEABLE_VOTES, "true");
 
-    Ballot ballot = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, Arrays.asList(choiceAlreadyVotedOn));
+    Ballot ballot = new BallotBuilder().parameters(parameters).choices(Arrays.asList(choiceAlreadyVotedOn)).build();
 
     choiceAlreadyVotedOn.voteFor(SOME_USER1);
 
@@ -236,7 +238,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
   @Test
   public void test_recordVote_alreadyVotedOnDifferentChangeAbleVotesFalse_success() {
-    Ballot ballot = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot ballot = new BallotBuilder().build();
 
     ballot.getChoices().iterator().next().voteFor(SOME_USER1);
 
@@ -277,7 +279,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
   public void test_resetVotes_votesAndCommentsReset_success() {
     final Survey survey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
     final String someBallotTitle = "someBallot";
-    final Ballot someBallot = SurveyUtilsTest.createDefaultBallot(someBallotTitle);
+    final Ballot someBallot = new BallotBuilder().title(someBallotTitle).build();
     someBallot.getChoices().iterator().next().voteFor(SOME_USER1);
     someBallot.getChoices().iterator().next().voteFor(SOME_USER2);
     survey.addBallot(someBallot);
