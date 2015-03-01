@@ -8,10 +8,7 @@ import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.model.wrapper.AnonymousUser;
 import org.hivesoft.confluence.model.wrapper.SurveyUser;
-import org.hivesoft.confluence.utils.PermissionEvaluatorImpl;
-import org.hivesoft.confluence.utils.SurveyUtils;
-import org.hivesoft.confluence.utils.SurveyUtilsTest;
-import org.hivesoft.confluence.utils.TestPermissionEvaluator;
+import org.hivesoft.confluence.utils.*;
 import org.junit.Test;
 
 import java.util.*;
@@ -19,6 +16,7 @@ import java.util.*;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -31,29 +29,29 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getTitle_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
     assertThat(classUnderTest.getTitle(), is(equalTo(SOME_BALLOT_TITLE)));
   }
 
   @Test
   public void test_getTitleNoSpace_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE + " more spaces");
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE + " more spaces").build();
 
     assertThat(classUnderTest.getTitleNoSpace(), is(equalTo(SOME_BALLOT_TITLE.toLowerCase() + "morespaces")));
   }
 
   @Test
   public void test_getDescription_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().build();
     assertEquals("", classUnderTest.getDescription());
 
-    classUnderTest = new Ballot(SOME_BALLOT_TITLE, "someDescription", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    classUnderTest = new BallotBuilder().description("someDescription").build();
     assertThat(classUnderTest.getDescription(), is("someDescription"));
   }
 
   @Test
   public void test_ballotsWithDefaults_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().build();
     assertThat(classUnderTest.getConfig(), is(notNullValue()));
   }
 
@@ -62,7 +60,7 @@ public class BallotTest extends ConfluenceTestBase {
     Choice someChoice = new Choice(SOME_CHOICE_DESCRIPTION);
     someChoice.voteFor(SOME_USER1);
 
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(someChoice));
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).choices(Arrays.asList(someChoice)).build();
 
     Choice result = classUnderTest.getChoiceForUser(SOME_USER1);
 
@@ -72,7 +70,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getVoteForNotExistingUser_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
     classUnderTest.getChoices().iterator().next().voteFor(SOME_USER1);
 
     Choice result = classUnderTest.getChoiceForUser(new DefaultUser("someDifferentNotExistingUser"));
@@ -83,7 +81,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getChoice_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
     final Choice someChoice = classUnderTest.getChoices().iterator().next();
 
     Choice result = classUnderTest.getChoice(SurveyUtils.getDefaultChoices().get(0).getDescription());
@@ -93,16 +91,16 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getChoice_NotExists_failure() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
 
     Choice result = classUnderTest.getChoice("NotExistingChoice");
 
-    assertNull(result);
+    assertThat(result, is(nullValue()));
   }
 
   @Test
   public void test_getChoices_DefaultChoices_failure() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
     Collection<Choice> result = classUnderTest.getChoices();
 
     assertThat(result.size(), is(5));
@@ -110,7 +108,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getPercentageOfVoteForChoice_NoVotes_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
 
     final Choice someChoice = classUnderTest.getChoices().iterator().next();
 
@@ -141,7 +139,7 @@ public class BallotTest extends ConfluenceTestBase {
   public void test_getComments_success() {
     Comment someComment = new Comment(SOME_USER1, "some crazy comment for a crazy plugin");
 
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithComments(SOME_BALLOT_TITLE, Arrays.asList(someComment));
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).comments(Arrays.asList(someComment)).build();
 
     final List<Comment> result = classUnderTest.getComments();
 
@@ -154,7 +152,7 @@ public class BallotTest extends ConfluenceTestBase {
     final String commentString = "some crazy comment for a crazy plugin";
     Comment someComment = new Comment(SOME_USER1, commentString);
 
-    classUnderTest = SurveyUtilsTest.createDefaultBallotWithComments(SOME_BALLOT_TITLE, Arrays.asList(someComment));
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).comments(Arrays.asList(someComment)).build();
 
     final Comment result = classUnderTest.getCommentForUser(SOME_USER1);
 
@@ -164,7 +162,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getCommentForUser_noComment_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot("someBallot");
+    classUnderTest = new BallotBuilder().title("someBallot").build();
 
     final Comment result = classUnderTest.getCommentForUser(SOME_USER1);
 
@@ -173,7 +171,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getCurrentValueByIndex_defaultSteps_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
 
     assertThat(classUnderTest.getCurrentValueByIndex(1), is(2));
     assertThat(classUnderTest.getCurrentValueByIndex(0), is(1));
@@ -186,7 +184,7 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_START_BOUND, "-3");
     parameters.put(VoteConfig.KEY_ITERATE_STEP, "-2");
 
-    classUnderTest = SurveyUtilsTest.createBallotWithParametersAndChoices(parameters, createChoicesWithoutVotes(2));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(createChoicesWithoutVotes(2)).build();
 
     assertThat(classUnderTest.getBoundsIfNotDefault(), is("(-3--5)"));
     assertThat(classUnderTest.getCurrentValueByIndex(1), is(-5));
@@ -196,7 +194,7 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_START_BOUND, "-3");
     parameters.put(VoteConfig.KEY_ITERATE_STEP, "4");
 
-    classUnderTest = createBallotWithParametersAndChoices(parameters, createChoicesWithoutVotes(3));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(createChoicesWithoutVotes(3)).build();
 
     assertThat(classUnderTest.getBoundsIfNotDefault(), is("(-3-5)"));
     assertThat(classUnderTest.getCurrentValueByIndex(2), is(5));
@@ -207,7 +205,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_computeAverage_TwoChoicesNoVotes_expectZero_success() {
-    classUnderTest = createDefaultBallotWithChoices(SOME_BALLOT_TITLE, createChoicesWithoutVotes(2));
+    classUnderTest = new BallotBuilder().choices(createChoicesWithoutVotes(2)).build();
 
     final float result = classUnderTest.computeAverage();
 
@@ -221,7 +219,7 @@ public class BallotTest extends ConfluenceTestBase {
     someChoice.voteFor(SOME_USER1);
     Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
 
-    classUnderTest = createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo));
+    classUnderTest = new BallotBuilder().choices(Arrays.asList(someChoice, someChoiceTwo)).build();
 
     final float result = classUnderTest.computeAverage();
 
@@ -235,7 +233,7 @@ public class BallotTest extends ConfluenceTestBase {
     someChoiceTwo.voteFor(SOME_USER2);
     Choice someChoiceThree = new Choice(SOME_CHOICE_DESCRIPTION + "THREE");
 
-    classUnderTest = createDefaultBallotWithChoices(SOME_BALLOT_TITLE, Arrays.asList(someChoice, someChoiceTwo, someChoiceThree));
+    classUnderTest = new BallotBuilder().choices(Arrays.asList(someChoice, someChoiceTwo, someChoiceThree)).build();
 
     final float result = classUnderTest.computeAverage();
 
@@ -257,7 +255,7 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(SurveyConfig.KEY_START_BOUND, "4");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-4");
 
-    classUnderTest = createBallotWithParametersAndChoices(parameters, Arrays.asList(someChoice, someChoiceTwo, someChoiceThree, someChoiceFour, someChoiceFive));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(Arrays.asList(someChoice, someChoiceTwo, someChoiceThree, someChoiceFour, someChoiceFive)).build();
 
     final float result = classUnderTest.computeAverage();
 
@@ -278,7 +276,7 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(SurveyConfig.KEY_START_BOUND, "0");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "1");
 
-    classUnderTest = createBallotWithParametersAndChoices(parameters, Arrays.asList(someChoice, someChoiceTwo));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(Arrays.asList(someChoice, someChoiceTwo)).build();
 
     final float result = classUnderTest.computeAverage();
 
@@ -300,7 +298,7 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(SurveyConfig.KEY_START_BOUND, "-1");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
 
-    classUnderTest = createBallotWithParametersAndChoices(parameters, Arrays.asList(someChoice, someChoiceTwo, someChoiceThree));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(Arrays.asList(someChoice, someChoiceTwo, someChoiceThree)).build();
 
     final String format = "0.##";
     final String result = classUnderTest.computeFormattedAverage(format);
@@ -310,7 +308,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBounds_Default_success() {
-    classUnderTest = createDefaultBallotWithChoices("someBallot", createChoicesWithoutVotes(2));
+    classUnderTest = new BallotBuilder().choices(createChoicesWithoutVotes(2)).build();
 
     assertThat(classUnderTest.getLowerBound(), is(SurveyConfig.DEFAULT_START_BOUND));
     assertThat(classUnderTest.getUpperBound(), is(SurveyConfig.DEFAULT_START_BOUND + SurveyConfig.DEFAULT_START_BOUND * (classUnderTest.getChoices().size() - 1)));
@@ -323,7 +321,7 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(SurveyConfig.KEY_START_BOUND, "-1");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
 
-    classUnderTest = createBallotWithParametersAndChoices(parameters, createChoicesWithoutVotes(2));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(createChoicesWithoutVotes(2)).build();
 
     assertThat(classUnderTest.getLowerBound(), is(-4));
     assertThat(classUnderTest.getUpperBound(), is(-1));
@@ -331,7 +329,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBoundsIfNotDefault_default_success() {
-    classUnderTest = createDefaultBallotWithChoices("someBallot", createChoicesWithoutVotes(2));
+    classUnderTest = new BallotBuilder().choices(createChoicesWithoutVotes(2)).build();
 
     assertThat(classUnderTest.getBoundsIfNotDefault(), is(""));
   }
@@ -346,7 +344,7 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(SurveyConfig.KEY_START_BOUND, "3");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "-3");
 
-    classUnderTest = createBallotWithParametersAndChoices(parameters, Arrays.asList(someChoice, someChoiceTwo));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(Arrays.asList(someChoice, someChoiceTwo)).build();
 
     assertThat(classUnderTest.getBoundsIfNotDefault(), is(equalTo("(3-0)")));
   }
@@ -360,14 +358,14 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
     parameters.put(SurveyConfig.KEY_START_BOUND, "3");
 
-    classUnderTest = createBallotWithParametersAndChoices(parameters, Arrays.asList(someChoice, someChoiceTwo));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(Arrays.asList(someChoice, someChoiceTwo)).build();
 
     assertThat(classUnderTest.getBoundsIfNotDefault(), is(equalTo("(3-4)")));
 
     parameters.put(SurveyConfig.KEY_START_BOUND, "1");
     parameters.put(SurveyConfig.KEY_ITERATE_STEP, "3");
 
-    classUnderTest = createBallotWithParametersAndChoices(parameters, Arrays.asList(someChoice, someChoiceTwo));
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(Arrays.asList(someChoice, someChoiceTwo)).build();
 
     assertThat(classUnderTest.getBoundsIfNotDefault(), is(equalTo("(1-4)")));
   }
@@ -381,7 +379,7 @@ public class BallotTest extends ConfluenceTestBase {
     final User userThree = new SurveyUser("someUserTHREE");
     someChoiceThree.voteFor(userThree);
 
-    classUnderTest = createDefaultBallotWithChoices("someBallot", Arrays.asList(someChoice, someChoiceTwo, someChoiceThree));
+    classUnderTest = new BallotBuilder().choices(Arrays.asList(someChoice, someChoiceTwo, someChoiceThree)).build();
 
     final Collection<User> allVoters = classUnderTest.getAllVoters();
 
@@ -411,8 +409,6 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getAllPendingVoters_success() {
-    final PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
-
     final User user11 = new SurveyUser("user11");
     final User user12 = new SurveyUser("user12");
     final User user13 = new SurveyUser("user13");
@@ -427,6 +423,7 @@ public class BallotTest extends ConfluenceTestBase {
 
     Choice someChoiceOne = new Choice(SOME_CHOICE_DESCRIPTION + "ONE");
     Choice someChoiceTwo = new Choice(SOME_CHOICE_DESCRIPTION + "TWO");
+
     someChoiceOne.voteFor(user21);
     someChoiceOne.voteFor(user12); // user has voted but is now deactivated
     someChoiceOne.voteFor(user4); // user has voted but is now deleted
@@ -437,12 +434,18 @@ public class BallotTest extends ConfluenceTestBase {
     parameters.put(VoteConfig.KEY_TITLE, "someBallotTitle");
     parameters.put(VoteConfig.KEY_VOTERS, "group1, " + user22.getName() + ", group2, group3");
 
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group1")).thenReturn(newArrayList(user11, user12, user13));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser(user22.getName())).thenReturn(newArrayList(user22));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group2")).thenReturn(newArrayList(user21, user22));
-    when(mockPermissionEvaluator.getActiveUsersForGroupOrUser("group3")).thenReturn(newArrayList(user31, user32));
+    HashMap<String, List<String>> groupsWithUsers = new HashMap<String, List<String>>();
+    groupsWithUsers.put("group1",Arrays.asList(user11.getName(),user12.getName(),user13.getName()));
+    groupsWithUsers.put(user22.getName(),Arrays.asList(user22.getName()));
+    groupsWithUsers.put("group2",Arrays.asList(user21.getName(),user22.getName()));
+    groupsWithUsers.put("group3",Arrays.asList(user31.getName(), user32.getName()));
 
-    classUnderTest = new Ballot("someBallotTitle", "", new VoteConfig(mockPermissionEvaluator, parameters), newArrayList(someChoiceOne, someChoiceTwo), new ArrayList<Comment>());
+    PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1)
+            .groupsWithUsers(groupsWithUsers)
+            .build();
+
+    classUnderTest = new BallotBuilder().parameters(parameters).choices(Arrays.asList(someChoiceOne, someChoiceTwo)).permissionEvaluator(permissionEvaluator).build();
+
     List<User> result = classUnderTest.getAllPendingVoters();
 
     assertThat(result, containsInAnyOrder(user13, user22, user31));
@@ -484,8 +487,8 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_equalsAndHashCode_success() {
-    classUnderTest = SurveyUtilsTest.createDefaultBallot(SOME_BALLOT_TITLE);
-    Ballot classUnderTest2 = new Ballot(SOME_BALLOT_TITLE, "", SurveyUtilsTest.createDefaultVoteConfig(new HashMap<String, String>()), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
+    Ballot classUnderTest2 = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
 
     assertFalse(classUnderTest.equals("someString"));
     assertTrue(classUnderTest.equals(classUnderTest2));
@@ -513,7 +516,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getCanVote_emptyUser_success() {
-    classUnderTest = new BallotBuilder(new HashMap<String, String>())
+    classUnderTest = new BallotBuilder()
             .title(SOME_BALLOT_TITLE)
             .permissionEvaluator(new TestPermissionEvaluator.Builder(new AnonymousUser()).build()).build();
 
@@ -524,10 +527,7 @@ public class BallotTest extends ConfluenceTestBase {
 
   @Test
   public void test_getCanVote_userNotVoted_unrestricted_success() {
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
-
-    classUnderTest = new BallotBuilder(parameters).choices(createChoicesWithoutVotes(2)).build();
+    classUnderTest = new BallotBuilder().title(SOME_BALLOT_TITLE).choices(createChoicesWithoutVotes(2)).build();
 
     final Boolean canVote = classUnderTest.canVote(SOME_USER1);
 
@@ -539,7 +539,7 @@ public class BallotTest extends ConfluenceTestBase {
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_VOTERS, "notThisUser, notThisUserEither");
 
-    classUnderTest = new BallotBuilder(parameters).build();
+    classUnderTest = new BallotBuilder().parameters(parameters).build();
 
     final Boolean canVote = classUnderTest.canVote(SOME_USER1);
 
@@ -558,7 +558,7 @@ public class BallotTest extends ConfluenceTestBase {
 
     HashMap<String, List<String>> groupsWithUsers = new HashMap<String, List<String>>();
     groupsWithUsers.put("userIsInThisGroup", Arrays.asList(SOME_USER1.getName()));
-    classUnderTest = new BallotBuilder(parameters)
+    classUnderTest = new BallotBuilder().parameters(parameters)
             .permissionEvaluator(new TestPermissionEvaluator.Builder(SOME_USER1)
                     .groupsWithUsers(groupsWithUsers).build()).choices(createChoicesWithoutVotes(2)).build();
 

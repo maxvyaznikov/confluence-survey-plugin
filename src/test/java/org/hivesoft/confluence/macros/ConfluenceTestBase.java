@@ -30,16 +30,14 @@ public abstract class ConfluenceTestBase {
 
   protected static class BallotBuilder {
 
-    private Map<String, String> parameters;
-    private String title;
+    private Map<String, String> parameters = new HashMap<String, String>();
+    private String title = "";
     private String description = "";
     private PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).build();
     private List<Choice> choices = SurveyUtils.getDefaultChoices();
     private List<Comment> comments = new ArrayList<Comment>();
 
-    public BallotBuilder(Map<String, String> parameters) {
-      this.title = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE));
-      this.parameters = parameters;
+    public BallotBuilder() {
     }
 
     /**
@@ -47,6 +45,15 @@ public abstract class ConfluenceTestBase {
      */
     public BallotBuilder title(String title) {
       this.title = title;
+      return this;
+    }
+
+    public BallotBuilder parameters(Map<String, String> parameters) {
+      this.parameters.clear();
+      this.parameters.putAll(parameters);
+      if (StringUtils.isBlank(this.title)) {
+        this.title = StringUtils.defaultString(parameters.get(VoteConfig.KEY_TITLE));
+      }
       return this;
     }
 
@@ -99,11 +106,7 @@ public abstract class ConfluenceTestBase {
   }
 
   protected static Ballot createBallotWithParametersAndChoices(Map<String, String> parameters, List<Choice> choices) {
-    return new BallotBuilder(parameters).choices(choices).build();
-  }
-
-  protected static Choice createdDefaultChoice() {
-    return new Choice(SOME_CHOICE_DESCRIPTION);
+    return new BallotBuilder().parameters(parameters).choices(choices).build();
   }
 
   protected static VoteConfig createDefaultVoteConfig(Map<String, String> parameters) {

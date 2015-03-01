@@ -52,7 +52,6 @@ public class SurveyMacroTest extends ConfluenceTestBase {
   private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
   private final TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
   private final PageManager mockPageManager = mock(PageManager.class);
-  private final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
   private final ConversionContext mockConversionContext = mock(ConversionContext.class);
 
   private final TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();
@@ -93,9 +92,6 @@ public class SurveyMacroTest extends ConfluenceTestBase {
             + StringUtils.join(ballotTitles, "\n")
             + "]]></ac:plain-text-body></ac:macro>");
     final PageContext pageContext = new PageContext(somePage);
-
-    when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
-    when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(any(List.class), eq(SOME_USER1))).thenReturn(true);
 
     Survey survey = surveyWithBallots(parameters, ballotTitles);
 
@@ -161,7 +157,7 @@ public class SurveyMacroTest extends ConfluenceTestBase {
    * Helper Methods
    */
   private Survey surveyWithBallots(Map<String, String> parameters, String... ballotTitles) {
-    final SurveyConfig config = new SurveyConfig(mockPermissionEvaluator, parameters);
+    final SurveyConfig config = new SurveyConfig(new TestPermissionEvaluator.Builder(SOME_USER1).build(), parameters);
     Survey survey = new Survey(config);
     for (String ballotTitle : ballotTitles) {
       survey.addBallot(new Ballot(ballotTitle, "", config, SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));

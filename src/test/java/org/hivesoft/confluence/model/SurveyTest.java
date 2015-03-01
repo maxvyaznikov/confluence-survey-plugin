@@ -1,10 +1,9 @@
 package org.hivesoft.confluence.model;
 
-import com.atlassian.user.User;
-import com.atlassian.user.impl.DefaultUser;
 import org.hivesoft.confluence.macros.ConfluenceTestBase;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.model.vote.Ballot;
+import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.utils.SurveyUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,10 +14,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public class SurveyTest extends ConfluenceTestBase {
 
@@ -30,7 +27,7 @@ public class SurveyTest extends ConfluenceTestBase {
   }
 
   @Test
-  public void test_equalsHashCode() {
+  public void test_toString() {
     Survey classUnderTest2 = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
 
     assertThat(classUnderTest.toString(), is(classUnderTest2.toString()));
@@ -38,7 +35,8 @@ public class SurveyTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBallot_success() {
-    Ballot someBallot = createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
+
     classUnderTest.addBallot(someBallot);
 
     final Ballot result = classUnderTest.getBallot(SOME_BALLOT_TITLE);
@@ -48,7 +46,8 @@ public class SurveyTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBallotNotFound_failure() {
-    Ballot someBallot = createDefaultBallot(SOME_BALLOT_TITLE);
+    Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
+
     classUnderTest.addBallot(someBallot);
 
     final Ballot result = classUnderTest.getBallot("BallotNotFound");
@@ -58,45 +57,49 @@ public class SurveyTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBallots_success() {
-    Ballot someBallot = createDefaultBallot(SOME_BALLOT_TITLE);
-    Ballot someBallot2 = createDefaultBallot(SOME_BALLOT_TITLE + "2");
-    final List<Ballot> ballots = Arrays.asList(someBallot, someBallot2);
+    Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
+    Ballot someBallot2 = new BallotBuilder().title(SOME_BALLOT_TITLE + "2").build();
+
     classUnderTest.addBallot(someBallot);
     classUnderTest.addBallot(someBallot2);
 
     final List<Ballot> result = classUnderTest.getBallots();
 
-    assertThat(result, is(equalTo(ballots)));
+    assertThat(result, is(equalTo(Arrays.asList(someBallot, someBallot2))));
   }
 
   @Test
   public void test_isSurveyComplete_success() {
-    Ballot mockBallot = mock(Ballot.class);
-    classUnderTest.addBallot(mockBallot);
+    Choice choice1 = new Choice("firstChoice");
+    Choice choice2 = new Choice("secondChoice");
+    choice1.voteFor(SOME_USER1);
+    Ballot someBallot = new BallotBuilder().choices(Arrays.asList(choice1, choice2)).build();
 
-    when(mockBallot.getHasVoted(any(User.class))).thenReturn(true);
+    classUnderTest.addBallot(someBallot);
 
-    final boolean completed = classUnderTest.isSurveyComplete(new DefaultUser("someUsername"));
+    final boolean completed = classUnderTest.isSurveyComplete(SOME_USER1);
 
-    assertTrue(completed);
+    assertThat(completed, is(true));
   }
 
   @Test
   public void test_isSurveyComplete_failure() {
-    Ballot mockBallot = mock(Ballot.class);
-    classUnderTest.addBallot(mockBallot);
+    Choice choice1 = new Choice("firstChoice");
+    Choice choice2 = new Choice("secondChoice");
 
-    when(mockBallot.getHasVoted(any(User.class))).thenReturn(false);
+    Ballot someBallot = new BallotBuilder().choices(Arrays.asList(choice1, choice2)).build();
 
-    final boolean completed = classUnderTest.isSurveyComplete(new DefaultUser("someUsername"));
+    classUnderTest.addBallot(someBallot);
 
-    assertFalse(completed);
+    final boolean completed = classUnderTest.isSurveyComplete(SOME_USER1);
+
+    assertThat(completed, is(false));
   }
 
   @Test
   public void test_getBallotTitlesWithChoiceNames_success() {
-    Ballot someBallot = createDefaultBallot(SOME_BALLOT_TITLE);
-    Ballot someBallot2 = createDefaultBallot(SOME_BALLOT_TITLE + "2");
+    Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
+    Ballot someBallot2 = new BallotBuilder().title(SOME_BALLOT_TITLE + "2").build();
 
     classUnderTest.addBallot(someBallot);
     classUnderTest.addBallot(someBallot2);

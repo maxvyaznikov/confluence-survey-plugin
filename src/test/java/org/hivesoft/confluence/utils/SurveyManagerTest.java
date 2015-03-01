@@ -188,10 +188,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
     List<Choice> choicesWithoutVotes = createChoicesWithoutVotes(2);
     Choice choiceToVoteOn = choicesWithoutVotes.get(0);
 
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(VoteConfig.KEY_TITLE, SOME_BALLOT_TITLE);
-
-    Ballot ballot = new BallotBuilder(parameters).choices(choicesWithoutVotes).build();
+    Ballot ballot = new BallotBuilder().title(SOME_BALLOT_TITLE).choices(choicesWithoutVotes).build();
 
     classUnderTest.recordVote(ballot, new Page(), choiceToVoteOn.getDescription(), VoteAction.VOTE);
 
