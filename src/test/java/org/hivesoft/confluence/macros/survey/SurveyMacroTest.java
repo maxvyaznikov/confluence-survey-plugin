@@ -52,7 +52,7 @@ public class SurveyMacroTest extends ConfluenceTestBase {
   private final EventPublisher mockEventPublisher = mock(EventPublisher.class);
   private final TransactionTemplate transactionTemplate = mock(TransactionTemplate.class);
   private final PageManager mockPageManager = mock(PageManager.class);
-  private final PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
+  private final PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
   private final ConversionContext mockConversionContext = mock(ConversionContext.class);
 
   private final TemplateRenderer testTemplateRenderer = new TestTemplateRenderer();

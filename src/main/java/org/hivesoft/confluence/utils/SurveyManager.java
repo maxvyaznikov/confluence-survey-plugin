@@ -39,9 +39,9 @@ public class SurveyManager {
   protected static final char COMMENTERS_SEPARATOR = '|';
 
   private final ContentPropertyManager contentPropertyManager;
-  private final PermissionEvaluatorImpl permissionEvaluator;
+  private final PermissionEvaluator permissionEvaluator;
 
-  public SurveyManager(ContentPropertyManager contentPropertyManager, PermissionEvaluatorImpl permissionEvaluator) {
+  public SurveyManager(ContentPropertyManager contentPropertyManager, PermissionEvaluator permissionEvaluator) {
     this.contentPropertyManager = contentPropertyManager;
     this.permissionEvaluator = permissionEvaluator;
   }

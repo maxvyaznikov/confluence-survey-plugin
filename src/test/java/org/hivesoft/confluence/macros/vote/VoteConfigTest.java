@@ -1,12 +1,11 @@
 package org.hivesoft.confluence.macros.vote;
 
-import com.atlassian.confluence.security.PermissionManager;
-import com.atlassian.confluence.user.UserAccessor;
-import com.atlassian.sal.api.user.UserManager;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.model.enums.UserVisualization;
-import org.hivesoft.confluence.utils.PermissionEvaluatorImpl;
-import org.junit.Before;
+import org.hivesoft.confluence.model.wrapper.AnonymousUser;
+import org.hivesoft.confluence.model.wrapper.SurveyUser;
+import org.hivesoft.confluence.utils.PermissionEvaluator;
+import org.hivesoft.confluence.utils.TestPermissionEvaluator;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -14,24 +13,13 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class VoteConfigTest {
   private final static String CURRENT_USER_NAME = "spock";
 
-  private final PermissionManager mockPermissionManager = mock(PermissionManager.class);
-  private final UserManager mockUserManager = mock(UserManager.class);
-  private final UserAccessor mockUserAccessor = mock(UserAccessor.class);
-
-  private final PermissionEvaluatorImpl permissionEvaluator = new PermissionEvaluatorImpl(mockUserAccessor, mockUserManager, mockPermissionManager);
+  private final PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(new SurveyUser(CURRENT_USER_NAME)).build();
 
   private VoteConfig classUnderTest;
-
-  @Before
-  public void setUp() {
-    when(mockUserManager.getRemoteUsername()).thenReturn(CURRENT_USER_NAME);
-  }
 
   @Test
   public void test_createWithDefaultParameters_success() {
@@ -67,9 +55,7 @@ public class VoteConfigTest {
   public void test_createWithDefaultParameters_userIsAnonymous_success() {
     Map<String, String> parameters = new HashMap<String, String>();
 
-    when(mockUserManager.getRemoteUsername()).thenReturn(null);
-
-    classUnderTest = new VoteConfig(permissionEvaluator, parameters);
+    classUnderTest = new VoteConfig(new TestPermissionEvaluator.Builder(new AnonymousUser()).build(), parameters);
 
     assertThat(classUnderTest.isCanSeeResults(), is(true));
     assertThat(classUnderTest.isCanTakeSurvey(), is(false));
@@ -78,8 +64,7 @@ public class VoteConfigTest {
 
   @Test
   public void test_createFromSurveyConfigWithDefaultParameters_success() {
-    Map<String, String> parameters = new HashMap<String, String>();
-    SurveyConfig surveyConfig = new SurveyConfig(permissionEvaluator, parameters);
+    SurveyConfig surveyConfig = new SurveyConfig(permissionEvaluator, new HashMap<String, String>());
 
     classUnderTest = new VoteConfig(surveyConfig);
 

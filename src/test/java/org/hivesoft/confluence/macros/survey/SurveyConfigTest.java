@@ -3,7 +3,7 @@ package org.hivesoft.confluence.macros.survey;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
 import org.hivesoft.confluence.model.SurveySummary;
 import org.hivesoft.confluence.model.enums.UserVisualization;
-import org.hivesoft.confluence.utils.PermissionEvaluatorImpl;
+import org.hivesoft.confluence.utils.PermissionEvaluator;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -20,7 +20,7 @@ public class SurveyConfigTest {
 
   @Test
   public void test_createWithDefaultParameters_success() {
-    PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
     Map<String, String> parameters = new HashMap<String, String>();
     classUnderTest = new SurveyConfig(mockPermissionEvaluator, parameters);
 
@@ -83,7 +83,7 @@ public class SurveyConfigTest {
   }
 
   private static SurveyConfig createSurveyConfigWithRenderTitleLevel(int level) {
-    PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_RENDER_TITLE_LEVEL, String.valueOf(level));
@@ -91,7 +91,7 @@ public class SurveyConfigTest {
   }
 
   private static SurveyConfig createSurveyConfigWithSurveySummary(SurveySummary surveySummary) {
-    PermissionEvaluatorImpl mockPermissionEvaluator = mock(PermissionEvaluatorImpl.class);
+    PermissionEvaluator mockPermissionEvaluator = mock(PermissionEvaluator.class);
 
     return new SurveyConfig(mockPermissionEvaluator, createSurveySummaryParameters(surveySummary));
   }

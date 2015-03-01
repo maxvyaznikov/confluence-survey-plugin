@@ -2,6 +2,7 @@ package org.hivesoft.confluence.utils;
 
 import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.user.User;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,15 +14,13 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
   private final User currentUser;
   private final boolean canAttachFile;
   private final boolean canCreatePage;
-  private final boolean canSeeVoters;
   private final List<User> activeUsers;
   private final Map<String, List<String>> groupsWithUsers;
 
-  private TestPermissionEvaluator(User currentUser, boolean canAttachFile, boolean canCreatePage, boolean canSeeVoters, List<User> activeUsers, Map<String, List<String>> groupsWithUsers) {
+  private TestPermissionEvaluator(User currentUser, boolean canAttachFile, boolean canCreatePage, List<User> activeUsers, Map<String, List<String>> groupsWithUsers) {
     this.currentUser = currentUser;
     this.canAttachFile = canAttachFile;
     this.canCreatePage = canCreatePage;
-    this.canSeeVoters = canSeeVoters;
     this.activeUsers = activeUsers;
     this.groupsWithUsers = groupsWithUsers;
   }
@@ -74,7 +73,7 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
 
   @Override
   public boolean canSeeVoters(String visibleVoters, boolean canSeeResults) {
-    return canSeeVoters;
+    return !(!canSeeResults || StringUtils.isBlank(visibleVoters)) && Boolean.parseBoolean(visibleVoters);
   }
 
   @Override
@@ -87,7 +86,6 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
     private final User currentUser;
     private boolean canAttachFile = false;
     private boolean canCreatePage = false;
-    private boolean canSeeVoters = false;
     private List<User> activeUsers = new ArrayList<User>();
     private Map<String, List<String>> groupsWithUsers = new HashMap<String, List<String>>();
 
@@ -105,11 +103,6 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
       return this;
     }
 
-    public Builder canSeeVoters(boolean canSeeVoters) {
-      this.canSeeVoters = canSeeVoters;
-      return this;
-    }
-
     public Builder activeUsers(List<User> activeUsers) {
       this.activeUsers = activeUsers;
       return this;
@@ -121,7 +114,7 @@ public class TestPermissionEvaluator implements PermissionEvaluator {
     }
 
     public TestPermissionEvaluator build() {
-      return new TestPermissionEvaluator(currentUser, canAttachFile, canCreatePage, canSeeVoters, activeUsers, groupsWithUsers);
+      return new TestPermissionEvaluator(currentUser, canAttachFile, canCreatePage, activeUsers, groupsWithUsers);
     }
   }
 }
