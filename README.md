@@ -10,6 +10,12 @@ Since Version 1.2.9 the Macro Browser is quite comfortably described to use, but
 
 This file is merely a placeholder for the wiki documentation.
 
+Support
+=======
+
+Additionally to support this project via the issue tracker and pull requests you can now send me items from my opensource wishlist on amazon:
+http://www.amazon.de/registry/wishlist/21XXGUQ5TOYXM. Thanks in advance for any collaboration.
+
 Plugin development
 ==================
 
