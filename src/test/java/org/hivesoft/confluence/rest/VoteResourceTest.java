@@ -90,7 +90,7 @@ public class VoteResourceTest extends ConfluenceTestBase {
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
 
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
+    Survey someSurvey = new SurveyBuilder().build();
     final Ballot someBallot = new Ballot("Should this be exported?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     someSurvey.addBallot(someBallot);
     someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));
@@ -118,7 +118,7 @@ public class VoteResourceTest extends ConfluenceTestBase {
             "</ac:plain-text-body></ac:macro><ac:macro ac:name=\"vote\"><ac:parameter ac:name=\"title\">" + SOME_BALLOT_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Choice1\n" +
             "Choice2]]></ac:plain-text-body></ac:macro>");
 
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
+    Survey someSurvey = new SurveyBuilder().build();
 
     for (String ballotTitle : ballots) {
       someSurvey.addBallot(new Ballot(ballotTitle, "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));
@@ -144,7 +144,7 @@ public class VoteResourceTest extends ConfluenceTestBase {
     somePage.setId(SOME_PAGE_ID);
     somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">" + SOME_SURVEY_TITLE + "</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
+    Survey someSurvey = new SurveyBuilder().build();
     final Ballot someBallot = new Ballot("Should this be exported?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     someSurvey.addBallot(someBallot);
     someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));

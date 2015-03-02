@@ -5,6 +5,7 @@ import com.atlassian.user.impl.DefaultUser;
 import org.apache.commons.lang3.StringUtils;
 import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.macros.vote.VoteConfig;
+import org.hivesoft.confluence.model.Survey;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.model.vote.Comment;
@@ -83,9 +84,24 @@ public abstract class ConfluenceTestBase {
     }
   }
 
-  protected static SurveyConfig createDefaultSurveyConfig(Map<String, String> parameters) {
+  public static class SurveyBuilder {
     PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).build();
-    return new SurveyConfig(permissionEvaluator, parameters);
+    Map<String, String> parameters = new HashMap<String, String>();
+
+    public SurveyBuilder permissionEvaluator(PermissionEvaluator permissionEvaluator) {
+      this.permissionEvaluator = permissionEvaluator;
+      return this;
+    }
+
+    public SurveyBuilder parameters(Map<String, String> parameters) {
+      this.parameters.clear();
+      this.parameters.putAll(parameters);
+      return this;
+    }
+
+    public Survey build() {
+      return new Survey(new SurveyConfig(permissionEvaluator, parameters));
+    }
   }
 
   protected static List<Choice> createChoicesWithoutVotes(int count) {

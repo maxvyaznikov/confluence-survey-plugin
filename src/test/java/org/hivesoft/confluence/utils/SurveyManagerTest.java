@@ -272,7 +272,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
   @Test
   public void test_resetVotes_votesAndCommentsReset_success() {
-    final Survey survey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+    final Survey survey = new SurveyBuilder().build();
     final String someBallotTitle = "someBallot";
     final Ballot someBallot = new BallotBuilder().title(someBallotTitle).build();
     someBallot.getChoices().iterator().next().voteFor(SOME_USER1);
@@ -364,7 +364,7 @@ public class SurveyManagerTest extends ConfluenceTestBase {
 
   @Test
   public void test_canResetSurvey_success() {
-    Survey survey = new Survey(SurveyUtilsTest.createDefaultSurveyConfig(new HashMap<String, String>()));
+    Survey survey = new SurveyBuilder().build();
 
     when(mockPermissionEvaluator.getRemoteUser()).thenReturn(SOME_USER1);
     when(mockPermissionEvaluator.isPermissionListEmptyOrContainsGivenUser(any(List.class), eq(SOME_USER1))).thenReturn(true);

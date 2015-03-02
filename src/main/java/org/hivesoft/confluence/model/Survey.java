@@ -32,6 +32,14 @@ public class Survey {
     this.config = config;
   }
 
+  public List<Ballot> getBallots() {
+    return ballots;
+  }
+
+  public SurveyConfig getConfig() {
+    return config;
+  }
+
   public void addBallot(Ballot ballot) {
     ballots.add(ballot);
   }
@@ -47,13 +55,6 @@ public class Survey {
       }
     }
     return null;
-  }
-
-  /**
-   * @return the list of ballots
-   */
-  public List<Ballot> getBallots() {
-    return ballots;
   }
 
   /**
@@ -78,10 +79,6 @@ public class Survey {
 
   public String getTitleWithRenderedLinks() {
     return SurveyUtils.enrichStringWithHttpPattern(getTitle());
-  }
-
-  public SurveyConfig getConfig() {
-    return config;
   }
 
   /**

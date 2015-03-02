@@ -72,7 +72,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
 
     final Response response = classUnderTest.getCSVExportForSurvey(SOME_PAGE_ID, new CSVExportRepresentation(SOME_SURVEY_TITLE, null));
 
-    assertThat(Response.Status.NOT_FOUND.getStatusCode(), is(response.getStatus()));
+    assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
   }
 
   @Test
@@ -123,7 +123,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
             "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
     HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(VoteConfig.KEY_TITLE, SOME_SURVEY_TITLE);
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
+    Survey someSurvey = new SurveyBuilder().parameters(parameters).build();
     final Ballot someBallot = new Ballot("Should this be exported?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>());
     someSurvey.addBallot(someBallot);
     someSurvey.addBallot(new Ballot("How do you like the modern iconSet?", "", someSurvey.getConfig(), SurveyUtils.getDefaultChoices(), new ArrayList<Comment>()));
@@ -151,7 +151,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
 
     final Response response = classUnderTest.setLocked(SOME_PAGE_ID, new LockRepresentation(SOME_SURVEY_TITLE, false));
 
-    assertThat(Response.Status.NOT_FOUND.getStatusCode(), is(response.getStatus()));
+    assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
   }
 
   @Test
@@ -216,7 +216,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
 
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
-    assertThat(Response.Status.NOT_FOUND.getStatusCode(), is(response.getStatus()));
+    assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
   }
 
   @Test
@@ -255,7 +255,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
 
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
+    Survey someSurvey = new SurveyBuilder().parameters(parameters).build();
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
@@ -277,7 +277,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
     parameters.put(SurveyConfig.KEY_MANAGERS, "notThisUser");
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
+    Survey someSurvey = new SurveyBuilder().parameters(parameters).build();
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
@@ -299,7 +299,7 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     final HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
     parameters.put(SurveyConfig.KEY_LOCKED, "true");
-    Survey someSurvey = new Survey(createDefaultSurveyConfig(parameters));
+    Survey someSurvey = new SurveyBuilder().parameters(parameters).build();
 
     when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
     when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);

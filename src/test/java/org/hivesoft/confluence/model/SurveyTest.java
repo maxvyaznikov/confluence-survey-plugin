@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -21,20 +22,19 @@ public class SurveyTest extends ConfluenceTestBase {
 
   private Survey classUnderTest;
 
-  @Before
-  public void setup() {
-    classUnderTest = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
-  }
-
   @Test
   public void test_toString() {
-    Survey classUnderTest2 = new Survey(createDefaultSurveyConfig(new HashMap<String, String>()));
+    classUnderTest = new SurveyBuilder().build();
+
+    Survey classUnderTest2 = new SurveyBuilder().build();
 
     assertThat(classUnderTest.toString(), is(classUnderTest2.toString()));
   }
 
   @Test
   public void test_getBallot_success() {
+    classUnderTest = new SurveyBuilder().build();
+
     Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
 
     classUnderTest.addBallot(someBallot);
@@ -46,17 +46,21 @@ public class SurveyTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBallotNotFound_failure() {
+    classUnderTest = new SurveyBuilder().build();
+
     Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
 
     classUnderTest.addBallot(someBallot);
 
     final Ballot result = classUnderTest.getBallot("BallotNotFound");
 
-    assertNull(result);
+    assertThat(result, is(nullValue()));
   }
 
   @Test
   public void test_getBallots_success() {
+    classUnderTest = new SurveyBuilder().build();
+
     Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
     Ballot someBallot2 = new BallotBuilder().title(SOME_BALLOT_TITLE + "2").build();
 
@@ -70,9 +74,12 @@ public class SurveyTest extends ConfluenceTestBase {
 
   @Test
   public void test_isSurveyComplete_success() {
+    classUnderTest = new SurveyBuilder().build();
+
     Choice choice1 = new Choice("firstChoice");
     Choice choice2 = new Choice("secondChoice");
     choice1.voteFor(SOME_USER1);
+
     Ballot someBallot = new BallotBuilder().choices(Arrays.asList(choice1, choice2)).build();
 
     classUnderTest.addBallot(someBallot);
@@ -84,6 +91,8 @@ public class SurveyTest extends ConfluenceTestBase {
 
   @Test
   public void test_isSurveyComplete_failure() {
+    classUnderTest = new SurveyBuilder().build();
+
     Choice choice1 = new Choice("firstChoice");
     Choice choice2 = new Choice("secondChoice");
 
@@ -98,6 +107,8 @@ public class SurveyTest extends ConfluenceTestBase {
 
   @Test
   public void test_getBallotTitlesWithChoiceNames_success() {
+    classUnderTest = new SurveyBuilder().build();
+
     Ballot someBallot = new BallotBuilder().title(SOME_BALLOT_TITLE).build();
     Ballot someBallot2 = new BallotBuilder().title(SOME_BALLOT_TITLE + "2").build();
 
@@ -111,10 +122,11 @@ public class SurveyTest extends ConfluenceTestBase {
 
   @Test
   public void test_getTitleWithRenderedLinks_success() {
+
     HashMap<String, String> parameters = new HashMap<String, String>();
     parameters.put(SurveyConfig.KEY_TITLE, "i am a survey to http://google.de but https://www.google.com is also ok");
 
-    classUnderTest = new Survey(createDefaultSurveyConfig(parameters));
+    classUnderTest = new SurveyBuilder().parameters(parameters).build();
 
     assertThat(classUnderTest.getTitleWithRenderedLinks(),
             is("i am a survey to <a href=\"http://google.de\" target=\"_blank\">http://google.de</a> but <a href=\"https://www.google.com\" target=\"_blank\">https://www.google.com</a> is also ok"));

@@ -27,6 +27,7 @@ import java.util.Set;
  * Each <code>Choice</code> can be assigned zero or more votes.
  */
 public class Ballot {
+
   private final String title;
   private final String description;
   private final VoteConfig config;
@@ -42,11 +43,24 @@ public class Ballot {
     this.comments = comments;
   }
 
-  /**
-   * @return the title of the Ballot
-   */
   public String getTitle() {
     return title;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public VoteConfig getConfig() {
+    return config;
+  }
+
+  public Collection<Choice> getChoices() {
+    return choices;
+  }
+
+  public List<Comment> getComments() {
+    return comments;
   }
 
   /**
@@ -60,16 +74,8 @@ public class Ballot {
     return SurveyUtils.enrichStringWithHttpPattern(title);
   }
 
-  public String getDescription() {
-    return description;
-  }
-
   public String getDescriptionWithRenderedLinks() {
     return SurveyUtils.enrichStringWithHttpPattern(description);
-  }
-
-  public VoteConfig getConfig() {
-    return config;
   }
 
   public Choice getChoiceForUser(User user) {
@@ -99,13 +105,6 @@ public class Ballot {
   }
 
   /**
-   * @return all of the {@link Choice}s belonging to this <code>Ballot</code>
-   */
-  public Collection<Choice> getChoices() {
-    return choices;
-  }
-
-  /**
    * Get the comment entered by a particular user.
    *
    * @param user The name of the user whose comment is to be returned.
@@ -118,13 +117,6 @@ public class Ballot {
       }
     }
     return null;
-  }
-
-  /**
-   * @return All comments entered for this ballot.
-   */
-  public List<Comment> getComments() {
-    return comments;
   }
 
   /**
