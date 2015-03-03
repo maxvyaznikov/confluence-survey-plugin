@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -230,6 +231,28 @@ public class SurveyResourceTest extends ConfluenceTestBase {
     final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
 
     assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+  }
+
+  @Test
+  public void test_resetVotes_surveyFoundTwice_failure() throws UnsupportedEncodingException, XhtmlException {
+    Page somePage = new Page();
+    somePage.setId(SOME_PAGE_ID);
+    somePage.setBodyAsString("<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">"+SOME_SURVEY_TITLE+"</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>" +
+                             "<ac:macro ac:name=\"survey\"><ac:parameter ac:name=\"title\">"+SOME_SURVEY_TITLE+"</ac:parameter><ac:plain-text-body><![CDATA[Should this be exported?\n" +
+            "How do you like the modern iconSet?]]></ac:plain-text-body></ac:macro>");
+
+    final HashMap<String, String> parameters = new HashMap<String, String>();
+    parameters.put(SurveyConfig.KEY_TITLE, SOME_SURVEY_TITLE);
+    Survey someSurvey = new SurveyBuilder().parameters(parameters).build();
+
+    when(mockPageManager.getById(SOME_PAGE_ID)).thenReturn(somePage);
+    when(mockSurveyManager.reconstructSurveyFromPlainTextMacroBody(anyString(), eq(somePage), any(Map.class))).thenReturn(someSurvey);
+
+    final Response response = classUnderTest.resetVotes(SOME_PAGE_ID, new ResetRepresentation(SOME_SURVEY_TITLE, true));
+
+    assertThat(response.getStatus(), is(Response.Status.BAD_REQUEST.getStatusCode()));
+    assertThat((String)response.getEntity(), containsString("Found more than one survey"));
   }
 
   @Test
