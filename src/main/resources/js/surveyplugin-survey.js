@@ -27,7 +27,7 @@ AJS.toInit(function () {
         //window.scrollTo(0, top);
       },
       error: function (xhr, status, error) {
-        alert("There was a problem casting a vote. Returned status: " + status + ", error: " + error);
+        alert(error + ": " + xhr.responseText);
       }
     });
   }
@@ -53,8 +53,7 @@ AJS.toInit(function () {
         inlineDialog.show();
       },
       error: function (xhr, status, error) {
-        var err = eval("(" + xhr.responseText + ")");
-        alert(err.Message);
+        alert(error + ": " + xhr.responseText);
       }
     });
   }
@@ -81,7 +80,7 @@ AJS.toInit(function () {
         location.reload(true); //reload the wiki page
       },
       error: function (xhr, status, error) {
-        alert("There was a problem resetting the survey. Returned status: " + status + ", error: " + error);
+        alert(error + ": " + xhr.responseText);
       }
     });
   }
@@ -108,7 +107,7 @@ AJS.toInit(function () {
         location.reload(true); //reload the wiki page
       },
       error: function (xhr, status, error) {
-        alert("There was a problem locking the survey. Returned status: " + status + ", error: " + error);
+        alert(error + ": " + xhr.responseText);
       }
     });
   }
