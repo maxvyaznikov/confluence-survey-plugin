@@ -31,12 +31,12 @@ public abstract class ConfluenceTestBase {
 
   protected static class BallotBuilder {
 
-    private Map<String, String> parameters = new HashMap<String, String>();
+    private final Map<String, String> parameters = new HashMap<String, String>();
     private String title = "";
     private String description = "";
     private PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).build();
-    private List<Choice> choices = SurveyUtils.getDefaultChoices();
-    private List<Comment> comments = new ArrayList<Comment>();
+    private final List<Choice> choices = SurveyUtils.getDefaultChoices();
+    private final List<Comment> comments = new ArrayList<Comment>();
 
     public BallotBuilder() {
     }
@@ -86,7 +86,7 @@ public abstract class ConfluenceTestBase {
 
   public static class SurveyBuilder {
     PermissionEvaluator permissionEvaluator = new TestPermissionEvaluator.Builder(SOME_USER1).build();
-    Map<String, String> parameters = new HashMap<String, String>();
+    final Map<String, String> parameters = new HashMap<String, String>();
 
     public SurveyBuilder permissionEvaluator(PermissionEvaluator permissionEvaluator) {
       this.permissionEvaluator = permissionEvaluator;

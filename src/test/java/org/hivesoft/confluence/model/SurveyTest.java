@@ -5,7 +5,6 @@ import org.hivesoft.confluence.macros.survey.SurveyConfig;
 import org.hivesoft.confluence.model.vote.Ballot;
 import org.hivesoft.confluence.model.vote.Choice;
 import org.hivesoft.confluence.utils.SurveyUtils;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -14,9 +13,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 public class SurveyTest extends ConfluenceTestBase {
 
